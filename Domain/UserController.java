@@ -37,30 +37,28 @@ public class UserController {
         return this.passwordEncoder.matches(password, user.getEncodedPassword());
     }
 
-    public boolean register(String user_name, String password){
+    public void register(String user_name, String password){
         String encodedPass = this.passwordEncoder.encodePassword(password);
-        if(!isUserNameExists(user_name)){
+        if (!isUserNameExists(user_name)) {
             this.users.add(new User(user_name, encodedPass));
-            return true;
+        } else {
+            throw new Exception("Username already exists.");
         }
-        return false;
     }
 
-    public boolean logIn(String user_name, String password){
+    public void logIn(String user_name, String password){
         User user = getUserByUsername(user_name);
         if (user != null && isCredentialsCorrect(user, password)) {
             user.logIn();
-            return true;
         }
-        return false;
+        throw new Exception("Invalid credentials or registration required.");
     }
 
-    public boolean logOut(String user_name){
+    public void logOut(String user_name){
         User user = getUserByUsername(user_name);
         if (user != null) {
             user.logOut();
-            return true;
         }
-        return false;
+        throw new Exception("User not found or already logged out.");
     }
 }
