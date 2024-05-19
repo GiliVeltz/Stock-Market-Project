@@ -54,7 +54,7 @@ public class UserController {
         return true;
     }
 
-    public boolean logOut(String user_name, String password){
+    public boolean logOut(String user_name){
         
     }
 
