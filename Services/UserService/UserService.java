@@ -7,9 +7,12 @@ public class UserService {
         tokenService = new TokenService();
     }
 
-    public String logIn(String user_name, String password){
-        if (userController.logIn(user_name, password)){
-            return tokenService.generateToken(user_name);
+    public String logIn(String userName, String password) throws Exception {
+        try {
+            userController.logIn(userName, password);
+            return tokenService.generateToken(userName);
+        } catch (Exception e) {
+            throw new Exception("Login failed: " + e.getMessage());
         }
     }
 

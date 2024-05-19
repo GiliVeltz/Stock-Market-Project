@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 public class UserController {
     private List<User> users;
-    private List<Guest> guests;
     private PasswordEncoderUtil passwordEncoder;
 
     public UserController() {
