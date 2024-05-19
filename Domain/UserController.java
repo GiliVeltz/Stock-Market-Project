@@ -10,14 +10,14 @@ public class UserController {
     private PasswordEncoderUtil passwordEncoder;
 
     public UserController() {
-        users = new ArrayList<>();
-        guests = new ArrayList<>();
-        passwordEncoder = new PasswordEncoderUtil();
+        this.users = new ArrayList<>();
+        this.guests = new ArrayList<>();
+        this.passwordEncoder = new PasswordEncoderUtil();
     }
 
     public boolean isUserNameExists(String username) {
         // Check if the username already exists
-        for (User user : users) {
+        for (User user : this.users) {
             if (user.getUserName().equals(username)) {
                 return true;
             }
@@ -25,37 +25,43 @@ public class UserController {
         return false;
     }
 
-    public boolean isCredentialCorrect(String username, String encoded_password) {
-        // Check if the username already exists
-        for (User user : users) {
-            if(user.getUserName().equals(username)){
-                if (user.getPassword().equals(encoded_password)) {
-                    return true;
-                }
+    public User getUserByUsername(String username) {
+        for (User user : this.users) {
+            if (user.getUserName().equals(username)) {
+                return user;
             }
         }
-        return false;
+        return null;
+    }
+
+    public boolean isCredentialsCorrect(User user, String password) {
+        return this.passwordEncoder.matches(password, user.getEncodedPassword());
     }
 
     public boolean register(String user_name, String password){
-        String encodedPass = passwordEncoder.encodePassword(password);
+        String encodedPass = this.passwordEncoder.encodePassword(password);
         if(!isUserNameExists(user_name)){
-            users.add(new User(user_name, encodedPass));
+            this.users.add(new User(user_name, encodedPass));
             return true;
         }
         return false;
     }
 
     public boolean logIn(String user_name, String password){
-        String encodedPass = passwordEncoder.encodePassword(password);
-        if(!isCredentialCorrect(user_name, encodedPass)){
-            return false;
-        } 
-        return true;
+        User user = getUserByUsername(user_name);
+        if (user != null && isCredentialsCorrect(user, password)) {
+            user.logIn();
+            return true;
+        }
+        return false;
     }
 
     public boolean logOut(String user_name){
-        
+        User user = getUserByUsername(user_name);
+        if (user != null) {
+            user.logOut();
+            return true;
+        }
+        return false;
     }
-
 }
