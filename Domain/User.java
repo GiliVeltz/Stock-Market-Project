@@ -1,13 +1,15 @@
 package Domain;
-public class User extends Guest {
+public class User {
     private String encoded_password;
     private String username;
     private boolean loggedIn;
+    private String email;
 
-    public User(String username, String encoded_password) {
+    public User(String username, String encoded_password, String email) {
         this.username = username;
         this.encoded_password = encoded_password;
         this.loggedIn = false;
+        this.email = email;
     }
 
     public boolean isCurrUser(String username, String encoded_password) {
@@ -31,6 +33,14 @@ public class User extends Guest {
 
     public void logOut(){
         this.loggedIn = false;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }
