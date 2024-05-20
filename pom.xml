@@ -24,6 +24,7 @@
             <artifactId>spring-web</artifactId>
             <version>5.3.14</version> <!-- Replace with the desired version -->
         </dependency>
+        
         <!-- Spring Test (Optional, if you're writing unit tests) -->
         <dependency>
             <groupId>junit</groupId>
@@ -31,6 +32,12 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency> 
+    
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.0.0</version>
+      </dependency>
     </dependencies>
     
     <!-- Maven plugins configuration -->
