@@ -17,7 +17,7 @@ public class UserService {
             userController.logIn(userName, password);
             response.setReturnValue(tokenService.generateToken(userName));
         } catch (Exception e) {
-            response.setErrorMessage("Login failed: " + e.getMessage());
+            response.setErrorMessage("LogIn failed: " + e.getMessage());
         }
         return response;
     }
@@ -32,15 +32,15 @@ public class UserService {
                 response.setErrorMessage("Token is incorrect");
             }
         } catch (Exception e) {
-            response.setErrorMessage("Login failed: " + e.getMessage());
+            response.setErrorMessage("LogOut failed: " + e.getMessage());
         }
         return response;
     }
 
-    public Response register(String user_name, String password){
+    public Response register(String user_name, String password, String email){
         Response response = new Response();
         try {
-            userController.register(user_name, password);
+            userController.register(user_name, password, email);
             response.setReturnValue("Registeration Succeed");
         } catch (Exception e) {
             response.setErrorMessage("Registeration failed: " + e.getMessage());

@@ -1,8 +1,6 @@
 package Domain;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
 
 public class UserController {
     private List<User> users;
@@ -10,8 +8,6 @@ public class UserController {
 
     public UserController() {
         this.users = new ArrayList<>();
-        // TODO: AMIT: check this error
-        this.guests = new ArrayList<>();
         this.passwordEncoder = new PasswordEncoderUtil();
     }
 
@@ -38,10 +34,10 @@ public class UserController {
         return this.passwordEncoder.matches(password, user.getEncodedPassword());
     }
 
-    public void register(String user_name, String password){
+    public void register(String user_name, String password, String email) throws Exception{
         String encodedPass = this.passwordEncoder.encodePassword(password);
         if (!isUserNameExists(user_name)) {
-            this.users.add(new User(user_name, encodedPass));
+            this.users.add(new User(user_name, encodedPass, email));
         } else {
             throw new Exception("Username already exists.");
         }
