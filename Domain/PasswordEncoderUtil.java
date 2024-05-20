@@ -6,12 +6,8 @@ import org.springframework.stereotype.Component;
 public class PasswordEncoderUtil{
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public PasswordEncoderUtil(){
-        
-    }
-
     public String encodePassword(String password){
-        return passwordEncoder.encode(password);
+        return this.passwordEncoder.encode(password);
     }
 
     public boolean matches(String rawPassword, String encodedPassword){

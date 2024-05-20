@@ -37,10 +37,10 @@ public class UserService {
         return response;
     }
 
-    public Response register(String user_name, String password){
+    public Response register(String user_name, String password, String email){
         Response response = new Response();
         try {
-            userController.register(user_name, password);
+            userController.register(user_name, password, email);
             response.setReturnValue("Registeration Succeed");
         } catch (Exception e) {
             response.setErrorMessage("Registeration failed: " + e.getMessage());
