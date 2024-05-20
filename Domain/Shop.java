@@ -2,46 +2,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Shop {
-    private Integer m_ShopId;
-    private String m_ShopFounder;
-    private Map<Integer ,Product> m_ProductMap; // <ProductId, Product> 
-    private List<ShoppingBasket> m_OrderHistory; 
+    private Integer _shopId;
+    private String _shopFounder;
+    private Map<Integer ,Product> _productMap; // <ProductId, Product> 
+    private List<ShoppingBasket> _orderHistory; 
+    //private Map<String, List<Permission>> //<userName, List<Permissions>
+    //TODO:: List<Discount> 
 
     // Constructor
-    public Shop(Integer pi_ShopId, String pi_ShopFounder){
-        this.m_ShopId = pi_ShopId;
-        this.m_ShopFounder = pi_ShopFounder;
-        this.m_ProductMap = new HashMap<>(); // Initialize the product map
-        this.m_OrderHistory = new ArrayList<>();
+    public Shop(Integer shopId, String shopFounder){
+        this._shopId = shopId;
+        this._shopFounder = shopFounder;
+        this._productMap = new HashMap<>(); // Initialize the product map
+        this._orderHistory = new ArrayList<>();
     }
 
-    public void addProductToShop(Product pi_Product) {
-        m_ProductList.add(pi_product); // Add product to the map
+    public void addProductToShop(Product product) {
+        if (_productMap.containsKey(product.getProductId())) {
+            throw new ProductAlreadyExistsException("Product with ID " + product.getProductId() + " already exists.");
+        }
+        _productMap.put(product.getProductId(), product); // Add product to the map
     }
 
-    public Product findProductById(Integer pi_ProductId) {
-        return m_ProductMap.get(pi_ProductId); // Get product by ID from the map
+    public Product getProductById(Integer productId) {
+        return _productMap.get(productId); // Get product by ID from the map
     }
 
     public Map<Integer ,Product> getShopProducts() {
-        return m_ProductMap;
+        return _productMap;
     }
 
     public List<ShoppingBasket> getShopOrderHistory() {
-        return m_OrderHistory;
+        return _orderHistory;
     }
 
-    public void createOrder(ShoppingBasket pi_Order) {
-        m_OrderHistory.add(pi_Order); // Add order to the history
+    public void addOrderToOrderHistory(ShoppingBasket order) {
+        _orderHistory.add(order); // Add order to the history
     }
 
     @Override
     public String toString() {
         return "Shop{" +
-                "Shop ID=" + m_ShopId +
-                ", Shop Founder=" + m_ShopFounder +
-                ", Products= \n" + m_ProductMap +
-                ", Order History= \n " + m_OrderHistory +
+                "Shop ID=" + _shopId +
+                ", Shop Founder=" + _shopFounder +
+                ", Products= \n" + _productMap +
+                ", Order History= \n " + _orderHistory +
                 '}';
     }
 }

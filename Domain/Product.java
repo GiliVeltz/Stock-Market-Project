@@ -1,33 +1,38 @@
+import java.util.List;
+
 public class Product {
-    private Integet m_ProductId;
-    private String m_ProductName;
-    private double m_Price;
+    private Integet _productId;
+    private String _productName;
+    private double _price;
+    private Integer _quantity;
+    //TODO: private List<discount> 
 
     // Constructor
-    public Product(Integer pi_ProductId, String pi_ProductName, double pi_Price) {
-        this.m_ProductId = pi_ProductId;
-        this.m_ProductName = pi_ProductName;
-        this.m_Price = pi_Price;
+    public Product(Integer productId, String productName, double price) {
+        this._productId = productId;
+        this._productName = productName;
+        this._price = price;
+        this._quantity = 0;
     }
 
     public int getProductId() {
-        return m_ProductId;
+        return _productId;
     }
 
     public String getProductName() {
-        return m_ProductName;
+        return _productName;
     }
 
     public double getPrice() {
-        return m_Price;
+        return _price;
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + m_ProductId +
-                ", name='" + m_ProductName + '\'' +
-                ", price=" + m_Price +
+                "id=" + _productId +
+                ", name='" + _productName + '\'' +
+                ", price=" + _price +
                 '}';
     }
 }

@@ -1,39 +1,41 @@
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO: add external service to the constructor and the class for payment and shipping methods
+
 public class Order {
-    private Integer m_OrderId;
-    private Map<Integer ,ShoppingBasket> m_ShoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
-    private double m_TotalOrderAmount;
+    private Integer _orderId;
+    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
+    private double _totalOrderAmount;
 
     // Constructor
     public Order(Integer orderId) {
-        this.m_OrderId = orderId;
-        this.m_ShoppingBasketMap = new HashMap<>();
-        this.m_TotalOrderAmount = 0.0;
+        this._orderId = orderId;
+        this._shoppingBasketMap = new HashMap<>();
+        this._totalOrderAmount = 0.0;
     }
 
     public Integer getOrderId() {
-        return m_OrderId;
+        return _orderId;
     }
 
     public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
-        return m_ShoppingBasketMap;
+        return _shoppingBasketMap;
     }
 
-    public double getOrderTotalAmount() { return m_TotalOrderAmount; }
+    public double getOrderTotalAmount() { return _totalOrderAmount; }
 
     // Add a product to the order under a specific shop
-    public void addProductToOrder(Product pi_Product, Integer pi_ShopId) {
-        m_ShoppingBasketMap.putIfAbsent(pi_ShopId, new ShoppingBasket(pi_ShopId));
-        m_ShoppingBasketMap.get(pi_Product).AddProductToShoppingBasket(pi_Product);
+    public void addProductToOrder(Product product, Integer shopId) {
+        _shoppingBasketMap.putIfAbsent(shopId, new ShoppingBasket(shopId));
+        _shoppingBasketMap.get(product).AddProductToShoppingBasket(product);
         calcTotalAmount();
     }
 
     public void calcTotalAmount() { 
-        m_TotalOrderAmount = 0.0;
+        _totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : map.entrySet()) {
-            m_TotalOrderAmount += entry.getValue().getShoppingBasketPrice();
+            _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
         }
     }
 
@@ -50,7 +52,7 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + m_OrderId +
+                "orderId=" + _orderId +
                 ", totalAmount=" + totalAmount +
                 ", products= \n" + printAllProduct() +
                 '}';
