@@ -24,7 +24,6 @@
             <artifactId>spring-web</artifactId>
             <version>5.3.14</version> <!-- Replace with the desired version -->
         </dependency>
-        
         <!-- Spring Test (Optional, if you're writing unit tests) -->
         <dependency>
             <groupId>junit</groupId>

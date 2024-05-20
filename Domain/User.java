@@ -1,32 +1,38 @@
-// This class represents the User entity in the domain layer of the application
+package Domain;
 public class User {
+    private String encoded_password;
     private String username;
-    private String password;
+    private boolean loggedIn;
     private String email;
 
-    // constructor
-    public User(String username, String password, String email) {
+    public User(String username, String encoded_password, String email) {
         this.username = username;
-        this.password = password;
+        this.encoded_password = encoded_password;
+        this.loggedIn = false;
         this.email = email;
     }
 
-    // Getters and setters for username, password, and email
-
-    public String getUsername() {
-        return username;
+    public boolean isCurrUser(String username, String encoded_password) {
+        if(this.username == username & this.encoded_password == encoded_password){
+            return true;
+        }
+        return false;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getUserName(){
+        return this.username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEncodedPassword(){
+        return this.encoded_password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void logIn(){
+        this.loggedIn = true;
+    }
+
+    public void logOut(){
+        this.loggedIn = false;
     }
 
     public String getEmail() {
@@ -37,5 +43,4 @@ public class User {
         this.email = email;
     }
 
-    // Other methods and functionalities can be added here
 }

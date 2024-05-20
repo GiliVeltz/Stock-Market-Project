@@ -1,3 +1,4 @@
+package ServiceLayer;
 // Purpose: Response class for handling the response of the service layer.
 public class Response {
     
