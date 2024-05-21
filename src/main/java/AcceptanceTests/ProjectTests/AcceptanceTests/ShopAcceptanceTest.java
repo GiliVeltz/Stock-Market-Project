@@ -1,4 +1,4 @@
-package AcceptanceTests.ProjectTests;
+package AcceptanceTests.ProjectTests.AcceptanceTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import Domain.ShopController;
 import Domain.User;
 
 
-public class ShopTest {
+public class ShopAcceptanceTest {
 
     @Mock
     ShopService mockShopService;
@@ -35,7 +35,6 @@ public class ShopTest {
     void init() {
         MockitoAnnotations.openMocks(this);
         // mockLibrary = Mockito.spy(new Library(mockDatabaseService, mockReviewService));
-
     }
 
     @AfterEach

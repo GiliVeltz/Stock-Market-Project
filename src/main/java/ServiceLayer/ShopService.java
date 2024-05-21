@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
+import java.lang.module.ModuleDescriptor.Opens;
 import java.util.logging.Level;
 
 import Domain.Product;
@@ -18,6 +19,13 @@ public class ShopService {
         _shopController = ShopController.getShopController();
     }
 
+    /**
+    * Opens a new shop with the specified shop ID and user name.
+    * 
+    * @param shopId    The ID of the new shop to be opened.
+    * @param userName  The name of the user opening the shop (founder).
+    * @return          A response indicating the success or failure of the operation.
+    */
     public Response OpenNewShop(Integer shopId, String userName)
     {
         Response response = new Response();
@@ -36,6 +44,14 @@ public class ShopService {
         return response;        
     }
 
+    /**
+    * Adds a product to the specified shop.
+    * 
+    * @param shopId    The ID of the shop to which the product will be added.
+    * @param userName  The name of the user adding the product.
+    * @param product   The product to be added to the shop.
+    * @return          A response indicating the success or failure of the operation.
+    */
     public Response addProductToShop(Integer shopId, String userName, Product product)
     {
         Response response = new Response();
