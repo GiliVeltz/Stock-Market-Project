@@ -19,7 +19,7 @@ public class ExternalServiceHandler {
      * Connects to all external services.
      * @return true if all services are successfully connected, false otherwise.
      */
-    public boolean ConnectToServices() {
+    public boolean connectToServices() {
         for (ExternalService externalService : externalServices) {
             if (!externalService.ConnectToService()) {
                 return false;

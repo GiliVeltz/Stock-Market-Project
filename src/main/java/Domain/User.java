@@ -49,5 +49,9 @@ public class User {
         return this.isAdmin;
     }
 
+    public boolean isLoggedIn(){
+        return this.loggedIn;
+    }
+
 
 }

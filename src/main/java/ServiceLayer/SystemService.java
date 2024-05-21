@@ -1,4 +1,5 @@
 package ServiceLayer;
+
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import Domain.ExternalServices.ExternalServiceHandler;
@@ -6,7 +7,7 @@ import Domain.ExternalServices.ExternalServiceHandler;
 // Class that represents the system service and enables users (probably admins) to control the system.
 
 public class SystemService {
-     private UserService userService;
+    private UserService userService;
     private ExternalServiceHandler externalServiceHandler;
     private boolean isOpen = false;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
@@ -15,7 +16,7 @@ public class SystemService {
         this.userService = userService;
         this.externalServiceHandler = externalServiceHandler;
     }
-   
+
     /**
      * Opens the system.
      * 
@@ -23,17 +24,24 @@ public class SystemService {
      * @param password the user password
      * @return a response indicating the success or failure of opening the system
      */
-    public Response openSystem(String userId, String password) {
+    public Response openSystem(String userId) {
         Response response = new Response();
         try {
-            // Perform user login
-            Response loginResponse = userService.logIn(userId, password);
-            if (loginResponse.getErrorMessage() != null) {
-                response.setErrorMessage("Login failed: " + loginResponse.getErrorMessage());
-                logger.log(Level.SEVERE, "Login failed: " + loginResponse.getErrorMessage());
+            // Check if the user is already logged in
+            Response loggedInResponse = userService.isLoggedIn(userId);
+            if (loggedInResponse.getErrorMessage() != null) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
                 return response;
             }
-            
+            // Check if the user is an admin
+            Response isAdResponse = userService.isAdmin(userId);
+            if (isAdResponse.getErrorMessage() != null) {
+                response.setErrorMessage("User is not an admin");
+                logger.log(Level.SEVERE, "User is not an admin");
+                return response;
+            }
+    
             // Check if the system is already open
             if (isSystemOpen()) {
                 response.setErrorMessage("System is already open");
@@ -42,7 +50,7 @@ public class SystemService {
             }
 
             // Connect to external services
-            if (!externalServiceHandler.ConnectToServices()) {
+            if (!externalServiceHandler.connectToServices()) {
                 response.setErrorMessage("Failed to connect to external services");
                 logger.log(Level.SEVERE, "Failed to connect to external services");
                 return response;
