@@ -40,7 +40,6 @@ public class ShopController {
 
     public void OpenNewShop(Integer shopId, String userName) throws Exception 
     {
-        //TODO: need to implement  (check if shop exist)
         if(isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
         else
@@ -50,8 +49,7 @@ public class ShopController {
     public void addProductToShop(Integer shopId, Product product, String userName )
     {
         //TODO: need to implement  (check if shop exist)
- 
-        
+
     }
 
 
