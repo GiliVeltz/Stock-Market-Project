@@ -1,10 +1,11 @@
 package ServiceLayer;
 
 import java.util.Date;
-
+import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.SecretKey;
-
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.Jwts;
 
 public class TokenService {
     @Value("jwk.secret")
