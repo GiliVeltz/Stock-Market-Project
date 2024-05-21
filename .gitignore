@@ -1,1 +1,5 @@
-﻿.vs/StockMarket_Project/FileContentIndex
+﻿.github
+.vs
+.vscode
+target
+*.DS_STORE
