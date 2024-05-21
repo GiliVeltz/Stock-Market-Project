@@ -3,15 +3,22 @@ package Domain.ExternalServices;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents an external service handler.
+ * It manages a list of external services.
+ */
 public class ExternalServiceHandler {
-    //fields of list of external services
+
     private List<ExternalService> externalServices;
 
     public ExternalServiceHandler() {
         this.externalServices = new ArrayList<ExternalService>();
     }
 
-    //connect to all external services
+    /**
+     * Connects to all external services.
+     * @return true if all services are successfully connected, false otherwise.
+     */
     public boolean ConnectToServices() {
         for (ExternalService externalService : externalServices) {
             if (!externalService.ConnectToService()) {
@@ -20,5 +27,4 @@ public class ExternalServiceHandler {
         }
         return true;
     }
-    
 }

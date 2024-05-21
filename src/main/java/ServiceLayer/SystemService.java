@@ -15,11 +15,18 @@ public class SystemService {
         this.userService = userService;
         this.externalServiceHandler = externalServiceHandler;
     }
-    // Open the system
+   
+    /**
+     * Opens the system.
+     * 
+     * @param userId   the user ID
+     * @param password the user password
+     * @return a response indicating the success or failure of opening the system
+     */
     public Response openSystem(String userId, String password) {
         Response response = new Response();
         try {
-            
+            // Perform user login
             Response loginResponse = userService.logIn(userId, password);
             if (loginResponse.getErrorMessage() != null) {
                 response.setErrorMessage("Login failed: " + loginResponse.getErrorMessage());
@@ -27,12 +34,14 @@ public class SystemService {
                 return response;
             }
             
+            // Check if the system is already open
             if (isSystemOpen()) {
                 response.setErrorMessage("System is already open");
                 logger.log(Level.SEVERE, "System is already open");
                 return response;
             }
 
+            // Connect to external services
             if (!externalServiceHandler.ConnectToServices()) {
                 response.setErrorMessage("Failed to connect to external services");
                 logger.log(Level.SEVERE, "Failed to connect to external services");
@@ -41,7 +50,7 @@ public class SystemService {
 
             // Open the system
             setSystemOpen(true);
-            logger.info("System opened by admin :" + userId);
+            logger.info("System opened by admin: " + userId);
             response.setReturnValue("System Opened Successfully");
         } catch (Exception e) {
             response.setErrorMessage("Failed to open system: " + e.getMessage());
