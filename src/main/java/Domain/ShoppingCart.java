@@ -12,10 +12,26 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
     }
+    
+    /*
+     * Go thorugh the list of baskets to buy and purchase them.
+     * If an exception is thrown, cancel the purchase of all the baskets that were bought.
+     * This function only updates the item's stock. 
+     */
+    public void  purchesCart(User buyer, List<Integer> busketsToBuy) {
+        List<Integer> boughtBasketList = new ArrayList<>();
 
-    public String purchesCart(User buyer, PaymentMethod paymentMethod, SupplyMethod shippingMethod, List<Integer> busketsToBuy) {
+        for (Integer basketId : busketsToBuy) {
+            try{
+                _shoppingBaskets.get(basketId).purchaseBasket(buyer);
+            }
+            catch (ItemOutOfStockExepction e){
+                for (Integer basket : boughtBasketList) {
+                    _shoppingBaskets.get(basket).cancelPurchase();
+                }
+            }
             
-        return "";
+        }
     }
 
     public String toString() {

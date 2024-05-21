@@ -52,7 +52,8 @@ public class User {
     }
 
     public void purchesCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
-        _shoppingCart.purchesCart(this, paymentMethod, shippingMethod, busketsToBuy);
+        _shoppingCart.purchesCart(this, busketsToBuy);
+        
     }
 
 }
