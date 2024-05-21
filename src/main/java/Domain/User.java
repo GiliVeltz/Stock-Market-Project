@@ -51,8 +51,8 @@ public class User {
         _email = email;
     }
 
-    public void purchesCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
-        _shoppingCart.purchesCart(this, busketsToBuy);
+    public void purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+        _shoppingCart.purchaseCart(this, busketsToBuy);
         
     }
 

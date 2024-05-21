@@ -12,13 +12,13 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
     }
-    
+
     /*
      * Go thorugh the list of baskets to buy and purchase them.
      * If an exception is thrown, cancel the purchase of all the baskets that were bought.
      * This function only updates the item's stock. 
      */
-    public void  purchesCart(User buyer, List<Integer> busketsToBuy) {
+    public void  purchaseCart(User buyer, List<Integer> busketsToBuy) {
         List<Integer> boughtBasketList = new ArrayList<>();
 
         for (Integer basketId : busketsToBuy) {
