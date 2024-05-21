@@ -32,6 +32,8 @@ public class Shop {
         _productMap.put(product.getProductId(), product); // Add product to the map
     }
 
+    public Integer getShopId() { return _shopId;}
+
     public Product getProductById(Integer productId) {
         return _productMap.get(productId); // Get product by ID from the map
     }
