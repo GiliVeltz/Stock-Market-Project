@@ -1,4 +1,10 @@
 package Domain;
+
+import java.util.List;
+
+import Domain.ExternalServices.PaymentService.PaymentMethod;
+import Domain.ExternalServices.SupplyService.SupplyMethod;
+
 public class User {
     private String _encoded_password;
     private String _username;
@@ -43,6 +49,10 @@ public class User {
 
     public void setEmail(String email) {
         _email = email;
+    }
+
+    public void purchesCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+        _shoppingCart.purchesCart(this, paymentMethod, shippingMethod, busketsToBuy);
     }
 
 }
