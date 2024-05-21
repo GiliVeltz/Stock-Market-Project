@@ -56,4 +56,25 @@ public class UserService {
         }
         return response;
     }
+
+    // function that check if the user is an admin using try catch and logging without checking for token
+    public Response isAdmin(String userName, String password){
+        Response response = new Response();
+        try {
+            if (userController.isAdmin(userName)){
+                logger.info("User is an admin: " + userName);
+                response.setReturnValue("User is an admin");
+            } else {
+                logger.info("User is not an admin: " + userName);
+                response.setReturnValue("User is not an admin");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to check if user is an admin: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+
+
 }

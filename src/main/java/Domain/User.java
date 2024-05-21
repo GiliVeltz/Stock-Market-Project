@@ -3,12 +3,14 @@ public class User {
     private String encoded_password;
     private String username;
     private boolean loggedIn;
+    private boolean isAdmin;
     private String email;
 
     public User(String username, String encoded_password, String email) {
         this.username = username;
         this.encoded_password = encoded_password;
         this.loggedIn = false;
+        this.isAdmin = false;
         this.email = email;
     }
 
@@ -42,5 +44,10 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public boolean isAdmin(){
+        return this.isAdmin;
+    }
+
 
 }

@@ -58,4 +58,10 @@ public class UserController {
         }
         throw new Exception("User not found or already logged out.");
     }
+
+   // function that check if a given user is an admin
+    public boolean isAdmin(String userName){
+        User user = getUserByUsername(userName);
+        return user != null && user.isAdmin();
+    }
 }
