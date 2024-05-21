@@ -2,6 +2,7 @@ package Domain;
 
 import java.util.List;
 
+import Domain.Exceptions.PaymentFailedException;
 import Domain.ExternalServices.PaymentService.PaymentMethod;
 import Domain.ExternalServices.SupplyService.SupplyMethod;
 
