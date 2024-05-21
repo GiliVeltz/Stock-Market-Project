@@ -53,6 +53,12 @@ public class User {
         _email = email;
     }
 
+    /*
+     * This method is responsible for purchasing the cart.
+     * It first calls the purchaseCart method of the shopping cart which reaponsible for changing the item's stock.
+     * Then it tries to pay and deliver the items.
+     * If the payment or the delivery fails, it cancels the purchase and restock the item.
+     */
     public void purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
         _shoppingCart.purchaseCart(this, busketsToBuy);
         try {
