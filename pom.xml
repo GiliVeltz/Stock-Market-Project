@@ -1,28 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
     
     <!-- Project metadata -->
     <groupId>com.example</groupId>
-    <artifactId>spring-example</artifactId>
+    <artifactId>stock-market</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Stock Market Project</name>
+
+    <properties>
+		<java.version>22</java.version>
+	</properties>
     
     <!-- Define dependencies -->
     <dependencies>
-        <!-- Spring Core and Context -->
+        <!-- Spring Boot -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.23</version> <!-- Updated to the latest available version -->
-        </dependency>
-        
-        <!-- Spring Web (Optional, if you're building a web application) -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>5.3.23</version> <!-- Updated to the latest available version -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.2.5</version>
         </dependency>
 
         <!-- Spring Security -->
@@ -31,13 +36,8 @@
             <artifactId>spring-security-core</artifactId>
             <version>5.8.1</version> <!-- Updated to the latest available version -->
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>5.8.1</version> <!-- Updated to the latest available version -->
-        </dependency>
  
-        <!-- Spring Test (Optional, if you're writing unit tests) -->
+        <!-- Junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -85,6 +85,13 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <!-- Running spring server configuration -->
+            <plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.5</version>
+			</plugin>
         </plugins>
     </build>
 </project>
