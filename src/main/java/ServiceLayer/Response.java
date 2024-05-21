@@ -15,19 +15,19 @@ public class Response {
     }
 
     // Gettera and Setters
-    public String get_errorMessage() {
+    public String getErrorMessage() {
         return _errorMessage;
     }
 
-    public void set_errorMessage(String errorMessage) {
+    public void setErrorMessage(String errorMessage) {
         _errorMessage = errorMessage;
     }
 
-    public Object get_returnValue() {
+    public Object getReturnValue() {
         return _returnValue;
     }
 
-    public void set_returnValue(Object returnValue) {
+    public void setReturnValue(Object returnValue) {
         _returnValue = returnValue;
     }
 }

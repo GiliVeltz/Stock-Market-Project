@@ -23,9 +23,9 @@ public class UserService {
         try {
             userController.logIn(userName, password);
             logger.info("User logged in: " + userName);
-            response.set_returnValue(tokenService.generateToken(userName));
+            response.setReturnValue(tokenService.generateToken(userName));
         } catch (Exception e) {
-            response.set_errorMessage("LogIn failed: " + e.getMessage());
+            response.setErrorMessage("LogIn failed: " + e.getMessage());
             logger.log(Level.SEVERE, "LogIn failed: " + e.getMessage(), e);
         }
         return response;
@@ -38,12 +38,12 @@ public class UserService {
             if (userController.isUserNameExists(username)) {
                 userController.logOut(username);
                 logger.info("User logged out: " + username);
-                response.set_returnValue("Logout Succeed");
+                response.setReturnValue("Logout Succeed");
             } else {
-                response.set_errorMessage("A user with the username given in the token does not exist.");
+                response.setErrorMessage("A user with the username given in the token does not exist.");
             }
         } catch (Exception e) {
-            response.set_errorMessage("Token is invalid");
+            response.setErrorMessage("Token is invalid");
             logger.log(Level.SEVERE, "LogOut failed: " + e.getMessage(), e);
         }
         return response;
@@ -54,9 +54,9 @@ public class UserService {
         try {
             userController.register(userName, password, email);
             logger.info("User registered: " + userName);
-            response.set_returnValue("Registeration Succeed");
+            response.setReturnValue("Registeration Succeed");
         } catch (Exception e) {
-            response.set_errorMessage("Registeration failed: " + e.getMessage());
+            response.setErrorMessage("Registeration failed: " + e.getMessage());
             logger.log(Level.SEVERE, "Registeration failed: " + e.getMessage(), e);
         }
         return response;
