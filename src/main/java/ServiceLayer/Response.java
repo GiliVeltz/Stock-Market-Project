@@ -1,39 +1,33 @@
 package ServiceLayer;
+
 // Purpose: Response class for handling the response of the service layer.
 public class Response {
-    
-    // Fields.
-    public String ErrorMessage;
-    public Object ReturnValue;
+    private String _errorMessage;
+    private Object _returnValue;
 
     // consructor.
-    public Response() { }
-
-    public Response(String msg, Object returnValue)
-    {
-        ErrorMessage = msg;
-        this.ReturnValue = returnValue;
+    public Response() {
     }
 
-    // Getter and Setter
-
-    public String getErrorMessage()
-    {
-        return ErrorMessage;
+    public Response(String errorMessage, Object returnValue) {
+        _errorMessage = errorMessage;
+        _returnValue = returnValue;
     }
 
-    public void setErrorMessage(String errorMessage)
-    {
-        ErrorMessage = errorMessage;
+    // Gettera and Setters
+    public String get_errorMessage() {
+        return _errorMessage;
     }
 
-    public Object getReturnValue()
-    {
-        return ReturnValue;
+    public void set_errorMessage(String errorMessage) {
+        _errorMessage = errorMessage;
     }
 
-    public void setReturnValue(Object returnValue)
-    {
-        this.ReturnValue = returnValue;
+    public Object get_returnValue() {
+        return _returnValue;
+    }
+
+    public void set_returnValue(Object returnValue) {
+        _returnValue = returnValue;
     }
 }
