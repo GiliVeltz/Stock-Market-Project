@@ -27,7 +27,7 @@ public class SystemService {
     public Response openSystem(String userId) {
         Response response = new Response();
         try {
-            // Check if the user is already logged in
+            // Check if the user is already logged in.
             Response loggedInResponse = userService.isLoggedIn(userId);
             if (loggedInResponse.getErrorMessage() != null) {
                 response.setErrorMessage("User is not logged in");
