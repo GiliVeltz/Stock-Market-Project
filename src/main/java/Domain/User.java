@@ -54,14 +54,15 @@ public class User {
 
     public void purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
         _shoppingCart.purchaseCart(this, busketsToBuy);
-        try{
+        try {
             paymentMethod.pay();
-        }
-        catch (PaymentFailedException e){
-            for (Integer basket : busketsToBuy) {
-                _shoppingCart.cancelPurchase(basket);
-            }
+            shippingMethod.deliver();
+        } catch (PaymentFailedException e) {
+            _shoppingCart.cancelPurchase(this, busketsToBuy);
             throw new PaymentFailedException("Payment failed");
+        } catch (ShippingFailedException e) {
+            _shoppingCart.cancelPurchase(this, busketsToBuy);
+            throw new ShippingFailedException("Shipping failed");
         }
         
     }

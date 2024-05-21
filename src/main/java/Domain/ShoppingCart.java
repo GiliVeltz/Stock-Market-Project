@@ -34,6 +34,16 @@ public class ShoppingCart {
         }
     }
 
+    /*
+     * Go through the list of baskets to cancel and cancel the purchase of them.
+     * This function only updates the item's stock.
+     */
+    public void cancelPurchase(User buyer, List<Integer> busketsToBuy){
+        for (Integer basketId : busketsToBuy) {
+            _shoppingBaskets.get(basketId).cancelPurchase(); 
+        }
+    }
+
     public String toString() {
         StringBuilder output = new StringBuilder();
         for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
