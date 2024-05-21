@@ -38,4 +38,12 @@ public class UserMappings {
         Response resp = _userService.logIn(username, password);
         return resp;
     }
+
+    @GetMapping("/logout")
+    public Response logout(@RequestParam String token) {
+        // example request:
+        // http://localhost:8080/api/user/logout?token=user_token_here
+        Response resp = _userService.logOut(token);
+        return resp;
+    }
 }

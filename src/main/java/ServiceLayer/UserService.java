@@ -31,18 +31,19 @@ public class UserService {
         return response;
     }
 
-    public Response logOut(String token, String userName, String password) {
+    public Response logOut(String token) {
         Response response = new Response();
         try {
-            if (tokenService.validateToken(token)) {
-                userController.logOut(userName);
-                logger.info("User logged out: " + userName);
-                response.set_returnValue("Login Succeed");
+            String username = tokenService.getUsernameFromToken(token);
+            if (userController.isUserNameExists(username)) {
+                userController.logOut(username);
+                logger.info("User logged out: " + username);
+                response.set_returnValue("Logout Succeed");
             } else {
-                response.set_errorMessage("Token is incorrect");
+                response.set_errorMessage("A user with the username given in the token does not exist.");
             }
         } catch (Exception e) {
-            response.set_errorMessage("LogOut failed: " + e.getMessage());
+            response.set_errorMessage("Token is invalid");
             logger.log(Level.SEVERE, "LogOut failed: " + e.getMessage(), e);
         }
         return response;
