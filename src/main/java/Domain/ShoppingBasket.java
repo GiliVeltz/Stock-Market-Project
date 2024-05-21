@@ -3,6 +3,7 @@ package Domain;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ShoppingBasket {
     private Integer _shopId;
     private List<Product> _productList;
@@ -10,9 +11,9 @@ public class ShoppingBasket {
 
     // Constructor
     public ShoppingBasket(Integer shopId){
-        this._shopId = shopId;
-        this._productList = new ArrayList<>();
-        this._basketTotalAmount = 0.0;
+        _shopId = shopId;
+        _productList = new ArrayList<>();
+        _basketTotalAmount = 0.0;
     }
 
 
@@ -31,6 +32,27 @@ public class ShoppingBasket {
 
     public double getShoppingBasketPrice() {
         return _basketTotalAmount;
+    }
+
+    /*
+     * Go through the list of products in the basket and purchase them.
+     * If an exception is thrown, cancel the purchase of all the products that were bought.
+     * This function only updates the item's stock.
+     */
+    public void purchaseBasket(User buyer) {
+        List<Product> boughtProductList = new ArrayList<>();
+        for (Product product : _productList) {
+            try{
+                product.purchaseProduct(buyer);
+                boughtProductList.add(product);
+            }
+            catch (ItemOutOfStockExepction e){
+                for (Product boughtProduct : boughtProductList) {
+                    boughtProduct.cancelPurchase();
+                }
+                throw new ItemOutOfStockExepction("One of the products in the basket is out of stock");
+            }
+        }
     }
 
     @Override

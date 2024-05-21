@@ -24,6 +24,7 @@ public class ShoppingCart {
         for (Integer basketId : busketsToBuy) {
             try{
                 _shoppingBaskets.get(basketId).purchaseBasket(buyer);
+                boughtBasketList.add(basketId);
             }
             catch (ItemOutOfStockExepction e){
                 for (Integer basket : boughtBasketList) {
