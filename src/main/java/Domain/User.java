@@ -1,46 +1,48 @@
 package Domain;
 public class User {
-    private String encoded_password;
-    private String username;
-    private boolean loggedIn;
-    private String email;
+    private String _encoded_password;
+    private String _username;
+    private boolean _loggedIn;
+    private String _email;
+    private ShoppingCart _shoppingCart;
 
     public User(String username, String encoded_password, String email) {
-        this.username = username;
-        this.encoded_password = encoded_password;
-        this.loggedIn = false;
-        this.email = email;
+        _username = username;
+        _encoded_password = encoded_password;
+        _loggedIn = false;
+        _email = email;
+        _shoppingCart = new ShoppingCart();
     }
 
     public boolean isCurrUser(String username, String encoded_password) {
-        if(this.username == username & this.encoded_password == encoded_password){
+        if(_username == username & _encoded_password == encoded_password){
             return true;
         }
         return false;
     }
 
     public String getUserName(){
-        return this.username;
+        return _username;
     }
 
     public String getEncodedPassword(){
-        return this.encoded_password;
+        return _encoded_password;
     }
 
     public void logIn(){
-        this.loggedIn = true;
+        _loggedIn = true;
     }
 
     public void logOut(){
-        this.loggedIn = false;
+        _loggedIn = false;
     }
 
     public String getEmail() {
-        return email;
+        return _email;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        _email = email;
     }
 
 }

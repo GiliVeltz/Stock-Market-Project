@@ -1,6 +1,7 @@
 package Domain;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import Domain.ExternalServices.PaymentService.PaymentMethod;
 import Domain.ExternalServices.SupplyService.SupplyMethod;
@@ -8,8 +9,8 @@ import Domain.ExternalServices.SupplyService.SupplyMethod;
 public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
 
-    public ShoppingCart(List<ShoppingBasket> shoppingBaskets) {
-        _shoppingBaskets = shoppingBaskets;
+    public ShoppingCart() {
+        _shoppingBaskets = new ArrayList<>();
     }
 
     public String purchesCart(User buyer, PaymentMethod paymentMethod, SupplyMethod shippingMethod, List<Integer> busketsToBuy) {
