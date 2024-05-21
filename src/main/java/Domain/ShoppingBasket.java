@@ -39,11 +39,11 @@ public class ShoppingBasket {
      * If an exception is thrown, cancel the purchase of all the products that were bought.
      * This function only updates the item's stock.
      */
-    public void purchaseBasket(User buyer) {
+    public void purchaseBasket() {
         List<Product> boughtProductList = new ArrayList<>();
         for (Product product : _productList) {
             try{
-                product.purchaseProduct(buyer);
+                product.purchaseProduct();
                 boughtProductList.add(product);
             }
             catch (ItemOutOfStockExepction e){
@@ -52,6 +52,12 @@ public class ShoppingBasket {
                 }
                 throw new ItemOutOfStockExepction("One of the products in the basket is out of stock");
             }
+        }
+    }
+
+    public void cancelPurchase() {
+        for (Product product : _productList) {
+            product.cancelPurchase();
         }
     }
 

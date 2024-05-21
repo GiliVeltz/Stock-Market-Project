@@ -18,12 +18,12 @@ public class ShoppingCart {
      * If an exception is thrown, cancel the purchase of all the baskets that were bought.
      * This function only updates the item's stock. 
      */
-    public void  purchaseCart(User buyer, List<Integer> busketsToBuy) {
+    public void purchaseCart(User buyer, List<Integer> busketsToBuy) {
         List<Integer> boughtBasketList = new ArrayList<>();
 
         for (Integer basketId : busketsToBuy) {
             try{
-                _shoppingBaskets.get(basketId).purchaseBasket(buyer);
+                _shoppingBaskets.get(basketId).purchaseBasket();
                 boughtBasketList.add(basketId);
             }
             catch (ItemOutOfStockExepction e){

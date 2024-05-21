@@ -29,6 +29,17 @@ public class Product {
         return _price;
     }
 
+    public void purchaseProduct() {
+        if (_quantity == 0) {
+            throw new ItemOutOfStockExepction("Product is out of stock");
+        }
+        _quantity--;
+    }
+
+    public void cancelPurchase() {
+        _quantity++;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
