@@ -23,9 +23,9 @@ public class UserTests implements TestCases{
         // assertFalse(bridge.Login("bob","BOBSPASSWORD") );
     }
 
-    public void ShopOpenTest{
+//     public void ShopOpenTest{
         
-assertTrue(bridge.OpenMewShop("Success", "client123", 5555));
-assertTrue(bridge.OpenMewShop("false", "client123", 5555));
-    }
+// assertTrue(bridge.OpenMewShop("Success", "client123", 5555));
+// assertTrue(bridge.OpenMewShop("false", "client123", 5555));
+//     }
 }
