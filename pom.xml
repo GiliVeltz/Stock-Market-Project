@@ -99,8 +99,6 @@
                 <version>3.8.1</version> <!-- Replace with the desired version -->
                 <configuration>
                     <release>11</release> <!-- or the version you are using -->
-                    <source>1.8</source>
-                    <target>1.8</target>
                 </configuration>
             </plugin>
 
