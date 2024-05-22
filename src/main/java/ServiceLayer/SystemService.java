@@ -104,11 +104,15 @@ public class SystemService {
     public Response leaveSystem(String token){
         Response response = new Response();
         try {
-            String id = tokenService.extractGuestId(token);
-            if(id != null){
-                logger.info("Guest with id: " + id + "left the system");
-                userController.removeGuest(id);
-                response.setReturnValue("Guest left system Successfully");    
+            if (tokenService.validateToken(token)) {
+                String id = tokenService.extractGuestId(token);
+                if(id != null){
+                    logger.info("Guest with id: " + id + "left the system");
+                    userController.removeGuest(id);
+                    response.setReturnValue("Guest left system Successfully");    
+                }
+            } else {
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to leave the system: " + e.getMessage());
