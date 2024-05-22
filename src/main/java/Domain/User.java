@@ -31,7 +31,6 @@ public class User {
         }
         return false;
     }
-
     public String getUserName(){
         return _username;
     }

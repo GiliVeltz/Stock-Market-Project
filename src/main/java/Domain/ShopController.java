@@ -52,6 +52,18 @@ public class ShopController {
 
     }
 
+    //get purchase history for a shop by shop id
+    public List<Order> getPurchaseHistory(Integer shopId)
+    {
+        List<Order> orders = new ArrayList<>();
+        for (Shop shop : this._shopsList) {
+            if (shop.getShopId().equals(shopId)) {
+                orders = shop.getPurchaseHistory();
+            }
+        }
+        return orders;
+    }
+
 
 
 

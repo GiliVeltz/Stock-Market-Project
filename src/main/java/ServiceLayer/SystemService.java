@@ -33,24 +33,23 @@ public class SystemService {
      * @param password the user password
      * @return a response indicating the success or failure of opening the system
      */
-    public Response openSystem(String userId) {
+    public Response openSystem(String userId, String token) {
         Response response = new Response();
         try {
             // Check if the user is already logged in.
-            Response loggedInResponse = userService.isLoggedIn(userId);
-            if (loggedInResponse.getErrorMessage() != null) {
+            if (!tokenService.isLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
                 return response;
             }
             // Check if the user is an admin
-            Response isAdResponse = userService.isAdmin(userId);
-            if (isAdResponse.getErrorMessage() != null) {
+            Response isAdminResponse = userService.isAdmin(userId);
+            if (isAdminResponse.getErrorMessage() != null) {
                 response.setErrorMessage("User is not an admin");
                 logger.log(Level.SEVERE, "User is not an admin");
                 return response;
             }
-    
+
             // Check if the system is already open
             if (isSystemOpen()) {
                 response.setErrorMessage("System is already open");
@@ -86,7 +85,7 @@ public class SystemService {
         return isOpen;
     }
 
-    public Response enterSystem(){
+    public Response enterSystem() {
         Response response = new Response();
         try {
             String token = tokenService.generateGuestToken();
@@ -101,15 +100,15 @@ public class SystemService {
         return response;
     }
 
-    public Response leaveSystem(String token){
+    public Response leaveSystem(String token) {
         Response response = new Response();
         try {
             if (tokenService.validateToken(token)) {
                 String id = tokenService.extractGuestId(token);
-                if(id != null){
+                if (id != null) {
                     logger.info("Guest with id: " + id + "left the system");
                     userController.removeGuest(id);
-                    response.setReturnValue("Guest left system Successfully");    
+                    response.setReturnValue("Guest left system Successfully");
                 }
             } else {
                 throw new Exception("Invalid session token.");

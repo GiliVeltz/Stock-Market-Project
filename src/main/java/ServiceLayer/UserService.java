@@ -120,25 +120,4 @@ public class UserService {
         return response;
     }
 
-    // check if user is logged in using try catch and logging
-    // TODO: remove that function
-    // public Response isLoggedIn(String userId){
-    // Response response = new Response();
-    // try {
-    // if (userController.isLoggedIn(userId)){
-    // logger.info("User is logged in: " + userId);
-    // response.setReturnValue("User is logged in");
-    // } else {
-    // logger.info("User is not logged in: " + userId);
-    // response.setReturnValue("User is not logged in");
-    // }
-    // } catch (Exception e) {
-    // response.setErrorMessage("Failed to check if user is logged in: " +
-    // e.getMessage());
-    // logger.log(Level.SEVERE, "Failed to check if user is logged in: " +
-    // e.getMessage(), e);
-    // }
-    // return response;
-    // }
-
 }
