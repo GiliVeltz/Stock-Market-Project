@@ -53,6 +53,8 @@ public class ShoppingCart {
         }
     }
 
+    //TODO: add pay and ship methods.
+    
     public String toString() {
         StringBuilder output = new StringBuilder();
         for (ShoppingBasket shoppingBasket : _shoppingBaskets) {

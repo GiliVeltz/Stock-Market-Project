@@ -65,7 +65,7 @@ public class UserService {
         return response;
     }
 
-    public Response purchaseCart(String token, List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+    public Response purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
         Response response = new Response();
         try {
             String username = tokenService.getUsernameFromToken(token);
