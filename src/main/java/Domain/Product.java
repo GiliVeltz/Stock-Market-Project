@@ -2,7 +2,7 @@ package Domain;
 
 import java.util.List;
 
-import Domain.Exceptions.ItemOutOfStockExepction;
+import Domain.Exceptions.ProductOutOfStockExepction;
 
 public class Product {
     private Integer _productId;
@@ -33,7 +33,7 @@ public class Product {
 
     public void purchaseProduct() {
         if (_quantity == 0) {
-            throw new ItemOutOfStockExepction("Product is out of stock");
+            throw new ProductOutOfStockExepction("Product is out of stock");
         }
         _quantity--;
     }

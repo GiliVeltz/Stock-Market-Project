@@ -3,7 +3,7 @@ package Domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import Domain.Exceptions.ItemOutOfStockExepction;
+import Domain.Exceptions.ProductOutOfStockExepction;
 
 
 public class ShoppingBasket {
@@ -48,11 +48,11 @@ public class ShoppingBasket {
                 product.purchaseProduct();
                 boughtProductList.add(product);
             }
-            catch (ItemOutOfStockExepction e){
+            catch (ProductOutOfStockExepction e){
                 for (Product boughtProduct : boughtProductList) {
                     boughtProduct.cancelPurchase();
                 }
-                throw new ItemOutOfStockExepction("One of the products in the basket is out of stock");
+                throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
             }
         }
     }

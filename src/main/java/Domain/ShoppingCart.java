@@ -3,7 +3,7 @@ package Domain;
 import java.util.List;
 import java.util.ArrayList;
 
-import Domain.Exceptions.ItemOutOfStockExepction;
+import Domain.Exceptions.ProductOutOfStockExepction;
 
 public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
@@ -25,7 +25,7 @@ public class ShoppingCart {
                 _shoppingBaskets.get(basketId).purchaseBasket();
                 boughtBasketList.add(basketId);
             }
-            catch (ItemOutOfStockExepction e){
+            catch (ProductOutOfStockExepction e){
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
