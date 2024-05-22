@@ -4,8 +4,11 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Level;
 import Domain.UserController;
+import Domain.ExternalServices.PaymentService.PaymentMethod;
+import Domain.ExternalServices.SupplyService.SupplyMethod;
 
 @Service
 public class UserService {
@@ -81,9 +84,26 @@ public class UserService {
         return response;
     }
 
-    // function that check if the user is an admin using try catch and logging
-    // without checking for token
-    public Response isAdmin(String userId) {
+    public Response purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+        Response response = new Response();
+        try {
+            String username = tokenService.getUsernameFromToken(token);
+            if (userController.isUserNameExists(username)) {
+                userController.getUserByUsername(username).purchaseCart(busketsToBuy, paymentMethod, shippingMethod);
+                logger.info("User purchase cart successfully: " + username);
+                response.setReturnValue("Purchase cart Succeed");
+            } else {
+                response.setErrorMessage("A user with the username given in the token does not exist.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Token is invalid");
+            logger.log(Level.SEVERE, "Purchase cart failed: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // function that check if the user is an admin using try catch and logging without checking for token
+    public Response isAdmin(String userId){
         Response response = new Response();
         try {
             if (userController.isAdmin(userId)) {
