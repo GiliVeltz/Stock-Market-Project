@@ -18,15 +18,18 @@ public class UserService {
         tokenService = new TokenService();
     }
 
-    public Response logIn(String userId, String password) {
+    public Response logIn(String userName, String password) {
         Response response = new Response();
         try {
-            userController.logIn(userId, password);
-            logger.info("User logged in: " + userId);
-            response.setReturnValue(tokenService.generateToken(userId));
+            if(userController.AreCredentialsCorrect(userName, password)){
+                response.setReturnValue(tokenService.generateUserToken(userName));    
+                logger.info("User " + userName + " Logged In Succesfully");
+            } else {
+                throw new Exception("User Name Is Already Exists");
+            }
         } catch (Exception e) {
-            response.setErrorMessage("LogIn failed: " + e.getMessage());
-            logger.log(Level.SEVERE, "LogIn failed: " + e.getMessage(), e);
+            response.setErrorMessage("LogIn Failed: " + e.getMessage());
+            logger.log(Level.SEVERE, "LogIn Failed: " + e.getMessage(), e);
         }
         return response;
     }
@@ -34,11 +37,11 @@ public class UserService {
     public Response logOut(String token) {
         Response response = new Response();
         try {
-            String username = tokenService.getUsernameFromToken(token);
-            if (userController.isUserNameExists(username)) {
-                userController.logOut(username);
-                logger.info("User logged out: " + username);
-                response.setReturnValue("Logout Succeed");
+            String userName = tokenService.extractUsername(token);
+            if (userController.isUserNameExists(userName)) {
+                String newToken = tokenService.generateGuestToken();
+                logger.info("User successfuly logged out: " + userName);
+                response.setReturnValue(newToken);
             } else {
                 response.setErrorMessage("A user with the username given in the token does not exist.");
             }
@@ -49,12 +52,16 @@ public class UserService {
         return response;
     }
 
-    public Response register(String userId, String password, String email) {
+    public Response register(String userName, String password, String email) {
         Response response = new Response();
         try {
-            userController.register(userId, password, email);
-            logger.info("User registered: " + userId);
-            response.setReturnValue("Registeration Succeed");
+            if(!userController.isUserNameExists(userName)){
+                userController.register(userName, password, email);
+                logger.info("User registered: " + userName);
+                response.setReturnValue("Registeration Succeed");
+                } else {
+                throw new Exception("User Name Is Already Exists");
+            }
         } catch (Exception e) {
             response.setErrorMessage("Registeration failed: " + e.getMessage());
             logger.log(Level.SEVERE, "Registeration failed: " + e.getMessage(), e);
@@ -81,23 +88,22 @@ public class UserService {
     }
 
     //check if user is logged in using try catch and logging
-    public Response isLoggedIn(String userId){
-        Response response = new Response();
-        try {
-            if (userController.isLoggedIn(userId)){
-                logger.info("User is logged in: " + userId);
-                response.setReturnValue("User is logged in");
-            } else {
-                logger.info("User is not logged in: " + userId);
-                response.setReturnValue("User is not logged in");
-            }
-        } catch (Exception e) {
-            response.setErrorMessage("Failed to check if user is logged in: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to check if user is logged in: " + e.getMessage(), e);
-        }
-        return response;
-    }
-
-
+    //TODO: remove that function
+    // public Response isLoggedIn(String userId){
+    //     Response response = new Response();
+    //     try {
+    //         if (userController.isLoggedIn(userId)){
+    //             logger.info("User is logged in: " + userId);
+    //             response.setReturnValue("User is logged in");
+    //         } else {
+    //             logger.info("User is not logged in: " + userId);
+    //             response.setReturnValue("User is not logged in");
+    //         }
+    //     } catch (Exception e) {
+    //         response.setErrorMessage("Failed to check if user is logged in: " + e.getMessage());
+    //         logger.log(Level.SEVERE, "Failed to check if user is logged in: " + e.getMessage(), e);
+    //     }
+    //     return response;
+    // }
 
 }

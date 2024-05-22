@@ -2,14 +2,12 @@ package Domain;
 public class User {
     private String encoded_password;
     private String username;
-    private boolean loggedIn;
     private boolean isAdmin;
     private String email;
 
     public User(String username, String encoded_password, String email) {
         this.username = username;
         this.encoded_password = encoded_password;
-        this.loggedIn = false;
         this.isAdmin = false;
         this.email = email;
     }
@@ -29,13 +27,6 @@ public class User {
         return this.encoded_password;
     }
 
-    public void logIn(){
-        this.loggedIn = true;
-    }
-
-    public void logOut(){
-        this.loggedIn = false;
-    }
 
     public String getEmail() {
         return email;
@@ -48,10 +39,5 @@ public class User {
     public boolean isAdmin(){
         return this.isAdmin;
     }
-
-    public boolean isLoggedIn(){
-        return this.loggedIn;
-    }
-
 
 }
