@@ -219,15 +219,15 @@ public class Role {
 
     /**
      * Gets the permissions of this role in the shop.
-     * @return the list of permissions.
+     * @return the set of permissions.
      */
     public Set<Permission> getPermissions() {
         return _permissions;
     }
 
     /**
-     * Gets the permissions of this role in the shop.
-     * @return the list of permissions.
+     * Gets the appointments of this role in the shop.
+     * @return the set of appointed people by this role.
      */
     public Set<String> getAppointments() {
         return _appointments;

@@ -45,5 +45,4 @@ public enum Permission {
     GET_CLIENT_REQUEST, //12
     RESPONSE_TO_CLIENT_REQUEST, //12
     GET_PURCHASE_HISTORY, //13
-    BAN_USER
 }
