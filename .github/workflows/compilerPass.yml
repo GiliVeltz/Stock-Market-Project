@@ -1,0 +1,19 @@
+name: Java CompilerPass
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'  # Specify the version of Java your project uses
+
+    - name: Build with Maven
+      run: mvn clean install  # Use your build command (e.g., mvn, gradle)
