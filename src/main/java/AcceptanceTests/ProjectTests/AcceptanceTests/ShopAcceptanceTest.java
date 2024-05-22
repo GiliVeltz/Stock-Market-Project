@@ -69,7 +69,10 @@ public class ShopAcceptanceTest {
         // Verify interactions
         verify(mockShopController, times(1)).openNewShop(shopId, userName);
 
+
         assertDoesNotThrow(() -> mockShopService.openNewShop(token, shopId, userName));
+
+
     }
 
     @Test
@@ -96,6 +99,7 @@ public class ShopAcceptanceTest {
         // Assert the result
         assertEquals("Failed to create shopID 5555 by user client123. Error: ", exception.getMessage());
     }
+
 
     @Test
     public void givenSuccessfulCloseShop_whenGivenShopIdAndUserName_thenNoExceptionThrown() throws Exception 
@@ -135,3 +139,6 @@ public class ShopAcceptanceTest {
     }
 
 }
+
+}
+

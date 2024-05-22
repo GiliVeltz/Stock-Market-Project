@@ -36,13 +36,16 @@ public class SystemService {
     public Response openSystem(String userId) {
         Response response = new Response();
         try {
-            // Check if the user is already logged in.
-            Response loggedInResponse = userService.isLoggedIn(userId);
-            if (loggedInResponse.getErrorMessage() != null) {
-                response.setErrorMessage("User is not logged in");
-                logger.log(Level.SEVERE, "User is not logged in");
-                return response;
-            }
+            // TODO: METAR: fix compilation error
+            // // Check if the user is already logged in.
+            // Response loggedInResponse = userService.isLoggedIn(userId);
+            // if (loggedInResponse.getErrorMessage() != null) {
+            //     response.setErrorMessage("User is not logged in");
+            //     logger.log(Level.SEVERE, "User is not logged in");
+            //     return response;
+            //}
+
+            
             // Check if the user is an admin
             Response isAdResponse = userService.isAdmin(userId);
             if (isAdResponse.getErrorMessage() != null) {
@@ -86,6 +89,7 @@ public class SystemService {
         return isOpen;
     }
 
+    // TODO: change doc and name- its a request to open the system
     public Response enterSystem(){
         Response response = new Response();
         try {
