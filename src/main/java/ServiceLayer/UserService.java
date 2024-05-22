@@ -69,7 +69,7 @@ public class UserService {
         return response;
     }
 
-    // function that check if the user is an admin using try catch and logging without checking for token
+    // function that check if the user is an admin 
     public Response isAdmin(String userId){
         Response response = new Response();
         try {
