@@ -1,6 +1,8 @@
 package Domain;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import Domain.Exceptions.PaymentFailedException;
 import Domain.Exceptions.ShippingFailedException;
@@ -13,6 +15,7 @@ public class User {
     private boolean _loggedIn;
     private String _email;
     private ShoppingCart _shoppingCart;
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
 
     public User(String username, String encoded_password, String email) {
         _username = username;
@@ -60,14 +63,17 @@ public class User {
      * If the payment or the delivery fails, it cancels the purchase and restock the item.
      */
     public void purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+        logger.log(Level.INFO, "User " + _username + " is trying to purchase the cart.");
         _shoppingCart.purchaseCart(this, busketsToBuy);
         try {
             paymentMethod.pay();
             shippingMethod.deliver();
         } catch (PaymentFailedException e) {
+            logger.log(Level.SEVERE, "Payment for user: " + _username + " has been failed with exception: "+ e.getMessage(), e);
             _shoppingCart.cancelPurchase(this, busketsToBuy);
             throw new PaymentFailedException("Payment failed");
         } catch (ShippingFailedException e) {
+            logger.log(Level.SEVERE, "Shipping for user: " + _username + " has been failed with exception: "+ e.getMessage(), e);
             _shoppingCart.cancelPurchase(this, busketsToBuy);
             throw new ShippingFailedException("Shipping failed");
         }

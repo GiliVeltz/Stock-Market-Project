@@ -2,14 +2,16 @@ package Domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import Domain.Exceptions.ProductOutOfStockExepction;
-
 
 public class ShoppingBasket {
     private Integer _shopId;
     private List<Product> _productList;
     private double _basketTotalAmount;
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
 
     // Constructor
     public ShoppingBasket(Integer shopId){
@@ -41,23 +43,32 @@ public class ShoppingBasket {
      * If an exception is thrown, cancel the purchase of all the products that were bought.
      * This function only updates the item's stock.
      */
-    public void purchaseBasket() {
+    public boolean purchaseBasket(User buyer){
+        logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - user: " + buyer.getUserName() + ". Start purchasing basket from shodId: " + _shopId);
         List<Product> boughtProductList = new ArrayList<>();
+
         for (Product product : _productList) {
             try{
                 product.purchaseProduct();
                 boughtProductList.add(product);
             }
             catch (ProductOutOfStockExepction e){
+                logger.log(Level.SEVERE, "ShoppingBasket - purchaseBasket - user: " + buyer.getUserName() 
+                + " Product out of stock in basket from shopId: " + _shopId + ". Exception: " + e.getMessage(), e);
+                logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - user: " 
+                + buyer.getUserName() + ". Canceling purchase of all products from basket from shopId: " + _shopId);
                 for (Product boughtProduct : boughtProductList) {
                     boughtProduct.cancelPurchase();
                 }
-                throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
+                return false;
             }
         }
+        return true;
     }
 
-    public void cancelPurchase() {
+    public void cancelPurchase(User buyer) {
+        logger.log(Level.FINE, "ShoppingBasket - cancelPurchase - user: " + buyer.getUserName() 
+        + ". Canceling purchase of all products from basket from shodId: " + _shopId);
         for (Product product : _productList) {
             product.cancelPurchase();
         }
