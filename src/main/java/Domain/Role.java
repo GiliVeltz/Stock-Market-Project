@@ -124,12 +124,12 @@ public class Role {
         return !permissions.retainAll(_permissions);
     }
 
-    //TODO: What happens if founder decides to change owner to regular manager?
     /**
      * Add permissions to this role.
-     *
+     * @param username the user that is giving the new permissions.
      * @param permission the permissions to add.
      * @implNote If the role already has this permission its ok.
+     * @Constraint username must be the one that appointed this role.
      * @throws RoleException 
      */
     public void addPermissions(String username, Set<Permission> permissions) throws RoleException {
@@ -167,27 +167,26 @@ public class Role {
     public void addAppointment(String username) throws RoleException{
         //TODO: Instead of exception maybe just return false?
         if(_appointments.contains(username)){
-            throw new RoleException("Username "+username+"is already appointed.");
+            throw new RoleException("Username "+username+" is already appointed.");
         }
         if(username.equals(_username)){
-            throw new RoleException("Username "+username+"cannot appoint itself.");
+            throw new RoleException("Username "+username+" cannot appoint itself.");
         }
         if(username.equals(_appointedBy)){
-            throw new RoleException("Username "+username+"cannot appoint the user that appointed him.");
+            throw new RoleException("Username "+username+" cannot appoint the user that appointed him.");
         }
         _appointments.add(username);
     }
 
     public void deleteAppointment(String username) throws RoleException{
-        //TODO: Instead of exception maybe just return false?
         if(!_appointments.contains(username)){
-            throw new RoleException("Username "+username+"is not appointed.");
+            throw new RoleException("Username "+username+" is not appointed.");
         }
         if(username.equals(_username)){
-            throw new RoleException("Username "+username+"cannot delete himself from his appointments.");
+            throw new RoleException("Username "+username+" cannot delete himself from his appointments.");
         }
         if(username.equals(_appointedBy)){
-            throw new RoleException("Username "+username+"cannot delete appointment of the user that appointed him.");
+            throw new RoleException("Username "+username+" cannot delete appointment of the user that appointed him.");
         }
         _appointments.remove(username);
     }

@@ -50,7 +50,7 @@ public class Shop {
      */
     public boolean checkPermission(String username, Permission p) throws ShopException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
         if(!isOwnerOrFounder(role) && !role.hasPermission(p)){
@@ -68,7 +68,7 @@ public class Shop {
      */
     public boolean checkAtLeastOnePermission(String username, Set<Permission> permissions) throws ShopException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
         if(!isOwnerOrFounder(role) && !role.hasAtLeastOnePermission(permissions)){
@@ -86,7 +86,7 @@ public class Shop {
      */
     public boolean checkAllPermission(String username, Set<Permission> permissions) throws ShopException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
         if(!isOwnerOrFounder(role) && !role.hasAllPermissions(permissions)){
@@ -111,10 +111,10 @@ public class Shop {
      */
     public void AppointManager(String username, String newManagerUserName, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.APPOINT_MANAGER))){
-            throw new PermissionException("User "+username+ "doesn't have permission to add new manager to shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to add new manager to shop with id "+_shopId);
         }
         if(checkIfHasRole(newManagerUserName)){
-            throw new ShopException("User "+username+ "already in shop with id "+_shopId);
+            throw new ShopException("User "+username+ " already in shop with id "+_shopId);
         }
         if(permissions.isEmpty()){
             throw new PermissionException("Cannot create a manager with 0 permissions.");
@@ -144,10 +144,10 @@ public class Shop {
      */
     public void AppointOwner(String username, String newOwnerUserName) throws ShopException, PermissionException, RoleException{
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))){
-            throw new PermissionException("User "+username+ "doesn't have permission to add new owner to shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to add new owner to shop with id "+_shopId);
         }
         if(checkIfHasRole(newOwnerUserName)){
-            throw new ShopException("User "+username+ "already in shop with id "+_shopId);
+            throw new ShopException("User "+username+ " already in shop with id "+_shopId);
         }
         //All constraints checked
         Role owner = new Role(newOwnerUserName, _shopId, username, EnumSet.of(Permission.OWNER));
@@ -166,13 +166,13 @@ public class Shop {
      */
     public void addPermissions(String username, String userRole, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(userRole)){
-            throw new ShopException("User "+userRole+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+userRole+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.ADD_PERMISSION))){
-            throw new PermissionException("User "+username+ "doesn't have permission to change permissions in the shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to change permissions in the shop with id "+_shopId);
         }
         Role appointer = _userToRole.get(username);
         //Here we make sure that a manager doesn't give permissions that he doesn't have to his assignee.
@@ -181,7 +181,7 @@ public class Shop {
         }
         Role manager = _userToRole.get(userRole);
         if(manager.getAppointedBy() != username){
-            throw new PermissionException("User "+username+ "didn't appoint manager "+userRole+". Can't change his permissions.");
+            throw new PermissionException("User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
         }
         //All constraints checked
         manager.addPermissions(username, permissions);
@@ -199,17 +199,17 @@ public class Shop {
      */
     public void deletePermissions(String username, String userRole, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(userRole)){
-            throw new ShopException("User "+userRole+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+userRole+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.REMOVE_PERMISSION))){
-            throw new PermissionException("User "+username+ "doesn't have permission to change permissions in the shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to change permissions in the shop with id "+_shopId);
         }
         Role manager = _userToRole.get(userRole);
         if(manager.getAppointedBy() != username){
-            throw new PermissionException("User "+username+ "didn't appoint manager "+userRole+". Can't change his permissions.");
+            throw new PermissionException("User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
         }
         //All constraints checked
         manager.deletePermissions(username, permissions);
@@ -228,17 +228,17 @@ public class Shop {
      */
     public void fireRole(String username, String managerUserName) throws ShopException, PermissionException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(managerUserName)){
-            throw new ShopException("User "+managerUserName+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+managerUserName+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))){
-            throw new PermissionException("User "+username+ "doesn't have permission to fire people in the shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to fire people in the shop with id "+_shopId);
         }
         Role manager = _userToRole.get(managerUserName);
         if(manager.getAppointedBy() != username){
-            throw new PermissionException("User "+username+ "didn't appoint role "+managerUserName+". Can't fire him.");
+            throw new PermissionException("User "+username+ " didn't appoint role "+managerUserName+". Can't fire him.");
         }
         //All constraints checked
         //TODO: maybe when firing need to add some special logic?
@@ -255,7 +255,7 @@ public class Shop {
      */
     public void resign(String username) throws ShopException{
         if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ "doesn't have a role in this shop with id "+_shopId);
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(username.equals(_shopFounder)){
             throw new ShopException("Founder cannot resign from his shop.");
@@ -301,7 +301,7 @@ public class Shop {
 
     public String getRolesInfo(String username) throws PermissionException, ShopException{
         if(!checkPermission(username, Permission.GET_ROLES_INFO)){
-            throw new PermissionException("User "+username+ "doesn't have permission to get roles info in shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to get roles info in shop with id "+_shopId);
         }
         StringBuilder sb = new StringBuilder();
         sb.append("SHOP "+_shopId+" ROLES:\n");
@@ -322,7 +322,7 @@ public class Shop {
      */
     public void addProductToShop(String username, Product product) throws ProductAlreadyExistsException, ShopException, PermissionException {
         if(!checkPermission(username, Permission.ADD_PRODUCT)){
-            throw new PermissionException("User "+username+ "doesn't have permission to add product in shop with id "+_shopId);
+            throw new PermissionException("User "+username+ " doesn't have permission to add product in shop with id "+_shopId);
         }
         
         if (_productMap.containsKey(product.getProductId())) {
