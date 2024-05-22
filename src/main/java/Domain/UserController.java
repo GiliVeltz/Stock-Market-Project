@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserController {
-    private List<User> users;
+    private List<User> registeredUsers;
+    private List<String> guestIds;
     private PasswordEncoderUtil passwordEncoder;
 
     public UserController() {
-        this.users = new ArrayList<>();
+        this.registeredUsers = new ArrayList<>();
         this.passwordEncoder = new PasswordEncoderUtil();
     }
 
     public boolean isUserNameExists(String username) {
         // Check if the username already exists
-        for (User user : this.users) {
+        for (User user : this.registeredUsers) {
             if (user.getUserName().equals(username)) {
                 return true;
             }
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     public User getUserByUsername(String username) {
-        for (User user : this.users) {
+        for (User user : this.registeredUsers) {
             if (user.getUserName().equals(username)) {
                 return user;
             }
@@ -31,32 +32,48 @@ public class UserController {
         return null;
     }
 
-    public boolean isCredentialsCorrect(User user, String password) {
-        return this.passwordEncoder.matches(password, user.getEncodedPassword());
+    public boolean AreCredentialsCorrect(String username, String password) {
+        User user =  getUserByUsername(username);
+        if (user != null){
+            return this.passwordEncoder.matches(password, user.getEncodedPassword());
+        } 
+        return false;
     }
 
-    public void register(String user_name, String password, String email) throws Exception {
+    public void register(String userName, String password, String email) throws Exception {
         String encodedPass = this.passwordEncoder.encodePassword(password);
-        if (!isUserNameExists(user_name)) {
-            this.users.add(new User(user_name, encodedPass, email));
+        if (!isUserNameExists(userName)) {
+            this.registeredUsers.add(new User(userName, encodedPass, email));
         } else {
             throw new Exception("Username already exists.");
         }
     }
 
-    public void logIn(String user_name, String password) throws Exception {
-        User user = getUserByUsername(user_name);
-        if (user != null && isCredentialsCorrect(user, password)) {
-            user.logIn();
+    // function that check if a given user is an admin
+    public boolean isAdmin(String userName) throws Exception {
+        User user = getUserByUsername(userName);
+        if (user != null) {
+            return user.isAdmin();
         } else
-            throw new Exception("Invalid credentials or registration required.");
+            throw new Exception("User not found.");
     }
 
-    public void logOut(String user_name) throws Exception {
-        User user = getUserByUsername(user_name);
-        if (user != null) {
-            user.logOut();
-        } else
-            throw new Exception("User not found or already logged out.");
+    private boolean isGuestExists(String id) {
+        return guestIds.contains(id);
+    }
+    
+
+    public void addNewGuest(String id){
+        if (isGuestExists(id)) {
+            throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
+        }
+        guestIds.add(id);
+    }
+
+    public void removeGuest(String id){
+        if (!isGuestExists(id)) {
+            throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
+        }
+        guestIds.remove(String.valueOf(id));
     }
 }

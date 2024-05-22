@@ -12,7 +12,7 @@ import Domain.ExternalServices.SupplyService.SupplyMethod;
 public class User {
     private String _encoded_password;
     private String _username;
-    private boolean _loggedIn;
+    private boolean _isAdmin;
     private String _email;
     private ShoppingCart _shoppingCart;
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
@@ -20,7 +20,7 @@ public class User {
     public User(String username, String encoded_password, String email) {
         _username = username;
         _encoded_password = encoded_password;
-        _loggedIn = false;
+        _isAdmin = false;
         _email = email;
         _shoppingCart = new ShoppingCart();
     }
@@ -38,14 +38,6 @@ public class User {
 
     public String getEncodedPassword(){
         return _encoded_password;
-    }
-
-    public void logIn(){
-        _loggedIn = true;
-    }
-
-    public void logOut(){
-        _loggedIn = false;
     }
 
     public String getEmail() {
@@ -78,6 +70,10 @@ public class User {
             throw new ShippingFailedException("Shipping failed");
         }
         
+    }
+    
+    public boolean isAdmin(){
+        return _isAdmin;
     }
 
 }
