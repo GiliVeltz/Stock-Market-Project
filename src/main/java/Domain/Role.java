@@ -50,11 +50,6 @@ public class Role {
      * @param permissions the permission given to this role.
      * @throws RoleException 
      */
-
-     logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - user: " + buyer.getUserName() + ". Start purchasing cart.");
-     logger.log(Level.FINE, "ShoppingCart - purchaseCart - user: " + buyer.getUserName() + ". Canceling purchase of all baskets.");
-
-
     public Role(String username, int storeId, String appointedBy, Set<Permission> permissions) throws RoleException{
         logger.log(Level.INFO, "Role - constructor: Creating a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
         if(username == null){
