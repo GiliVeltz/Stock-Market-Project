@@ -25,7 +25,7 @@ public class UserTests implements TestCases{
 
     public void ShopOpenTest{
         
-assertTrue(RealBridge.OpenMewShop("Success", "client123", 5555));
-assertTrue(RealBridge.OpenMewShop("false", "client123", 5555));
+assertTrue(bridge.OpenMewShop("Success", "client123", 5555));
+assertTrue(bridge.OpenMewShop("false", "client123", 5555));
     }
 }

@@ -88,10 +88,10 @@ public class UserService {
     }
 
     // TODO: add documentation
-    public Response purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+    public Response purchaseCart(String token, List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
         Response response = new Response();
         try {
-            String username = tokenService.getUsernameFromToken(token);
+            String username = tokenService.extractUsername(token);
             if (userController.isUserNameExists(username)) {
                 userController.getUserByUsername(username).purchaseCart(busketsToBuy, paymentMethod, shippingMethod);
                 logger.info("User purchase cart successfully: " + username);
