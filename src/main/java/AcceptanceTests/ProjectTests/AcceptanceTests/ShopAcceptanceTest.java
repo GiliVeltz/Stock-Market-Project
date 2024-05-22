@@ -62,7 +62,7 @@ public class ShopAcceptanceTest {
         // Verify interactions
         verify(mockShopController, times(1)).OpenNewShop(shopId, userName);
 
-        assertDoesNotThrow(() -> mockShopService.OpenNewShop(shopId, userName));
+        assertDoesNotThrow(() -> mockShopService.OpenNewShop(shopId, userName)); //TODO: shopService not mock
     }
 
     @Test
