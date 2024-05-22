@@ -30,7 +30,7 @@ public class Order {
     // Add a product to the order under a specific shop
     public void addProductToOrder(Product product, Integer shopId) {
         _shoppingBasketMap.putIfAbsent(shopId, new ShoppingBasket(shopId));
-        _shoppingBasketMap.get(product).addProductToShoppingBasket(product);
+        _shoppingBasketMap.get(product.getProductId()).addProductToShoppingBasket(product);
         calcTotalAmount();
     }
 
