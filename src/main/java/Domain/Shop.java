@@ -59,4 +59,39 @@ public class Shop {
                 ", Order History= \n " + _orderHistory +
                 '}';
     }
+
+    public List<Product> getProductsByName(String productName) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) {
+            if (product.getProductName().equals(productName)) {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    public List<Product> getProductsByKeywords(List<String> keywords) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) 
+        {
+            if (product.isKeywordListExist(keywords)) 
+            {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    public List<Product> getProductsByPriceRange(Double minPrice, Double maxPrice) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) 
+        {
+            if (product.isPriceInRange(minPrice, maxPrice)) 
+            {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+        
 }

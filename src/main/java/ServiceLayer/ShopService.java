@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import java.lang.module.ModuleDescriptor.Opens;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import Domain.Product;
@@ -71,4 +73,108 @@ public class ShopService {
         
         return response;        
     }
+
+
+    /**
+    * searches products by their name.
+    * 
+    * @param shopId    The ID of the shop to search in OR null to search in all shops.
+    * @param productName  he name of the product.
+    * @return          A response indicating the success of the operation and some products' deatails or failure.
+    */
+    public Response searchProductInShopByName(Integer shopId, String productName)
+    {
+        Response response = new Response();
+        try
+        {
+            Map<Integer, List<Product>> products = _shopController.getProductInShopByName(shopId, productName);
+            if (products != null)
+            {
+                //TODO: handle return products as a response and log them 
+                response.setReturnValue("Products found in shop");
+                logger.info(String.format("Products found in Shop ID: %d", shopId));
+            }
+            else
+            {
+                response.setReturnValue("Product not found in shop");
+                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            }
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;        
+    }
+
+
+    /**
+    * searches products by keyWords.
+    * 
+    * @param shopId    The ID of the shop to search in OR null to search in all shops.
+    * @param keywords  The list of keywords.
+    * @return          A response indicating the success of the operation and some products' deatails or failure.
+    */
+    public Response searchProductsInShopByKeywords(Integer shopId, List<String> keywords)
+    {
+        Response response = new Response();
+        try
+        {
+            Map<Integer, List<Product>> products = _shopController.getProductsInShopByKeywords(shopId, keywords);
+            if (products != null)
+            {
+                //TODO: handle return products as a response and log them 
+                response.setReturnValue("Products found in shop");
+                logger.info(String.format("Products found in Shop ID: %d", shopId));
+            }
+            else
+            {
+                response.setReturnValue("Product not found in shop");
+                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            }
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;        
+    }
+
+
+    /**
+    * searches products by pricing range.
+    * 
+    * @param shopId    The ID of the shop to search in OR null to search in all shops.
+    * @param minPrice  The minimum price of the product.
+    * @param maxPrice  The maximum price of the product.
+    * @return          A response indicating the success of the operation and some products' deatails or failure.
+    */
+    public Response searchProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+    {
+        Response response = new Response();
+        try
+        {
+            Map<Integer, List<Product>> products = _shopController.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
+            if (products != null)
+            {
+                //TODO: handle return products as a response and log them 
+                response.setReturnValue("Products found in shop");
+                logger.info(String.format("Products found in Shop ID: %d", shopId));
+            }
+            else
+            {
+                response.setReturnValue("Product not found in shop");
+                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            }
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;        
+    }
+    
 }
