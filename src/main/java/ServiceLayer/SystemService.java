@@ -86,6 +86,7 @@ public class SystemService {
         return isOpen;
     }
 
+    // TODO: change doc and name- its a request to open the system
     public Response enterSystem(){
         Response response = new Response();
         try {
