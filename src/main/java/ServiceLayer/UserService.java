@@ -21,6 +21,7 @@ public class UserService {
         tokenService = new TokenService();
     }
 
+    // TODO: add documentation
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
@@ -41,6 +42,7 @@ public class UserService {
         return response;
     }
 
+    // TODO: add documentation
     public Response logOut(String token) {
         Response response = new Response();
         try {
@@ -63,6 +65,7 @@ public class UserService {
         return response;
     }
 
+    // TODO: add documentation
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
@@ -84,10 +87,11 @@ public class UserService {
         return response;
     }
 
-    public Response purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+    // TODO: add documentation
+    public Response purchaseCart(String token, List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
         Response response = new Response();
         try {
-            String username = tokenService.getUsernameFromToken(token);
+            String username = tokenService.extractUsername(token);
             if (userController.isUserNameExists(username)) {
                 userController.getUserByUsername(username).purchaseCart(busketsToBuy, paymentMethod, shippingMethod);
                 logger.info("User purchase cart successfully: " + username);
