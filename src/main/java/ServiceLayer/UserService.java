@@ -135,6 +135,10 @@ public class UserService {
         return response;
     }
 
+    public UserController getUserController() {
+        return _userController;
+    }
+
     // check if user is logged in using try catch and logging
     // TODO: remove that function
     // public Response isLoggedIn(String userId){

@@ -27,7 +27,7 @@ public class SystemService {
         _userService = userService;
         _externalServiceHandler = externalServiceHandler;
         _tokenService = new TokenService();
-        _userController = new UserController();
+        _userController = userService.getUserController();
         _shoppingCartFacade = new ShoppingCartFacade();
     }
 
