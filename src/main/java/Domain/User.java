@@ -58,8 +58,9 @@ public class User {
         logger.log(Level.INFO, "User " + _username + " is trying to purchase the cart.");
         _shoppingCart.purchaseCart(this, busketsToBuy);
         try {
-            paymentMethod.pay();
-            shippingMethod.deliver();
+            //TODO:
+            // paymentMethod.pay();
+            // shippingMethod.deliver();
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment for user: " + _username + " has been failed with exception: "+ e.getMessage(), e);
             _shoppingCart.cancelPurchase(this, busketsToBuy);

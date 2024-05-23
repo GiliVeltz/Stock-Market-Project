@@ -56,7 +56,7 @@ public class ShopController {
             else
             {
                 Shop shopToClose = getShopByShopId(shopId);
-                if(shopToClose.checkPermission(userName, FOUNDER))
+                if(shopToClose.checkPermission(userName, Permission.FOUNDER))
                     _shopsList.remove(shopToClose);
             } 
         }
