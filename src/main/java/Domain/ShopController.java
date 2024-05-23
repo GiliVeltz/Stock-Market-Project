@@ -3,6 +3,8 @@ package Domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.ShopException;
+
 public class ShopController {
     private static ShopController _shopController;
     private List<Shop> _shopsList;
@@ -53,15 +55,22 @@ public class ShopController {
     }
 
     //get purchase history for a shop by shop id
-    public List<Order> getPurchaseHistory(Integer shopId)
+    public List<ShopOrder> getPurchaseHistory(Integer shopId)
     {
-        List<Order> orders = new ArrayList<>();
-        for (Shop shop : this._shopsList) {
-            if (shop.getShopId().equals(shopId)) {
-                orders = shop.getPurchaseHistory();
-            }
+        List<ShopOrder> purchaseHistory = new ArrayList<>();
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            purchaseHistory = shop.getPurchaseHistory();
         }
-        return orders;
+        return purchaseHistory;
+    }
+
+    public Boolean isShopOwner(Integer shopId, String userId) throws ShopException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.isOwnerOrFounderOwner(userId);
+        }
+        return false;
     }
 
 

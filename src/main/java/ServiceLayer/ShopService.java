@@ -2,13 +2,17 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.apache.catalina.servlets.DefaultServlet.SortManager.Order;
 import org.springframework.stereotype.Service;
 
 import java.lang.module.ModuleDescriptor.Opens;
+import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Product;
 import Domain.ShopController;
+import Domain.ShopOrder;
+import Domain.ShoppingBasket;
 
 @Service
 public class ShopService {
@@ -72,5 +76,62 @@ public class ShopService {
         return response;        
     }
 
-    //function to 
+    //function to get a purchase from ShopController by shop ID
+    public Response getPurchaseHistory(Integer shopId)
+    {
+        Response response = new Response();
+        try
+        {
+            List<ShopOrder> purchasHistory = _shopController.getPurchaseHistory(shopId);
+            response.setReturnValue(purchasHistory);
+            logger.info(String.format("Purchase history retrieved for Shop ID: %d" ,shopId));
+
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to retrieve purchase history for shopID %d. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        
+        return response;        
+    }
+
+    //function to check if shop exists
+    public Response isShopIdExist(Integer shopId)
+    {
+        Response response = new Response();
+        try
+        {
+            Boolean isExist = _shopController.isShopIdExist(shopId);
+            response.setReturnValue(isExist);
+            logger.info(String.format("Shop ID: %d exists: %b" ,shopId, isExist));
+
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to check if shopID %d exists. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        
+        return response;        
+    }
+
+    public Response isShopOwner(Integer shopId, String userId) {
+        Response response = new Response();
+        try
+        {
+            Boolean isOwner = _shopController.isShopOwner(shopId, userId);
+            response.setReturnValue(isOwner);
+            logger.info(String.format("User %s is owner of Shop ID: %d: %b" ,userId, shopId, isOwner));
+
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to check if user %s is owner of shopID %d. Error: ", userId, shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        
+        return response;
+    }
+            
 }

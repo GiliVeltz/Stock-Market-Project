@@ -15,7 +15,7 @@ public class Shop {
     private Integer _shopId;
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
-    private List<ShoppingBasket> _orderHistory;
+    private List<ShopOrder> _orderHistory;
     private Map<String, Role> _userToRole; //<userName, Role>
     // TODO:: List<Discount>
 
@@ -39,6 +39,14 @@ public class Shop {
             return false;
         }
         return _userToRole.containsKey(username);  
+    }
+
+    //get role of the user in the shop
+    public Role getRole(String username) throws ShopException{
+        if(!checkIfHasRole(username)){
+            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
+        }
+        return _userToRole.get(username);
     }
 
     /**
@@ -342,11 +350,7 @@ public class Shop {
         return _productMap;
     }
 
-    public List<ShoppingBasket> getShopOrderHistory() {
-        return _orderHistory;
-    }
-
-    public void addOrderToOrderHistory(ShoppingBasket order) {
+    public void addOrderToOrderHistory(ShopOrder order) {
         _orderHistory.add(order); // Add order to the history
     }
 
@@ -358,5 +362,14 @@ public class Shop {
                 ", Products= \n" + _productMap +
                 ", Order History= \n " + _orderHistory +
                 '}';
+    }
+
+    public List<ShopOrder> getPurchaseHistory() {
+       return this._orderHistory;
+    }
+
+    public Boolean isOwnerOrFounderOwner(String userId) throws ShopException {
+        Role role = getRole(userId);
+        return isOwnerOrFounder(role);
     }
 }
