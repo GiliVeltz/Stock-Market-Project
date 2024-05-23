@@ -9,7 +9,8 @@ public class User {
     private boolean _isAdmin;
     private String _email;
     private List<Order> _purchaseHistory;
-    //private static final Logger logger = Logger.getLogger(UserController.class.getName());
+    // private static final Logger logger =
+    // Logger.getLogger(UserController.class.getName());
 
     public User(String username, String encoded_password, String email) {
         _username = username;
@@ -40,13 +41,8 @@ public class User {
     public void setEmail(String email) {
         _email = email;
     }
-
-    /**
-     * Checks if the user is an admin.
-     *
-     * @return A boolean indicating whether the user is an admin.
-     */
-    public boolean isAdmin() {
+    
+    public boolean isAdmin(){
         return _isAdmin;
     }
 
