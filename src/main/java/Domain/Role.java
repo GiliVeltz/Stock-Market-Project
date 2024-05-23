@@ -1,13 +1,14 @@
 package Domain;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import Exceptions.*;
 
 /** 
  * This class represents the role of a user in a specific shop.
  */
-//TODO: ADD LOGS
 //TODO: ADD TESTS
 //TODO: MODIFY MODEL CLASS IF NEEDED.
 public class Role {
@@ -18,15 +19,9 @@ public class Role {
      */
     private final String _appointedBy;
     
-    /**
-     *  The store id that this role is connected to.
-     */ 
-    private final int _storeId;
+    private final int _storeId; // The store id that this role is connected to.
 
-    /**
-     * The username of the user in the system.
-     */
-    private final String _username;
+    private final String _username; // The username of the user in the system.
 
     /**
      * The permissions of this role in the shop.
@@ -34,10 +29,9 @@ public class Role {
      */
     private Set<Permission> _permissions;
 
-    /**
-     * The appointments of this user in a specific shop.
-     */
-    private Set<String> _appointments;
+    private Set<String> _appointments; // The appointments of this user in a specific shop.
+
+    private static final Logger logger = Logger.getLogger(Role.class.getName());
 
     /**
      * Basic constructor with permission set.
@@ -48,26 +42,33 @@ public class Role {
      * @throws RoleException 
      */
     public Role(String username, int storeId, String appointedBy, Set<Permission> permissions) throws RoleException{
+        logger.log(Level.INFO, "Role - constructor: Creating a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
         if(username == null){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because username is null.");
             throw new RoleException("Can't create a role with null username.");
         }
         if(permissions == null){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because permissions are null.");
             throw new RoleException("Can't create a role with null permissions.");
         }
 
         if(permissions.isEmpty()){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because 0 permissions.");
             throw new RoleException("Can't create a role without permissions.");
         }
 
         if(permissions.contains(Permission.FOUNDER) && permissions.size() > 1){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because can't create a role with founder permission with other permissions too.");
             throw new RoleException("Founder doesn't need other permissions.");
         }
 
         if(permissions.contains(Permission.FOUNDER) && appointedBy != null){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because founder doesn't have appointer.");
             throw new RoleException("Founder is not appointed by anyone.");
         }
 
         if(permissions.contains(Permission.OWNER) && permissions.size() > 1){
+            logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because can't create a role with owner permission with other permissions too.");
             throw new RoleException("Owner doesn't need other permissions.");
         }
         
@@ -76,6 +77,8 @@ public class Role {
         _appointedBy = appointedBy;
         _appointments = new HashSet<String>();
         _permissions = permissions;
+
+        logger.log(Level.INFO, "Role - constructor: Successfuly created a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
     }
 
     public boolean isFounder(){
@@ -133,13 +136,17 @@ public class Role {
      * @throws RoleException 
      */
     public void addPermissions(String username, Set<Permission> permissions) throws RoleException {
+        logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
         if(isFounder() || isOwner()){
+            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
             throw new RoleException("Username is a founder of owner. No need to manage permissions.");
         }
         if(!username.equals(_appointedBy)){
+            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because "+username+" is not his appointer.");
             throw new RoleException("Only the role that appointed this user can change permission.");
         }
         if(permissions.contains(Permission.OWNER) || permissions.contains(Permission.FOUNDER)){
+            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because we can't add founder of owner permissions.");
             throw new RoleException("Cannot add owner or founder permissions.");
         }
         _permissions.addAll(permissions);
@@ -148,16 +155,19 @@ public class Role {
 
     /**
      * Remove a permission from this role.
-     *
+     * @param username the user that is removing the permissions.
      * @param permission the permissions to remove.
      * @implNote if role doesn't have permission its ok.
      * @throws RoleException 
      */
     public void deletePermissions(String username, Set<Permission> permissions) throws RoleException {
+        logger.log(Level.INFO, "Role - deletePermissions: "+username+" trying to delete permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
         if(isFounder() || isOwner()){
+            logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from owner of founder. Can't delete permissions for them.");
             throw new RoleException("Username is a founder of owner. No need to manage permissions.");
         }
         if(!username.equals(_appointedBy)){
+            logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from "+_username+" because "+username+" is not his appointer.");
             throw new RoleException("Only the role that appointed this user can change permission.");
         }
         _permissions.removeAll(permissions);
@@ -165,30 +175,39 @@ public class Role {
 
 
     public void addAppointment(String username) throws RoleException{
-        //TODO: Instead of exception maybe just return false?
+        logger.log(Level.INFO, "Role - addAppointment: "+_username+" trying to appoint user "+username+" in the shop with id "+_storeId);
         if(_appointments.contains(username)){
+            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he was already appointed by "+_username);
             throw new RoleException("Username "+username+" is already appointed.");
         }
         if(username.equals(_username)){
+            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he is trying to appoint himself.");
             throw new RoleException("Username "+username+" cannot appoint itself.");
         }
         if(username.equals(_appointedBy)){
-            throw new RoleException("Username "+username+" cannot appoint the user that appointed him.");
+            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he is trying to appoint his appointer "+_appointedBy);
+            throw new RoleException("Username "+_username+" cannot appoint the user that appointed him.");
         }
         _appointments.add(username);
+        logger.log(Level.INFO, "Role - addAppointment: "+_username+" successfuly appointed user "+username+" in the shop with id "+_storeId);
     }
 
     public void deleteAppointment(String username) throws RoleException{
+        logger.log(Level.INFO, "Role - deleteAppointment: "+_username+" trying delete user "+username+" that was appointed by him in the shop with id "+_storeId);
         if(!_appointments.contains(username)){
+            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he is not appointed by "+_username);
             throw new RoleException("Username "+username+" is not appointed.");
         }
         if(username.equals(_username)){
-            throw new RoleException("Username "+username+" cannot delete himself from his appointments.");
+            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he trying to remove himself.");
+            throw new RoleException("Username "+_username+" cannot delete himself from his appointments.");
         }
         if(username.equals(_appointedBy)){
-            throw new RoleException("Username "+username+" cannot delete appointment of the user that appointed him.");
+            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because "+_username+" didn't appoint him.");
+            throw new RoleException("Username "+_username+" cannot delete appointment of the user that appointed him.");
         }
         _appointments.remove(username);
+        logger.log(Level.INFO, "Role - deleteAppointment: "+_username+" successfuly deleted the user "+username+" that was appointed by him in the shop with id "+_storeId);
     }
     
     // GETTERS

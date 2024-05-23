@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
+// TODO: AMIT: add documentation about the class to help other undesrtant better when and why to use each method.
 public class TokenService {
     @Value("${jwk.secret}")
     private String secret;
@@ -76,10 +77,12 @@ public class TokenService {
         }
     }
 
+    // isUserAndLoggedIn
     public boolean isLoggedIn(String token){
         return extractUsername(token) != null;
     }
 
+    // change the check in the function
     public boolean isGuest(String token){
         return extractUsername(token) != null;
     }
