@@ -14,7 +14,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'  # Specify the distribution (e.g., 'adopt', 'zulu', 'temurin')
-        java-version: '17'       # Specify the version of Java your project uses
+        java-version: '8'        # Ensure this matches the version in your pom.xml
 
     - name: Build with Maven
-      run: mvn clean install  # Use your build command (e.g., mvn, gradle)
+      run: mvn clean install  # Use your build command (e.g., mvn, gradle
