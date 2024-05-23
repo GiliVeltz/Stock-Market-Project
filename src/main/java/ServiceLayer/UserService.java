@@ -23,7 +23,8 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserController userController, TokenService tokenService, ShoppingCartFacade shoppingCartFacade) {
+    public UserService(UserController userController, TokenService tokenService,
+            ShoppingCartFacade shoppingCartFacade) {
         _userController = userController;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
@@ -100,12 +101,11 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isGuest(token)){
+                if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
                     _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
                     response.setReturnValue("Guest bought card succeed");
-                }
-                else {
+                } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
                     _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
@@ -138,20 +138,18 @@ public class UserService {
         return response;
     }
 
-
-
     /**
      * Retrieves the purchase history of a shop as an admin.
      *
      * @param token  The session token of the admin user.
      * @param shopId The ID of the shop whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
-     *         an error message if not. () List<ShoppingBasket>)
+     *         an error message if not. () List<shopOrder>)
      * @throws Exception If the session token is invalid.
      */
     public Response getShopPurchaseHistoryAsAdmin(String token, Integer shopId) {
         Response response = new Response();
-      
+
         try {
             if (_tokenService.validateToken(token)) {
                 if (!_tokenService.isLoggedIn(token)) {
@@ -193,6 +191,49 @@ public class UserService {
     }
 
     /**
+     * Retrieves the purchase history of a specific user as an admin.
+     *
+     * @param token  The session token of the admin user.
+     * @param userId The ID of the user whose purchase history is to be retrieved.
+     * @return A Response object containing the purchase history if successful, or
+     *         an error message if not. () List<Order>
+     * @throws Exception If the session token is invalid.
+     */
+    public Response getUserPurchaseHistoryAsAdmin(String token, String userId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                    return response;
+                }
+                String adminId = _tokenService.extractUsername(token);
+                Response isAdminResponse = isAdmin(adminId);
+                if (isAdminResponse.getErrorMessage() != null) {
+                    response.setErrorMessage("User is not an admin");
+                    logger.log(Level.SEVERE, "User is not an admin");
+                    return response;
+                }
+                // get purchase history of a user
+                response.setReturnValue(_userController.getPurchaseHistory(userId));
+                if (response.getErrorMessage() != null) {
+                    response.setErrorMessage("Failed to get purchase history from user: " + userId);
+                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
+
+                }
+
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
      * Retrieves the purchase history of a shop as a shop owner.
      *
      * @param token  The session token of the a shop owner.
@@ -204,7 +245,7 @@ public class UserService {
     public Response getShopPurchaseHistoryAsShopOwner(String token, Integer shopId) {
         Response response = new Response();
         try {
-            
+
             if (_tokenService.validateToken(token)) {
                 if (!_tokenService.isLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
