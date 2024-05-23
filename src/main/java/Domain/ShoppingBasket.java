@@ -14,20 +14,19 @@ public class ShoppingBasket {
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
 
     // Constructor
-    public ShoppingBasket(Integer shopId){
+    public ShoppingBasket(Integer shopId) {
         _shopId = shopId;
         _productList = new ArrayList<>();
         _basketTotalAmount = 0.0;
     }
 
-
-    public void addProductToShoppingBasket(Product product){
+    public void addProductToShoppingBasket(Product product) {
         _productList.add(product);
     }
- 
+
     // Calculate and return the total price of all products in the basket
     private double calculateShoppingBasketPrice() {
-        _basketTotalAmount = 0.0; 
+        _basketTotalAmount = 0.0;
         for (Product product : _productList) {
             _basketTotalAmount += product.getPrice();
         }
@@ -40,22 +39,26 @@ public class ShoppingBasket {
 
     /*
      * Go through the list of products in the basket and purchase them.
-     * If an exception is thrown, cancel the purchase of all the products that were bought.
+     * If an exception is thrown, cancel the purchase of all the products that were
+     * bought.
      * This function only updates the item's stock.
      */
-    public boolean purchaseBasket(){
+    public boolean purchaseBasket() {
         logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shopId);
         List<Product> boughtProductList = new ArrayList<>();
 
         for (Product product : _productList) {
-            try{
+            try {
                 product.purchaseProduct();
                 boughtProductList.add(product);
-            }
-            catch (ProductOutOfStockExepction e){
-                logger.log(Level.SEVERE, "ShoppingBasket - purchaseBasket - Product out of stock in basket from shopId: " 
-                + _shopId + ". Exception: " + e.getMessage(), e);
-                logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Canceling purchase of all products from basket from shopId: " + _shopId);
+            } catch (ProductOutOfStockExepction e) {
+                logger.log(Level.SEVERE,
+                        "ShoppingBasket - purchaseBasket - Product out of stock in basket from shopId: "
+                                + _shopId + ". Exception: " + e.getMessage(),
+                        e);
+                logger.log(Level.FINE,
+                        "ShoppingBasket - purchaseBasket - Canceling purchase of all products from basket from shopId: "
+                                + _shopId);
                 for (Product boughtProduct : boughtProductList) {
                     boughtProduct.cancelPurchase();
                 }
@@ -66,10 +69,21 @@ public class ShoppingBasket {
     }
 
     public void cancelPurchase() {
-        logger.log(Level.FINE, "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: " + _shopId);
+        logger.log(Level.FINE,
+                "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: "
+                        + _shopId);
         for (Product product : _productList) {
             product.cancelPurchase();
         }
+    }
+
+    public boolean containsProduct(Integer productId) {
+        for (Product product : _productList) {
+            if (product.getProductId() == productId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

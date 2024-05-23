@@ -1,0 +1,39 @@
+package Domain.Rules;
+
+import java.util.List;
+
+import Domain.ShoppingBasket;
+
+/**
+ * Represents a rule that checks if all the items in a list of product IDs are
+ * present in a shopping basket.
+ * Implements the Rule interface with ShoppingBasket as the generic type.
+ */
+public class AllItemsRule implements Rule<ShoppingBasket> {
+    private List<Integer> _productIds;
+
+    /**
+     * Constructs a new AllItemsRule object with the specified list of product IDs.
+     * 
+     * @param productIds the list of product IDs to check in the shopping basket
+     */
+    public AllItemsRule(List<Integer> productIds) {
+        _productIds = productIds;
+    }
+
+    /**
+     * Checks if all the products in the list of product IDs are present in the
+     * shopping basket.
+     * 
+     * @param basket the shopping basket to check
+     * @return true if all the products are present, false otherwise
+     */
+    @Override
+    public boolean predicate(ShoppingBasket basket) {
+        // check if all the products in the list of products are in the basket
+        for (Integer pid : _productIds)
+            if (!basket.containsProduct(pid))
+                return false;
+        return true;
+    }
+}
