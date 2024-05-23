@@ -18,8 +18,8 @@
     <name>Stock Market Project</name>
 
     <properties>
-		<java.version>17</java.version>
-	</properties>
+        <java.version>17</java.version>
+	  </properties>
     
     <!-- Define dependencies -->
     <dependencies>
@@ -110,8 +110,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version> <!-- Replace with the desired version -->
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <release>11</release> <!-- or the version you are using -->
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 
