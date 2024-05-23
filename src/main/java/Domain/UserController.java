@@ -76,4 +76,13 @@ public class UserController {
         }
         guestIds.remove(String.valueOf(id));
     }
+
+    //function to return the purchase history for the user
+    public List<Order> getPurchaseHistory(String username) {
+        User user = getUserByUsername(username);
+        if (user != null) {
+            return user.getPurchaseHistory();
+        }
+        return null;
+    }
 }
