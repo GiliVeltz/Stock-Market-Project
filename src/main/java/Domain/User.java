@@ -1,7 +1,7 @@
 package Domain;
 
 import java.util.List;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class User {
     private String _encoded_password;
