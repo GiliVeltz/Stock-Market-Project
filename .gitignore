@@ -1,5 +1,5 @@
 ﻿.github
 .vs
 .vscode
-target
+target/
 *.DS_STORE
