@@ -32,8 +32,8 @@ public class ShoppingCart {
     public void purchaseCart(List<Integer> busketsToBuy, String cardNumber, String address) {
         purchaseCartEditStock(busketsToBuy);
         try {
-            _paymentMethod.pay();
-            _supplyMethod.deliver();
+            _paymentMethod.pay(cardNumber);
+            _supplyMethod.deliver(address);
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: "+ e.getMessage(), e);
             cancelPurchaseEditStock(busketsToBuy);

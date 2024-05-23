@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 
 import Domain.Exceptions.PaymentFailedException;
 import Domain.Exceptions.ShippingFailedException;
-import Domain.ExternalServices.PaymentService.PaymentMethod;
-import Domain.ExternalServices.SupplyService.SupplyMethod;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 import ServiceLayer.UserService;
 
 public class ShoppingCartFacade {

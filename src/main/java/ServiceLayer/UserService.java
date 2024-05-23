@@ -9,8 +9,8 @@ import java.util.logging.Level;
 
 import Domain.ShoppingCartFacade;
 import Domain.UserController;
-import Domain.ExternalServices.PaymentService.PaymentMethod;
-import Domain.ExternalServices.SupplyService.SupplyMethod;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 
 @Service
 public class UserService {
