@@ -49,34 +49,6 @@ public class User {
         _email = email;
     }
 
-    /*
-     * This method is responsible for purchasing the cart.
-     * It first calls the purchaseCart method of the shopping cart which reaponsible
-     * for changing the item's stock.
-     * Then it tries to pay and deliver the items.
-     * If the payment or the delivery fails, it cancels the purchase and restock the
-     * item.
-     */
-    public void purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
-        logger.log(Level.INFO, "User " + _username + " is trying to purchase the cart.");
-        _shoppingCart.purchaseCart(this, busketsToBuy);
-        try {
-            paymentMethod.pay();
-            shippingMethod.deliver();
-        } catch (PaymentFailedException e) {
-            logger.log(Level.SEVERE,
-                    "Payment for user: " + _username + " has been failed with exception: " + e.getMessage(), e);
-            _shoppingCart.cancelPurchase(this, busketsToBuy);
-            throw new PaymentFailedException("Payment failed");
-        } catch (ShippingFailedException e) {
-            logger.log(Level.SEVERE,
-                    "Shipping for user: " + _username + " has been failed with exception: " + e.getMessage(), e);
-            _shoppingCart.cancelPurchase(this, busketsToBuy);
-            throw new ShippingFailedException("Shipping failed");
-        }
-
-    }
-
     /**
      * Checks if the user is an admin.
      *
