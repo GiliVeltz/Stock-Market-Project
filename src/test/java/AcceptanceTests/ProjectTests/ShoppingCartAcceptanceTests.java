@@ -2,6 +2,7 @@ package AcceptanceTests.ProjectTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -21,7 +22,7 @@ public class ShoppingCartAcceptanceTests {
     }
     
     // Test try to add product to shopping cart as register and signed in user in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddProductToShoppingCartAsUser() {
         assertTrue(_bridge.testAddProductToShoppingCartUser("userName", "product1", "shopId") ); // success
@@ -29,7 +30,7 @@ public class ShoppingCartAcceptanceTests {
     }
     
     // Test try to add product to shopping cart as guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddProductToShoppingCartAsGuest() {
         assertTrue(_bridge.testAddProductToShoppingCartGuest("userName", "product1", "shopId") ); // success

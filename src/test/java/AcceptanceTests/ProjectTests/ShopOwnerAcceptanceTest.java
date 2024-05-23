@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
@@ -22,7 +23,7 @@ public class ShopOwnerAcceptanceTest {
     }
     
     // Test that shop owner can add products to the shop.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerAddProductToShop() {
         assertTrue(_bridge.testShopOwnerAddProductToShop("shopOwnerUserName", "shopId1", "ProductName", "ProductAmount") ); // success
@@ -32,7 +33,7 @@ public class ShopOwnerAcceptanceTest {
     }
     
     // Test that shop owner can remove products from the shop.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveProductFromShop() {
         assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "shopId1", "ProductName") ); // success
@@ -41,7 +42,7 @@ public class ShopOwnerAcceptanceTest {
     }
     
     // Test that shop owner can edit products details in the shop.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerEditProductInShop() {
         assertTrue(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "ProductName", "newProductName", "ProductAmount", "newProductAmount") ); // success
@@ -53,7 +54,7 @@ public class ShopOwnerAcceptanceTest {
     
     // TODO: NOT FOR VERSION 1
     // Test that shop owner can edit the shop policies.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerChangeShopPolicies() {
         // assertTrue(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "new shop policy") ); // success

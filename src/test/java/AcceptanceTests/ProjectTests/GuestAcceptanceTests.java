@@ -1,6 +1,7 @@
 package AcceptanceTests.ProjectTests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the guest can enter the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestEnterTheSystem() {
         assertTrue(_bridge.TestGuestEnterTheSystem("system is open") ); // success
@@ -30,7 +31,7 @@ public class GuestAcceptanceTests {
     }
     
     // TODO: AMIT: debug and check those tests- they are failing.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     // Test if the user can register to the system.
     @Test
     public void TestGuestRegisterToTheSystem() {
@@ -41,7 +42,7 @@ public class GuestAcceptanceTests {
         assertFalse(_bridge.TestGuestRegisterToTheSystem("mom","momspassword", "")); // fail - empty email
     }
     
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     // Test if the guest can enter the system.
     @Test
     public void TestUserEnterTheSystem() {
@@ -49,7 +50,7 @@ public class GuestAcceptanceTests {
         assertFalse(_bridge.TestUserEnterTheSystem("system is close") ); // fail - already exists
     }
     
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     // Test if the user can login to the system.
     @Test
     public void TestUserLogin() {

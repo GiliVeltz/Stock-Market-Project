@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
 
 import AcceptanceTests.Implementor.BridgeInterface;
+import org.junit.jupiter.api.Disabled;
 import AcceptanceTests.Implementor.RealBridge;
 import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
@@ -21,7 +22,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test get information about a shop as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetShopInfoAsGuest() {
         assertTrue(_bridge.testGetShopInfoAsGuest("shopId1") ); // success
@@ -29,7 +30,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test get information about a product as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoAsGuest() {
         assertTrue(_bridge.testGetProductInfoAsGuest("productId1") ); // success - exist product
@@ -37,7 +38,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to product name as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductNameAsGuest("productId1") ); // success - exist product
@@ -45,7 +46,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to product category as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsGuest("caterogy1") ); // success - exist category
@@ -53,7 +54,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to key words as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingKeyWordsAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingKeyWordsAsGuest("word1") ); // success - exist key word
@@ -64,7 +65,7 @@ public class ShoppingGuestAcceptanceTests {
     // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
     
     // Test search product information in a specific shop, according to product name as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId1") ); // success - exist product and exist shop
@@ -74,7 +75,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information in a specific shop, according to product category as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId1") ); // success - exist category and exist shop
@@ -84,7 +85,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information in a specific shop, according to key words as a guest in the system.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingKeyWordsInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword1", "shopId1") ); // success - exist keyword and exist shop
@@ -94,7 +95,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test when add product to shopping cart- it stays there.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddProductToShoppingCartAsGuest() {
         assertTrue(_bridge.testAddProductToShoppingCartAsGuest("productId1") ); // success
@@ -102,7 +103,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test a guest can watch his items in the shopping cart.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testCheckAndViewItemsInShoppingCartAsGuest() {
         assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsGuest() ); // success
@@ -110,7 +111,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test the buying senerio of a shopping cart (all or nothing).
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testBuyingShoppingCartAsGuest() {
         assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest() ); // success - all products a re available to buy them

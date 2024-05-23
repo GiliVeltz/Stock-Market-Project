@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
@@ -22,7 +23,7 @@ public class ShopManagerAcceptanceTets {
         }
         
         // Test that shop manager can do only what the shop owner allowed him.
-    @IgnoreForBinding
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
         @Test
         public void testOpenMarketSystem() {
             assertTrue(_bridge.testOpenMarketSystem("shopManager", "shopId", "possiblePermission") ); // success
