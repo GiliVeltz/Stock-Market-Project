@@ -4,8 +4,7 @@ package Domain.ExternalServices.PaymentService;
 public class ProxyPayment {
 
     public ProxyPayment() {
-        // TODO Auto-generated constructor stub
-        throw new UnsupportedOperationException("Unimplemented constructor 'ProxyPayment'");
+        // TODO: TAL: add constructor detalils
     }
     
     public void pay(String cardNumber) {

@@ -2,7 +2,6 @@ package Domain;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -519,12 +518,12 @@ public class Shop {
                 '}';
     }
 
+    public List<ShopOrder> getPurchaseHistory() {
+       return this._orderHistory;
+    }
+
     public Boolean isOwnerOrFounderOwner(String userId) throws ShopException {
         Role role = getRole(userId);
         return isOwnerOrFounder(role);
-    }
-
-    public List<ShopOrder> getPurchaseHistory() {
-        return this._orderHistory;
     }
 }
