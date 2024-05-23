@@ -29,6 +29,8 @@ public class SystemService {
         _tokenService = new TokenService();
         _userController = new UserController();
         _shoppingCartFacade = new ShoppingCartFacade();
+        //TODO: create it as a singleton
+        _externalServiceHandler = externalServiceHandler;
     }
 
     /**
