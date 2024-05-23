@@ -139,58 +139,6 @@ public class UserService {
     }
 
     /**
-     * Retrieves the purchase history of a shop as an admin.
-     *
-     * @param token  The session token of the admin user.
-     * @param shopId The ID of the shop whose purchase history is to be retrieved.
-     * @return A Response object containing the purchase history if successful, or
-     *         an error message if not. () List<shopOrder>)
-     * @throws Exception If the session token is invalid.
-     */
-    public Response getShopPurchaseHistoryAsAdmin(String token, Integer shopId) {
-        Response response = new Response();
-
-        try {
-            if (_tokenService.validateToken(token)) {
-                if (!_tokenService.isLoggedIn(token)) {
-                    response.setErrorMessage("User is not logged in");
-                    logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
-                }
-                String userId = _tokenService.extractUsername(token);
-                Response isAdminResponse = isAdmin(userId);
-                if (isAdminResponse.getErrorMessage() != null) {
-                    response.setErrorMessage("User is not an admin");
-                    logger.log(Level.SEVERE, "User is not an admin");
-                    return response;
-                }
-                // check if the shop exist with
-                Response isShopExistResponse = _shopService.isShopIdExist(shopId);
-                if (isShopExistResponse.getErrorMessage() != null) {
-                    response.setErrorMessage("Shop not found");
-                    logger.log(Level.SEVERE, "Shop not found");
-                    return response;
-                }
-                // get purchase history of a shop
-                response = _shopService.getPurchaseHistory(shopId);
-                if (response.getErrorMessage() != null) {
-                    response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
-                    logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);
-
-                }
-
-            } else {
-                throw new Exception("Invalid session token.");
-            }
-        } catch (Exception e) {
-            response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
-        }
-        // TODO: check with Spring how to return this response as a data object
-        return response;
-    }
-
-    /**
      * Retrieves the purchase history of a specific user as an admin.
      *
      * @param token  The session token of the admin user.
@@ -230,60 +178,6 @@ public class UserService {
             response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
         }
-        return response;
-    }
-
-    /**
-     * Retrieves the purchase history of a shop as a shop owner.
-     *
-     * @param token  The session token of the a shop owner.
-     * @param shopId The ID of the shop whose purchase history is to be retrieved.
-     * @return A Response object containing the purchase history if successful, or
-     *         an error message if not. () List<ShoppingBasket>)
-     * @throws Exception If the session token is invalid.
-     */
-    public Response getShopPurchaseHistoryAsShopOwner(String token, Integer shopId) {
-        Response response = new Response();
-        try {
-
-            if (_tokenService.validateToken(token)) {
-                if (!_tokenService.isLoggedIn(token)) {
-                    response.setErrorMessage("User is not logged in");
-                    logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
-                }
-                // check if the shop exist
-                Response isShopExistResponse = _shopService.isShopIdExist(shopId);
-                if (isShopExistResponse.getErrorMessage() != null) {
-                    response.setErrorMessage("Shop not found");
-                    logger.log(Level.SEVERE, "Shop not found");
-                    return response;
-                }
-                String userId = _tokenService.extractUsername(token);
-                // check if the user is the owner(or founder) of the shop
-                Response isShopOwnerResponse = _shopService.isShopOwner(shopId, userId);
-                if (isShopOwnerResponse.getErrorMessage() != null) {
-                    response.setErrorMessage("User is not the owner of the shop");
-                    logger.log(Level.SEVERE, "User is not the owner of the shop");
-                    return response;
-                }
-                // get purchase history of a shop
-                response = _shopService.getPurchaseHistory(shopId);
-                if (response.getErrorMessage() != null) {
-                    response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
-                    logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);
-
-                }
-
-            } else {
-                throw new Exception("Invalid session token.");
-            }
-        } catch (Exception e) {
-            response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
-        }
-
-        // TODO: check with Spring how to return this response as a data object
         return response;
     }
 
