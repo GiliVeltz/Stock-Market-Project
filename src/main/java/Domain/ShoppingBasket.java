@@ -52,7 +52,7 @@ public class ShoppingBasket {
         logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shopId);
         List<Product> boughtProductList = new ArrayList<>();
 
-        // TODO: consider the discounts!
+        // TODO: consider the discounts using productToPriceToAmount
 
         for (Product product : _productList) {
             try {
