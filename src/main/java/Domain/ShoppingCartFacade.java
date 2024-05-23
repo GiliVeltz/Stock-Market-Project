@@ -1,18 +1,11 @@
 package Domain;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import Domain.Exceptions.PaymentFailedException;
-import Domain.Exceptions.ShippingFailedException;
-import Domain.ExternalServices.PaymentService.ProxyPayment;
-import Domain.ExternalServices.SupplyService.ProxySupply;
-import ServiceLayer.UserService;
 
 public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <GuestToken, ShoppingCart>

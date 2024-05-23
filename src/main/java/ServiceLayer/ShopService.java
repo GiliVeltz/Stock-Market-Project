@@ -1,7 +1,6 @@
 package ServiceLayer;
 
 import java.util.logging.Logger;
-//TODO: check why it makes error
 // import org.apache.catalina.servlets.DefaultServlet.SortManager.Order;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +9,18 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Product;
-import Domain.ShopController;
+import Domain.ShopFacade;
 import Domain.ShopOrder;
-import Domain.ShoppingBasket;
 
 @Service
 public class ShopService {
-    private ShopController _shopController;
+    private ShopFacade _shopController;
     private TokenService _tokenService;
     private UserService _userService;
-    private static final Logger logger = Logger.getLogger(ShopController.class.getName());
+    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     public ShopService(UserService userService){
-        _shopController = ShopController.getShopController();
+        _shopController = ShopFacade.getShopFacade();
         _tokenService = new TokenService();
         _userService = userService;
     }
@@ -57,6 +55,13 @@ public class ShopService {
         return response;
     }
 
+    /**
+     * Close a shop with the specified shop ID and user name.
+     * 
+     * @param shopId   The ID of the existing shop to be closed.
+     * @param userName The name of the user closing the shop (founder).
+     * @return A response indicating the success or failure of the operation.
+     */
     public Response closeShop(String token, Integer shopId, String userName) {
         Response response = new Response();
         try {
