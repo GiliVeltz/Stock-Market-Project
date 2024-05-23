@@ -8,34 +8,31 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
-import Domain.ShoppingBasket;
 
 import Domain.ShoppingCartFacade;
-import Domain.UserController;
-import Domain.ExternalServices.PaymentService.ProxyPayment;
-import Domain.ExternalServices.SupplyService.ProxySupply;
+import Domain.UserFacade;
 
 @Service
 public class UserService {
-    private UserController _userController;
+    private UserFacade _userFacade;
     private TokenService _tokenService;
-    private ShopService _shopService;
+    //private ShopService _shopService;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserController userController, TokenService tokenService,
+    public UserService(UserFacade userController, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
-        _userController = userController;
+                _userFacade = userController;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_userController.AreCredentialsCorrect(userName, password)) {
+                if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
@@ -51,13 +48,13 @@ public class UserService {
         return response;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_userController.isUserNameExists(userName)) {
+                if (_userFacade.isUserNameExists(userName)) {
                     String newToken = _tokenService.generateGuestToken();
                     logger.info("User successfuly logged out: " + userName);
                     response.setReturnValue(newToken);
@@ -74,13 +71,13 @@ public class UserService {
         return response;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (!_userController.isUserNameExists(userName)) {
-                    _userController.register(userName, password, email);
+                if (!_userFacade.isUserNameExists(userName)) {
+                    _userFacade.register(userName, password, email);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
@@ -96,7 +93,7 @@ public class UserService {
         return response;
     }
 
-    // TODO: add documentation
+    // TODO: TAL: add documentation
     public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
@@ -124,7 +121,7 @@ public class UserService {
     public Response isAdmin(String userId) {
         Response response = new Response();
         try {
-            if (_userController.isAdmin(userId)) {
+            if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
             } else {
@@ -164,7 +161,7 @@ public class UserService {
                     return response;
                 }
                 // get purchase history of a user
-                response.setReturnValue(_userController.getPurchaseHistory(userId));
+                response.setReturnValue(_userFacade.getPurchaseHistory(userId));
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from user: " + userId);
                     logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
@@ -181,6 +178,7 @@ public class UserService {
         return response;
     }
 
+    // TODO: METAR: add documentation
     public Response getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
@@ -192,7 +190,7 @@ public class UserService {
                 }
                 String username = _tokenService.extractUsername(token);
                 logger.info("Purchase history request for user: " + username);
-                List<Order> purchaseHistory = _userController.getPurchaseHistory(username);
+                List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
                 logger.info("Purchase history retrieved for user: " + username);
                 response.setReturnValue(purchaseHistory);
 
@@ -207,4 +205,7 @@ public class UserService {
         return response;
     }
 
+    public UserFacade getUserFacade() {
+        return _userFacade;
+    }
 }

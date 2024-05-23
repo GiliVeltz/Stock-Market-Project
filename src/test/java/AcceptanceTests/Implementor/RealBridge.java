@@ -24,7 +24,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     private UserService _userServiceUnderTest;
     @Mock
-    private UserController _userControllerMock;
+    private UserFacade _userControllerMock;
     @Mock
     private TokenService _tokenServiceMock;
     @Mock
@@ -42,7 +42,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @BeforeEach
     public void setUp() {
-        _userControllerMock = mock(UserController.class);
+        _userControllerMock = mock(UserFacade.class);
         _tokenServiceMock = mock(TokenService.class);
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
     }

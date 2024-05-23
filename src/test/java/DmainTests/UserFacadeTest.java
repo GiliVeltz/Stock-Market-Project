@@ -13,7 +13,7 @@ import Domain.*;
 
 public class UserFacadeTest {
     
-    private UserController _userFacadeUnderTest;
+    private UserFacade _userFacadeUnderTest;
     private List<User> _registeredUsers;
     private List<String> _guestIds;
     @Mock
@@ -41,7 +41,7 @@ public class UserFacadeTest {
     @Test
     public void testRegister_whenNewUser_thenUserNameExistsCheckSuccess() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
 
         // Act - try to register a new user
@@ -60,7 +60,7 @@ public class UserFacadeTest {
     public void testRegister_whenExistUser_thenUserNameExistsCheckFail() {
         // Arrange - Create a new User object
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
 
         // Act - Set a new username

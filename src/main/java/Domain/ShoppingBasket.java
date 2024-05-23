@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 
 import Domain.Exceptions.ProductOutOfStockExepction;
 
+// This class represents a shopping basket that contains a list of products.
+// The shopping basket can belongs to one and only shop and one user.
 public class ShoppingBasket {
     private Integer _shopId;
     private List<Product> _productList;
@@ -25,6 +27,7 @@ public class ShoppingBasket {
         _productList.add(product);
     }
  
+    // TODO: OR: if not used- remove this method
     // Calculate and return the total price of all products in the basket
     private double calculateShoppingBasketPrice() {
         _basketTotalAmount = 0.0; 

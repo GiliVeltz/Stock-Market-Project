@@ -1,14 +1,13 @@
 package Domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class UserController {
+public class UserFacade {
     private List<User> _registeredUsers;
     private List<String> _guestIds;
     private PasswordEncoderUtil _passwordEncoder;
 
-    public UserController(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+    public UserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
         _registeredUsers = registeredUsers;
         _guestIds = guestIds;
         _passwordEncoder = passwordEncoder;
@@ -41,6 +40,7 @@ public class UserController {
         return false;
     }
 
+    // this function is used to register a new user to the system.
     public void register(String userName, String password, String email) throws Exception {
         String encodedPass = this._passwordEncoder.encodePassword(password);
         if (!isUserNameExists(userName)) {
@@ -82,7 +82,7 @@ public class UserController {
         return _registeredUsers;
     }
 
-    //function to return the purchase history for the user
+    // function to return the purchase history for the user
     public List<Order> getPurchaseHistory(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
