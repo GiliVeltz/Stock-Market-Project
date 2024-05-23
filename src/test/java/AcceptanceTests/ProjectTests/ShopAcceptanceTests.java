@@ -37,7 +37,7 @@
 //      @Mock
 //      ShopController mockShopController;
 
-    
+
 //      @Mock
 //      Shop mockShop;
 
@@ -57,13 +57,13 @@
 //      public void cleanup() {
 //          // Clean up resources or delete the object
 //      }
-    
+
 //      @Test
 //      public void givenSuccessfulAddProductToShop_whenGivenProduct_thenNoExceptionThrown()
 //      {
 //          //TODO: need to implement
 //      }
-    
+
 //      @Test
 //      public void givenSuccessfulOpenNewShop_whenGivenShopIdAndUserName_thenNoExceptionThrown() throws Exception
 //      {
@@ -93,14 +93,14 @@
 
 //          // Define behavior
 //          when(mockShopController.isShopIdExist(shopId)).thenReturn(true);
-        
+
 //          // Act and Assert
 //          IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class,
 //                  () -> mockShopService.openNewShop(token,shopId, userName));
 
 //          // Verify interactions
 //          verify(mockShopController, times(1)).openNewShop(shopId, userName);
-        
+
 //          // Assert the result
 //          assertEquals("Failed to create shopID 5555 by user client123. Error: ", exception.getMessage());
 //      }

@@ -2,7 +2,7 @@ package Domain;
 /**
  * This enum represents the permissions that a user with a role in a specific shop has. 
  */
-//TODO: vladi- remove numbers when done.
+//TODO: VLADI: remove numbers when done.
 public enum Permission {
 
     //CAN DO ALL

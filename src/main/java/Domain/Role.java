@@ -19,15 +19,9 @@ public class Role {
      */
     private final String _appointedBy;
     
-    /**
-     *  The store id that this role is connected to.
-     */ 
-    private final int _storeId;
+    private final int _storeId; // The store id that this role is connected to.
 
-    /**
-     * The username of the user in the system.
-     */
-    private final String _username;
+    private final String _username; // The username of the user in the system.
 
     /**
      * The permissions of this role in the shop.
@@ -35,10 +29,7 @@ public class Role {
      */
     private Set<Permission> _permissions;
 
-    /**
-     * The appointments of this user in a specific shop.
-     */
-    private Set<String> _appointments;
+    private Set<String> _appointments; // The appointments of this user in a specific shop.
 
     private static final Logger logger = Logger.getLogger(Role.class.getName());
 

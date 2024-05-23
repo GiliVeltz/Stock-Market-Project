@@ -4,8 +4,9 @@ package AcceptanceTests.Implementor;
 // A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
 public class ProxyBridge implements BridgeInterface{
     
-    public boolean Login(String username, String password) {
+    // important: all the functions will return false because the real implementation is in the RealBridge class
+
+    public boolean testRegisterToTheSystem(String username, String password, String email) {
         return false;
-        // TODO: Implement this method.
     }
 }
