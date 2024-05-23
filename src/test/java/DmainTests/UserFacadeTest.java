@@ -1,18 +1,14 @@
 package DmainTests;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-
-import Domain.PasswordEncoderUtil;
-import Domain.User;
-import Domain.UserController;
+import Domain.*;
 
 public class UserFacadeTest {
     private UserController _userFacadeUnderTest;
