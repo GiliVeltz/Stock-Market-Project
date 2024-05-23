@@ -6,28 +6,32 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Level;
+
+import Domain.ShoppingCartFacade;
 import Domain.UserController;
 import Domain.ExternalServices.PaymentService.PaymentMethod;
 import Domain.ExternalServices.SupplyService.SupplyMethod;
 
 @Service
 public class UserService {
-    private UserController userController;
-    private TokenService tokenService;
-    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+    private UserController _userController;
+    private TokenService _tokenService;
+    private ShoppingCartFacade _shoppingCartFacade;
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService() {
-        userController = new UserController();
-        tokenService = new TokenService();
+    public UserService(UserController userController, TokenService tokenService, ShoppingCartFacade shoppingCartFacade) {
+        _userController = userController;
+        _tokenService = tokenService;
+        _shoppingCartFacade = shoppingCartFacade;
     }
 
     // TODO: add documentation
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
-            if (tokenService.validateToken(token)) {
-                if (userController.AreCredentialsCorrect(userName, password)) {
-                    response.setReturnValue(tokenService.generateUserToken(userName));
+            if (_tokenService.validateToken(token)) {
+                if (_userController.AreCredentialsCorrect(userName, password)) {
+                    response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
                     throw new Exception("User Name Is Already Exists");
@@ -46,10 +50,10 @@ public class UserService {
     public Response logOut(String token) {
         Response response = new Response();
         try {
-            if (tokenService.validateToken(token)) {
-                String userName = tokenService.extractUsername(token);
-                if (userController.isUserNameExists(userName)) {
-                    String newToken = tokenService.generateGuestToken();
+            if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_userController.isUserNameExists(userName)) {
+                    String newToken = _tokenService.generateGuestToken();
                     logger.info("User successfuly logged out: " + userName);
                     response.setReturnValue(newToken);
                 } else {
@@ -69,9 +73,9 @@ public class UserService {
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
-            if (tokenService.validateToken(token)) {
-                if (!userController.isUserNameExists(userName)) {
-                    userController.register(userName, password, email);
+            if (_tokenService.validateToken(token)) {
+                if (!_userController.isUserNameExists(userName)) {
+                    _userController.register(userName, password, email);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
@@ -88,20 +92,27 @@ public class UserService {
     }
 
     // TODO: add documentation
-    public Response purchaseCart(String token, List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+    public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
-            String username = tokenService.extractUsername(token);
-            if (userController.isUserNameExists(username)) {
-                userController.getUserByUsername(username).purchaseCart(busketsToBuy, paymentMethod, shippingMethod);
-                logger.info("User purchase cart successfully: " + username);
-                response.setReturnValue("Purchase cart Succeed");
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isGuest(token)){
+                    logger.log(Level.INFO, "Start purchasing cart for guest.");
+                    _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
+                    response.setReturnValue("Guest bought card succeed");
+                }
+                else {
+                    String userName = _tokenService.extractUsername(token);
+                    logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
+                    _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
+                    response.setReturnValue("User bought card succeed");
+                }
             } else {
-                response.setErrorMessage("A user with the username given in the token does not exist.");
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage("Token is invalid");
-            logger.log(Level.SEVERE, "Purchase cart failed: " + e.getMessage(), e);
+            response.setErrorMessage("Cart bought has been failed: " + e.getMessage());
+            logger.log(Level.SEVERE, "Cart bought has been failed: " + e.getMessage(), e);
         }
         return response;
     }
@@ -110,7 +121,7 @@ public class UserService {
     public Response isAdmin(String userId){
         Response response = new Response();
         try {
-            if (userController.isAdmin(userId)) {
+            if (_userController.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
             } else {
