@@ -17,9 +17,9 @@ import Domain.ExternalServices.SupplyService.ProxySupply;
 
 @Service
 public class UserService {
-    private UserController __userController;
-    private TokenService __tokenService;
-    private ShopService shopService;
+    private UserController _userController;
+    private TokenService _tokenService;
+    private ShopService _shopService;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
@@ -167,14 +167,14 @@ public class UserService {
                     return response;
                 }
                 // check if the shop exist with
-                Response isShopExistResponse = shopService.isShopIdExist(shopId);
+                Response isShopExistResponse = _shopService.isShopIdExist(shopId);
                 if (isShopExistResponse.getErrorMessage() != null) {
                     response.setErrorMessage("Shop not found");
                     logger.log(Level.SEVERE, "Shop not found");
                     return response;
                 }
                 // get purchase history of a shop
-                response = shopService.getPurchaseHistory(shopId);
+                response = _shopService.getPurchaseHistory(shopId);
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
                     logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);
@@ -212,7 +212,7 @@ public class UserService {
                     return response;
                 }
                 // check if the shop exist
-                Response isShopExistResponse = shopService.isShopIdExist(shopId);
+                Response isShopExistResponse = _shopService.isShopIdExist(shopId);
                 if (isShopExistResponse.getErrorMessage() != null) {
                     response.setErrorMessage("Shop not found");
                     logger.log(Level.SEVERE, "Shop not found");
@@ -220,14 +220,14 @@ public class UserService {
                 }
                 String userId = _tokenService.extractUsername(token);
                 // check if the user is the owner(or founder) of the shop
-                Response isShopOwnerResponse = shopService.isShopOwner(shopId, userId);
+                Response isShopOwnerResponse = _shopService.isShopOwner(shopId, userId);
                 if (isShopOwnerResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not the owner of the shop");
                     logger.log(Level.SEVERE, "User is not the owner of the shop");
                     return response;
                 }
                 // get purchase history of a shop
-                response = shopService.getPurchaseHistory(shopId);
+                response = _shopService.getPurchaseHistory(shopId);
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
                     logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);

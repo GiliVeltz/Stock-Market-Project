@@ -40,17 +40,17 @@ public class SystemService {
      */
     public Response openSystem(String token) {
         Response response = new Response();
-        String userId = tokenService.extractUsername(token);
+        String userId = _tokenService.extractUsername(token);
         try {
-            if (tokenService.validateToken(token)) {
+            if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
-                if (!tokenService.isLoggedIn(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
                 // Check if the user is an admin
-                Response isAdminResponse = userService.isAdmin(userId);
+                Response isAdminResponse = _userService.isAdmin(userId);
                 if (isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
