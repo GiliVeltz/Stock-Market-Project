@@ -2,11 +2,14 @@ package Domain;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import Exceptions.*;
 
@@ -17,11 +20,13 @@ public class Shop {
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
     private Map<String, Role> _userToRole; //<userName, Role>
+    private static final Logger logger = Logger.getLogger(Shop.class.getName());
     // TODO:: List<Discount>
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName) throws ShopException {
         try{
+            logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id "+shopId+". The Founder of the shop is: "+shopFounderUserName);
             _shopId = shopId;
             _shopFounder = shopFounderUserName;
             _productMap = new HashMap<>(); // Initialize the product map
@@ -29,12 +34,21 @@ public class Shop {
             _userToRole = new HashMap<>();
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
+            logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id "+shopId+". The Founder of the shop is: "+shopFounderUserName);
         }catch(Exception e){
+            logger.log(Level.SEVERE,"Shop - constructor: Error while creating a new shop with id "+shopId+". The Founder of the shop is: "+shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
     }
 
+    /**
+     * Check if a username has a role in shop.
+     * @param username the username to check.
+     * @return True - if has role. False - if doesn't have.
+     * @throws ShopException
+     */
     public boolean checkIfHasRole(String username) throws ShopException{
+        logger.log(Level.FINE, "Shop - checkIfHasRole: Checking if user "+username+" has a role in shop with id: "+_shopId);
         if(username == null){
             return false;
         }
@@ -57,7 +71,9 @@ public class Shop {
      * @throws ShopException
      */
     public boolean checkPermission(String username, Permission p) throws ShopException{
+        logger.log(Level.FINE, "Shop - checkPermission: Checking if user "+username+" has permission: "+p);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - checkPermission: user "+username+" doesn't have a role in the shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
@@ -75,7 +91,9 @@ public class Shop {
      * @throws ShopException
      */
     public boolean checkAtLeastOnePermission(String username, Set<Permission> permissions) throws ShopException{
+        logger.log(Level.FINE, "Shop - checkAtLeastOnePermission: Checking if user "+username+" has at least one permission from the set: "+permissions);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - checkAtLeastOnePermission: user "+username+" doesn't have a role in the shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
@@ -93,7 +111,9 @@ public class Shop {
      * @throws ShopException
      */
     public boolean checkAllPermission(String username, Set<Permission> permissions) throws ShopException{
+        logger.log(Level.FINE, "Shop - checkAllPermission: Checking if user "+username+" has all permissions from the set: "+permissions);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - checkAllPermission: user "+username+" doesn't have a role in the shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         Role role = _userToRole.get(username);
@@ -118,16 +138,21 @@ public class Shop {
      * @throws RoleException 
      */
     public void AppointManager(String username, String newManagerUserName, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
+        logger.log(Level.INFO, "Shop - AppointManager: "+username+" trying to appoint "+newManagerUserName+" as a new manager with permissions: "+permissions);
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.APPOINT_MANAGER))){
+            logger.log(Level.SEVERE,"Shop - AppointManager: user "+username+" doesn't have permission to add new manager to shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to add new manager to shop with id "+_shopId);
         }
         if(checkIfHasRole(newManagerUserName)){
+            logger.log(Level.SEVERE,"Shop - AppointManager: user "+username+ " already in shop with id "+_shopId);
             throw new ShopException("User "+username+ " already in shop with id "+_shopId);
         }
         if(permissions.isEmpty()){
+            logger.log(Level.SEVERE,"Shop - AppointManager: Error while appointing a new manager with 0 permissions.");
             throw new PermissionException("Cannot create a manager with 0 permissions.");
         }
         if(permissions.contains(Permission.OWNER) || permissions.contains(Permission.FOUNDER)){
+            logger.log(Level.SEVERE,"Shop - AppointManager: Error while appointing a new manager with founder of owner permissions.");
             throw new PermissionException("Cannot appoint manager with owner or founder permissions.");
         }
         //All constraints checked
@@ -139,6 +164,7 @@ public class Shop {
         Role manager = new Role(newManagerUserName, _shopId, username, permissions);
        
         _userToRole.putIfAbsent(newManagerUserName, manager);
+        logger.log(Level.INFO, "Shop - AppointManager: "+username+" successfully appointed "+newManagerUserName+" as a new manager with permissions: "+permissions+"in the shop with id "+_shopId);
     }
 
     /**
@@ -151,15 +177,19 @@ public class Shop {
      * @throws RoleException 
      */
     public void AppointOwner(String username, String newOwnerUserName) throws ShopException, PermissionException, RoleException{
+        logger.log(Level.INFO, "Shop - AppointOwner: "+username+" trying to appoint "+newOwnerUserName+" as a new owner.");
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))){
+            logger.log(Level.SEVERE,"Shop - AppointOwner: user "+username+" doesn't have permission to add new owner to shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to add new owner to shop with id "+_shopId);
         }
         if(checkIfHasRole(newOwnerUserName)){
+            logger.log(Level.SEVERE,"Shop - AppointOwner: user "+username+ " already in shop with id "+_shopId);
             throw new ShopException("User "+username+ " already in shop with id "+_shopId);
         }
         //All constraints checked
         Role owner = new Role(newOwnerUserName, _shopId, username, EnumSet.of(Permission.OWNER));
         _userToRole.putIfAbsent(newOwnerUserName, owner);
+        logger.log(Level.INFO, "Shop - AppointOwner: "+username+" successfully appointed "+newOwnerUserName+" as a new owner in the shop with id "+_shopId);
     }
 
     /**
@@ -173,13 +203,17 @@ public class Shop {
      * @throws RoleException
      */
     public void addPermissions(String username, String userRole, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
+        logger.log(Level.INFO, "Shop - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+userRole+" in the shop with id "+_shopId);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - addPermissions: user "+username+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(userRole)){
+            logger.log(Level.SEVERE,"Shop - addPermissions: user "+userRole+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+userRole+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.ADD_PERMISSION))){
+            logger.log(Level.SEVERE,"Shop - addPermissions: user "+username+ " doesn't have permission to add permissions to other roles in shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to change permissions in the shop with id "+_shopId);
         }
         Role appointer = _userToRole.get(username);
@@ -189,10 +223,12 @@ public class Shop {
         }
         Role manager = _userToRole.get(userRole);
         if(manager.getAppointedBy() != username){
+            logger.log(Level.SEVERE,"Shop - addPermissions: User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
             throw new PermissionException("User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
         }
         //All constraints checked
         manager.addPermissions(username, permissions);
+        logger.log(Level.INFO, "Shop - addPermissions: "+username+" successfuly added permissions "+permissions+" to user "+userRole+" in the shop with id "+_shopId);
     }
 
     /**
@@ -206,17 +242,22 @@ public class Shop {
      * @throws RoleException
      */
     public void deletePermissions(String username, String userRole, Set<Permission> permissions) throws ShopException, PermissionException, RoleException{
+        logger.log(Level.INFO, "Shop - deletePermissions: "+username+" trying to delete permissions "+permissions+" from user "+userRole+" in the shop with id "+_shopId);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - deletePermissions: user "+username+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(userRole)){
+            logger.log(Level.SEVERE,"Shop - deletePermissions: user "+userRole+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+userRole+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.REMOVE_PERMISSION))){
+            logger.log(Level.SEVERE,"Shop - deletePermissions: user "+username+ " doesn't have permission to delete permissions to other roles in shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to change permissions in the shop with id "+_shopId);
         }
         Role manager = _userToRole.get(userRole);
         if(manager.getAppointedBy() != username){
+            logger.log(Level.SEVERE,"Shop - deletePermissions: User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
             throw new PermissionException("User "+username+ " didn't appoint manager "+userRole+". Can't change his permissions.");
         }
         //All constraints checked
@@ -224,6 +265,7 @@ public class Shop {
         if(manager.getPermissions().isEmpty()){
             //TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
         }
+        logger.log(Level.INFO, "Shop - deletePermissions: "+username+" successfuly deleted permissions "+permissions+" to user "+userRole+" in the shop with id "+_shopId);
     }
 
     /**
@@ -235,17 +277,22 @@ public class Shop {
      * @throws PermissionException
      */
     public void fireRole(String username, String managerUserName) throws ShopException, PermissionException{
+        logger.log(Level.INFO, "Shop - fireRole: "+username+" trying to fire user "+managerUserName+" from the shop with id "+_shopId);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - fireRole: user "+username+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkIfHasRole(managerUserName)){
+            logger.log(Level.SEVERE,"Shop - fireRole: user "+managerUserName+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+managerUserName+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))){
+            logger.log(Level.SEVERE,"Shop - fireRole: user "+username+ " doesn't have permission to fire users from shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to fire people in the shop with id "+_shopId);
         }
         Role manager = _userToRole.get(managerUserName);
         if(manager.getAppointedBy() != username){
+            logger.log(Level.SEVERE,"Shop - fireRole: User "+username+ " didn't appoint manager "+managerUserName+". Can't fire him.");
             throw new PermissionException("User "+username+ " didn't appoint role "+managerUserName+". Can't fire him.");
         }
         //All constraints checked
@@ -254,6 +301,7 @@ public class Shop {
         for(String user: appointed){
             _userToRole.remove(user);
         }
+        logger.log(Level.INFO, "Shop - fireRole: "+username+" successfuly fired "+managerUserName+" and all the users he appointed:"+ appointed.remove(username)+"from the shop with id "+_shopId);
     }
 
     /**
@@ -262,16 +310,20 @@ public class Shop {
      * @throws ShopException
      */
     public void resign(String username) throws ShopException{
+        logger.log(Level.INFO, "Shop - resign: "+username+" trying to resign from the shop with id "+_shopId);
         if(!checkIfHasRole(username)){
+            logger.log(Level.SEVERE,"Shop - resign: user "+username+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         if(username.equals(_shopFounder)){
+            logger.log(Level.SEVERE,"Shop - resign: user "+username+ " is the founder and cannot resign from his shop with id "+_shopId);
             throw new ShopException("Founder cannot resign from his shop.");
         }
         Set<String> appointed = getAllAppointed(username);
         for(String user: appointed){
             _userToRole.remove(user);
         }
+        logger.log(Level.INFO, "Shop - resign: "+username+" successfuly resigned with all the users he appointed:"+ appointed.remove(username)+"from the shop with id "+_shopId);
     }
 
 
@@ -282,6 +334,7 @@ public class Shop {
      * @throws ShopException
      */
     private Set<String> getAllAppointed(String username) throws ShopException {
+        logger.log(Level.FINE, "ShoppingCart - getAllAppointed: Getting all the appointed users by "+username);
         Set<String> appointed = new HashSet<>();
         collectAppointedUsers(username, appointed);
         return appointed;
@@ -295,6 +348,7 @@ public class Shop {
      */
     private void collectAppointedUsers(String username, Set<String> appointed) throws ShopException {
         if (!checkIfHasRole(username)) {
+            logger.log(Level.SEVERE,"Shop - collectAppointedUsers: user "+username+ " doesn't have a role in shop with id "+_shopId);
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!appointed.add(username)) {
@@ -308,7 +362,9 @@ public class Shop {
     }
 
     public String getRolesInfo(String username) throws PermissionException, ShopException{
+        logger.log(Level.INFO, "Shop - getRolesInfo: "+username+" trying get all roles info from the shop with id "+_shopId);
         if(!checkPermission(username, Permission.GET_ROLES_INFO)){
+            logger.log(Level.SEVERE,"Shop - getRolesInfo: user "+username+ " doesn't have permission to get roles info in shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to get roles info in shop with id "+_shopId);
         }
         StringBuilder sb = new StringBuilder();
@@ -316,6 +372,7 @@ public class Shop {
         for (Map.Entry<String,Role> entry : _userToRole.entrySet()){
             sb.append("Username: "+entry.getKey()+" | ROLES:"+entry.getValue().getPermissions().toString()+"\n");
         }
+        logger.log(Level.INFO, "Shop - getRolesInfo: "+username+" successfuly got all roles info from the shop with id "+_shopId);
         return sb.toString();
     }
 
@@ -329,15 +386,19 @@ public class Shop {
      * @throws PermissionException 
      */
     public void addProductToShop(String username, Product product) throws ProductAlreadyExistsException, ShopException, PermissionException {
+        logger.log(Level.INFO, "Shop - addProductToShop: "+username+" trying get add product "+product.getProductName()+" in the shop with id "+_shopId);
         if(!checkPermission(username, Permission.ADD_PRODUCT)){
+            logger.log(Level.SEVERE,"Shop - addProductToShop: user "+username+ " doesn't have permission to add products in shop with id "+_shopId);
             throw new PermissionException("User "+username+ " doesn't have permission to add product in shop with id "+_shopId);
         }
         
         if (_productMap.containsKey(product.getProductId())) {
+            logger.log(Level.SEVERE,"Shop - addProductToShop: Error while trying to add product with id: "+product.getProductId()+" to shop with id "+_shopId);
             throw new ProductAlreadyExistsException("Product with ID " +
             product.getProductId() + " already exists.");
         }
         _productMap.put(product.getProductId(), product); // Add product to the map
+        logger.log(Level.INFO, "Shop - addProductToShop: "+username+" successfully added product "+product.getProductName()+" in the shop with id "+_shopId);
     }
 
     public Integer getShopId() { return _shopId;}

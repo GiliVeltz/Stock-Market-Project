@@ -5,8 +5,7 @@ import java.util.logging.Logger;
 import org.apache.catalina.servlets.DefaultServlet.SortManager.Order;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ModuleDescriptor.Opens;
-import java.util.List;
+//import java.lang.module.ModuleDescriptor.Opens;
 import java.util.logging.Level;
 
 import Domain.Product;
@@ -17,10 +16,12 @@ import Domain.ShoppingBasket;
 @Service
 public class ShopService {
     private ShopController _shopController;
+    private TokenService _tokenService;
     private static final Logger logger = Logger.getLogger(ShopController.class.getName());
 
     public ShopService(){
         _shopController = ShopController.getShopController();
+        _tokenService = new TokenService();
     }
 
     /**
@@ -30,13 +31,49 @@ public class ShopService {
     * @param userName  The name of the user opening the shop (founder).
     * @return          A response indicating the success or failure of the operation.
     */
-    public Response OpenNewShop(Integer shopId, String userName)
+    public Response openNewShop(String token,Integer shopId, String userName)
     {
         Response response = new Response();
         try
         {
-            _shopController.OpenNewShop(shopId, userName);
-            logger.info(String.format("New shop created by: %s with Shop ID: %d" ,userName, shopId));
+            if (_tokenService.validateToken(token)) 
+            {
+                if(_tokenService.isLoggedIn(userName))
+                {
+                    _shopController.openNewShop(shopId, userName);
+                    logger.info(String.format("New shop created by: %s with Shop ID: %d" ,userName, shopId));
+                }
+                else { throw new Exception("Only register users can open shop."); }
+            }
+            else { throw new Exception("Invalid session token.");}
+
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to create shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return response;        
+    }
+
+
+
+    public Response closeShop(String token,Integer shopId, String userName)
+    {
+        Response response = new Response();
+        try
+        {
+            if (_tokenService.validateToken(token)) 
+            {
+                if(_tokenService.isLoggedIn(userName))
+                {
+                    _shopController.closeShop(shopId, userName);
+                    logger.info(String.format("Shop closed by: %s with Shop ID: %d" ,userName, shopId));
+                }
+                else { throw new Exception("User is not register."); }
+            }
+            else { throw new Exception("Invalid session token.");}
 
         }
         catch (Exception e)
@@ -56,14 +93,21 @@ public class ShopService {
     * @param product   The product to be added to the shop.
     * @return          A response indicating the success or failure of the operation.
     */
-    public Response addProductToShop(Integer shopId, String userName, Product product)
+    public Response addProductToShop(String token,Integer shopId, String userName, Product product)
     {
         Response response = new Response();
         try
         {
-            // TODO: verify if register and logged in and verify permissions in Shop
-            _shopController.addProductToShop(shopId, product, userName);
-            logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d" ,product.getProductName(), product.getProductId(), userName, shopId));
+            if (_tokenService.validateToken(token)) 
+            {
+                if(_tokenService.isLoggedIn(userName))
+                {
+                    _shopController.addProductToShop(shopId, product, userName);
+                    logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d" ,product.getProductName(), product.getProductId(), userName, shopId));
+                }
+                else { throw new Exception(String.format("User %s does not have permissions",userName)); }
+            }
+            else { throw new Exception("Invalid session token."); }
 
         }
         catch (Exception e)

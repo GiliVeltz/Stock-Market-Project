@@ -5,6 +5,8 @@ import java.util.Map;
 
 //TODO: add external service to the constructor and the class for payment and shipping methods
 
+// TODO: devide to userOrder and ShopOrder
+
 public class Order {
     private Integer _orderId;
     private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>

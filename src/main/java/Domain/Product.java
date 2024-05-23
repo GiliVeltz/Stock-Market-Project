@@ -1,6 +1,5 @@
 package Domain;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +10,7 @@ public class Product {
     private String _productName;
     private double _price;
     private Integer _quantity;
-    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+    private static final Logger logger = Logger.getLogger(Product.class.getName());
     //TODO: private List<discount> 
 
     // Constructor

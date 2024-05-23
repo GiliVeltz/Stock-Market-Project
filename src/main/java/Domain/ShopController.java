@@ -40,7 +40,7 @@ public class ShopController {
         return false;
     }
 
-    public void OpenNewShop(Integer shopId, String userName) throws Exception 
+    public void openNewShop(Integer shopId, String userName) throws Exception 
     {
         if(isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
@@ -48,10 +48,34 @@ public class ShopController {
             _shopsList.add(new Shop(shopId, userName));
     }
 
-    public void addProductToShop(Integer shopId, Product product, String userName )
+    //close shop only if the user is the founder of the shop
+    public void closeShop(Integer shopId, String userName) throws Exception 
     {
-        //TODO: need to implement  (check if shop exist)
+        try
+        {
+            if(!isShopIdExist(shopId))
+            throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
+            else
+            {
+                Shop shopToClose = getShopByShopId(shopId);
+                if(shopToClose.checkPermission(userName, Permission.FOUNDER))
+                    _shopsList.remove(shopToClose);
+            } 
+        }
+        catch(Exception e)
+        {
+            throw new Exception(e.getMessage());
+        }
+   
+    }
+    
 
+    public void addProductToShop(Integer shopId, Product product, String userName) throws Exception
+    {
+        if(!isShopIdExist(shopId))
+            throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
+        else
+            getShopByShopId(shopId).addProductToShop(userName,product);
     }
 
     //get purchase history for a shop by shop id

@@ -9,22 +9,27 @@ import java.util.logging.Level;
 
 import Domain.Order;
 import Domain.ShoppingBasket;
+
+import Domain.ShoppingCartFacade;
 import Domain.UserController;
-import Domain.ExternalServices.PaymentService.PaymentMethod;
-import Domain.ExternalServices.SupplyService.SupplyMethod;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 
 @Service
 public class UserService {
-    private UserController _userController;
-    private TokenService _tokenService;
+    private UserController __userController;
+    private TokenService __tokenService;
     private ShopService shopService;
-    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+    private ShoppingCartFacade _shoppingCartFacade;
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService() {
-        _userController = new UserController();
-        _tokenService = new TokenService();
+    public UserService(UserController userController, TokenService tokenService, ShoppingCartFacade shoppingCartFacade) {
+        _userController = userController;
+        _tokenService = tokenService;
+        _shoppingCartFacade = shoppingCartFacade;
     }
 
+    // TODO: add documentation
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
@@ -45,6 +50,7 @@ public class UserService {
         return response;
     }
 
+    // TODO: add documentation
     public Response logOut(String token) {
         Response response = new Response();
         try {
@@ -67,6 +73,7 @@ public class UserService {
         return response;
     }
 
+    // TODO: add documentation
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
@@ -88,20 +95,28 @@ public class UserService {
         return response;
     }
 
-    public Response purchaseCart(List<Integer> busketsToBuy, PaymentMethod paymentMethod, SupplyMethod shippingMethod) {
+    // TODO: add documentation
+    public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
-            String username = _tokenService.getUsernameFromToken(token);
-            if (_userController.isUserNameExists(username)) {
-                _userController.getUserByUsername(username).purchaseCart(busketsToBuy, paymentMethod, shippingMethod);
-                logger.info("User purchase cart successfully: " + username);
-                response.setReturnValue("Purchase cart Succeed");
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isGuest(token)){
+                    logger.log(Level.INFO, "Start purchasing cart for guest.");
+                    _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
+                    response.setReturnValue("Guest bought card succeed");
+                }
+                else {
+                    String userName = _tokenService.extractUsername(token);
+                    logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
+                    _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
+                    response.setReturnValue("User bought card succeed");
+                }
             } else {
-                response.setErrorMessage("A user with the username given in the token does not exist.");
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage("Token is invalid");
-            logger.log(Level.SEVERE, "Purchase cart failed: " + e.getMessage(), e);
+            response.setErrorMessage("Cart bought has been failed: " + e.getMessage());
+            logger.log(Level.SEVERE, "Cart bought has been failed: " + e.getMessage(), e);
         }
         return response;
     }

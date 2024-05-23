@@ -6,25 +6,29 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.logging.Level;
 
+import Domain.ShoppingCartFacade;
+import Domain.Shop;
+import Domain.ShoppingCart;
 import Domain.UserController;
 import Domain.ExternalServices.ExternalServiceHandler;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
 public class SystemService {
-    private UserService userService;
-    private ExternalServiceHandler externalServiceHandler;
-    private boolean isOpen = false;
-    private TokenService tokenService;
-    private UserController userController;
+    private UserService _userService;
+    private ExternalServiceHandler _externalServiceHandler;
+    private boolean _isOpen = false;
+    private TokenService _tokenService;
+    private UserController _userController;
+    private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    public SystemService(UserService userService,
-            ExternalServiceHandler externalServiceHandler) {
-        this.userService = userService;
-        this.externalServiceHandler = externalServiceHandler;
-        tokenService = new TokenService();
-        this.userController = new UserController();
+    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler) {
+        _userService = userService;
+        _externalServiceHandler = externalServiceHandler;
+        _tokenService = new TokenService();
+        _userController = new UserController();
+        _shoppingCartFacade = new ShoppingCartFacade();
     }
 
     /**
@@ -60,12 +64,12 @@ public class SystemService {
                     return response;
                 }
 
-                // Connect to external services
-                if (!externalServiceHandler.connectToServices()) {
-                    response.setErrorMessage("Failed to connect to external services");
-                    logger.log(Level.SEVERE, "Failed to connect to external services");
-                    return response;
-                }
+            // Connect to external services
+            if (!_externalServiceHandler.connectToServices()) {
+                response.setErrorMessage("Failed to connect to external services");
+                logger.log(Level.SEVERE, "Failed to connect to external services");
+                return response;
+            }
 
                 // Open the system
                 setSystemOpen(true);
@@ -84,21 +88,23 @@ public class SystemService {
 
     // Set system to open
     private void setSystemOpen(boolean isOpen) {
-        this.isOpen = isOpen;
+        this._isOpen = isOpen;
     }
 
     // Check if system is open
     public boolean isSystemOpen() {
-        return isOpen;
+        return _isOpen;
     }
 
-    public Response enterSystem() {
+    // TODO: change doc and name- its a request to open the system
+    public Response enterSystem(){
         Response response = new Response();
         try {
-            String token = tokenService.generateGuestToken();
-            String id = tokenService.extractGuestId(token);
+            String token = _tokenService.generateGuestToken();
+            String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
-            userController.addNewGuest(id);
+            _userController.addNewGuest(id);
+            _shoppingCartFacade.addCartForGuest(token);
             response.setReturnValue(token);
         } catch (Exception e) {
             response.setErrorMessage("Guest uuid failed: " + e.getMessage());
@@ -110,12 +116,13 @@ public class SystemService {
     public Response leaveSystem(String token) {
         Response response = new Response();
         try {
-            if (tokenService.validateToken(token)) {
-                String id = tokenService.extractGuestId(token);
-                if (id != null) {
+            if (_tokenService.validateToken(token)) {
+                String id = _tokenService.extractGuestId(token);
+                if(id != null){
                     logger.info("Guest with id: " + id + "left the system");
-                    userController.removeGuest(id);
-                    response.setReturnValue("Guest left system Successfully");
+                    _userController.removeGuest(id);
+                    _shoppingCartFacade.removeCartForGuest(token);
+                    response.setReturnValue("Guest left system Successfully");    
                 }
             } else {
                 throw new Exception("Invalid session token.");
