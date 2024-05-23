@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Level;
 
+import Domain.Order;
+import Domain.ShoppingBasket;
+
 import Domain.ShoppingCartFacade;
 import Domain.UserController;
 import Domain.ExternalServices.PaymentService.ProxyPayment;
@@ -16,10 +19,12 @@ import Domain.ExternalServices.SupplyService.ProxySupply;
 public class UserService {
     private UserController _userController;
     private TokenService _tokenService;
+    private ShopService _shopService;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserController userController, TokenService tokenService, ShoppingCartFacade shoppingCartFacade) {
+    public UserService(UserController userController, TokenService tokenService,
+            ShoppingCartFacade shoppingCartFacade) {
         _userController = userController;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
@@ -96,12 +101,11 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isGuest(token)){
+                if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
                     _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
                     response.setReturnValue("Guest bought card succeed");
-                }
-                else {
+                } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
                     _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
@@ -117,8 +121,7 @@ public class UserService {
         return response;
     }
 
-    // function that check if the user is an admin using try catch and logging without checking for token
-    public Response isAdmin(String userId){
+    public Response isAdmin(String userId) {
         Response response = new Response();
         try {
             if (_userController.isAdmin(userId)) {
@@ -135,29 +138,73 @@ public class UserService {
         return response;
     }
 
-    public UserController getUserController() {
-        return _userController;
+    /**
+     * Retrieves the purchase history of a specific user as an admin.
+     *
+     * @param token  The session token of the admin user.
+     * @param userId The ID of the user whose purchase history is to be retrieved.
+     * @return A Response object containing the purchase history if successful, or
+     *         an error message if not. () List<Order>
+     * @throws Exception If the session token is invalid.
+     */
+    public Response getUserPurchaseHistoryAsAdmin(String token, String userId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                    return response;
+                }
+                String adminId = _tokenService.extractUsername(token);
+                Response isAdminResponse = isAdmin(adminId);
+                if (isAdminResponse.getErrorMessage() != null) {
+                    response.setErrorMessage("User is not an admin");
+                    logger.log(Level.SEVERE, "User is not an admin");
+                    return response;
+                }
+                // get purchase history of a user
+                response.setReturnValue(_userController.getPurchaseHistory(userId));
+                if (response.getErrorMessage() != null) {
+                    response.setErrorMessage("Failed to get purchase history from user: " + userId);
+                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
+
+                }
+
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
+        }
+        return response;
     }
 
-    // check if user is logged in using try catch and logging
-    // TODO: remove that function
-    // public Response isLoggedIn(String userId){
-    // Response response = new Response();
-    // try {
-    // if (userController.isLoggedIn(userId)){
-    // logger.info("User is logged in: " + userId);
-    // response.setReturnValue("User is logged in");
-    // } else {
-    // logger.info("User is not logged in: " + userId);
-    // response.setReturnValue("User is not logged in");
-    // }
-    // } catch (Exception e) {
-    // response.setErrorMessage("Failed to check if user is logged in: " +
-    // e.getMessage());
-    // logger.log(Level.SEVERE, "Failed to check if user is logged in: " +
-    // e.getMessage(), e);
-    // }
-    // return response;
-    // }
+    public Response getPersonalPurchaseHistory(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                    return response;
+                }
+                String username = _tokenService.extractUsername(token);
+                logger.info("Purchase history request for user: " + username);
+                List<Order> purchaseHistory = _userController.getPurchaseHistory(username);
+                logger.info("Purchase history retrieved for user: " + username);
+                response.setReturnValue(purchaseHistory);
+
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to retrieve purchase history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to retrieve purchase history: " + e.getMessage(), e);
+        }
+        // TODO: check with Spring how to return this response as a data object
+        return response;
+    }
 
 }

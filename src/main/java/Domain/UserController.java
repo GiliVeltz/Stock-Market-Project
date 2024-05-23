@@ -81,4 +81,13 @@ public class UserController {
     public List<User> get_registeredUsers() {
         return _registeredUsers;
     }
+
+    //function to return the purchase history for the user
+    public List<Order> getPurchaseHistory(String username) {
+        User user = getUserByUsername(username);
+        if (user != null) {
+            return user.getPurchaseHistory();
+        }
+        return null;
+    }
 }
