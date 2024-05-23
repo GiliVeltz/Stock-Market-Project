@@ -1,11 +1,12 @@
 package Domain.Discounts;
 
+import java.sql.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
 
-public class PrecentageDiscount implements BaseDiscount {
+public class PrecentageDiscount extends BaseDiscount {
     private double _precentage;
     private Rule<ShoppingBasket> _rule;
     private int _productId;
@@ -13,7 +14,8 @@ public class PrecentageDiscount implements BaseDiscount {
     /**
      * Represents a percentage discount for a specific product.
      */
-    public PrecentageDiscount(double precentage, int productId) {
+    public PrecentageDiscount(Date expirationDate, double precentage, int productId) {
+        super(expirationDate);
         if (precentage < 0 || precentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _precentage = precentage;
@@ -32,8 +34,7 @@ public class PrecentageDiscount implements BaseDiscount {
      * @param basket The shopping basket to apply the discount to.
      */
     @Override
-
-    public void applyDiscount(ShoppingBasket basket) {
+    public void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 

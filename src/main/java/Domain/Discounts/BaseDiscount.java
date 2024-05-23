@@ -1,4 +1,9 @@
 package Domain.Discounts;
 
-public interface BaseDiscount extends Discount {
+import java.util.Date;
+
+public abstract class BaseDiscount extends Discount {
+    public BaseDiscount(Date expirationDate) {
+        super(expirationDate);
+    }
 }

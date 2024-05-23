@@ -46,12 +46,13 @@ public class ShoppingBasket {
     /*
      * Go through the list of products in the basket and purchase them.
      * If an exception is thrown, cancel the purchase of all the products that were
-     * bought.
-     * This function only updates the item's stock.
+     * bought. This function only updates the item's stock.
      */
     public boolean purchaseBasket() {
         logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shopId);
         List<Product> boughtProductList = new ArrayList<>();
+
+        // TODO: consider the discounts!
 
         for (Product product : _productList) {
             try {
@@ -94,11 +95,11 @@ public class ShoppingBasket {
     }
 
     /**
-     * Sets the product to price to amount mapping in the shopping basket.
+     * Resets the product to price to amount mapping in the shopping basket.
      * This method iterates through the product list and updates the mapping
      * based on the product ID, price, and quantity.
      */
-    public void setProductToPriceToAmount() {
+    public void resetProductToPriceToAmount() {
         productToPriceToAmount = new HashMap<>();
 
         for (Product product : _productList) {

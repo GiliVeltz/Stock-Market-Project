@@ -1,11 +1,12 @@
 package Domain.Discounts;
 
+import java.sql.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
 
-public class FixedDiscount implements BaseDiscount {
+public class FixedDiscount extends BaseDiscount {
     private double _discountTotal;
     private Rule<ShoppingBasket> _rule;
     private int _productId;
@@ -13,7 +14,8 @@ public class FixedDiscount implements BaseDiscount {
     /**
      * Represents a fixed discount for a specific product.
      */
-    public FixedDiscount(double discountTotal, int productId) {
+    public FixedDiscount(Date expirationDate, double discountTotal, int productId) {
+        super(expirationDate);
         _discountTotal = discountTotal;
         _productId = productId;
 
@@ -31,7 +33,7 @@ public class FixedDiscount implements BaseDiscount {
      */
     @Override
 
-    public void applyDiscount(ShoppingBasket basket) {
+    public void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 
