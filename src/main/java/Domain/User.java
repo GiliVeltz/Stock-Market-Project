@@ -21,18 +21,15 @@ public class User {
 
     public boolean isCurrUser(String username, String encoded_password) {
         if (_username == username & _encoded_password == encoded_password) {
-        if (_username == username & _encoded_password == encoded_password) {
             return true;
         }
         return false;
     }
 
     public String getUserName() {
-    public String getUserName() {
         return _username;
     }
 
-    public String getEncodedPassword() {
     public String getEncodedPassword() {
         return _encoded_password;
     }
@@ -44,24 +41,9 @@ public class User {
     public void setEmail(String email) {
         _email = email;
     }
-
-    /**
-     * Checks if the user is an admin.
-     *
-     * @return A boolean indicating whether the user is an admin.
-     */
-    public boolean isAdmin() {
+    
+    public boolean isAdmin(){
         return _isAdmin;
-    }
-
-    /**
-     * Retrieves the user's purchase history.
-     *
-     * @return A list of ShoppingBasket objects representing the user's purchase
-     *         history.
-     */
-    public List<Order> getPurchaseHistory() {
-        return _purchaseHistory;
     }
 
     /**
