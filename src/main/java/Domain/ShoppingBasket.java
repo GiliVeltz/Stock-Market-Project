@@ -1,6 +1,10 @@
 package Domain;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +16,8 @@ public class ShoppingBasket {
     private List<Product> _productList;
     private double _basketTotalAmount;
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
+
+    public Map<Integer, SortedMap<Double, Integer>> productToPriceToAmount;
 
     // Constructor
     public ShoppingBasket(Integer shopId) {
@@ -77,13 +83,35 @@ public class ShoppingBasket {
         }
     }
 
-    public boolean containsProduct(Integer productId) {
+    public int getProductCount(Integer productId) {
+        int count = 0;
+
+        for (Product product : _productList)
+            if (product.getProductId() == productId)
+                count++;
+
+        return count;
+    }
+
+    /**
+     * Sets the product to price to amount mapping in the shopping basket.
+     * This method iterates through the product list and updates the mapping
+     * based on the product ID, price, and quantity.
+     */
+    public void setProductToPriceToAmount() {
+        productToPriceToAmount = new HashMap<>();
+
         for (Product product : _productList) {
-            if (product.getProductId() == productId) {
-                return true;
-            }
+            int pid = product.getProductId();
+            double price = product.getPrice();
+            if (!productToPriceToAmount.containsKey(pid))
+                productToPriceToAmount.put(pid, new TreeMap<>((a, b) -> a > b ? 1 : -1));
+            if (!productToPriceToAmount.get(pid).containsKey(price))
+                productToPriceToAmount.get(pid).put(price, 0);
+
+            int oldAmount = productToPriceToAmount.get(pid).get(price);
+            productToPriceToAmount.get(pid).put(price, oldAmount + 1);
         }
-        return false;
     }
 
     @Override
