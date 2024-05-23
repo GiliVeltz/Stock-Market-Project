@@ -1,6 +1,7 @@
 package DmainTests;
 
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -11,12 +12,14 @@ import java.util.List;
 import Domain.*;
 
 public class UserFacadeTest {
+    
     private UserController _userFacadeUnderTest;
     private List<User> _registeredUsers;
     private List<String> _guestIds;
+    @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
     
-    private final User _user1 = new User("john_doe", "password123", "john.doe@example.com");
+    private User _user1 = new User("john_doe", "password123", "john.doe@example.com");
 
     /**
      * 
@@ -38,7 +41,8 @@ public class UserFacadeTest {
     @Test
     public void testRegister_whenNewUser_thenUserNameExistsCheckSuccess() {
         // Arrange - Create a new UserFacade object
-        UserController userFacade = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
 
         // Act - try to register a new user
         try {
@@ -49,14 +53,15 @@ public class UserFacadeTest {
         }
 
         // Assert - Verify that the user was registered successfully
-        assertEquals(true, userFacade.isUserNameExists("john_doe"));
+        assertEquals(true, _userFacadeUnderTest.isUserNameExists("john_doe"));
     }
 
     @Test
     public void testRegister_whenExistUser_thenUserNameExistsCheckFail() {
         // Arrange - Create a new User object
         _registeredUsers.add(_user1);
-        UserController userFacade = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserController(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
 
         // Act - Set a new username
         try {
@@ -66,8 +71,8 @@ public class UserFacadeTest {
         }
 
         // Assert - Verify that the username has been updated
-        assertThrowsExactly(Exception.class, () -> userFacade.register("john_doe", "password1234", "john.doe@example.co.il"));
-        assertEquals(true, userFacade.isUserNameExists("john_doe"));
-        assertEquals(1, userFacade.get_registeredUsers().size());
+        assertThrowsExactly(Exception.class, () -> _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il"));
+        assertEquals(true, _userFacadeUnderTest.isUserNameExists("john_doe"));
+        assertEquals(1, _userFacadeUnderTest.get_registeredUsers().size());
     }
 }
