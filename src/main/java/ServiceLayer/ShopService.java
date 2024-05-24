@@ -14,14 +14,15 @@ import Domain.ShopOrder;
 
 @Service
 public class ShopService {
-    private ShopFacade _shopController;
+    private ShopFacade _shopFacade;
     private TokenService _tokenService;
     private UserService _userService;
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
-    public ShopService(UserService userService){
-        _shopController = ShopFacade.getShopFacade();
-        _tokenService = new TokenService();
+    public ShopService(ShopFacade shopFacade, TokenService tokenService, UserService userService){
+       // _shopFacade = ShopFacade.getShopFacade();
+        _shopFacade = shopFacade;
+        _tokenService = tokenService;
         _userService = userService;
     }
 
@@ -37,8 +38,8 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isLoggedIn(userName)) {
-                    _shopController.openNewShop(shopId, userName, bankDetails, shopAddress);
+                if (_tokenService.isUserAndLoggedIn(userName)) {
+                    _shopFacade.openNewShop(shopId, userName, bankDetails, shopAddress);
                     logger.info(String.format("New shop created by: %s with Shop ID: %d", userName, shopId));
                 } else {
                     throw new Exception("Only register users can open shop.");
@@ -67,8 +68,8 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isLoggedIn(userName)) {
-                    _shopController.closeShop(shopId, userName);
+                if (_tokenService.isUserAndLoggedIn(userName)) {
+                    _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
                     throw new Exception("User is not register.");
@@ -98,8 +99,8 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isLoggedIn(userName)) {
-                    _shopController.addProductToShop(shopId, product, userName);
+                if (_tokenService.isUserAndLoggedIn(userName)) {
+                    _shopFacade.addProductToShop(shopId, product, userName);
                     logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
                             product.getProductName(), product.getProductId(), userName, shopId));
                 } else {
@@ -119,11 +120,11 @@ public class ShopService {
         return response;
     }
 
-    // function to get a purchase from ShopController by shop ID
+    // function to get a purchase from shopFacade by shop ID
     public Response getPurchaseHistory(Integer shopId) {
         Response response = new Response();
         try {
-            List<ShopOrder> purchasHistory = _shopController.getPurchaseHistory(shopId);
+            List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
             response.setReturnValue(purchasHistory);
             logger.info(String.format("Purchase history retrieved for Shop ID: %d", shopId));
 
@@ -140,7 +141,7 @@ public class ShopService {
     public Response isShopIdExist(Integer shopId) {
         Response response = new Response();
         try {
-            Boolean isExist = _shopController.isShopIdExist(shopId);
+            Boolean isExist = _shopFacade.isShopIdExist(shopId);
             response.setReturnValue(isExist);
             logger.info(String.format("Shop ID: %d exists: %b", shopId, isExist));
 
@@ -156,7 +157,7 @@ public class ShopService {
     public Response isShopOwner(Integer shopId, String userId) {
         Response response = new Response();
         try {
-            Boolean isOwner = _shopController.isShopOwner(shopId, userId);
+            Boolean isOwner = _shopFacade.isShopOwner(shopId, userId);
             response.setReturnValue(isOwner);
             logger.info(String.format("User %s is owner of Shop ID: %d: %b", userId, shopId, isOwner));
 
@@ -185,7 +186,7 @@ public class ShopService {
     
             try {
                 if (_tokenService.validateToken(token)) {
-                    if (!_tokenService.isLoggedIn(token)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)) {
                         response.setErrorMessage("User is not logged in");
                         logger.log(Level.SEVERE, "User is not logged in");
                         return response;
@@ -199,8 +200,8 @@ public class ShopService {
                      }
 
                     String userId = _tokenService.extractUsername(token);
-                    Response isAdminResponse = _userService.isAdmin(userId);
-                    if (_shopController.isShopOwner(shopId, userId) ||isAdminResponse.getErrorMessage() != null){ 
+                    Response isAdminResponse = _userService.isSystemAdmin(userId);
+                    if (_shopFacade.isShopOwner(shopId, userId) ||isAdminResponse.getErrorMessage() != null){ 
                         response.setErrorMessage("User has no permission to access the shop purchase history");
                         logger.log(Level.SEVERE, "User has no permission to access the shop purchase history");
                         return response;

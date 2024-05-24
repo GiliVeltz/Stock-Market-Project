@@ -156,7 +156,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open write a review about the product he purchased.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserWriteReviewOnPurchasedProduct() {
         assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product1") ); // success - the user secceeded to write a review
@@ -164,7 +164,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can rate a product he purchased.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingPurchasedProduct() {
         assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "product1", "score1") ); // success - the user secceeded to rate the product
@@ -172,7 +172,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can rate a shop he purchased from.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingShopHePurchasedFrom() {
         assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "shop1", "score1") ); // success - the user secceeded to rate the shop
@@ -180,7 +180,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserMessagingShopHePurchasedFrom() {
         assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // success - the user secceeded to send the message
@@ -189,7 +189,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserReportSystemManagerOnBreakingIntegrityRules() {
         assertTrue(_bridge.TestUserReportSystemManagerOnBreakingIntegrityRules("bob","bobspassword", "message1") ); // success - the user secceeded to send the message
@@ -197,7 +197,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can see his own history shopping orders.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserViewHistoryPurchaseList() {
         assertTrue(_bridge.TestUserViewHistoryPurchaseList("bob","bobspassword") ); // success - the user secceeded to see his history purchased list
@@ -206,15 +206,16 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can see his own private details.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserViewPrivateDetails() {
         assertTrue(_bridge.TestUserViewPrivateDetails("bob","bobspassword") ); // success - the user secceeded to see his private details
         assertFalse(_bridge.TestUserViewPrivateDetails("dad","dadspassword") ); // fail - the user did not exsist in the system
     }
     
+    
     // Test that a user can edit his own private details.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserEditPrivateDetails() {
         assertTrue(_bridge.TestUserEditEmail("bob","bobspassword", "newEmail") ); // success - the user secceeded to edit his email

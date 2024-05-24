@@ -32,7 +32,7 @@ public interface BridgeInterface {
     boolean TestUserEnterTheSystem(String SystemStatus);
     
     @Test
-    boolean testLoginToTheSystem(String username, String password, String email);
+    boolean testLoginToTheSystem(String username, String password);
 
     // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -181,9 +181,32 @@ public interface BridgeInterface {
     @Test
     boolean testShopOwnerEditProductInShop(String username, String shopId, String productName, String productNameNew, String productAmount, String productAmountNew);
     
-    // TODO: NOT FOR VERSION 1
-    // @Test
-    // boolean testShopOswnerEditProductInShop(String username, String shopId, String policy);
+    @Test
+    boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy);
+    
+    @Test
+    boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername);
+    
+    @Test
+    boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername);
+    
+    @Test
+    boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername, String permission);
+    
+    @Test
+    boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission);
+    
+    @Test
+    boolean testShopOwnerCloseShop(String username, String shopId);
+    
+    @Test
+    boolean testShopOwnerGetShopInfo(String username, String shopId);
+    
+    @Test
+    boolean testShopOwnerGetShopManagersPermissions(String username, String shopId);
+    
+    @Test
+    boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId);
     
     // STORE MANAGER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 

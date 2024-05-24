@@ -1,19 +1,28 @@
 package AcceptanceTests.Implementor;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
 import ServiceLayer.*;
+import java.util.List;
 
 // A real conection to the system.
 // The code is tested on the real information on te system.
@@ -21,14 +30,30 @@ import ServiceLayer.*;
 @SpringBootTest
 public class RealBridge implements BridgeInterface, ParameterResolver{
 
-
-    private UserService _userServiceUnderTest;
+    // mocks services
     @Mock
-    private UserFacade _userControllerMock;
+    private ShopService _shopServiceMock;
+    @Mock
+    private SystemService _systemServiceMock;
     @Mock
     private TokenService _tokenServiceMock;
     @Mock
+    private UserService _userServiceMock;
+
+    // mocks facades
+    @Mock
+    private ShopFacade _shopFacadeMock;
+    @Mock
     private ShoppingCartFacade _shoppingCartFacadeMock;
+    @Mock
+    private UserFacade _userFacadeMock;
+
+    // more mocks
+    @Mock
+    private PasswordEncoderUtil _passwordEncoderMock;
+
+    // private fields
+    private String token = "token";
     
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -40,26 +65,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         return new RealBridge();
     }
 
-    @BeforeEach
-    public void setUp() {
-        _userControllerMock = mock(UserFacade.class);
-        _tokenServiceMock = mock(TokenService.class);
-        _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-    }
+     @BeforeEach
+     void init() {
+         MockitoAnnotations.openMocks(this);
+         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+     }
 
-    @Test
-    public boolean testRegisterToTheSystem(String username, String password, String email) {
-        // Arrange
-        String token = "";
-        _tokenServiceMock = mock(TokenService.class); // Initialize the mock object
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        _userServiceUnderTest = new UserService(_userControllerMock, _tokenServiceMock, _shoppingCartFacadeMock);
-
-        // Act
-        Response res = _userServiceUnderTest.register(token, username, password, email);
-
-        // Assert
-        return res.getErrorMessage() == null;
+    @AfterEach
+    public void tearDown() {
     }
 
     @Override
@@ -88,8 +101,24 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestRegisterToTheSystem'");
+
+        //Arrange
+        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
+        when(_userFacadeMock.isUserNameExists("bobi")).thenReturn(true);
+
+        //Act
+        try
+        {
+             _userServiceMock.register(token, username, password, email);
+        }
+
+        //Assert
+        catch (Exception e) {
+            System.out.println("TestGuestRegisterToTheSystem Error message: " + e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -99,9 +128,35 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
-    public boolean testLoginToTheSystem(String username, String password, String email) {
+    public boolean testLoginToTheSystem(String username, String password) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");
+        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
+
+        // // Arrange
+        // String token = "";
+
+        // _tokenServiceMock = mock(TokenService.class);
+        // _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
+        // _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+
+        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        // when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
+        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+
+        // when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
+        // User bob = new User("bob", "bobspassword", "email");
+        // List<User> registeredUsers = new ArrayList<>();
+        // registeredUsers.add(bob);
+        // _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+
+        //  _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
+
+        // // Act
+        // Response res = _userServiceUnderTest.logIn(token, username, password);
+
+        // // Assert
+        // System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
+        // return res.getErrorMessage() == null;
     }
 
     @Override
@@ -419,5 +474,61 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     public boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartGuest'");
+    }
+
+    @Override
+    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerChangeShopPolicies'");
+    }
+
+    @Override
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopOwner'");
+    }
+
+    @Override
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager'");
+    }
+
+    @Override
+    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddShopManagerPermission'");
+    }
+
+    @Override
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveShopManagerPermission'");
+    }
+
+    @Override
+    public boolean testShopOwnerCloseShop(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerCloseShop'");
+    }
+
+    @Override
+    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopInfo'");
+    }
+
+    @Override
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopManagersPermissions'");
+    }
+
+    @Override
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop'");
     }
 }
