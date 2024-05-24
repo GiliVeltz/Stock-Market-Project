@@ -13,7 +13,7 @@ import Domain.Exceptions.ProductOutOfStockExepction;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
-public class ShoppingBasket implements Cloneable{
+public class ShoppingBasket implements Cloneable {
     private Integer _shopId;
     private List<Product> _productList;
     private double _basketTotalAmount;
@@ -31,19 +31,36 @@ public class ShoppingBasket implements Cloneable{
     public void addProductToShoppingBasket(Product product) {
         _productList.add(product);
     }
- 
-    // TODO: OR: if not used- remove this method
+
+
     // Calculate and return the total price of all products in the basket
     private double calculateShoppingBasketPrice() {
         _basketTotalAmount = 0.0;
+        //case where there are no discounts on the basket
+        if(productToPriceToAmount.size() == 0) {
         for (Product product : _productList) {
             _basketTotalAmount += product.getPrice();
+        }
+    }
+        else{
+            //iterate over the productt to price to amount map and calculate the total price
+            for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : productToPriceToAmount.entrySet()) {
+                for (Map.Entry<Double, Integer> priceToAmount : entry.getValue().entrySet()) {
+                    _basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
+                }
+            }
         }
         return _basketTotalAmount;
     }
 
     public double getShoppingBasketPrice() {
+        if (_basketTotalAmount == 0.0)
+            return calculateShoppingBasketPrice();
         return _basketTotalAmount;
+    }
+
+    public List<Product> getProductList() {
+        return _productList;
     }
 
     /*
@@ -131,7 +148,6 @@ public class ShoppingBasket implements Cloneable{
             throw new AssertionError(); // Can't happen as we implement Cloneable
         }
     }
-
 
     @Override
     public String toString() {

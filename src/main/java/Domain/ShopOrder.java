@@ -1,8 +1,5 @@
 package Domain;
 
-import java.util.HashMap;
-import java.util.Map;
-
 //class that represents an order for the shop
 
 public class ShopOrder {
@@ -14,7 +11,7 @@ public class ShopOrder {
     public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) {
         this._orderId = orderId;
         this._shoppingBasket = shoppingBasket.clone();
-        this._totalOrderAmount = 0.0;
+        this._totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
     }
 
     public Integer getOrderId() {
@@ -22,32 +19,32 @@ public class ShopOrder {
     }
 
     
-    public double getOrderTotalAmount() { return _totalOrderAmount; }
+    public double getOrderTotalAmount() {
+         return _totalOrderAmount; 
+        }
 
-  
-    // public void calcTotalAmount() { 
-    //     _totalOrderAmount = 0.0;
-    //     for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-    //         _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
-    //     }
-    // }
+    public ShoppingBasket getShoppingBasket() {
+        return _shoppingBasket;
+    }
 
-    // // Helper method to print all products in the order
-    // private String printAllProduct() 
-    // {
-    //     StringBuilder output = new StringBuilder();
-    //     for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-    //         output.append(entry.getValue().toString()).append("\n");
-    //     }
-    //     return output.toString(); // Convert StringBuilder to String
-    // }
+    //Helper method to print all products in the order
+     private String printAllProduct() 
+        {
+            StringBuilder sb = new StringBuilder();
+            for (Product product : _shoppingBasket.getProductList()) {
+                sb.append(product.toString());
+                sb.append("\n");
+            }
+            return sb.toString();
+        }
+   
 
     @Override
     public String toString() {
         return "Order{" +
                 "orderId = " + _orderId +
                 ", totalAmount = " + _totalOrderAmount +
-                // ", products = \n" + printAllProduct() +
+                ", products = \n" + printAllProduct() +
                 '}';
     }
 }
