@@ -21,9 +21,6 @@ public class UserFacadeTest {
     
     private User _user1 = new User("john_doe", "password123", "john.doe@example.com");
 
-    /**
-     * 
-     */
     @BeforeEach
     public void setUp() {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);

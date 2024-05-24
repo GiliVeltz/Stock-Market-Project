@@ -2,6 +2,8 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.stereotype.Service;
+
 import java.util.logging.Level;
 
 import Domain.ShoppingCartFacade;
@@ -10,23 +12,23 @@ import Domain.ExternalServices.ExternalServiceHandler;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
+@Service
 public class SystemService {
     private UserService _userService;
     private ExternalServiceHandler _externalServiceHandler;
     private boolean _isOpen = false;
     private TokenService _tokenService;
-    private UserFacade _userController;
+    private UserFacade _userFacade;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler) {
+    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler, TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _userService = userService;
         _externalServiceHandler = externalServiceHandler;
-        _tokenService = new TokenService();
-        _userController = userService.getUserFacade();
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _tokenService = tokenService;
+        _userFacade = userFacade;
+        _shoppingCartFacade = shoppingCartFacade;
         //TODO: create it as a singleton
-        _externalServiceHandler = externalServiceHandler;
     }
 
     /**
@@ -42,13 +44,13 @@ public class SystemService {
         try {
             if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
-                if (!_tokenService.isLoggedIn(token)) {
+                if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
                 // Check if the user is an admin
-                Response isAdminResponse = _userService.isAdmin(userId);
+                Response isAdminResponse = _userService.isSystemAdmin(userId);
                 if (isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
@@ -101,7 +103,7 @@ public class SystemService {
             String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
-            _userController.addNewGuest(id);
+            _userFacade.addNewGuest(id);
             _shoppingCartFacade.addCartForGuest(token);
             response.setReturnValue(token);
         } catch (Exception e) {
@@ -119,7 +121,7 @@ public class SystemService {
                 String id = _tokenService.extractGuestId(token);
                 if(id != null){
                     logger.info("Guest with id: " + id + "left the system");
-                    _userController.removeGuest(id);
+                    _userFacade.removeGuest(id);
                     _shoppingCartFacade.removeCartForGuest(token);
                     response.setReturnValue("Guest left system Successfully");    
                 }
