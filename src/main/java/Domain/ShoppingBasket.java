@@ -33,7 +33,7 @@ public class ShoppingBasket {
     }
  
     // Calculate and return the total price of all products in the basket
-    private double calculateShoppingBasketPrice() {
+    public double calculateShoppingBasketPrice() {
         resetProductToPriceToAmount();
         _shop.applyDiscounts(this);
         _basketTotalAmount = 0.0;
@@ -118,6 +118,14 @@ public class ShoppingBasket {
             int oldAmount = productToPriceToAmount.get(productId).get(price);
             productToPriceToAmount.get(productId).put(price, oldAmount + 1);
         }
+    }
+
+    public String getShopBankDetails() {
+        return _shop.getBankDetails();
+    }
+
+    public String getShopAddress() {
+        return _shop.getShopAddress();
     }
 
     @Override

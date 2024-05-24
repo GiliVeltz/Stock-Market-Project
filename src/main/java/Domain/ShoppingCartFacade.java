@@ -30,9 +30,8 @@ public class ShoppingCartFacade {
      * This methos called only when a guest user register to the system.
      * The cart of the guest user will be added to the user's cart and then will be deleted in the guests carts.
      */
-    public void addCartForUser(String guestToken, String username, ShoppingCart cart) {
-        _usersCarts.put(username, cart);
-        _guestsCarts.remove(guestToken);
+    public void addCartForUser(String guestToken, String username) {
+        _usersCarts.put(username, _guestsCarts.remove(guestToken));
     }
 
     /*

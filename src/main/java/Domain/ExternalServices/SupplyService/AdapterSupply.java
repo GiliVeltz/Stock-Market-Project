@@ -1,6 +1,7 @@
 package Domain.ExternalServices.SupplyService;
 import java.util.logging.Logger;
 
+import Domain.Exceptions.ShippingFailedException;
 import Domain.ExternalServices.ExternalService;
 
 public class AdapterSupply implements ExternalService{
@@ -20,9 +21,15 @@ public class AdapterSupply implements ExternalService{
         return true;
     }
 
-    public void deliver(String address) {
+    public void checkIfDeliverOk(String address, String shopAddress) {
+        logger.info("Checking if the delivery is valid");
+        if (!_supplyService.checkIfDeliverOk(address, shopAddress))
+            throw new ShippingFailedException("Shipping failed");
+    }
+
+    public void deliver(String clientAddress, String shopAddress) {
         logger.info("Delivering the cart");
-        _supplyService.deliver(address);
+        _supplyService.deliver(clientAddress, shopAddress);
     }
     
 }
