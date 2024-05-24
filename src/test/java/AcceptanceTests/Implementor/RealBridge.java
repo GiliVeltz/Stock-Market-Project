@@ -115,6 +115,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
+    @Test
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
         // Arrange
         String token = "";
@@ -139,6 +140,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
+    @Test
     public boolean testLoginToTheSystem(String username, String password) {
         // Arrange
         String token = "";
