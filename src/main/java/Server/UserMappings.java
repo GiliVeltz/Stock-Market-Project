@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ServiceLayer.*;
 
+// Purpose: This class is mapping the user requests to the service layer functions.
 @RestController
 @RequestMapping(path = "/api/user")
-// Purpose: This class is mapping the user requests to the service layer functions.
 public class UserMappings {
     private final UserService _userService;
 

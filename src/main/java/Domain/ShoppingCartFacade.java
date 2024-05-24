@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <GuestToken, ShoppingCart>
     Map<String, ShoppingCart> _usersCarts; // <Username, ShoppingCart>

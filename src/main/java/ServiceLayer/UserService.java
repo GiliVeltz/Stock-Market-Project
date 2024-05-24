@@ -16,7 +16,6 @@ import Domain.UserFacade;
 public class UserService {
     private UserFacade _userFacade;
     private TokenService _tokenService;
-    //private ShopService _shopService;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
@@ -27,7 +26,7 @@ public class UserService {
         _shoppingCartFacade = shoppingCartFacade;
     }
 
-    // TODO: AMIT: add documentation
+    // this function is responsible for logging in a user to the system by checking the credentials and generating a token for the user
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
@@ -51,7 +50,7 @@ public class UserService {
         return response;
     }
 
-    // TODO: AMIT: add documentation
+    // this function is responsible for logging out a user from the system by returning a new token for a guest in the system
     public Response logOut(String token) {
         Response response = new Response();
         try {
@@ -74,7 +73,7 @@ public class UserService {
         return response;
     }
 
-    // TODO: AMIT: add documentation
+    // this function is responsible for registering a new user to the system
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
@@ -99,7 +98,8 @@ public class UserService {
         return response;
     }
 
-    // TODO: TAL: add documentation
+    // this function is responsible for purchasing the cart of a user or a guest
+    // by checking the token and the user type and then calling the purchaseCart function
     public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
@@ -124,7 +124,8 @@ public class UserService {
         return response;
     }
 
-    public Response isAdmin(String userId) {
+    // this function is responsible for checking if a user is a system admin
+    public Response isSystemAdmin(String userId) {
         Response response = new Response();
         try {
             if (_userFacade.isAdmin(userId)) {
@@ -154,13 +155,13 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (!_tokenService.isLoggedIn(token)) {
+                if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
                 String adminId = _tokenService.extractUsername(token);
-                Response isAdminResponse = isAdmin(adminId);
+                Response isAdminResponse = isSystemAdmin(adminId);
                 if (isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
@@ -189,7 +190,7 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (!_tokenService.isLoggedIn(token)) {
+                if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;

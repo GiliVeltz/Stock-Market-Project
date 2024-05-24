@@ -3,7 +3,9 @@ package Domain;
 import java.util.ArrayList;
 import java.util.List;
 import Exceptions.ShopException;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class ShopFacade {
     private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
