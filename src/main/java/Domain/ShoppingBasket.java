@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import Domain.Exceptions.ProductOutOfStockExepction;
 
-public class ShoppingBasket {
+public class ShoppingBasket implements Cloneable{
     private Integer _shopId;
     private List<Product> _productList;
     private double _basketTotalAmount;
@@ -71,6 +71,21 @@ public class ShoppingBasket {
             product.cancelPurchase();
         }
     }
+
+    @Override
+    public ShoppingBasket clone() {
+        try {
+            ShoppingBasket cloned = (ShoppingBasket) super.clone();
+            cloned._productList = new ArrayList<>();
+            for (Product product : _productList) {
+                cloned._productList.add(product.clone());
+            }
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen as we implement Cloneable
+        }
+    }
+
 
     @Override
     public String toString() {
