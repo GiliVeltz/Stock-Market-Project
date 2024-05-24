@@ -1,21 +1,23 @@
 package Domain;
 
-import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
-public class UserController {
-    private List<User> registeredUsers;
-    private List<String> guestIds;
-    private PasswordEncoderUtil passwordEncoder;
+@RestController
+public class UserFacade {
+    private List<User> _registeredUsers;
+    private List<String> _guestIds;
+    private PasswordEncoderUtil _passwordEncoder;
 
-    public UserController() {
-        this.registeredUsers = new ArrayList<>();
-        this.passwordEncoder = new PasswordEncoderUtil();
+    public UserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+        _registeredUsers = registeredUsers;
+        _guestIds = guestIds;
+        _passwordEncoder = passwordEncoder;
     }
 
     public boolean isUserNameExists(String username) {
         // Check if the username already exists
-        for (User user : this.registeredUsers) {
+        for (User user : this._registeredUsers) {
             if (user.getUserName().equals(username)) {
                 return true;
             }
@@ -24,7 +26,7 @@ public class UserController {
     }
 
     public User getUserByUsername(String username) {
-        for (User user : this.registeredUsers) {
+        for (User user : this._registeredUsers) {
             if (user.getUserName().equals(username)) {
                 return user;
             }
@@ -35,15 +37,22 @@ public class UserController {
     public boolean AreCredentialsCorrect(String username, String password) {
         User user =  getUserByUsername(username);
         if (user != null){
-            return this.passwordEncoder.matches(password, user.getEncodedPassword());
+            return this._passwordEncoder.matches(password, user.getEncodedPassword());
         } 
         return false;
     }
 
+    // this function is used to register a new user to the system.
     public void register(String userName, String password, String email) throws Exception {
-        String encodedPass = this.passwordEncoder.encodePassword(password);
+        String encodedPass = this._passwordEncoder.encodePassword(password);
         if (!isUserNameExists(userName)) {
-            this.registeredUsers.add(new User(userName, encodedPass, email));
+            if(email == null || email.isEmpty()){
+                throw new Exception("Email is empty.");
+            }
+            if(password == null || password.isEmpty()){
+                throw new Exception("Password is empty.");
+            }
+            this._registeredUsers.add(new User(userName, encodedPass, email));
         } else {
             throw new Exception("Username already exists.");
         }
@@ -59,7 +68,7 @@ public class UserController {
     }
 
     private boolean isGuestExists(String id) {
-        return guestIds.contains(id);
+        return _guestIds.contains(id);
     }
     
 
@@ -67,13 +76,26 @@ public class UserController {
         if (isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
         }
-        guestIds.add(id);
+        _guestIds.add(id);
     }
 
     public void removeGuest(String id){
         if (!isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
         }
-        guestIds.remove(String.valueOf(id));
+        _guestIds.remove(String.valueOf(id));
+    }
+
+    public List<User> get_registeredUsers() {
+        return _registeredUsers;
+    }
+
+    // function to return the purchase history for the user
+    public List<Order> getPurchaseHistory(String username) {
+        User user = getUserByUsername(username);
+        if (user != null) {
+            return user.getPurchaseHistory();
+        }
+        return null;
     }
 }
