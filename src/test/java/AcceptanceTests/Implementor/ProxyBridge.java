@@ -199,7 +199,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartUser(String username, String password) {
+    public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartUser' in ProxyBridge class");
     }
@@ -229,15 +229,9 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserOpenAShop(String username, String password, String shopName) {
+    public boolean TestUserOpenAShop(String username, String password, String shopName, String bankDetails, String shopAddress) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestUserOpenAShop' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserIsFounderOfTheShop(String username, String password, String shopName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserIsFounderOfTheShop' in ProxyBridge class");
     }
 
     @Override

@@ -46,7 +46,7 @@ public class ShoppingBasket {
     }
 
     public double getShoppingBasketPrice() {
-        return _basketTotalAmount;
+        return calculateShoppingBasketPrice();
     }
 
     /*
