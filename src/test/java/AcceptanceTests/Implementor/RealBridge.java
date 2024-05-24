@@ -121,15 +121,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         // Arrange
         String token = "";
         _tokenServiceMock = mock(TokenService.class);
-        _userFacadeMock = mock(UserFacade.class);
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_userFacadeMock.AreCredentialsCorrect(anyString(), anyString())).thenReturn(true);
         User bobi = new User("bobi", "bobspassword", "email");
         List<User> registeredUsers = new ArrayList<>();
         registeredUsers.add(bobi);
         _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
-         _userServiceUnderTest = new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock);
+         _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
 
         // Act
         Response res = _userServiceUnderTest.register(token, username, password, email);
@@ -152,6 +150,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         _tokenServiceMock = mock(TokenService.class);
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
         User bob = new User("bob", "bobspassword", "email");
         List<User> registeredUsers = new ArrayList<>();
         registeredUsers.add(bob);
