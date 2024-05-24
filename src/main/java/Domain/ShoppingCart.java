@@ -36,8 +36,16 @@ public class ShoppingCart {
     public void purchaseCart(List<Integer> busketsToBuy, String cardNumber, String address) {
         purchaseCartEditStock(busketsToBuy);
         try {
-            _paymentMethod.pay(cardNumber);
-            _supplyMethod.deliver(address);
+            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
+                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+                _paymentMethod.checkIfPaymentOk(cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
+                _supplyMethod.checkIfDeliverOk(address, shoppingBasket.getShopAddress());
+            }
+            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
+                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+                _paymentMethod.pay(cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
+                _supplyMethod.deliver(address, shoppingBasket.getShopAddress());
+            }
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: "+ e.getMessage(), e);
             cancelPurchaseEditStock(busketsToBuy);
@@ -45,6 +53,7 @@ public class ShoppingCart {
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: "+ e.getMessage(), e);
             cancelPurchaseEditStock(busketsToBuy);
+            _paymentMethod.refound(cardNumber);
             throw new ShippingFailedException("Shipping failed");
         }
         

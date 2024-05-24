@@ -83,6 +83,7 @@ public class UserService {
                 }
                 if (!_userFacade.isUserNameExists(userName)) {
                     _userFacade.register(userName, password, email);
+                    _shoppingCartFacade.addCartForUser(token, userName);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
