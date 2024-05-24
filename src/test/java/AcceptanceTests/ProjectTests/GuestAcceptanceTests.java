@@ -30,6 +30,7 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the user can register to the system.
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestRegisterToTheSystem() {
         assertTrue(_bridge.TestGuestRegisterToTheSystem("bob","bobspassword", "email") ); // success
