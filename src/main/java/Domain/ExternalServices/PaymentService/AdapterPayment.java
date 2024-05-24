@@ -25,5 +25,10 @@ public class AdapterPayment implements ExternalService {
         logger.info("Paying for the cart");
         _paymentService.pay(cardNumber);
     }
+
+    public void refound(String cardNumber) {
+        logger.info("Refounding the cart");
+        _paymentService.refound(cardNumber);
+    }
     
 }

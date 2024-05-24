@@ -9,7 +9,12 @@ public class ProxyPayment {
     
     public void pay(String cardNumber) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'pay'");
+        return;
+    }
+
+    public void refound(String cardNumber) {
+        // TODO Auto-generated method stub
+        return;
     }
     
 }

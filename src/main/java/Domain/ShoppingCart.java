@@ -45,6 +45,7 @@ public class ShoppingCart {
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: "+ e.getMessage(), e);
             cancelPurchaseEditStock(busketsToBuy);
+            _paymentMethod.refound(cardNumber);
             throw new ShippingFailedException("Shipping failed");
         }
         
