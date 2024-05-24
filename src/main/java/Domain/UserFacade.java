@@ -46,6 +46,12 @@ public class UserFacade {
     public void register(String userName, String password, String email) throws Exception {
         String encodedPass = this._passwordEncoder.encodePassword(password);
         if (!isUserNameExists(userName)) {
+            if(email == null || email.isEmpty()){
+                throw new Exception("Email is empty.");
+            }
+            if(password == null || password.isEmpty()){
+                throw new Exception("Password is empty.");
+            }
             this._registeredUsers.add(new User(userName, encodedPass, email));
         } else {
             throw new Exception("Username already exists.");
