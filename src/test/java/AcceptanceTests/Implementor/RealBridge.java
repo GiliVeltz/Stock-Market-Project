@@ -1,12 +1,14 @@
 package AcceptanceTests.Implementor;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -115,7 +117,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
-    @Test
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
         // Arrange
         String token = "";
@@ -143,7 +144,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
-    @Test
     public boolean testLoginToTheSystem(String username, String password) {
         // Arrange
         String token = "";
