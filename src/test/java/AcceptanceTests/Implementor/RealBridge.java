@@ -75,10 +75,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @AfterEach
     public void tearDown() {
-        _shopServiceUnderTest = null;
-        _systemServiceUnderTest = null;
-        _tokenServiceUnderTest = null;
-        _userServiceUnderTest = null;
     }
 
     @Override
