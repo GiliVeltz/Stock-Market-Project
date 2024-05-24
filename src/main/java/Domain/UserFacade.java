@@ -43,6 +43,9 @@ public class UserFacade {
     // this function is used to register a new user to the system.
     public void register(String userName, String password, String email) throws Exception {
         String encodedPass = this._passwordEncoder.encodePassword(password);
+        if(userName == null || userName.isEmpty()){
+            throw new Exception("UserName is empty.");
+        }
         if (!isUserNameExists(userName)) {
             if(email == null || email.isEmpty()){
                 throw new Exception("Email is empty.");
