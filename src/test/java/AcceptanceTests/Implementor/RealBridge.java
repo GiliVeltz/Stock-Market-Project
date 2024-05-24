@@ -119,6 +119,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
         // Arrange
         String token = "";
+        _tokenServiceMock = mock(TokenService.class);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         User bobi = new User("bobi", "bobspassword", "email");
         List<User> registeredUsers = new ArrayList<>();
@@ -144,6 +145,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     public boolean testLoginToTheSystem(String username, String password) {
         // Arrange
         String token = "";
+        _tokenServiceMock = mock(TokenService.class);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         User bob = new User("bob", "bobspassword", "email");
         List<User> registeredUsers = new ArrayList<>();
