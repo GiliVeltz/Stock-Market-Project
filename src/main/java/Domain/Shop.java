@@ -531,6 +531,15 @@ public class Shop {
         return isOwnerOrFounder(role);
     }
 
+    // before removing the shop send notificstion to all relevasnt users
+    public void notifyRemoveShop()
+    {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String userName = entry.getKey();
+            // TODO: StoreClosedAlert();
+        }
+    }
+
     public String getBankDetails() {
         return _bankDetails;
     }

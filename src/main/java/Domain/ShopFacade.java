@@ -61,7 +61,14 @@ public class ShopFacade {
             else {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER))
+                {
+                    getShopByShopId(shopId).notifyRemoveShop();
                     _shopsList.remove(shopToClose);
+                }
+                else
+                {
+                    throw new Exception(String.format("User %s can't cloase the Shop: %d. Only the fonder has the permission",userName, shopId));
+                }
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
