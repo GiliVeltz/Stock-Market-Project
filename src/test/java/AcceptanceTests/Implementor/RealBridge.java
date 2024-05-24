@@ -131,6 +131,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         Response res = _userServiceUnderTest.register(token, username, password, email);
 
         // Assert
+        System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
         return res.getErrorMessage() == null;
     }
 
@@ -157,6 +158,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         Response res = _userServiceUnderTest.logIn(token, username, password);
 
         // Assert
+        System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
         return res.getErrorMessage() == null;
     }
 
