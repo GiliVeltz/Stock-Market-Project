@@ -6,9 +6,13 @@ public class ProxySupply {
         // TODO: TAL: add constructor detalils
     }
 
-    public void deliver(String address) {
+    public boolean checkIfDeliverOk(String address, String shopAddress) {
+        return true;
+    }
+
+    public void deliver(String address, String shopAddress) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deliver'");
+        return;
     }
     
 }

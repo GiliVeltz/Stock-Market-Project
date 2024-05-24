@@ -114,7 +114,7 @@ public interface BridgeInterface {
     boolean testCheckAndViewItemsInShoppingCartAsUser();
     
     @Test
-    boolean testCheckAllOrNothingBuyingShoppingCartUser(String username, String password);
+    boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address);
     
     @Test
     boolean testBuyingShoppingCartPoliciesUser(String username, String password);
@@ -129,10 +129,7 @@ public interface BridgeInterface {
     boolean TestWhenUserLogoutThenHeBecomeGuest(String username);
     
     @Test
-    boolean TestUserOpenAShop(String username, String password, String shopName);
-    
-    @Test
-    boolean TestUserIsFounderOfTheShop(String username, String password, String shopName);
+    boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress);
 
     @Test
     boolean TestUserWriteReviewOnPurchasedProduct(String username, String password, String productId);
