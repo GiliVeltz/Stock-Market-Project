@@ -39,33 +39,9 @@ public class SystemService {
      * @return a response indicating the success or failure of opening the system
      */
     public Response openSystem(String token) {
-    public Response openSystem(String token) {
         Response response = new Response();
-        String userId = _tokenService.extractUsername(token);
         try {
-            if (_tokenService.validateToken(token)) {
-                // Check if the user is already logged in.
-                if (!_tokenService.isLoggedIn(token)) {
-                    response.setErrorMessage("User is not logged in");
-                    logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
-                }
-                // Check if the user is an admin
-                Response isAdminResponse = _userService.isAdmin(userId);
-                if (isAdminResponse.getErrorMessage() != null) {
-                    response.setErrorMessage("User is not an admin");
-                    logger.log(Level.SEVERE, "User is not an admin");
-                    return response;
-                }
-
-                // Check if the system is already open
-                if (isSystemOpen()) {
-                    response.setErrorMessage("System is already open");
-                    logger.log(Level.SEVERE, "System is already open");
-                    return response;
-                }
-        String userId = _tokenService.extractUsername(token);
-        try {
+            String userId = _tokenService.extractUsername(token);
             if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
                 if (!_tokenService.isLoggedIn(token)) {
@@ -107,10 +83,6 @@ public class SystemService {
                 setSystemOpen(true);
                 logger.info("System opened by admin: " + userId);
                 response.setReturnValue("System Opened Successfully");
-            } else {
-                throw new Exception("Invalid session token.");
-            }
-
         } catch (Exception e) {
             response.setErrorMessage("Failed to open system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to open system: " + e.getMessage(), e);

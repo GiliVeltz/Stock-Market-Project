@@ -16,7 +16,7 @@ import Domain.UserFacade;
 public class UserService {
     private UserFacade _userFacade;
     private TokenService _tokenService;
-    private ShopService _shopService;
+
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
@@ -161,7 +161,7 @@ public class UserService {
                     return response;
                 }
                 // get purchase history of a user
-                response.setReturnValue(_userController.getPurchaseHistory(userId));
+                response.setReturnValue(_userFacade.getPurchaseHistory(userId));
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from user: " + userId);
                     logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
@@ -189,7 +189,7 @@ public class UserService {
                 }
                 String username = _tokenService.extractUsername(token);
                 logger.info("Purchase history request for user: " + username);
-                List<Order> purchaseHistory = _userController.getPurchaseHistory(username);
+                List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
                 logger.info("Purchase history retrieved for user: " + username);
                 response.setReturnValue(purchaseHistory);
 

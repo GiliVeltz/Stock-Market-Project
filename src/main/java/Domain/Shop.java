@@ -18,11 +18,7 @@ public class Shop {
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
-<<<<<<< HEAD
-    private Map<String, Role> _userToRole; //<userName, Role>
-=======
     private Map<String, Role> _userToRole; // <userName, Role>
->>>>>>> main
     private static final Logger logger = Logger.getLogger(Shop.class.getName());
     private List<Discount> _discounts;
 
@@ -67,14 +63,6 @@ public class Shop {
     public Role getRole(String username) throws ShopException {
         if (!checkIfHasRole(username)) {
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
-        }
-        return _userToRole.get(username);
-    }
-
-    //get role of the user in the shop
-    public Role getRole(String username) throws ShopException{
-        if(!checkIfHasRole(username)){
-            throw new ShopException("User "+username+ " doesn't have a role in this shop with id "+_shopId);
         }
         return _userToRole.get(username);
     }
@@ -501,8 +489,6 @@ public class Shop {
         return _productMap;
     }
 
-<<<<<<< HEAD
-=======
     public List<ShopOrder> getShopOrderHistory() {
         return _orderHistory;
     }
@@ -518,7 +504,6 @@ public class Shop {
         }
     }
 
->>>>>>> main
     public void addOrderToOrderHistory(ShopOrder order) {
         _orderHistory.add(order); // Add order to the history
     }

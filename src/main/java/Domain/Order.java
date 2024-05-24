@@ -3,13 +3,10 @@ package Domain;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO: TAL: add external service to the constructor and the class for payment and shipping methods
-
-// TODO: devide to userOrder and ShopOrder
-
+// calss that represents an order for the user
 public class Order {
     private Integer _orderId;
-    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
+    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> // think about changing the map to shopping cart.
     private double _totalOrderAmount;
 
     // Constructor

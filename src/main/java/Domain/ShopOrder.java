@@ -3,31 +3,17 @@ package Domain;
 import java.util.HashMap;
 import java.util.Map;
 
-<<<<<<< HEAD
 //class that represents an order for the shop
 
 public class ShopOrder {
     private Integer _orderId;
-    //TODO: change this map - what will be the best?
-    // private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <UserId, ShoppingBasketPerShop>
     private ShoppingBasket _shoppingBasket;
     private double _totalOrderAmount;
 
     // Constructor
     public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) {
         this._orderId = orderId;
-        this._shoppingBasket = clone(shoppingBasket);
-=======
-public class ShopOrder {
-     private Integer _orderId;
-    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <UserId, ShoppingBasketPerShop>
-    private double _totalOrderAmount;
-
-    // Constructor
-    public ShopOrder(Integer orderId) {
-        this._orderId = orderId;
-        this._shoppingBasketMap = new HashMap<>();
->>>>>>> main
+        this._shoppingBasket = shoppingBasket.clone();
         this._totalOrderAmount = 0.0;
     }
 
@@ -35,36 +21,33 @@ public class ShopOrder {
         return _orderId;
     }
 
-    public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
-        return _shoppingBasketMap;
-    }
-
+    
     public double getOrderTotalAmount() { return _totalOrderAmount; }
 
   
-    public void calcTotalAmount() { 
-        _totalOrderAmount = 0.0;
-        for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
-        }
-    }
+    // public void calcTotalAmount() { 
+    //     _totalOrderAmount = 0.0;
+    //     for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
+    //         _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
+    //     }
+    // }
 
-    // Helper method to print all products in the order
-    private String printAllProduct() 
-    {
-        StringBuilder output = new StringBuilder();
-        for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            output.append(entry.getValue().toString()).append("\n");
-        }
-        return output.toString(); // Convert StringBuilder to String
-    }
+    // // Helper method to print all products in the order
+    // private String printAllProduct() 
+    // {
+    //     StringBuilder output = new StringBuilder();
+    //     for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
+    //         output.append(entry.getValue().toString()).append("\n");
+    //     }
+    //     return output.toString(); // Convert StringBuilder to String
+    // }
 
     @Override
     public String toString() {
         return "Order{" +
                 "orderId = " + _orderId +
                 ", totalAmount = " + _totalOrderAmount +
-                ", products = \n" + printAllProduct() +
+                // ", products = \n" + printAllProduct() +
                 '}';
     }
 }

@@ -60,15 +60,4 @@ public class User {
     public List<Order> getPurchaseHistory() {
         return _purchaseHistory;
     }
-
-    /**
-     * Retrieves the user's purchase history.
-     *
-     * @return A list of ShoppingBasket objects representing the user's purchase
-     *         history.
-     */
-    public List<Order> getPurchaseHistory() {
-        return _purchaseHistory;
-    }
-
 }
