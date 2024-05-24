@@ -52,6 +52,9 @@ public class ShoppingBasket implements Cloneable {
         }
         return _basketTotalAmount;
     }
+    public int getShopId() {     
+        return _shopId;
+    }
 
     public double getShoppingBasketPrice() {
         if (_basketTotalAmount == 0.0)

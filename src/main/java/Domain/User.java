@@ -42,6 +42,11 @@ public class User {
         _email = email;
     }
 
+    //add order to the purchase history
+    public void addOrder(Order order) {
+        _purchaseHistory.add(order);
+    }
+
     /**
      * Checks if the user is an admin.
      *
