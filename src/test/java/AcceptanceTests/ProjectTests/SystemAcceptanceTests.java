@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 @ExtendWith(RealBridge.class)
 public class SystemAcceptanceTests {

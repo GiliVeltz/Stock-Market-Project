@@ -13,12 +13,16 @@ import Domain.*;
 
 public class UserFacadeTest {
     
+    // private fields.
     private UserFacade _userFacadeUnderTest;
     private List<User> _registeredUsers;
     private List<String> _guestIds;
+
+    // mock fields.
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
     
+    // users fields.
     private User _user1 = new User("john_doe", "password123", "john.doe@example.com");
 
     @BeforeEach
