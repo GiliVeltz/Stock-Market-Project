@@ -28,17 +28,6 @@ import java.util.List;
 @SpringBootTest
 public class RealBridge implements BridgeInterface, ParameterResolver{
 
-    // services under test
-    private ShopService _shopServiceUnderTest;
-    private SystemService _systemServiceUnderTest;
-    private TokenService _tokenServiceUnderTest;
-    private UserService _userServiceUnderTest;
-
-    // real facades
-    private ShopFacade _shopFacadeReal;
-    private ShoppingCartFacade _shoppingCartFacadeReal;
-    private UserFacade _userFacadeReal;
-
     // mocks services
     @Mock
     private ShopService _shopServiceMock;
@@ -118,30 +107,32 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
 
         // Arrange
-        String token = "";
+        // String token = "";
 
-        _tokenServiceMock = mock(TokenService.class);
-        _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+        // _tokenServiceMock = mock(TokenService.class);
+        // _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
+        // _passwordEncoderMock = mock(PasswordEncoderUtil.class);
 
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
 
-        User bobi = new User("bobi", "bobspassword", "email");
-        List<User> registeredUsers = new ArrayList<>();
-        registeredUsers.add(bobi);
-        _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+        // User bobi = new User("bobi", "bobspassword", "email");
+        // List<User> registeredUsers = new ArrayList<>();
+        // registeredUsers.add(bobi);
+        // _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
         
-         _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
+        //  _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
 
         // Act
-        Response res = _userServiceUnderTest.register(token, username, password, email);
+        // Response res = _userServiceUnderTest.register(token, username, password, email);
 
         // Assert
-        System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
-        return res.getErrorMessage() == null;
+        // System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
+        // return res.getErrorMessage() == null;
     }
 
     @Override
@@ -152,32 +143,34 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean testLoginToTheSystem(String username, String password) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
 
-        // Arrange
-        String token = "";
+        // // Arrange
+        // String token = "";
 
-        _tokenServiceMock = mock(TokenService.class);
-        _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+        // _tokenServiceMock = mock(TokenService.class);
+        // _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
+        // _passwordEncoderMock = mock(PasswordEncoderUtil.class);
 
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
-        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        // when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
+        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
 
-        when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
-        User bob = new User("bob", "bobspassword", "email");
-        List<User> registeredUsers = new ArrayList<>();
-        registeredUsers.add(bob);
-        _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+        // when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
+        // User bob = new User("bob", "bobspassword", "email");
+        // List<User> registeredUsers = new ArrayList<>();
+        // registeredUsers.add(bob);
+        // _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
 
-         _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
+        //  _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
 
-        // Act
-        Response res = _userServiceUnderTest.logIn(token, username, password);
+        // // Act
+        // Response res = _userServiceUnderTest.logIn(token, username, password);
 
-        // Assert
-        System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
-        return res.getErrorMessage() == null;
+        // // Assert
+        // System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
+        // return res.getErrorMessage() == null;
     }
 
     @Override
