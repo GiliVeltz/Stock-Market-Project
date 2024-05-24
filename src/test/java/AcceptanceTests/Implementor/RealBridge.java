@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
 import ServiceLayer.*;
-import java.util.List;
 
 // A real conection to the system.
 // The code is tested on the real information on te system.
@@ -82,16 +80,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @BeforeEach
-    public void setUp() {
-        _shopServiceMock = mock(ShopService.class);
-        _systemServiceMock = mock(SystemService.class);
-        _tokenServiceMock = mock(TokenService.class);
-        _userServiceMock = mock(UserService.class);
-        _userFacadeMock = mock(UserFacade.class);
-        _shopFacadeMock = mock(ShopFacade.class);
-        _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        _userFacadeMock = mock(UserFacade.class);
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+    public void init() {
+        MockitoAnnotations.openMocks(this);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
     }
 
@@ -126,25 +116,26 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) 
     {
+        //Arrange
+        MockitoAnnotations.openMocks(this);
 
-        when(_userFacadeMock.isUserNameExists("Bob")).thenReturn(false);
-        when(_userFacadeMock.isUserNameExists("Bobi")).thenReturn(true);
-        when(_userFacadeMock.isUserNameExists("Mom")).thenReturn(false);
-        try
-        {
-            _userServiceMock.register(token, username, password, email);
-            
-            // Verify interactions
-            verify(_userFacadeMock, times(1)).isUserNameExists(username);
-            verify(_tokenServiceMock, times(1)).validateToken(token);
-   
-            return true;
-        }
-        catch(Exception e)
-        {
-            System.out.println("TestGuestRegisterToTheSystem Error message: " + e.getMessage());
-            return false;
-        }
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
+        
+        User bob = new User("Bobi", "bobspassword", "email");
+        List<User> registeredUsers = new ArrayList<>();
+        registeredUsers.add(bob);
+        
+        UserFacade _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+        UserService _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
+
+        // Act
+        Response res = _userServiceUnderTest.register(token, username, password, email);
+
+        // Assert
+        System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
     @Override
@@ -155,24 +146,28 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean testLoginToTheSystem(String username, String password) {
-        when(_userFacadeMock.AreCredentialsCorrect("Bob","bobspassword")).thenReturn(true);
-        when(_userFacadeMock.AreCredentialsCorrect("Mom","momspassword")).thenReturn(false);
+        
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-        try
-        {
-            _userServiceMock.logIn(token, username, password);
-            
-            // Verify interactions
-            verify(_userFacadeMock, times(1)).AreCredentialsCorrect(username,password);
-            verify(_tokenServiceMock, times(1)).validateToken(token);
-   
-            return true;
-        }
-        catch(Exception e)
-        {
-            return false;
-        }
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
+        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
 
+        User bob = new User("Bob", "bobspassword", "email");
+        List<User> registeredUsers = new ArrayList<>();
+        registeredUsers.add(bob);
+        
+        UserFacade _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+        UserService _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
+
+        // Act
+        Response res = _userServiceUnderTest.logIn(token, username, password);
+
+        // Assert
+        System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
     @Override
@@ -328,18 +323,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address) {
-
         // Split the input string by spaces Convert the array to a list of Integer
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         String[] stringArray = busketsToBuy.split("\\s+");
         List<Integer> busketsToBuyList = new ArrayList<>();
+
         for (String s : stringArray) {
-        try {
-            int number = Integer.parseInt(s);
-            busketsToBuyList.add(number);
-        } catch (NumberFormatException e) {
-            // Handle the case where the string cannot be parsed to an integer
-            System.err.println("Invalid number format: " + s);
-        }
+            try {
+                int number = Integer.parseInt(s);
+                busketsToBuyList.add(number);
+            } catch (NumberFormatException e) {
+                // Handle the case where the string cannot be parsed to an integer
+                System.err.println("Invalid number format: " + s);
+            }
         }
 
         try
@@ -370,6 +366,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean testLogoutToTheSystem(String username) {
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_userFacadeMock.isUserNameExists("Bob")).thenReturn(true);
         when(_userFacadeMock.isUserNameExists("notUsername")).thenReturn(false);
@@ -405,10 +402,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
         when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
         when(_tokenServiceMock.isGuest("Tom")).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(true);
+
         try
         {
             // Verify interactions
@@ -502,6 +501,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
     String productAmount)
     {
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         try
         {
             when(_tokenServiceMock.isUserAndLoggedIn("Nirvana")).thenReturn(true);
@@ -605,7 +605,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean testShopOwnerCloseShop(String username, String shopId) {
-    
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        
         try
         {
             when(_shopFacadeMock.isShopIdExist(Integer.valueOf("12345"))).thenReturn(true);

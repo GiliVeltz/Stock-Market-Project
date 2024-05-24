@@ -24,7 +24,7 @@ public class SystemAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testOpenMarketSystem() {
-        assertTrue(_bridge.testOpenMarketSystem("manager") ); // success
+        assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success
         assertFalse(_bridge.testOpenMarketSystem("guest") ); // fail
     }
     
