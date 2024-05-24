@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import Exceptions.ShopException;
 
-public class ShopController {
-    private static ShopController _shopController;
+public class ShopFacade {
+    private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
 
-    private ShopController() {
+    private ShopFacade() {
         this._shopsList = new ArrayList<>();
     }
 
-    // Public method to provide access to the _shopController
-    public static synchronized ShopController getShopController() {
-        if (_shopController == null) {
-            _shopController = new ShopController();
+    // Public method to provide access to the _shopFacade
+    public static synchronized ShopFacade getShopFacade() {
+        if (_shopFacade == null) {
+            _shopFacade = new ShopFacade();
         }
-        return _shopController;
+        return _shopFacade;
     }
 
     public Shop getShopByShopId(Integer shopId) {
@@ -105,4 +105,3 @@ public class ShopController {
         return false;
     }
 }
-

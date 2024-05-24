@@ -3,6 +3,7 @@ package Domain;
 import java.util.HashMap;
 import java.util.Map;
 
+<<<<<<< HEAD
 //class that represents an order for the shop
 
 public class ShopOrder {
@@ -16,6 +17,17 @@ public class ShopOrder {
     public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) {
         this._orderId = orderId;
         this._shoppingBasket = clone(shoppingBasket);
+=======
+public class ShopOrder {
+     private Integer _orderId;
+    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <UserId, ShoppingBasketPerShop>
+    private double _totalOrderAmount;
+
+    // Constructor
+    public ShopOrder(Integer orderId) {
+        this._orderId = orderId;
+        this._shoppingBasketMap = new HashMap<>();
+>>>>>>> main
         this._totalOrderAmount = 0.0;
     }
 

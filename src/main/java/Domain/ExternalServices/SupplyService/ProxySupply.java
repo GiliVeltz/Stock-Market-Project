@@ -3,8 +3,7 @@ package Domain.ExternalServices.SupplyService;
 public class ProxySupply {
 
     public ProxySupply() {
-        // TODO Auto-generated constructor stub
-        throw new UnsupportedOperationException("Unimplemented constructor 'ProxySupply'");
+        // TODO: TAL: add constructor detalils
     }
 
     public void deliver(String address) {

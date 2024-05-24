@@ -3,7 +3,7 @@ package Domain;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO: add external service to the constructor and the class for payment and shipping methods
+//TODO: TAL: add external service to the constructor and the class for payment and shipping methods
 
 // TODO: devide to userOrder and ShopOrder
 
