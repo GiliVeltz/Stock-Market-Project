@@ -364,4 +364,60 @@ public class ProxyBridge implements BridgeInterface{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartGuest' in ProxyBridge class");
     }
+
+    @Override
+    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerChangeShopPolicies' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopOwner' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddShopManagerPermission' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveShopManagerPermission' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerCloseShop(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerCloseShop' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopInfo' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopManagersPermissions' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop' in ProxyBridge class");
+    }
 }
