@@ -79,6 +79,9 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                if(userName == null || userName.isEmpty()){
+                    throw new Exception("UserName is empty.");
+                }
                 if (!_userFacade.isUserNameExists(userName)) {
                     _userFacade.register(userName, password, email);
                     logger.info("User registered: " + userName);

@@ -153,6 +153,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
         when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
         when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
         User bob = new User("bob", "bobspassword", "email");
