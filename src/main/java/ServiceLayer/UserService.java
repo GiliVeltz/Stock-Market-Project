@@ -31,11 +31,14 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                if(userName == null || userName.isEmpty() || password == null || password.isEmpty()){
+                    throw new Exception("Username or password is empty.");
+                }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
-                    throw new Exception("User Name Is Already Exists");
+                    throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }
             } else {
                 throw new Exception("Invalid session token.");
@@ -75,6 +78,9 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                if(userName == null || userName.isEmpty()){
+                    throw new Exception("UserName is empty.");
+                }
                 if (!_userFacade.isUserNameExists(userName)) {
                     _userFacade.register(userName, password, email);
                     logger.info("User registered: " + userName);
