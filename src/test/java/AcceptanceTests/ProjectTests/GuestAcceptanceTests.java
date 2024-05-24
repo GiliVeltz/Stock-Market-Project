@@ -51,7 +51,6 @@ public class GuestAcceptanceTests {
     @Test
     public void TestUserLogin() {
         assertTrue(_bridge.testLoginToTheSystem("bob","bobspassword") ); // success
-        //assertFalse(_bridge.testLoginToTheSystem("bobLogIn","bobspassword") ); // fail - already logged in
         assertFalse(_bridge.testLoginToTheSystem("","bobspassword") ); // fail - empty username
         assertFalse(_bridge.testLoginToTheSystem("bob","") ); // fail - empty pasword
         assertFalse(_bridge.testLoginToTheSystem("mom","momspassword")); // not a user in the system
