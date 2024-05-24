@@ -11,6 +11,10 @@ import Domain.Exceptions.ShippingFailedException;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 
+//TODO: TAL: add pay and ship methods to this class.
+
+// This class represents a shopping cart that contains a list of shopping baskets.
+// The shopping cart connected to one user at any time.
 public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
     private AdapterPayment _paymentMethod;
@@ -88,7 +92,9 @@ public class ShoppingCart {
         return _shoppingBaskets.size();
     }
 
-    //TODO: add pay and ship methods.
+    public int getCartSize() {
+        return _shoppingBaskets.size();
+    }
     
     public String toString() {
         StringBuilder output = new StringBuilder();

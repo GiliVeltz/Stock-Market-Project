@@ -1,6 +1,9 @@
 package Domain;
 
+<<<<<<< HEAD
 import java.lang.reflect.Array;
+=======
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,12 +11,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+<<<<<<< HEAD
 import Domain.Exceptions.PaymentFailedException;
 import Domain.Exceptions.ShippingFailedException;
 import Domain.ExternalServices.PaymentService.ProxyPayment;
 import Domain.ExternalServices.SupplyService.ProxySupply;
 import ServiceLayer.UserService;
 
+=======
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
 public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <GuestToken, ShoppingCart>
     Map<String, ShoppingCart> _usersCarts; // <Username, ShoppingCart>

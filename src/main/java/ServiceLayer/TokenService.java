@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
+// TODO: AMIT: add documentation about the class to help other undesrtant better when and why to use each method.
 public class TokenService {
     @Value("${jwk.secret}")
     private String secret;
@@ -20,9 +21,7 @@ public class TokenService {
     private final long expirationTime = 1000 * 60 * 60 * 24;
     private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    // TODO: add documentation
     public String generateUserToken(String username) {
-        // TODO: add log debug with all the fields
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -31,9 +30,7 @@ public class TokenService {
                 .compact();
     }
 
-    // TODO: add documentation
     public String generateGuestToken() {
-        // TODO: add log debug with all the fields
         String guestId = UUID.randomUUID().toString();
         return Jwts.builder()
                 .claim("guestId", guestId)
@@ -60,9 +57,7 @@ public class TokenService {
         return ClaimsResolver.apply(claims);
     }  
 
-    // TODO: add documentation
     private Claims extractAllClaims(String token){
-        // TODO: add log debug with all the fields
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -70,9 +65,7 @@ public class TokenService {
                 .getBody();
     }
 
-    // TODO: add documentation
     public boolean validateToken(String token) {
-        // TODO: add log debug with all the fields
         try {
             Jwts.parserBuilder()
                 .setSigningKey(key)

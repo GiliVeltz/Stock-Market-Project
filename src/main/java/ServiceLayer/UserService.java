@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Level;
 
+<<<<<<< HEAD
 import Domain.ShoppingCartFacade;
 import Domain.UserController;
 import Domain.ExternalServices.PaymentService.ProxyPayment;
@@ -21,16 +22,38 @@ public class UserService {
 
     public UserService(UserController userController, TokenService tokenService, ShoppingCartFacade shoppingCartFacade) {
         _userController = userController;
+=======
+import Domain.Order;
+
+import Domain.ShoppingCartFacade;
+import Domain.UserFacade;
+
+@Service
+public class UserService {
+    private UserFacade _userFacade;
+    private TokenService _tokenService;
+    //private ShopService _shopService;
+    private ShoppingCartFacade _shoppingCartFacade;
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
+
+    public UserService(UserFacade userController, TokenService tokenService,
+            ShoppingCartFacade shoppingCartFacade) {
+                _userFacade = userController;
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+<<<<<<< HEAD
                 if (_userController.AreCredentialsCorrect(userName, password)) {
+=======
+                if (_userFacade.AreCredentialsCorrect(userName, password)) {
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
@@ -46,13 +69,17 @@ public class UserService {
         return response;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
+<<<<<<< HEAD
                 if (_userController.isUserNameExists(userName)) {
+=======
+                if (_userFacade.isUserNameExists(userName)) {
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
                     String newToken = _tokenService.generateGuestToken();
                     logger.info("User successfuly logged out: " + userName);
                     response.setReturnValue(newToken);
@@ -69,13 +96,18 @@ public class UserService {
         return response;
     }
 
-    // TODO: add documentation
+    // TODO: AMIT: add documentation
     public Response register(String token, String userName, String password, String email) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+<<<<<<< HEAD
                 if (!_userController.isUserNameExists(userName)) {
                     _userController.register(userName, password, email);
+=======
+                if (!_userFacade.isUserNameExists(userName)) {
+                    _userFacade.register(userName, password, email);
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
@@ -91,17 +123,29 @@ public class UserService {
         return response;
     }
 
+<<<<<<< HEAD
     // TODO: add documentation
+=======
+    // TODO: TAL: add documentation
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
     public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+<<<<<<< HEAD
                 if (_tokenService.isGuest(token)){
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
                     _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
                     response.setReturnValue("Guest bought card succeed");
                 }
                 else {
+=======
+                if (_tokenService.isGuest(token)) {
+                    logger.log(Level.INFO, "Start purchasing cart for guest.");
+                    _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
+                    response.setReturnValue("Guest bought card succeed");
+                } else {
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
                     _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
@@ -117,11 +161,14 @@ public class UserService {
         return response;
     }
 
-    // function that check if the user is an admin using try catch and logging without checking for token
-    public Response isAdmin(String userId){
+    public Response isAdmin(String userId) {
         Response response = new Response();
         try {
+<<<<<<< HEAD
             if (_userController.isAdmin(userId)) {
+=======
+            if (_userFacade.isAdmin(userId)) {
+>>>>>>> 93aa5064a1aaaa9c44e5e697be3b238a6832c369
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
             } else {
@@ -135,25 +182,77 @@ public class UserService {
         return response;
     }
 
-    // check if user is logged in using try catch and logging
-    // TODO: remove that function
-    // public Response isLoggedIn(String userId){
-    // Response response = new Response();
-    // try {
-    // if (userController.isLoggedIn(userId)){
-    // logger.info("User is logged in: " + userId);
-    // response.setReturnValue("User is logged in");
-    // } else {
-    // logger.info("User is not logged in: " + userId);
-    // response.setReturnValue("User is not logged in");
-    // }
-    // } catch (Exception e) {
-    // response.setErrorMessage("Failed to check if user is logged in: " +
-    // e.getMessage());
-    // logger.log(Level.SEVERE, "Failed to check if user is logged in: " +
-    // e.getMessage(), e);
-    // }
-    // return response;
-    // }
+    /**
+     * Retrieves the purchase history of a specific user as an admin.
+     *
+     * @param token  The session token of the admin user.
+     * @param userId The ID of the user whose purchase history is to be retrieved.
+     * @return A Response object containing the purchase history if successful, or
+     *         an error message if not. () List<Order>
+     * @throws Exception If the session token is invalid.
+     */
+    public Response getUserPurchaseHistoryAsAdmin(String token, String userId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                    return response;
+                }
+                String adminId = _tokenService.extractUsername(token);
+                Response isAdminResponse = isAdmin(adminId);
+                if (isAdminResponse.getErrorMessage() != null) {
+                    response.setErrorMessage("User is not an admin");
+                    logger.log(Level.SEVERE, "User is not an admin");
+                    return response;
+                }
+                // get purchase history of a user
+                response.setReturnValue(_userFacade.getPurchaseHistory(userId));
+                if (response.getErrorMessage() != null) {
+                    response.setErrorMessage("Failed to get purchase history from user: " + userId);
+                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
 
+                }
+
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // TODO: METAR: add documentation
+    public Response getPersonalPurchaseHistory(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (!_tokenService.isLoggedIn(token)) {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                    return response;
+                }
+                String username = _tokenService.extractUsername(token);
+                logger.info("Purchase history request for user: " + username);
+                List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
+                logger.info("Purchase history retrieved for user: " + username);
+                response.setReturnValue(purchaseHistory);
+
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to retrieve purchase history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to retrieve purchase history: " + e.getMessage(), e);
+        }
+        // TODO: check with Spring how to return this response as a data object
+        return response;
+    }
+
+    public UserFacade getUserFacade() {
+        return _userFacade;
+    }
 }

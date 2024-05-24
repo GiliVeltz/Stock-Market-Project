@@ -20,7 +20,7 @@ public class SystemMappings {
 
     @GetMapping("/enterSystem")
     public Response enterSystem(){
-        Response resp = _systemService.enterSystem();
+        Response resp = _systemService.requestToEnterSystem();
         return resp;
     }
 
