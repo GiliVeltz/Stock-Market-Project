@@ -1,5 +1,6 @@
 package AcceptanceTests.Implementor;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -49,6 +51,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     // more mocks
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
+
+    // private fields
+    private String token = "token";
     
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -60,18 +65,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         return new RealBridge();
     }
 
-    @BeforeEach
-    public void setUp() {
-        _shopServiceMock = mock(ShopService.class);
-        _systemServiceMock = mock(SystemService.class);
-        _tokenServiceMock = mock(TokenService.class);
-        _userServiceMock = mock(UserService.class);
-        _userFacadeMock = mock(UserFacade.class);
-        _shopFacadeMock = mock(ShopFacade.class);
-        _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        _userFacadeMock = mock(UserFacade.class);
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
-    }
+     @BeforeEach
+     void init() {
+         MockitoAnnotations.openMocks(this);
+         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+     }
 
     @AfterEach
     public void tearDown() {
@@ -103,32 +101,24 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
 
-        // Arrange
-        // String token = "";
+        //Arrange
+        when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
+        when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
+        when(_userFacadeMock.isUserNameExists("bobi")).thenReturn(true);
 
-        // _tokenServiceMock = mock(TokenService.class);
-        // _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        // _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+        //Act
+        try
+        {
+             _userServiceMock.register(token, username, password, email);
+        }
 
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
-
-        // User bobi = new User("bobi", "bobspassword", "email");
-        // List<User> registeredUsers = new ArrayList<>();
-        // registeredUsers.add(bobi);
-        // _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
-        
-        //  _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock, _shoppingCartFacadeMock);
-
-        // Act
-        // Response res = _userServiceUnderTest.register(token, username, password, email);
-
-        // Assert
-        // System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
-        // return res.getErrorMessage() == null;
+        //Assert
+        catch (Exception e) {
+            System.out.println("TestGuestRegisterToTheSystem Error message: " + e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override
