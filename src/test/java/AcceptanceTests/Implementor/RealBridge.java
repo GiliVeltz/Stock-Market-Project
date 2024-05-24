@@ -1,6 +1,10 @@
 package AcceptanceTests.Implementor;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
 import ServiceLayer.*;
+import java.util.List;
 
 // A real conection to the system.
 // The code is tested on the real information on te system.
@@ -21,14 +26,38 @@ import ServiceLayer.*;
 @SpringBootTest
 public class RealBridge implements BridgeInterface, ParameterResolver{
 
-
+    // services under test
+    private ShopService _shopServiceUnderTest;
+    private SystemService _systemServiceUnderTest;
+    private TokenService _tokenServiceUnderTest;
     private UserService _userServiceUnderTest;
+
+    // real facades
+    private ShopFacade _shopFacadeReal;
+    private ShoppingCartFacade _shoppingCartFacadeReal;
+    private UserFacade _userFacadeReal;
+
+    // mocks services
     @Mock
-    private UserFacade _userControllerMock;
+    private ShopService _shopServiceMock;
+    @Mock
+    private SystemService _systemServiceMock;
     @Mock
     private TokenService _tokenServiceMock;
     @Mock
+    private UserService _userServiceMock;
+
+    // mocks facades
+    @Mock
+    private ShopFacade _shopFacadeMock;
+    @Mock
     private ShoppingCartFacade _shoppingCartFacadeMock;
+    @Mock
+    private UserFacade _userFacadeMock;
+
+    // more mocks
+    @Mock
+    private PasswordEncoderUtil _passwordEncoderMock;
     
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -42,24 +71,23 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @BeforeEach
     public void setUp() {
-        _userControllerMock = mock(UserFacade.class);
+        _shopServiceMock = mock(ShopService.class);
+        _systemServiceMock = mock(SystemService.class);
         _tokenServiceMock = mock(TokenService.class);
+        _userServiceMock = mock(UserService.class);
+        _userFacadeMock = mock(UserFacade.class);
+        _shopFacadeMock = mock(ShopFacade.class);
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
+        _userFacadeMock = mock(UserFacade.class);
+        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
     }
 
-    @Test
-    public boolean testRegisterToTheSystem(String username, String password, String email) {
-        // Arrange
-        String token = "";
-        _tokenServiceMock = mock(TokenService.class); // Initialize the mock object
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        _userServiceUnderTest = new UserService(_userControllerMock, _tokenServiceMock, _shoppingCartFacadeMock);
-
-        // Act
-        Response res = _userServiceUnderTest.register(token, username, password, email);
-
-        // Assert
-        return res.getErrorMessage() == null;
+    @AfterEach
+    public void tearDown() {
+        _shopServiceUnderTest = null;
+        _systemServiceUnderTest = null;
+        _tokenServiceUnderTest = null;
+        _userServiceUnderTest = null;
     }
 
     @Override
@@ -88,8 +116,20 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestRegisterToTheSystem'");
+        // Arrange
+        String token = "";
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        User bobi = new User("bobi", "bobspassword", "email");
+        List<User> registeredUsers = new ArrayList<>();
+        registeredUsers.add(bobi);
+        _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+         _userServiceUnderTest = new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock);
+
+        // Act
+        Response res = _userServiceUnderTest.register(token, username, password, email);
+
+        // Assert
+        return res.getErrorMessage() == null;
     }
 
     @Override
@@ -99,9 +139,21 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
-    public boolean testLoginToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");
+    public boolean testLoginToTheSystem(String username, String password) {
+        // Arrange
+        String token = "";
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        User bob = new User("bob", "bobspassword", "email");
+        List<User> registeredUsers = new ArrayList<>();
+        registeredUsers.add(bob);
+        _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
+         _userServiceUnderTest = new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock);
+
+        // Act
+        Response res = _userServiceUnderTest.logIn(token, username, password);
+
+        // Assert
+        return res.getErrorMessage() == null;
     }
 
     @Override

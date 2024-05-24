@@ -43,7 +43,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testLoginToTheSystem(String username, String password, String email) {
+    public boolean testLoginToTheSystem(String username, String password) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem' in ProxyBridge class");
     }

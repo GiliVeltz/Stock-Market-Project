@@ -32,7 +32,7 @@ public interface BridgeInterface {
     boolean TestUserEnterTheSystem(String SystemStatus);
     
     @Test
-    boolean testLoginToTheSystem(String username, String password, String email);
+    boolean testLoginToTheSystem(String username, String password);
 
     // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
