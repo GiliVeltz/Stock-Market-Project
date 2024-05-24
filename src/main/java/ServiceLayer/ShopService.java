@@ -31,14 +31,15 @@ public class ShopService {
      * 
      * @param shopId   The ID of the new shop to be opened.
      * @param userName The name of the user opening the shop (founder).
+     * @param bankDetails The bank details of the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response openNewShop(String token, Integer shopId, String userName) {
+    public Response openNewShop(String token, Integer shopId, String userName, String bankDetails, String shopAddress) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
-                    _shopFacade.openNewShop(shopId, userName);
+                    _shopFacade.openNewShop(shopId, userName, bankDetails, shopAddress);
                     logger.info(String.format("New shop created by: %s with Shop ID: %d", userName, shopId));
                 } else {
                     throw new Exception("Only register users can open shop.");

@@ -7,9 +7,18 @@ public class ProxyPayment {
         // TODO: TAL: add constructor detalils
     }
     
-    public void pay(String cardNumber) {
+    public boolean checkIfPaymentOk(String cardNumber, String shopBankDetails, double amountToPay) {
+        return true;
+    }
+
+    public void pay(String cardNumber, String shopBankDetails, double amountToPay) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'pay'");
+        return;
+    }
+
+    public void refound(String cardNumber) {
+        // TODO Auto-generated method stub
+        return;
     }
     
 }

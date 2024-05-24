@@ -46,11 +46,11 @@ public class ShopFacade {
         return false;
     }
 
-    public void openNewShop(Integer shopId, String userName) throws Exception {
+    public void openNewShop(Integer shopId, String userName, String bankDetails, String shopAddress) throws Exception {
         if (isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
         else
-            _shopsList.add(new Shop(shopId, userName));
+            _shopsList.add(new Shop(shopId, userName, bankDetails, shopAddress));
     }
 
     // close shop only if the user is the founder of the shop
