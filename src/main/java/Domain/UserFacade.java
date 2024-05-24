@@ -1,7 +1,9 @@
 package Domain;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class UserFacade {
     private List<User> _registeredUsers;
     private List<String> _guestIds;
