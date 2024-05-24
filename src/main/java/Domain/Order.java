@@ -30,11 +30,11 @@ public class Order {
     public double getOrderTotalAmount() { return _totalOrderAmount; }
 
     // Add a product to the order under a specific shop
-    public void addProductToOrder(Product product, Integer shopId) {
-        _shoppingBasketMap.putIfAbsent(shopId, new ShoppingBasket(shopId));
-        _shoppingBasketMap.get(product.getProductId()).addProductToShoppingBasket(product);
-        calcTotalAmount();
-    }
+    // public void addProductToOrder(Product product, Integer shopId) {
+    //     _shoppingBasketMap.putIfAbsent(shopId, new ShoppingBasket(shopId));
+    //     _shoppingBasketMap.get(product.getProductId()).addProductToShoppingBasket(product);
+    //     calcTotalAmount();
+    // }
 
     public void calcTotalAmount() { 
         _totalOrderAmount = 0.0;
