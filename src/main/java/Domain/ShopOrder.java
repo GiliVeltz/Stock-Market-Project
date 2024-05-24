@@ -30,12 +30,7 @@ public class ShopOrder {
     //Helper method to print all products in the order
      private String printAllProduct() 
         {
-            StringBuilder sb = new StringBuilder();
-            for (Product product : _shoppingBasket.getProductList()) {
-                sb.append(product.toString());
-                sb.append("\n");
-            }
-            return sb.toString();
+           return _shoppingBasket.printAllProducts();
         }
    
 

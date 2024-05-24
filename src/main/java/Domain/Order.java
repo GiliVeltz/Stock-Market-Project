@@ -53,23 +53,18 @@ public class Order {
     }
 
     // Helper method to print all products in the order by shopId
-    private String printAllProduct() 
+    private String printAllShopAndProducts() 
     {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
             sb.append("ShopId: " + entry.getKey() + "\n");
-            sb.append(printAllProduct(entry.getValue()));
+            sb.append(printAllProducts(entry.getValue()));
         }
         return sb.toString();
     }
 
-    private Object printAllProduct(ShoppingBasket shoppingBasket) {
-        StringBuilder sb = new StringBuilder();
-        for (Product product : shoppingBasket.getProductList()) {
-            sb.append(product.toString());
-            sb.append("\n");
-        }
-        return sb.toString();
+    private Object printAllProducts(ShoppingBasket shoppingBasket) {
+       return shoppingBasket.printAllProducts();
         
     }
     @Override
@@ -77,7 +72,7 @@ public class Order {
         return "Order{" +
                 "orderId=" + _orderId +
                 ", totalAmount=" + _totalOrderAmount +
-                ", products= \n" + printAllProduct() +
+                ", products= \n" + printAllShopAndProducts() +
                 '}';
     }
 }
