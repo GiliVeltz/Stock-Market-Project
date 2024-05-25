@@ -8,7 +8,6 @@ import Domain.Rules.Rule;
 
 public class PrecentageDiscount extends BaseDiscount {
     private double _precentage;
-    private Rule<ShoppingBasket> _rule;
     private int _productId;
 
     /**
@@ -34,7 +33,7 @@ public class PrecentageDiscount extends BaseDiscount {
      * @param basket The shopping basket to apply the discount to.
      */
     @Override
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 

@@ -8,7 +8,6 @@ import Domain.Rules.Rule;
 
 public class FixedDiscount extends BaseDiscount {
     private double _discountTotal;
-    private Rule<ShoppingBasket> _rule;
     private int _productId;
 
     /**
@@ -32,8 +31,7 @@ public class FixedDiscount extends BaseDiscount {
      * @param basket The shopping basket to apply the discount to.
      */
     @Override
-
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 

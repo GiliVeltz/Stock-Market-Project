@@ -13,9 +13,7 @@ import Exceptions.DiscountExpiredException;
  * if certain products are present in the basket.
  */
 public class ConditionalDiscount extends Discount {
-
     private BaseDiscount _discount;
-    private Rule<ShoppingBasket> _rule;
 
     /**
      * Constructs a new ConditionalDiscount object with the specified must-have
@@ -40,7 +38,7 @@ public class ConditionalDiscount extends Discount {
      * @throws DiscountExpiredException if the discount has expired
      */
     @Override
-    public void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException {
+    protected void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException {
         if (_rule.predicate(basket))
             _discount.applyDiscount(basket);
     }
