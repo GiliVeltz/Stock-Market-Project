@@ -632,4 +632,7 @@ public class Shop {
         return product.getProductRating();
     }
 
+    public String getFounderName() {
+        return _shopFounder;
+    }
 }

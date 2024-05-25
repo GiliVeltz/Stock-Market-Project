@@ -35,6 +35,10 @@ public class ShopFacade {
         this._shopsList = new ArrayList<>();
     }
 
+    public ShopFacade(List<Shop> shopsList) { // ForTests
+        _shopsList = shopsList;
+    }
+
     // Public method to provide access to the _shopFacade
     public static synchronized ShopFacade getShopFacade() {
         if (_shopFacade == null) {
@@ -196,6 +200,10 @@ public class ShopFacade {
 
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If productName is null, raise an error
+        if (productName == null) {
+            throw new Exception("Product name is null.");
+        }
         // If shopId is null, search in all shops
         if (shopId == null) {
             for (Shop shop : this._shopsList) {
@@ -221,6 +229,10 @@ public class ShopFacade {
     public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
             throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If category is null, raise an error
+        if (productCategory == null) {
+            throw new Exception("Product category is null.");
+        }
         // If shopId is null, search in all shops
         if (shopId == null) {
             for (Shop shop : this._shopsList) {
@@ -235,7 +247,10 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
-                productsByShop.put(shop.getShopId(), products);
+                // If the shop has products in the requested category, add them to the map
+                if(!products.isEmpty()){
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -245,7 +260,10 @@ public class ShopFacade {
 
     public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords)
             throws Exception {
-        // TODO: check if keywords is empty
+        // If keywords is null, raise an error
+        if (keywords == null || keywords.isEmpty()) {
+            throw new Exception("Product keywords is null.");
+        }
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -292,5 +310,13 @@ public class ShopFacade {
             }
         }
         return productsByShop;
+    }
+
+    public String getShopFounderUsername(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getFounderName();
+        }
+        return null;
     }
 }
