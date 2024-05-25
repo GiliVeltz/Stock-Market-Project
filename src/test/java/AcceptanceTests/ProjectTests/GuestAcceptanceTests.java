@@ -30,14 +30,13 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the user can register to the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestRegisterToTheSystem() {
-        assertTrue(_bridge.TestGuestRegisterToTheSystem("bob","bobspassword", "email") ); // success
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("bobi","bobspassword", "") ); // fail - already exists
+        assertTrue(_bridge.TestGuestRegisterToTheSystem("Bob","bobspassword", "email") ); // success
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("Bobi","bobspassword", "") ); // fail - already exists
         assertFalse(_bridge.TestGuestRegisterToTheSystem("","bobspassword", "email") ); // fail - empty username
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("mom","", "email") ); // fail - empty pasword
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("mom","momspassword", "")); // fail - empty email
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("Mom","", "email") ); // fail - empty pasword
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("Mom","momspassword", "")); // fail - empty email
     }
     
     @Disabled("This test is disabled cuase needs to implement in real bridge")
@@ -49,13 +48,12 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the user can login to the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogin() {
-        assertTrue(_bridge.testLoginToTheSystem("bob","bobspassword") ); // success
+        assertTrue(_bridge.testLoginToTheSystem("Bob","bobspassword") ); // success
         assertFalse(_bridge.testLoginToTheSystem("","bobspassword") ); // fail - empty username
-        assertFalse(_bridge.testLoginToTheSystem("bob","") ); // fail - empty pasword
-        assertFalse(_bridge.testLoginToTheSystem("mom","momspassword")); // not a user in the system
+        assertFalse(_bridge.testLoginToTheSystem("Bob","") ); // fail - empty pasword
+        assertFalse(_bridge.testLoginToTheSystem("Mom","momspassword")); // not a user in the system
     }
     
 }

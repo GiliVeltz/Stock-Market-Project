@@ -1,10 +1,21 @@
 package AcceptanceTests.Implementor;
 
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.MockitoAnnotations;
+
 // Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object.
 // A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
 public class ProxyBridge implements BridgeInterface{
     
     // IMPORTANT: all the functions will return false because the real implementation is in the RealBridge class
+
+    
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Override
     public boolean testOpenMarketSystem(String username) {
@@ -199,7 +210,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartUser(String username, String password) {
+    public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartUser' in ProxyBridge class");
     }
@@ -229,15 +240,9 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserOpenAShop(String username, String password, String shopName) {
+    public boolean TestUserOpenAShop(String username, String password, String shopName, String bankDetails, String shopAddress) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestUserOpenAShop' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserIsFounderOfTheShop(String username, String password, String shopName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserIsFounderOfTheShop' in ProxyBridge class");
     }
 
     @Override

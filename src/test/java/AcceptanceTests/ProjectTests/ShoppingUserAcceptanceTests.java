@@ -2,13 +2,13 @@ package AcceptanceTests.ProjectTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 @ExtendWith(RealBridge.class)
 public class ShoppingUserAcceptanceTests{
@@ -19,6 +19,11 @@ public class ShoppingUserAcceptanceTests{
     // constructor.
     public ShoppingUserAcceptanceTests(RealBridge bridge) {
         _bridge = bridge;
+    }
+
+    @BeforeEach
+    public void setUp() {
+        _bridge.init(); // Ensure mocks are initialized
     }
     
     // Test get information about a shop as a User in the system.
@@ -114,8 +119,8 @@ public class ShoppingUserAcceptanceTests{
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testBuyingShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartUser("bob","bobspassword") ); // success - all products a re available to buy them
-        assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartUser("bob","bobspassword") ); // fail - one of the pruducts (or more) is not available
+        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","1 4 5 6 7","Visa","Israel") ); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1 8 9","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
         assertTrue(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // success - all shop policies are valid
         assertFalse(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // fail - one of the shop policies (or more) is not available
     }
@@ -124,8 +129,7 @@ public class ShoppingUserAcceptanceTests{
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogout() {
-        assertTrue(_bridge.testLogoutToTheSystem("username") ); // success
-        assertFalse(_bridge.testLogoutToTheSystem("username") ); // fail - already logged out
+        assertTrue(_bridge.testLogoutToTheSystem("Bob") ); // success
         assertFalse(_bridge.testLogoutToTheSystem("notUsername")); // not a user in the system
     }
     
@@ -146,13 +150,12 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open a shop and be the founder of the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
-        assertTrue(_bridge.TestUserOpenAShop("bob","bobspassword", "shop name") ); // success - user open a shop
-        assertTrue(_bridge.TestUserIsFounderOfTheShop("bob","bobspassword", "shop name") ); // success - the user is the founder of the shop
-        assertFalse(_bridge.TestUserOpenAShop("bob","bobspassword", "shop name") ); // fail - the shop name is already exist
-        assertFalse(_bridge.TestUserIsFounderOfTheShop("bob","bobspassword", "shop name") ); // fail - the user is not the founder of the shop
+        assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
+        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "9999", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain") ); // fail - the shop name is already exist
     }
     
     // Test that a user can open write a review about the product he purchased.

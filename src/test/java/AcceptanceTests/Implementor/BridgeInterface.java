@@ -1,5 +1,6 @@
 package AcceptanceTests.Implementor;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public interface BridgeInterface {
     
     // SYSTEM TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
+    @BeforeEach
+    void init();
+
     @Test
     boolean testOpenMarketSystem(String username);
 
@@ -114,7 +117,7 @@ public interface BridgeInterface {
     boolean testCheckAndViewItemsInShoppingCartAsUser();
     
     @Test
-    boolean testCheckAllOrNothingBuyingShoppingCartUser(String username, String password);
+    boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address);
     
     @Test
     boolean testBuyingShoppingCartPoliciesUser(String username, String password);
@@ -129,10 +132,7 @@ public interface BridgeInterface {
     boolean TestWhenUserLogoutThenHeBecomeGuest(String username);
     
     @Test
-    boolean TestUserOpenAShop(String username, String password, String shopName);
-    
-    @Test
-    boolean TestUserIsFounderOfTheShop(String username, String password, String shopName);
+    boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress);
 
     @Test
     boolean TestUserWriteReviewOnPurchasedProduct(String username, String password, String productId);
@@ -228,4 +228,5 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
+
 }

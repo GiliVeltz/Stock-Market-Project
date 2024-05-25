@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Exceptions.PaymentFailedException;
+import Exceptions.ShippingFailedException;
+
 @RestController
 public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
@@ -30,7 +33,8 @@ public class ShoppingCartFacade {
     /*
      * Add a cart for a user by username.
      * This methos called only when a guest user register to the system.
-     * The cart of the guest user will be added to the user's cart and then will be deleted in the guests carts.
+     * The cart of the guest user will be added to the user's cart and then will be
+     * deleted in the guests carts.
      */
     public void addCartForUser(String guestID, String username) {
         _usersCarts.put(username, _guestsCarts.remove(guestID));
@@ -64,16 +68,18 @@ public class ShoppingCartFacade {
         _guestsCarts.remove(guestID);
     }
 
-    public void purchaseCartGuest(String guestID,  String cardNumber, String address) {
+    public void purchaseCartGuest(String guestID, String cardNumber, String address)
+            throws PaymentFailedException, ShippingFailedException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
-        for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++) 
+        for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
             allBaskets.add(i + 1);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         _guestsCarts.get(guestID).purchaseCart(allBaskets, cardNumber, address);
     }
 
-    public void purchaseCartUser(String username, List<Integer> busketsToBuy, String cardNumber, String address) {
+    public void purchaseCartUser(String username, List<Integer> busketsToBuy, String cardNumber, String address)
+            throws PaymentFailedException, ShippingFailedException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         _usersCarts.get(username).purchaseCart(busketsToBuy, cardNumber, address);
     }

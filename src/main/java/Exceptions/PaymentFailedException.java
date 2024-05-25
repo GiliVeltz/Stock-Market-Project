@@ -1,6 +1,6 @@
-package Domain.Exceptions;
+package Exceptions;
 
-public class PaymentFailedException extends RuntimeException{
+public class PaymentFailedException extends StockMarketException {
     // This class represents an error when payment has been failed.
     public PaymentFailedException() {
         super();

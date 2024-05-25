@@ -1,6 +1,6 @@
 package Exceptions;
 
-public class ShopException extends Exception {
+public class ShopException extends StockMarketException {
     public ShopException(String message) {
         super(message);
     }

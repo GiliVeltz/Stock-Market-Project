@@ -8,13 +8,12 @@ import Domain.Rules.Rule;
 
 public class PrecentageDiscount extends BaseDiscount {
     private double _precentage;
-    private Rule<ShoppingBasket> _rule;
     private int _productId;
 
     /**
      * Represents a percentage discount for a specific product.
      */
-    public PrecentageDiscount(Date expirationDate, double precentage, int productId) {
+    public PrecentageDiscount(java.util.Date expirationDate, double precentage, int productId) {
         super(expirationDate);
         if (precentage < 0 || precentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
@@ -34,22 +33,24 @@ public class PrecentageDiscount extends BaseDiscount {
      * @param basket The shopping basket to apply the discount to.
      */
     @Override
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 
-        SortedMap<Double, Integer> priceToAmount = basket.productToPriceToAmount.get(_productId);
+        SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(_productId);
 
         // get most expensive price and amount
-        double price = priceToAmount.firstKey();
+        double price = priceToAmount.lastKey();
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
         double discount = price * _precentage / 100;
-        int postAmount = priceToAmount.get(price - discount);
+        int postAmount = priceToAmount.getOrDefault(price - discount, 0);
 
         // update the price to amount mapping
         priceToAmount.put(price - discount, postAmount + 1);
         priceToAmount.put(price, amount - 1);
+        if (amount == 1)
+            priceToAmount.remove(price);
     }
 }

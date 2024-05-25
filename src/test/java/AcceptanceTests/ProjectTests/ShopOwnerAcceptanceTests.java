@@ -25,10 +25,10 @@ public class ShopOwnerAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerAddProductToShop() {
-        assertTrue(_bridge.testShopOwnerAddProductToShop("shopOwnerUserName", "shopId1", "ProductName", "ProductAmount") ); // success
-        assertFalse(_bridge.testShopOwnerAddProductToShop("shopOwnerUserName", "shopId1", "ProductName", "inValidAmount") ); // fail - invalid amount
-        assertFalse(_bridge.testShopOwnerAddProductToShop("shopOwnerUserName", "shopId1", "ExistProductName", "ProductAmount") ); // fail - already exist product name
-        assertFalse(_bridge.testShopOwnerAddProductToShop("shopOwnerUserName", "shopId2", "ExistProductName", "ProductAmount") ); // fail - the user is not the shop onwer
+        assertTrue(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "ProductAmount") ); // success
+        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "inValidAmount") ); // fail - invalid amount
+        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ExistProductName", "ProductAmount") ); // fail - already exist product name
+        assertFalse(_bridge.testShopOwnerAddProductToShop("whoAmI", "56321", "ExistProductName", "ProductAmount") ); // fail - the user is not the shop onwer
     }
     
     // Test that shop owner can remove products from the shop.
@@ -100,9 +100,9 @@ public class ShopOwnerAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerCloseShop(){
-        assertTrue(_bridge.testShopOwnerCloseShop("userName", "shopId1")); // success
-        assertFalse(_bridge.testShopOwnerCloseShop("userName", "shopId2")); // fail - exist shop but he is not the owner
-        assertFalse(_bridge.testShopOwnerCloseShop("userName", "shopId3")); // fail - non exist shop id
+        assertTrue(_bridge.testShopOwnerCloseShop("Bob", "12345")); // success
+        assertFalse(_bridge.testShopOwnerCloseShop("userName", "67890")); // fail - exist shop but he is not the owner
+        assertFalse(_bridge.testShopOwnerCloseShop("userName", "33333")); // fail - non exist shop id
     }
     
     // Test that the shop owner can get the information about the shop.
