@@ -34,6 +34,11 @@ public class ShoppingBasket implements Cloneable {
         _productIdList.add(productId);
     }
 
+    public void removeProductFromShoppingBasket(Integer productId) {
+        _productIdList.remove(productId);
+    }
+
+
     // Calculate and return the total price of all products in the basket
     public double calculateShoppingBasketPrice() {
         resetProductToPriceToAmount();
@@ -59,6 +64,10 @@ public class ShoppingBasket implements Cloneable {
 
     public int getShopId() {
         return _shop.getShopId();
+    }
+
+    public Shop getShop(){
+        return _shop;
     }
 
     public double getShoppingBasketPrice() {
@@ -202,4 +211,9 @@ public class ShoppingBasket implements Cloneable {
                 ", products=" + printAllProducts() +
                 '}';
     }
+
+    public boolean isEmpty() {
+        return this._productIdList.isEmpty(); 
+    }
+    
 }
