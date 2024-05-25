@@ -139,6 +139,12 @@ public class Shop {
         return true;
     }
 
+    public double getProductPriceById(Integer product){
+        return _productMap.get(product).getPrice();
+
+
+    }
+
     public boolean isOwnerOrFounder(Role role) {
         return role.isFounder() || role.isOwner();
     }
