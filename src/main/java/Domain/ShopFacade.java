@@ -164,14 +164,18 @@ public class ShopFacade {
     /**
      * Adds a conditional discount to a shop.
      *
-     * @param shopId          the ID of the shop
-     * @param username        the username of the user adding the discount
-     * @param mustHaveProducts a list of product IDs that must be present in the cart for the discount to apply
-     * @param isPercentage    a flag indicating whether the discount amount is a percentage or a fixed amount
-     * @param discountAmount  the amount of the discount
-     * @param expirationDate  the expiration date of the discount
-     * @throws PermissionException if the user does not have permission to add a discount to the shop
-     * @throws ShopException       if the shop does not exist or an error occurs while adding the discount
+     * @param shopId           the ID of the shop
+     * @param username         the username of the user adding the discount
+     * @param mustHaveProducts a list of product IDs that must be present in the
+     *                         cart for the discount to apply
+     * @param isPercentage     a flag indicating whether the discount amount is a
+     *                         percentage or a fixed amount
+     * @param discountAmount   the amount of the discount
+     * @param expirationDate   the expiration date of the discount
+     * @throws PermissionException if the user does not have permission to add a
+     *                             discount to the shop
+     * @throws ShopException       if the shop does not exist or an error occurs
+     *                             while adding the discount
      */
     public void addConditionalDiscountToShop(int shopId, String username, List<Integer> mustHaveProducts,
             boolean isPrecentage, double discountAmount, Date expirationDate)
@@ -186,7 +190,7 @@ public class ShopFacade {
         else
             baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
 
-        ConditionalDiscount discount = new ConditionalDiscount(expirationDate, mustHaveProducts, baseDiscount);
+        ConditionalDiscount discount = new ConditionalDiscount(mustHaveProducts, baseDiscount);
         shop.addDiscount(discount);
     }
 
@@ -203,19 +207,19 @@ public class ShopFacade {
         }
         // Search in a specific shop
         else {
-            if(isShopIdExist(shopId)) {
+            if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
                 productsByShop.put(shop.getShopId(), products);
-            }
-            else {
+            } else {
                 throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory) throws Exception {
+    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
+            throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -228,20 +232,20 @@ public class ShopFacade {
         }
         // Search in a specific shop
         else {
-            if(isShopIdExist(shopId)) {
+            if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
                 productsByShop.put(shop.getShopId(), products);
-            }
-            else {
+            } else {
                 throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords) throws Exception {
-        //TODO: check if keywords is empty
+    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords)
+            throws Exception {
+        // TODO: check if keywords is empty
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -254,19 +258,19 @@ public class ShopFacade {
         }
         // Search in a specific shop
         else {
-            if(isShopIdExist(shopId)) {
+            if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
                 productsByShop.put(shop.getShopId(), products);
-            }
-            else {
+            } else {
                 throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice) throws Exception {
+    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+            throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -279,12 +283,11 @@ public class ShopFacade {
         }
         // Search in a specific shop
         else {
-            if(isShopIdExist(shopId)) {
+            if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
                 productsByShop.put(shop.getShopId(), products);
-            }
-            else {
+            } else {
                 throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
