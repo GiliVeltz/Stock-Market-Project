@@ -9,8 +9,7 @@ public class User {
     private boolean _isAdmin;
     private String _email;
     private List<Order> _purchaseHistory;
-    // private static final Logger logger =
-    // Logger.getLogger(UserController.class.getName());
+    //private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     public User(String username, String encoded_password, String email) {
         _username = username;

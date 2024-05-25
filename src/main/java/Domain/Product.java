@@ -1,8 +1,11 @@
 package Domain;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.ShopFacade.Category;
 import Exceptions.ProductOutOfStockExepction;
 
 public class Product implements Cloneable {
@@ -10,15 +13,23 @@ public class Product implements Cloneable {
     private String _productName;
     private double _price;
     private Integer _quantity;
+    private HashSet<String> _keywords;
+    private Double _productRating;
+    private Integer _productRatersCounter;
+    private Category _category;
     private static final Logger logger = Logger.getLogger(Product.class.getName());
     // TODO: private List<discount>
 
     // Constructor
-    public Product(Integer productId, String productName, double price) {
+    public Product(Integer productId, String productName, Category category, double price) {
         this._productId = productId;
         this._productName = productName;
+        this._category = category;
         this._price = price;
         this._quantity = 0;
+        this._keywords = new HashSet<>();
+        this._productRating = -1.0;
+        this._productRatersCounter = 0;
     }
 
     public int getProductId() {
@@ -29,8 +40,31 @@ public class Product implements Cloneable {
         return _productName;
     }
 
+    public Category getCategory() {
+        return _category;
+    }
+
     public double getPrice() {
         return _price;
+    }
+
+    public void addKeyword(String keyword) {
+        _keywords.add(keyword);
+    }
+
+    public Double getProductRating() {
+        return _productRating;
+    }
+
+    public void addProductRating(Integer rating) {
+        //TODO: limit the rating to 1-5 
+        Double newRating = Double.valueOf(rating);
+        if (_productRating == -1.0) {
+            _productRating = newRating;
+        } else {
+            _productRating = ((_productRating * _productRatersCounter) + newRating) / (_productRatersCounter + 1);
+        }
+        _productRatersCounter++;
     }
 
     public void purchaseProduct() throws ProductOutOfStockExepction {
@@ -64,7 +98,28 @@ public class Product implements Cloneable {
         return "Product{" +
                 "id=" + _productId +
                 ", name='" + _productName + '\'' +
+                ", category=" + _category +
                 ", price=" + _price +
+                ", keywords=" + _keywords +
+                ", rating=" + _productRating +
                 '}';
     }
+
+    public boolean isKeywordExist(String keyword) {
+        return _keywords.contains(keyword);
+    }
+
+    public boolean isKeywordListExist(List<String> keywords) {
+        for (String keyword : keywords) {
+            if (isKeywordExist(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isPriceInRange(double minPrice, double maxPrice) {
+        return _price >= minPrice && _price <= maxPrice;
+    }
+    
 }
