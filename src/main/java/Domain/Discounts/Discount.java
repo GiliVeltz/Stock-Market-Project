@@ -7,6 +7,7 @@ import java.util.Map;
 import Domain.Product;
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Exceptions.DiscountExpiredException;
 
 public abstract class Discount {
     protected Rule<ShoppingBasket> _rule;
@@ -16,11 +17,17 @@ public abstract class Discount {
         _expirationDate = expirationDate;
     }
 
-    public void applyDiscount(ShoppingBasket basket) {
-        if (new Date().before(_expirationDate) && _rule.predicate(basket))
+    public void applyDiscount(ShoppingBasket basket) throws DiscountExpiredException {
+        Date currentTime = new Date();
+        if (currentTime.before(_expirationDate) && _rule.predicate(basket))
             applyDiscountLogic(basket);
-        // TODO: throw custom exception if discount is expired
+        else if (currentTime.after(_expirationDate))
+            throw new DiscountExpiredException("Discount has expired");
     }
 
-    protected abstract void applyDiscountLogic(ShoppingBasket basket);
+    public Date getExpirationDate() {
+        return _expirationDate;
+    }
+
+    protected abstract void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException;
 }

@@ -418,6 +418,7 @@ public class Shop {
         return appointed;
     }
 
+
     /**
      * Helper function to retrieve all the roles that we assigned from root role.
      * 
@@ -467,7 +468,7 @@ public class Shop {
     }
 
     public void addShopRating(Integer rating) {
-        //TODO: limit the rating to 1-5 
+        // TODO: limit the rating to 1-5
         Double newRating = Double.valueOf(rating);
         if (_shopRating == -1.0) {
             _shopRating = newRating;
@@ -529,9 +530,18 @@ public class Shop {
     }
 
     public void applyDiscounts(ShoppingBasket basket) {
+        List<Discount> expiredDiscounts = new ArrayList<>();
         basket.resetProductToPriceToAmount();
         for (Discount discount : _discounts) {
-            discount.applyDiscount(basket);
+            try {
+                discount.applyDiscount(basket);
+            } catch (DiscountExpiredException e) {
+                logger.info("Shop - applyDiscounts: discount: " + discount + " has expired, removing it.");
+                expiredDiscounts.add(discount);
+            }
+        }
+        for (Discount discount : expiredDiscounts) {
+            _discounts.remove(discount);
         }
     }
 
@@ -573,29 +583,23 @@ public class Shop {
 
     public List<Product> getProductsByKeywords(List<String> keywords) {
         List<Product> products = new ArrayList<>();
-        for (Product product : _productMap.values()) 
-        {
-            if (product.isKeywordListExist(keywords)) 
-            {
+        for (Product product : _productMap.values()) {
+            if (product.isKeywordListExist(keywords)) {
                 products.add(product);
             }
         }
         return products;
     }
-    
 
     public List<Product> getProductsByPriceRange(Double minPrice, Double maxPrice) {
         List<Product> products = new ArrayList<>();
-        for (Product product : _productMap.values()) 
-        {
-            if (product.isPriceInRange(minPrice, maxPrice)) 
-            {
+        for (Product product : _productMap.values()) {
+            if (product.isPriceInRange(minPrice, maxPrice)) {
                 products.add(product);
             }
         }
         return products;
     }
-        
 
     public List<ShopOrder> getPurchaseHistory() {
         return this._orderHistory;
@@ -623,11 +627,39 @@ public class Shop {
     }
 
     public Double addProductRating(Integer productId, Integer rating) {
-        //TODO: limit the rating to 1-5
+        // TODO: limit the rating to 1-5
         Product product = _productMap.get(productId);
         product.addProductRating(rating);
         return product.getProductRating();
     }
 
+    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException
+    {
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, String.format
+                ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. Product does not exist",productId, _shopId));
+            throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
+        }
+        return true;
+
+    }
+
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception
+    {
+        try{
+            if(!checkPermission(username, Permission.ADD_PRODUCT)){
+                logger.log(Level.SEVERE, String.format
+                    ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",productId, _shopId, username));
+                throw new PermissionException(String.format("User: %s does not have permission to Update product: %d", username, productId));
+            }
+    
+            isProductExist(productId);
+            getProductById(productId).updateProductQuantity(productAmoutn);
+        }
+        catch(Exception e)
+        {
+            throw new Exception(e.getMessage());
+        }
+    }
 
 }

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,6 +80,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     // private fields
     private String token = "token";
+    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
     
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -94,6 +97,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         MockitoAnnotations.openMocks(this);
         _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
         _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
+        // _tokenServiceMock =
 
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
 
@@ -413,11 +417,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestWhenUserLogoutThenHeBecomeGuest'");
     }
-
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
-        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
-        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
 
@@ -436,6 +437,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         {
             return false;
         }
+
         Response response = _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
         
         // Verify interactions
@@ -523,7 +525,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
     String productAmount)
     {
+        MockitoAnnotations.openMocks(this);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
         try
         {
             when(_tokenServiceMock.isUserAndLoggedIn("Nirvana")).thenReturn(true);
@@ -532,17 +537,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
             when(_shopFacadeMock.getShopByShopId(Integer.valueOf("56321"))).thenReturn(_shopMock);
             when(_shopMock.checkPermission("Nirvana",Permission.ADD_PRODUCT)).thenReturn(true);
             when(_shopMock.checkPermission("whoAmI",Permission.ADD_PRODUCT)).thenReturn(false);
+
+            when(_shopMock.checkPermission("whoAmI",Permission.ADD_PRODUCT)).thenAnswer(invocation -> {
+                throw new IllegalArgumentException();
+            });
             
-            //TODO: verify how to check if product mock exists>> maybe split it to 2 different functions 
-            // _productMap.containsKey(product.getProductId())
-
+            Response response =  _shopServiceMock.addProductToShop(token, Integer.valueOf(shopId), username, _productMock);
+            
             // Verify interactions
+            verify(_shopServiceMock, times(1)).addProductToShop(token, Integer.valueOf(shopId), username, _productMock);
             verify(_shopFacadeMock, times(1)).addProductToShop(Integer.valueOf(shopId), _productMock, username);
-            verify(_shopFacadeMock, times(1)).addProductToShop(Integer.valueOf(shopId), _productMock, username);
-
    
-            _shopServiceMock.addProductToShop(token, Integer.valueOf(shopId), username, _productMock);
-            return true;
+            return response.getErrorMessage() == null;
         }
         catch(Exception e)
         {
@@ -626,9 +632,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
 
     @Override
-    public boolean testShopOwnerCloseShop(String username, String shopId) {
+    public boolean testShopOwnerCloseShop(String username, String shopId) {  
+        MockitoAnnotations.openMocks(this);
+
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
         try
         {
             when(_shopFacadeMock.isShopIdExist(Integer.valueOf("12345"))).thenReturn(true);
@@ -641,14 +650,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
             when(_shopFacadeMock.isShopIdExist(Integer.valueOf("33333"))).thenReturn(false);
 
-            _shopServiceMock.closeShop(token, Integer.valueOf(shopId), username);
+            Response response = _shopServiceMock.closeShop(token, Integer.valueOf(shopId), username);
             // Verify interactions
-            verify(_shopFacadeMock, times(1)).closeShop(Integer.valueOf(shopId), username);
-   
-            return true;
+            verify(_shopServiceMock, times(1)).closeShop(token, Integer.valueOf(shopId), username);
+            
+            return response.getErrorMessage() == null;
         }
         catch(Exception e)
         {
+            logger.log(Level.SEVERE, String.format("Exception: %s",e.getMessage()));
             return false;
         }
     }
