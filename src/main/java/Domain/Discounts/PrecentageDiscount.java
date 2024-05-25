@@ -38,7 +38,7 @@ public class PrecentageDiscount extends BaseDiscount {
         if (!_rule.predicate(basket))
             return;
 
-        SortedMap<Double, Integer> priceToAmount = basket.productToPriceToAmount.get(_productId);
+        SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(_productId);
 
         // get most expensive price and amount
         double price = priceToAmount.firstKey();
