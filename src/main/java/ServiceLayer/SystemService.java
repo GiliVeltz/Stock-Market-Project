@@ -64,12 +64,12 @@ public class SystemService {
                     return response;
                 }
 
-            // Connect to external services
-            if (!_externalServiceHandler.connectToServices()) {
-                response.setErrorMessage("Failed to connect to external services");
-                logger.log(Level.SEVERE, "Failed to connect to external services");
-                return response;
-            }
+                // Connect to external services
+                if (!_externalServiceHandler.connectToServices()) {
+                    response.setErrorMessage("Failed to connect to external services");
+                    logger.log(Level.SEVERE, "Failed to connect to external services");
+                    return response;
+                }
 
                 // Open the system
                 setSystemOpen(true);

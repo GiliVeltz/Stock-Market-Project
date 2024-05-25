@@ -19,9 +19,9 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserFacade userController, TokenService tokenService,
+    public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
-                _userFacade = userController;
+                _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
