@@ -1,13 +1,15 @@
 package Domain.ExternalServices.SupplyService;
+
 import java.util.logging.Logger;
 
-import Domain.Exceptions.ShippingFailedException;
 import Domain.ExternalServices.ExternalService;
+import Exceptions.ShippingFailedException;
 
-public class AdapterSupply implements ExternalService{
+public class AdapterSupply implements ExternalService {
 
     private ProxySupply _supplyService;
     private static final Logger logger = Logger.getLogger(AdapterSupply.class.getName());
+
     public AdapterSupply() {
         _supplyService = new ProxySupply();
     }
@@ -15,13 +17,13 @@ public class AdapterSupply implements ExternalService{
     @Override
     public boolean ConnectToService() {
         // Connect to the supply service
-         //TODO : forward the request to the Supply service
-         logger.info("Connecting to the Supply service");
+        // TODO : forward the request to the Supply service
+        logger.info("Connecting to the Supply service");
 
         return true;
     }
 
-    public void checkIfDeliverOk(String address, String shopAddress) {
+    public void checkIfDeliverOk(String address, String shopAddress) throws ShippingFailedException {
         logger.info("Checking if the delivery is valid");
         if (!_supplyService.checkIfDeliverOk(address, shopAddress))
             throw new ShippingFailedException("Shipping failed");
@@ -31,5 +33,5 @@ public class AdapterSupply implements ExternalService{
         logger.info("Delivering the cart");
         _supplyService.deliver(clientAddress, shopAddress);
     }
-    
+
 }
