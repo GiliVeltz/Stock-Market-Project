@@ -5,6 +5,7 @@ import java.util.List;
 
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Exceptions.DiscountExpiredException;
 
 /**
  * Represents a conditional discount that applies a base discount to a shopping
@@ -12,9 +13,7 @@ import Domain.Rules.Rule;
  * if certain products are present in the basket.
  */
 public class ConditionalDiscount extends Discount {
-
     private BaseDiscount _discount;
-    private Rule<ShoppingBasket> _rule;
 
     /**
      * Constructs a new ConditionalDiscount object with the specified must-have
@@ -26,8 +25,8 @@ public class ConditionalDiscount extends Discount {
      * @param discount         the base discount to apply if the must-have products
      *                         are present
      */
-    public ConditionalDiscount(Date expirationDate, List<Integer> mustHaveProducts, BaseDiscount discount) {
-        super(expirationDate);
+    public ConditionalDiscount(List<Integer> mustHaveProducts, BaseDiscount discount) {
+        super(discount.getExpirationDate());
         _discount = discount;
         _rule = (basket) -> mustHaveProducts.stream().allMatch((productId) -> basket.getProductCount(productId) > 0);
     }
@@ -36,9 +35,10 @@ public class ConditionalDiscount extends Discount {
      * Applies the discount to the given shopping basket if the rule is satisfied.
      * 
      * @param basket the shopping basket to apply the discount to
+     * @throws DiscountExpiredException if the discount has expired
      */
     @Override
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException {
         if (_rule.predicate(basket))
             _discount.applyDiscount(basket);
     }

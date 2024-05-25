@@ -1,6 +1,6 @@
 package Domain.Discounts;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
@@ -8,7 +8,6 @@ import Domain.Rules.Rule;
 
 public class FixedDiscount extends BaseDiscount {
     private double _discountTotal;
-    private Rule<ShoppingBasket> _rule;
     private int _productId;
 
     /**
@@ -32,23 +31,24 @@ public class FixedDiscount extends BaseDiscount {
      * @param basket The shopping basket to apply the discount to.
      */
     @Override
-
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) {
         if (!_rule.predicate(basket))
             return;
 
-        SortedMap<Double, Integer> priceToAmount = basket.productToPriceToAmount.get(_productId);
+        SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(_productId);
 
         // get most expensive price and amount
-        double price = priceToAmount.firstKey();
+        double price = priceToAmount.lastKey();
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
         double postPrice = Math.max(price - _discountTotal, 0.0);
-        int postAmount = priceToAmount.get(postPrice);
+        int postAmount = priceToAmount.getOrDefault(postPrice, 0);
 
         // update the price to amount mapping
         priceToAmount.put(postPrice, postAmount + 1);
         priceToAmount.put(price, amount - 1);
+        if (amount == 1)
+            priceToAmount.remove(price);
     }
 }
