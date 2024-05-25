@@ -63,7 +63,7 @@ public class Order {
         return sb.toString();
     }
 
-    private Object printAllProducts(ShoppingBasket shoppingBasket) {
+    private String printAllProducts(ShoppingBasket shoppingBasket) {
        return shoppingBasket.printAllProducts();
         
     }

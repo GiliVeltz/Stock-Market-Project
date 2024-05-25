@@ -151,11 +151,12 @@ public class ShoppingBasket implements Cloneable {
     public ShoppingBasket clone() {
         try {
             ShoppingBasket cloned = (ShoppingBasket) super.clone();
+            cloned._shop = this._shop;
             cloned._productIdList = new ArrayList<>(_productIdList);
             cloned.productToPriceToAmount = cloneProductToPriceToAmount();
             return cloned;
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError(); // Can't happen as we implement Cloneable
+            throw new AssertionError(); // should not happen as we implement Cloneable
         }
     }
 
