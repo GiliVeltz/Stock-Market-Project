@@ -1,6 +1,6 @@
 package Domain.Discounts;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
@@ -45,7 +45,7 @@ public class FixedDiscount extends BaseDiscount {
 
         // calculate discount, and amount of the product at the discounted price
         double postPrice = Math.max(price - _discountTotal, 0.0);
-        int postAmount = priceToAmount.get(postPrice);
+        int postAmount = priceToAmount.getOrDefault(postPrice, 0);
 
         // update the price to amount mapping
         priceToAmount.put(postPrice, postAmount + 1);
