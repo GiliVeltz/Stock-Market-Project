@@ -418,6 +418,7 @@ public class Shop {
         return appointed;
     }
 
+
     /**
      * Helper function to retrieve all the roles that we assigned from root role.
      * 
@@ -630,6 +631,35 @@ public class Shop {
         Product product = _productMap.get(productId);
         product.addProductRating(rating);
         return product.getProductRating();
+    }
+
+    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException
+    {
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, String.format
+                ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. Product does not exist",productId, _shopId));
+            throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
+        }
+        return true;
+
+    }
+
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception
+    {
+        try{
+            if(!checkPermission(username, Permission.ADD_PRODUCT)){
+                logger.log(Level.SEVERE, String.format
+                    ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",productId, _shopId, username));
+                throw new PermissionException(String.format("User: %s does not have permission to Update product: %d", username, productId));
+            }
+    
+            isProductExist(productId);
+            getProductById(productId).updateProductQuantity(productAmoutn);
+        }
+        catch(Exception e)
+        {
+            throw new Exception(e.getMessage());
+        }
     }
 
 }
