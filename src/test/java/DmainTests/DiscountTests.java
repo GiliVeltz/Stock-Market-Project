@@ -17,7 +17,7 @@ import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Exceptions.DiscountExpiredException;
 
-public class DiscountTest {
+public class DiscountTests {
     /***************** Precentage Discount Tests *****************/
     @Mock
     private ShoppingBasket _basketMock;

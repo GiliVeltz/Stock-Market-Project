@@ -413,7 +413,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestWhenUserLogoutThenHeBecomeGuest'");
     }
-
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
         _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
@@ -436,6 +435,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         {
             return false;
         }
+
         Response response = _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
         
         // Verify interactions
