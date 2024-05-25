@@ -18,9 +18,10 @@ public abstract class Discount {
     }
 
     public void applyDiscount(ShoppingBasket basket) throws DiscountExpiredException {
-        if (new Date().before(_expirationDate) && _rule.predicate(basket))
+        Date currentTime = new Date();
+        if (currentTime.before(_expirationDate) && _rule.predicate(basket))
             applyDiscountLogic(basket);
-        else
+        else if (currentTime.after(_expirationDate))
             throw new DiscountExpiredException("Discount has expired");
     }
 
