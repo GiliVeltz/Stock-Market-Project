@@ -13,6 +13,14 @@ public class ShopFacade {
     private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
 
+    public enum Category {
+        GROCERY,
+        CLOTHING,
+        ELECTRONICS,
+        PHARMACY,
+        // Add more categories as needed
+    }
+
     private ShopFacade() {
         this._shopsList = new ArrayList<>();
     }
@@ -117,7 +125,7 @@ public class ShopFacade {
         return false;
     }
 
-        public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
+    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -133,6 +141,31 @@ public class ShopFacade {
             if(isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
+                productsByShop.put(shop.getShopId(), products);
+            }
+            else {
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+            }
+        }
+        return productsByShop;
+    }
+
+    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory) throws Exception {
+        Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If shopId is null, search in all shops
+        if (shopId == null) {
+            for (Shop shop : this._shopsList) {
+                List<Product> products = shop.getProductsByCategory(productCategory);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
+            }
+        }
+        // Search in a specific shop
+        else {
+            if(isShopIdExist(shopId)) {
+                Shop shop = getShopByShopId(shopId);
+                List<Product> products = shop.getProductsByCategory(productCategory);
                 productsByShop.put(shop.getShopId(), products);
             }
             else {
@@ -192,5 +225,7 @@ public class ShopFacade {
         }
         return productsByShop;
     }
+
+    
 
 }

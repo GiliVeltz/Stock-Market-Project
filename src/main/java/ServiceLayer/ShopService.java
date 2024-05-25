@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import Domain.Product;
 import Domain.ShopFacade;
 import Domain.ShopOrder;
+import Domain.ShopFacade.Category;
 
 @Service
 public class ShopService {
@@ -130,11 +131,12 @@ public class ShopService {
     * @return          A response indicating the success of the operation and some products' deatails or failure.
     */
     public Response searchProductInShopByName(Integer shopId, String productName)
+    //TODO: handle return products as a response and log them
     {
         Response response = new Response();
         try
         {
-            Map<Integer, List<Product>> products = _shopController.getProductInShopByName(shopId, productName);
+            Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
             if (products != null)
             {
                 //TODO: handle return products as a response and log them 
@@ -155,6 +157,39 @@ public class ShopService {
         return response;        
     }
 
+/**
+    * searches products by their Category.
+    * 
+    * @param shopId    The ID of the shop to search in OR null to search in all shops.
+    * @param productCategory  The category of the product.
+    * @return          A response indicating the success of the operation and some products' deatails or failure.
+    */
+    public Response searchProductInShopByCategory(Integer shopId, Category productCategory)
+    //TODO: handle return products as a response and log them
+    {
+        Response response = new Response();
+        try
+        {
+            Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
+            if (products != null)
+            {
+                //TODO: handle return products as a response and log them 
+                response.setReturnValue("Products found in shop");
+                logger.info(String.format("Products found in Shop ID: %d", shopId));
+            }
+            else
+            {
+                response.setReturnValue("Products not found in shop");
+                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            }
+        }
+        catch (Exception e)
+        {
+            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;        
+    }
 
     /**
     * searches products by keyWords.
@@ -164,11 +199,12 @@ public class ShopService {
     * @return          A response indicating the success of the operation and some products' deatails or failure.
     */
     public Response searchProductsInShopByKeywords(Integer shopId, List<String> keywords)
+    //TODO: handle return products as a response and log them
     {
         Response response = new Response();
         try
         {
-            Map<Integer, List<Product>> products = _shopController.getProductsInShopByKeywords(shopId, keywords);
+            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
             if (products != null)
             {
                 //TODO: handle return products as a response and log them 
@@ -190,7 +226,9 @@ public class ShopService {
     }
 
 
+
     /**
+    * Temporary function - replace filter
     * searches products by pricing range.
     * 
     * @param shopId    The ID of the shop to search in OR null to search in all shops.
@@ -199,11 +237,12 @@ public class ShopService {
     * @return          A response indicating the success of the operation and some products' deatails or failure.
     */
     public Response searchProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+    //TODO: handle return products as a response and log them
     {
         Response response = new Response();
         try
         {
-            Map<Integer, List<Product>> products = _shopController.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
+            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
             if (products != null)
             {
                 //TODO: handle return products as a response and log them 
