@@ -273,4 +273,53 @@ public class ShopService {
             return resp;
         }
     }
+
+    /**
+     * Adds a conditional discount to a shop.
+     * 
+     * @param token            The session token of the user adding the discount.
+     * @param shopId           The ID of the shop to which the discount will be
+     *                         added.
+     * @param mustHaveProducts A list of product IDs that must be in the shopping
+     *                         basket for the discount to apply.
+     * @param isPrecentage     A boolean indicating whether the discount is a
+     *                         percentage or a fixed amount.
+     * @param discountAmount   The amount of the discount.
+     * @param expirationDate   The date on which the discount will expire.
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response addShopConditionalDiscount(String token, int shopId, List<Integer> mustHaveProducts,
+            boolean isPrecentage, double discountAmount, Date expirationDate) {
+        Response resp = new Response();
+        try {
+            // check for user validity
+            if (!_tokenService.validateToken(token))
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token))
+                throw new StockMarketException("User is not logged in");
+
+            // check validity of input parameters
+            if (!_shopFacade.isShopIdExist(shopId))
+                throw new StockMarketException("Shop not found");
+            if (isPrecentage && (discountAmount < 0 || discountAmount > 100))
+                throw new StockMarketException("Invalid discount amount - precentage should be between 0% and 100%");
+            if (!isPrecentage && discountAmount < 0)
+                throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
+            Date currentDate = new Date();
+            if (expirationDate.before(currentDate) || expirationDate.getTime() - currentDate.getTime() < 86400000)
+                throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
+
+            String username = _tokenService.extractUsername(token);
+            _shopFacade.addConditionalDiscountToShop(shopId, username, mustHaveProducts, isPrecentage, discountAmount,
+                    expirationDate);
+            resp.setReturnValue("Added conditional discount");
+            logger.info("Added conditional discount to shop: " + shopId);
+            return resp;
+
+        } catch (StockMarketException e) {
+            resp.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to add discount to shop: " + e.getMessage(), e);
+            return resp;
+        }
+    }
 }

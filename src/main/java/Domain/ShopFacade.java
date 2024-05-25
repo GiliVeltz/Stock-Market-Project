@@ -6,8 +6,12 @@ import java.util.List;
 
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
+import Exceptions.StockMarketException;
+
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Discounts.BaseDiscount;
+import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.Discount;
 import Domain.Discounts.PrecentageDiscount;
 
@@ -138,11 +142,40 @@ public class ShopFacade {
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
-        Discount discount;
+        BaseDiscount discount;
         if (isPrecentage)
             discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
         else
             discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        shop.addDiscount(discount);
+    }
+
+    /**
+     * Adds a conditional discount to a shop.
+     *
+     * @param shopId          the ID of the shop
+     * @param username        the username of the user adding the discount
+     * @param mustHaveProducts a list of product IDs that must be present in the cart for the discount to apply
+     * @param isPercentage    a flag indicating whether the discount amount is a percentage or a fixed amount
+     * @param discountAmount  the amount of the discount
+     * @param expirationDate  the expiration date of the discount
+     * @throws PermissionException if the user does not have permission to add a discount to the shop
+     * @throws ShopException       if the shop does not exist or an error occurs while adding the discount
+     */
+    public void addConditionalDiscountToShop(int shopId, String username, List<Integer> mustHaveProducts,
+            boolean isPrecentage, double discountAmount, Date expirationDate)
+            throws PermissionException, ShopException {
+
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
+        BaseDiscount baseDiscount;
+        if (isPrecentage)
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        else
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+
+        ConditionalDiscount discount = new ConditionalDiscount(expirationDate, mustHaveProducts, baseDiscount);
         shop.addDiscount(discount);
     }
 }
