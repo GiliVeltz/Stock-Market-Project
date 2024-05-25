@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.ShopFacade.Category;
 import Domain.Discounts.Discount;
 import Exceptions.*;
 
@@ -23,6 +24,8 @@ public class Shop {
     private List<Discount> _discounts;
     private String _bankDetails;
     private String _shopAddress;
+    private Double _shopRating;
+    private Integer _shopRatersCounter;
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -38,6 +41,8 @@ public class Shop {
             _bankDetails = bankDetails;
             _shopAddress = shopAddress;
             _discounts = new ArrayList<>();
+            this._shopRating = -1.0;
+            this._shopRatersCounter = 0;
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
@@ -457,6 +462,21 @@ public class Shop {
         return sb.toString();
     }
 
+    public Double getShopRating() {
+        return _shopRating;
+    }
+
+    public void addShopRating(Integer rating) {
+        //TODO: limit the rating to 1-5 
+        Double newRating = Double.valueOf(rating);
+        if (_shopRating == -1.0) {
+            _shopRating = newRating;
+        } else {
+            _shopRating = ((_shopRating * _shopRatersCounter) + newRating) / (_shopRatersCounter + 1);
+        }
+        _shopRatersCounter++;
+    }
+
     /**
      * Add new product to the shop.
      * 
@@ -524,10 +544,58 @@ public class Shop {
         return "Shop{" +
                 "Shop ID=" + _shopId +
                 ", Shop Founder=" + _shopFounder +
+                ", Shop address=" + _shopAddress +
+                ", Shop rating=" + _shopRating +
                 ", Products= \n" + _productMap +
                 ", Order History= \n " + _orderHistory +
                 '}';
     }
+
+    public List<Product> getProductsByName(String productName) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) {
+            if (product.getProductName().equals(productName)) {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    public List<Product> getProductsByCategory(Category productCategory) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) {
+            if (product.getCategory() == productCategory) {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+
+    public List<Product> getProductsByKeywords(List<String> keywords) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) 
+        {
+            if (product.isKeywordListExist(keywords)) 
+            {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+    
+
+    public List<Product> getProductsByPriceRange(Double minPrice, Double maxPrice) {
+        List<Product> products = new ArrayList<>();
+        for (Product product : _productMap.values()) 
+        {
+            if (product.isPriceInRange(minPrice, maxPrice)) 
+            {
+                products.add(product);
+            }
+        }
+        return products;
+    }
+        
 
     public List<ShopOrder> getPurchaseHistory() {
         return this._orderHistory;
@@ -553,4 +621,13 @@ public class Shop {
     public String getShopAddress() {
         return _shopAddress;
     }
+
+    public Double addProductRating(Integer productId, Integer rating) {
+        //TODO: limit the rating to 1-5
+        Product product = _productMap.get(productId);
+        product.addProductRating(rating);
+        return product.getProductRating();
+    }
+
+
 }
