@@ -12,7 +12,9 @@ import java.util.logging.Level;
 import Domain.Product;
 import Domain.ShopFacade;
 import Domain.ShopOrder;
+
 import Domain.ShopFacade.Category;
+
 import Exceptions.StockMarketException;
 
 @Service
@@ -414,6 +416,7 @@ public class ShopService {
             resp.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to add discount to shop: " + e.getMessage(), e);
             return resp;
+
         }
     }
 

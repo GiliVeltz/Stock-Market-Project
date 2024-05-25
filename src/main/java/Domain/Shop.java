@@ -28,7 +28,8 @@ public class Shop {
     private Integer _shopRatersCounter;
 
     // Constructor
-    public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress) throws ShopException {
+    public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
+            throws ShopException {
         try {
             logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
@@ -39,6 +40,7 @@ public class Shop {
             _userToRole = new HashMap<>();
             _bankDetails = bankDetails;
             _shopAddress = shopAddress;
+            _discounts = new ArrayList<>();
             this._shopRating = -1.0;
             this._shopRatersCounter = 0;
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
@@ -144,9 +146,8 @@ public class Shop {
         return true;
     }
 
-    public double getProductPriceById(Integer product){
+    public double getProductPriceById(Integer product) {
         return _productMap.get(product).getPrice();
-
 
     }
 
@@ -597,7 +598,7 @@ public class Shop {
         
 
     public List<ShopOrder> getPurchaseHistory() {
-       return this._orderHistory;
+        return this._orderHistory;
     }
 
     public Boolean isOwnerOrFounderOwner(String userId) throws ShopException {
@@ -606,8 +607,7 @@ public class Shop {
     }
 
     // before removing the shop send notificstion to all relevasnt users
-    public void notifyRemoveShop()
-    {
+    public void notifyRemoveShop() {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String userName = entry.getKey();
             // TODO: StoreClosedAlert();

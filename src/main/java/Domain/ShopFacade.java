@@ -290,7 +290,4 @@ public class ShopFacade {
         }
         return productsByShop;
     }
-
-    
-
 }
