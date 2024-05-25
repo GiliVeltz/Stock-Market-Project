@@ -1,6 +1,6 @@
-package Domain.Exceptions;
+package Exceptions;
 
-public class ProductOutOfStockExepction extends RuntimeException {
+public class ProductOutOfStockExepction extends StockMarketException {
     // This class represents an error when a product is out of stock.
     
     public ProductOutOfStockExepction() {

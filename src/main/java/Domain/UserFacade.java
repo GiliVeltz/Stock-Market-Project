@@ -49,7 +49,7 @@ public class UserFacade {
             if(email == null || email.isEmpty()){
                 throw new Exception("Email is empty.");
             }
-            if(password == null || password.isEmpty()){
+            if(password == null || password.isEmpty() || password.length() < 5){
                 throw new Exception("Password is empty.");
             }
             this._registeredUsers.add(new User(userName, encodedPass, email));
@@ -98,4 +98,6 @@ public class UserFacade {
         }
         return null;
     }
+
+
 }
