@@ -662,4 +662,7 @@ public class Shop {
         }
     }
 
+    public String getFounderName() {
+        return _shopFounder;
+    }
 }
