@@ -41,15 +41,17 @@ public class PrecentageDiscount extends BaseDiscount {
         SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(_productId);
 
         // get most expensive price and amount
-        double price = priceToAmount.firstKey();
+        double price = priceToAmount.lastKey();
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
         double discount = price * _precentage / 100;
-        int postAmount = priceToAmount.get(price - discount);
+        int postAmount = priceToAmount.getOrDefault(price - discount, 0);
 
         // update the price to amount mapping
         priceToAmount.put(price - discount, postAmount + 1);
         priceToAmount.put(price, amount - 1);
+        if (amount == 1)
+            priceToAmount.remove(price);
     }
 }

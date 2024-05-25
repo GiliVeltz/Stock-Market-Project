@@ -40,7 +40,7 @@ public class FixedDiscount extends BaseDiscount {
         SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(_productId);
 
         // get most expensive price and amount
-        double price = priceToAmount.firstKey();
+        double price = priceToAmount.lastKey();
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
@@ -50,5 +50,7 @@ public class FixedDiscount extends BaseDiscount {
         // update the price to amount mapping
         priceToAmount.put(postPrice, postAmount + 1);
         priceToAmount.put(price, amount - 1);
+        if (amount == 1)
+            priceToAmount.remove(price);
     }
 }

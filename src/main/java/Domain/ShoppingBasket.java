@@ -142,7 +142,7 @@ public class ShoppingBasket implements Cloneable {
         for (Integer productId : _productIdList) {
             double price = _shop.getProductById(productId).getPrice();
             if (!_productToPriceToAmount.containsKey(productId))
-                _productToPriceToAmount.put(productId, new TreeMap<>((a, b) -> a > b ? 1 : -1));
+                _productToPriceToAmount.put(productId, new TreeMap<>());
             if (!_productToPriceToAmount.get(productId).containsKey(price))
                 _productToPriceToAmount.get(productId).put(price, 0);
 
