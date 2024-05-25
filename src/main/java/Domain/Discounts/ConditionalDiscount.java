@@ -5,6 +5,7 @@ import java.util.List;
 
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Exceptions.DiscountExpiredException;
 
 /**
  * Represents a conditional discount that applies a base discount to a shopping
@@ -36,9 +37,10 @@ public class ConditionalDiscount extends Discount {
      * Applies the discount to the given shopping basket if the rule is satisfied.
      * 
      * @param basket the shopping basket to apply the discount to
+     * @throws DiscountExpiredException if the discount has expired
      */
     @Override
-    public void applyDiscountLogic(ShoppingBasket basket) {
+    public void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException {
         if (_rule.predicate(basket))
             _discount.applyDiscount(basket);
     }
