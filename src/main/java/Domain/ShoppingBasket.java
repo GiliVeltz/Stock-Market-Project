@@ -21,7 +21,6 @@ public class ShoppingBasket implements Cloneable {
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
 
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
-    private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
 
     // Constructor
     public ShoppingBasket(Shop shop) {
@@ -48,14 +47,12 @@ public class ShoppingBasket implements Cloneable {
 
         // case where there are no discounts on the basket
         if (_productToPriceToAmount.size() == 0) {
-        if (_productToPriceToAmount.size() == 0) {
             for (Integer product : _productIdList) {
                 _basketTotalAmount += _shop.getProductPriceById(product);
             }
         } else {
             // iterate over the productt to price to amount map and calculate the total
             // price
-            for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : _productToPriceToAmount.entrySet()) {
             for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : _productToPriceToAmount.entrySet()) {
                 for (Map.Entry<Double, Integer> priceToAmount : entry.getValue().entrySet()) {
                     _basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
@@ -64,6 +61,7 @@ public class ShoppingBasket implements Cloneable {
         }
         return _basketTotalAmount;
     }
+    
 
     public int getShopId() {
         return _shop.getShopId();
