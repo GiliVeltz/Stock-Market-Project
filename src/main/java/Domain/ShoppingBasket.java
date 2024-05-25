@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Exceptions.ProductOutOfStockExepction;
+import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
@@ -31,6 +32,7 @@ public class ShoppingBasket implements Cloneable {
     }
 
     public void addProductToShoppingBasket(Integer productId) {
+        
         _productIdList.add(productId);
     }
 
@@ -84,13 +86,24 @@ public class ShoppingBasket implements Cloneable {
      * If an exception is thrown, cancel the purchase of all the products that were
      * bought. This function only updates the item's stock.
      */
-    public boolean purchaseBasket() {
+    public boolean purchaseBasket() throws ShopPolicyException {
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
 
+        //HERE WE CHECK IF THE SHOP Policy is met.
+        try{
+        logger.log(Level.FINE,
+                "ShoppingBasket - purchaseBasket - Check if the shop policy is ok for shop: " + _shop.getShopId());
+        _shop.ValidateBasketMeetsShopPolicy(this);
+        }catch (ShopPolicyException e){
+            logger.log(Level.FINE,
+                "ShoppingBasket - purchaseBasket - Basket didn't meet the shop policy.");
+            throw e;
+        }
+        
         // TODO: consider the discounts using productToPriceToAmount
-
+        
         for (Integer productId : _productIdList) {
             try {
                 _shop.getProductById(productId).purchaseProduct();

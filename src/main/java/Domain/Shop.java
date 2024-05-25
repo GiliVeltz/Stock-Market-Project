@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import Domain.ShopFacade.Category;
 import Domain.Discounts.Discount;
+import Domain.Policies.ShopPolicy;
 import Exceptions.*;
 
 public class Shop {
@@ -26,6 +27,7 @@ public class Shop {
     private String _shopAddress;
     private Double _shopRating;
     private Integer _shopRatersCounter;
+    private ShopPolicy _shopPolicy;
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -43,6 +45,7 @@ public class Shop {
             _discounts = new ArrayList<>();
             this._shopRating = -1.0;
             this._shopRatersCounter = 0;
+            _shopPolicy = new ShopPolicy();
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
@@ -630,6 +633,33 @@ public class Shop {
         Product product = _productMap.get(productId);
         product.addProductRating(rating);
         return product.getProductRating();
+    }
+
+    /**
+     * Checks if a basket is meeting the shop Policy.
+     * @param sb the basket to check
+     * @throws ShopPolicyException
+     */
+    public void ValidateBasketMeetsShopPolicy(ShoppingBasket sb) throws ShopPolicyException{
+        logger.log(Level.FINE, "Shop - ValidateBasketMeetsShopPolicy: Starting validation of basket for shop with id: "+_shopId);
+        if(!_shopPolicy.evaluate(sb)){
+            logger.log(Level.SEVERE, "Shop - ValidateBasketMeetsShopPolicy: Basket violates the shop policy of shop with id: "+_shopId);
+            throw new ShopPolicyException("Basket violates the shop policy of shop with id: "+_shopId);
+        }
+    }
+
+    /**
+     * Checks if a user is meeting the product policy.
+     * @param u The user that tries to add the product to basket.
+     * @param p The product which policy is being checked.
+     * @throws ProdcutPolicyException 
+     */
+    public void ValidateProdcutPolicy(User u, Product p) throws ProdcutPolicyException{
+        logger.log(Level.FINE, "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: "+_shopId);
+        if(!p.getProductPolicy().evaluate(u)){
+            logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User "+u.getUserName()+" violates the product policy of product "+p.getProductName()+" in shop with id: "+_shopId);
+            throw new ProdcutPolicyException("User "+u.getUserName()+" violates the shop policy of shop with id: "+_shopId);
+        }
     }
 
 }

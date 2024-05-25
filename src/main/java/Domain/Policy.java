@@ -11,7 +11,7 @@ import Domain.Rules.Rule;
  *
  * @param <T> the type of the rules that define the policy
  */
-public class Policy<T> {
+public abstract class Policy<T> {
     private List<Rule<T>> _rules;
 
     /**

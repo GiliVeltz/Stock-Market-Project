@@ -10,8 +10,10 @@ import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
+import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
+//TODO: function to add prodcut to cart?
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
@@ -78,8 +80,14 @@ public class ShoppingCart {
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {
-                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Product out of stock for baket number: "
+                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Product out of stock for basket number: "
                         + basketId + ". Exception: " + e.getMessage(), e);
+                logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
+                for (Integer basket : boughtBasketList) {
+                    _shoppingBaskets.get(basket).cancelPurchase();
+                }
+            } catch(ShopPolicyException e){
+                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Basket "+basketId+" Validated the policy of the shop.");
                 logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
