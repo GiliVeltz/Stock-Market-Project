@@ -15,7 +15,7 @@ public class Product {
     private HashSet<String> _keywords;
     private Double _rating;
     private Integer _ratersCounter;
-    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+    private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
     //TODO: private List<discount> 
 
     // Constructor
