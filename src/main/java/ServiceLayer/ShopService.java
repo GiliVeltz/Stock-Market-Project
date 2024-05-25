@@ -468,4 +468,39 @@ public class ShopService {
             return resp;
         }
     }
+
+    /**
+     * Updates the quantity of a specified product in a shop.
+     * 
+     * @param token          The session token of the user performing the update.
+     * @param userName       The username of the user performing the update.
+     * @param shopId         The ID of the shop where the product quantity is being updated.
+     * @param productId      The ID of the product whose quantity is being updated.
+     * @param productAmount  The new quantity amount of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     * @throws StockMarketException if the session token is invalid, the user is not logged in, or the shop ID does not exist.
+     */
+    public Response updateProductQuantity(String token, String userName, Integer shopId, Integer productId, Integer productAmount) throws StockMarketException
+    {
+        Response resp = new Response();
+        if (!_tokenService.validateToken(token))
+            throw new StockMarketException("Invalid session token.");
+        if (!_tokenService.isUserAndLoggedIn(token))
+            throw new StockMarketException("User is not logged in");
+        if (!_shopFacade.isShopIdExist(shopId))
+            throw new StockMarketException(String.format("Shop Id: %d not found",shopId));
+
+        try
+        {
+            _shopFacade.updateProductQuantity(userName, shopId, productId, productAmount);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d",productId, shopId));
+            return resp;
+        }
+        catch(Exception e)
+        {
+            resp.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",userName, shopId, e.getMessage()) , e);
+            return resp;
+        }
+    }
 }

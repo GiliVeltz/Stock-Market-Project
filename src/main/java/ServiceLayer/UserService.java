@@ -222,9 +222,9 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 if(_tokenService.isGuest(token)){
-                    _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID, shopID);
+                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID);
                 } else if(_tokenService.isUserAndLoggedIn(token)){
-                    _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID, shopID);
+                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
                 } else {
                     throw new Exception("Token is incorrect");
                 }

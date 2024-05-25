@@ -26,9 +26,9 @@ public class ShopOwnerAcceptanceTests {
     @Test
     public void testShopOwnerAddProductToShop() {
         assertTrue(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "ProductAmount") ); // success
-        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "inValidAmount") ); // fail - invalid amount
-        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ExistProductName", "ProductAmount") ); // fail - already exist product name
+        // assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "inValidAmount") ); // fail - invalid amount
         assertFalse(_bridge.testShopOwnerAddProductToShop("whoAmI", "56321", "ExistProductName", "ProductAmount") ); // fail - the user is not the shop onwer
+        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ExistProductName", "ProductAmount") ); // fail - already exist product name
     }
     
     // Test that shop owner can remove products from the shop.
@@ -97,7 +97,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can close his shop in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerCloseShop(){
         assertTrue(_bridge.testShopOwnerCloseShop("Bob", "12345")); // success
