@@ -22,5 +22,9 @@ public abstract class Discount {
         // TODO: throw custom exception if discount is expired
     }
 
+    public Date getExpirationDate() {
+        return _expirationDate;
+    }
+
     protected abstract void applyDiscountLogic(ShoppingBasket basket);
 }

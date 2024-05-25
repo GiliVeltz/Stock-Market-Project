@@ -26,8 +26,8 @@ public class ConditionalDiscount extends Discount {
      * @param discount         the base discount to apply if the must-have products
      *                         are present
      */
-    public ConditionalDiscount(Date expirationDate, List<Integer> mustHaveProducts, BaseDiscount discount) {
-        super(expirationDate);
+    public ConditionalDiscount(List<Integer> mustHaveProducts, BaseDiscount discount) {
+        super(discount.getExpirationDate());
         _discount = discount;
         _rule = (basket) -> mustHaveProducts.stream().allMatch((productId) -> basket.getProductCount(productId) > 0);
     }
