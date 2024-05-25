@@ -27,12 +27,13 @@ public class ShoppingBasket implements Cloneable {
         _shop = shop;
         _productIdList = new ArrayList<>();
         _basketTotalAmount = 0.0;
+        _productToPriceToAmount = new HashMap<>();
     }
 
     public void addProductToShoppingBasket(Integer productId) {
         _productIdList.add(productId);
     }
- 
+
     // Calculate and return the total price of all products in the basket
     public double calculateShoppingBasketPrice() {
         resetProductToPriceToAmount();
@@ -84,7 +85,8 @@ public class ShoppingBasket implements Cloneable {
      * bought. This function only updates the item's stock.
      */
     public boolean purchaseBasket() {
-        logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
+        logger.log(Level.FINE,
+                "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
 
         // TODO: consider the discounts using productToPriceToAmount
@@ -180,7 +182,7 @@ public class ShoppingBasket implements Cloneable {
         return clonedMap;
     }
 
-    public String printAllProducts(){
+    public String printAllProducts() {
         StringBuilder sb = new StringBuilder();
         for (Integer product : _productIdList) {
             sb.append(_shop.getProductById(product).toString());
