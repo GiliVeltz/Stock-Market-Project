@@ -20,9 +20,9 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserFacade userController, TokenService tokenService,
+    public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
-                _userFacade = userController;
+                _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
@@ -32,11 +32,14 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                if(userName == null || userName.isEmpty() || password == null || password.isEmpty()){
+                    throw new Exception("Username or password is empty.");
+                }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
-                    throw new Exception("User Name Is Already Exists");
+                    throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }
             } else {
                 throw new Exception("Invalid session token.");
@@ -76,8 +79,12 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                if(userName == null || userName.isEmpty()){
+                    throw new Exception("UserName is empty.");
+                }
                 if (!_userFacade.isUserNameExists(userName)) {
                     _userFacade.register(userName, password, email);
+                    _shoppingCartFacade.addCartForUser(token, userName);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {

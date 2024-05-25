@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.Exceptions.ProductOutOfStockExepction;
+import Exceptions.ProductOutOfStockExepction;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
+
 public class ShoppingBasket implements Cloneable {
     private Shop _shop;
     private List<Integer> _productIdList;
@@ -28,12 +29,14 @@ public class ShoppingBasket implements Cloneable {
         _basketTotalAmount = 0.0;
     }
 
-    public void addProductToShoppingBasket(Integer product) {
-        _productIdList.add(product);
+    public void addProductToShoppingBasket(Integer productId) {
+        _productIdList.add(productId);
     }
-
+ 
     // Calculate and return the total price of all products in the basket
-    private double calculateShoppingBasketPrice() {
+    public double calculateShoppingBasketPrice() {
+        resetProductToPriceToAmount();
+        _shop.applyDiscounts(this);
         _basketTotalAmount = 0.0;
 
         // case where there are no discounts on the basket
@@ -81,25 +84,25 @@ public class ShoppingBasket implements Cloneable {
      * bought. This function only updates the item's stock.
      */
     public boolean purchaseBasket() {
-        logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shopId);
-        List<Product> boughtProductList = new ArrayList<>();
+        logger.log(Level.FINE, "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
+        List<Integer> boughtProductIdList = new ArrayList<>();
 
         // TODO: consider the discounts using productToPriceToAmount
 
-        for (Product product : _productList) {
+        for (Integer productId : _productIdList) {
             try {
-                product.purchaseProduct();
-                boughtProductList.add(product);
+                _shop.getProductById(productId).purchaseProduct();
+                boughtProductIdList.add(productId);
             } catch (ProductOutOfStockExepction e) {
                 logger.log(Level.SEVERE,
                         "ShoppingBasket - purchaseBasket - Product out of stock in basket from shopId: "
-                                + _shopId + ". Exception: " + e.getMessage(),
+                                + _shop.getShopId() + ". Exception: " + e.getMessage(),
                         e);
                 logger.log(Level.FINE,
                         "ShoppingBasket - purchaseBasket - Canceling purchase of all products from basket from shopId: "
-                                + _shopId);
-                for (Product boughtProduct : boughtProductList) {
-                    boughtProduct.cancelPurchase();
+                                + _shop.getShopId());
+                for (Integer boughtProductId : boughtProductIdList) {
+                    _shop.getProductById(boughtProductId).cancelPurchase();
                 }
                 return false;
             }
@@ -110,17 +113,17 @@ public class ShoppingBasket implements Cloneable {
     public void cancelPurchase() {
         logger.log(Level.FINE,
                 "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: "
-                        + _shopId);
-        for (Product product : _productList) {
-            product.cancelPurchase();
+                        + _shop.getShopId());
+        for (Integer productId : _productIdList) {
+            _shop.getProductById(productId).cancelPurchase();
         }
     }
 
     public int getProductCount(Integer productId) {
         int count = 0;
 
-        for (Product product : _productList)
-            if (product.getProductId() == productId)
+        for (Integer product : _productIdList)
+            if (product == productId)
                 count++;
 
         return count;
@@ -134,17 +137,24 @@ public class ShoppingBasket implements Cloneable {
     public void resetProductToPriceToAmount() {
         productToPriceToAmount = new HashMap<>();
 
-        for (Product product : _productList) {
-            int pid = product.getProductId();
-            double price = product.getPrice();
-            if (!productToPriceToAmount.containsKey(pid))
-                productToPriceToAmount.put(pid, new TreeMap<>((a, b) -> a > b ? 1 : -1));
-            if (!productToPriceToAmount.get(pid).containsKey(price))
-                productToPriceToAmount.get(pid).put(price, 0);
+        for (Integer productId : _productIdList) {
+            double price = _shop.getProductById(productId).getPrice();
+            if (!productToPriceToAmount.containsKey(productId))
+                productToPriceToAmount.put(productId, new TreeMap<>((a, b) -> a > b ? 1 : -1));
+            if (!productToPriceToAmount.get(productId).containsKey(price))
+                productToPriceToAmount.get(productId).put(price, 0);
 
-            int oldAmount = productToPriceToAmount.get(pid).get(price);
-            productToPriceToAmount.get(pid).put(price, oldAmount + 1);
+            int oldAmount = productToPriceToAmount.get(productId).get(price);
+            productToPriceToAmount.get(productId).put(price, oldAmount + 1);
         }
+    }
+
+    public String getShopBankDetails() {
+        return _shop.getBankDetails();
+    }
+
+    public String getShopAddress() {
+        return _shop.getShopAddress();
     }
 
     @Override

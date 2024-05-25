@@ -1,7 +1,10 @@
 package Domain.ExternalServices.PaymentService;
+
 import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
+
 import Domain.ExternalServices.ExternalService;
+import Exceptions.PaymentFailedException;
 
 // TODO: Implement the Adapter pattern
 public class AdapterPayment implements ExternalService {
@@ -16,14 +19,26 @@ public class AdapterPayment implements ExternalService {
     @Override
     public boolean ConnectToService() {
         // Connect to the payment service
-        //TODO : forward the request to the Payment service
+        // TODO : forward the request to the Payment service
         logger.info("Connecting to the payment service");
         return true;
     }
 
-    public void pay(String cardNumber) {
-        logger.info("Paying for the cart");
-        _paymentService.pay(cardNumber);
+    public void checkIfPaymentOk(String cardNumber, String shopBankDetails, double amountToPay)
+            throws PaymentFailedException {
+        logger.info("Checking if the card is valid");
+        if (!_paymentService.checkIfPaymentOk(cardNumber, shopBankDetails, amountToPay))
+            throw new PaymentFailedException("Payment failed");
     }
-    
+
+    public void pay(String cardNumber, String shopBankDetails, double amountToPay) {
+        logger.info("Paying for the cart");
+        _paymentService.pay(cardNumber, shopBankDetails, amountToPay);
+    }
+
+    public void refound(String cardNumber) {
+        logger.info("Refounding the cart");
+        _paymentService.refound(cardNumber);
+    }
+
 }
