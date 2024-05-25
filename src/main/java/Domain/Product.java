@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.Exceptions.ProductOutOfStockExepction;
+import Exceptions.ProductOutOfStockExepction;
 
-public class Product {
+public class Product implements Cloneable {
     private Integer _productId;
     private String _productName;
     private double _price;
@@ -15,8 +15,8 @@ public class Product {
     private HashSet<String> _keywords;
     private Double _rating;
     private Integer _ratersCounter;
-    private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
-    //TODO: private List<discount> 
+    private static final Logger logger = Logger.getLogger(Product.class.getName());
+    // TODO: private List<discount>
 
     // Constructor
     public Product(Integer productId, String productName, double price) {
@@ -60,19 +60,50 @@ public class Product {
         _ratersCounter++;
     }
 
-    public void purchaseProduct() {
+    public void addKeyword(String keyword) {
+        _keywords.add(keyword);
+    }
+
+    public Double getRating() {
+        return _rating;
+    }
+
+    public void addRating(Integer rating) {
+        //TODO: limit the rating to 1-5 
+        Double newRating = Double.valueOf(rating);
+        if (_rating == -1.0) {
+            _rating = newRating;
+        } else {
+            _rating = ((_rating * _ratersCounter) + newRating) / (_ratersCounter + 1);
+        }
+        _ratersCounter++;
+    }
+
+    public void purchaseProduct() throws ProductOutOfStockExepction {
         if (_quantity == 0) {
-            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId + " out of stock -- thorwing ProductOutOfStockExepction.");
+            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+                    + " out of stock -- thorwing ProductOutOfStockExepction.");
             throw new ProductOutOfStockExepction("Product is out of stock");
         }
         _quantity--;
-        logger.log(Level.FINE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId + " had been purchased -- -1 to stock.");
+        logger.log(Level.FINE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+                + " had been purchased -- -1 to stock.");
     }
 
     public void cancelPurchase() {
         _quantity++;
-        logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId + " had been purchased cancel -- +1 to stock.");
+        logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId
+                + " had been purchased cancel -- +1 to stock.");
     }
+
+        @Override
+        public Product clone() {
+            try {
+                return (Product) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError(); // Can't happen as we implement Cloneable
+            }
+        }
 
     @Override
     public String toString() {

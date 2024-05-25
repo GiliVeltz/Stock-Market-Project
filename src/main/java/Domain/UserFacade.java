@@ -1,7 +1,9 @@
 package Domain;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class UserFacade {
     private List<User> _registeredUsers;
     private List<String> _guestIds;
@@ -44,6 +46,12 @@ public class UserFacade {
     public void register(String userName, String password, String email) throws Exception {
         String encodedPass = this._passwordEncoder.encodePassword(password);
         if (!isUserNameExists(userName)) {
+            if(email == null || email.isEmpty()){
+                throw new Exception("Email is empty.");
+            }
+            if(password == null || password.isEmpty() || password.length() < 5){
+                throw new Exception("Password is empty.");
+            }
             this._registeredUsers.add(new User(userName, encodedPass, email));
         } else {
             throw new Exception("Username already exists.");
@@ -90,4 +98,6 @@ public class UserFacade {
         }
         return null;
     }
+
+
 }

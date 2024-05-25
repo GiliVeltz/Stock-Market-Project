@@ -2,6 +2,8 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.stereotype.Service;
+
 import java.util.logging.Level;
 
 import Domain.ShoppingCartFacade;
@@ -10,22 +12,24 @@ import Domain.ExternalServices.ExternalServiceHandler;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
+@Service
 public class SystemService {
     private UserService _userService;
     private ExternalServiceHandler _externalServiceHandler;
     private boolean _isOpen = false;
     private TokenService _tokenService;
-    private UserFacade _userController;
+    private UserFacade _userFacade;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler) {
+    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler,
+            TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _userService = userService;
         _externalServiceHandler = externalServiceHandler;
-        _tokenService = new TokenService();
-        _userController = userService.getUserFacade();
-        _shoppingCartFacade = new ShoppingCartFacade();
-        //TODO: create it as a singleton
+        _tokenService = tokenService;
+        _userFacade = userFacade;
+        _shoppingCartFacade = shoppingCartFacade;
+        // TODO: create it as a singleton
         _externalServiceHandler = externalServiceHandler;
     }
 
@@ -38,17 +42,17 @@ public class SystemService {
      */
     public Response openSystem(String token) {
         Response response = new Response();
-        String userId = _tokenService.extractUsername(token);
         try {
+            String userId = _tokenService.extractUsername(token);
             if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
-                if (!_tokenService.isLoggedIn(token)) {
+                if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
                 // Check if the user is an admin
-                Response isAdminResponse = _userService.isAdmin(userId);
+                Response isAdminResponse = _userService.isSystemAdmin(userId);
                 if (isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
@@ -62,12 +66,12 @@ public class SystemService {
                     return response;
                 }
 
-            // Connect to external services
-            if (!_externalServiceHandler.connectToServices()) {
-                response.setErrorMessage("Failed to connect to external services");
-                logger.log(Level.SEVERE, "Failed to connect to external services");
-                return response;
-            }
+                // Connect to external services
+                if (!_externalServiceHandler.connectToServices()) {
+                    response.setErrorMessage("Failed to connect to external services");
+                    logger.log(Level.SEVERE, "Failed to connect to external services");
+                    return response;
+                }
 
                 // Open the system
                 setSystemOpen(true);
@@ -76,7 +80,6 @@ public class SystemService {
             } else {
                 throw new Exception("Invalid session token.");
             }
-
         } catch (Exception e) {
             response.setErrorMessage("Failed to open system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to open system: " + e.getMessage(), e);
@@ -95,13 +98,13 @@ public class SystemService {
     }
 
     // TODO: AMIT: add documentation
-    public Response requestToEnterSystem(){
+    public Response requestToEnterSystem() {
         Response response = new Response();
         try {
             String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
-            _userController.addNewGuest(id);
+            _userFacade.addNewGuest(id);
             _shoppingCartFacade.addCartForGuest(token);
             response.setReturnValue(token);
         } catch (Exception e) {
@@ -117,11 +120,11 @@ public class SystemService {
         try {
             if (_tokenService.validateToken(token)) {
                 String id = _tokenService.extractGuestId(token);
-                if(id != null){
+                if (id != null) {
                     logger.info("Guest with id: " + id + "left the system");
-                    _userController.removeGuest(id);
+                    _userFacade.removeGuest(id);
                     _shoppingCartFacade.removeCartForGuest(token);
-                    response.setReturnValue("Guest left system Successfully");    
+                    response.setReturnValue("Guest left system Successfully");
                 }
             } else {
                 throw new Exception("Invalid session token.");

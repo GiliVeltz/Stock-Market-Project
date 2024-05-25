@@ -1,7 +1,7 @@
 package Domain;
 
 import java.util.List;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class User {
     private String _encoded_password;
@@ -41,6 +41,11 @@ public class User {
         _email = email;
     }
 
+    //add order to the purchase history
+    public void addOrder(Order order) {
+        _purchaseHistory.add(order);
+    }
+
     /**
      * Checks if the user is an admin.
      *
@@ -59,5 +64,4 @@ public class User {
     public List<Order> getPurchaseHistory() {
         return _purchaseHistory;
     }
-
 }

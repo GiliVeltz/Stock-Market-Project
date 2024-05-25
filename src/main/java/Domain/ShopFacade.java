@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import Exceptions.ShopException;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class ShopFacade {
     private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
@@ -47,11 +49,11 @@ public class ShopFacade {
         return false;
     }
 
-    public void openNewShop(Integer shopId, String userName) throws Exception {
+    public void openNewShop(Integer shopId, String userName, String bankDetails, String shopAddress) throws Exception {
         if (isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
         else
-            _shopsList.add(new Shop(shopId, userName));
+            _shopsList.add(new Shop(shopId, userName, bankDetails, shopAddress));
     }
 
     // close shop only if the user is the founder of the shop
@@ -62,7 +64,14 @@ public class ShopFacade {
             else {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER))
+                {
+                    getShopByShopId(shopId).notifyRemoveShop();
                     _shopsList.remove(shopToClose);
+                }
+                else
+                {
+                    throw new Exception(String.format("User %s can't cloase the Shop: %d. Only the fonder has the permission",userName, shopId));
+                }
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
