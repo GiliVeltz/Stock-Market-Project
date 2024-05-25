@@ -130,4 +130,23 @@ public class ShoppingCart {
         basket.addProductToShoppingBasket(productID);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
+
+    public void removeProduct(int productID, int shopID) {
+        Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
+        .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
+
+        if (basketOptional.isPresent()) {
+            ShoppingBasket basket = basketOptional.get();
+            basket.removeProductFromShoppingBasket(productID);
+            logger.log(Level.INFO, "Product removed from shopping basket: " + productID + " in shop: " + shopID);
+            if (basket.isEmpty()) {
+                _shoppingBaskets.remove(basket);
+                logger.log(Level.INFO, "Shopping basket for shop: " + shopID + " is empty and has been removed.");
+            }
+        } else {
+            logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
+        }
+    }
+    
+
 }
