@@ -150,7 +150,6 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open a shop and be the founder of the shop.
-    // @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
         assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
