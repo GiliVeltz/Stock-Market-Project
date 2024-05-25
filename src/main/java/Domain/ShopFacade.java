@@ -1,9 +1,15 @@
 package Domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import org.springframework.web.bind.annotation.RestController;
+
+import Domain.Discounts.Discount;
+import Domain.Discounts.PrecentageDiscount;
 
 @RestController
 public class ShopFacade {
@@ -60,14 +66,12 @@ public class ShopFacade {
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
-                if (shopToClose.checkPermission(userName, Permission.FOUNDER))
-                {
+                if (shopToClose.checkPermission(userName, Permission.FOUNDER)) {
                     getShopByShopId(shopId).notifyRemoveShop();
                     _shopsList.remove(shopToClose);
-                }
-                else
-                {
-                    throw new Exception(String.format("User %s can't cloase the Shop: %d. Only the fonder has the permission",userName, shopId));
+                } else {
+                    throw new Exception(String.format(
+                            "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
                 }
             }
         } catch (Exception e) {
@@ -112,5 +116,33 @@ public class ShopFacade {
             return shop.isOwnerOrFounderOwner(userId);
         }
         return false;
+    }
+
+    /**
+     * Adds a basic discount to the shop.
+     *
+     * @param shopId         the ID of the shop
+     * @param username       the username of the user adding the discount
+     * @param isPercentage   a flag indicating whether the discount amount is a
+     *                       percentage or a fixed value
+     * @param discountAmount the amount of the discount
+     * @param expirationDate the expiration date of the discount
+     * @throws PermissionException if the user does not have permission to add a
+     *                             discount to the shop
+     * @throws ShopException       if there is an error adding the discount to the
+     *                             shop
+     */
+    public void addBasicDiscountToShop(int shopId, String username, boolean isPrecentage, double discountAmount,
+            Date expirationDate) throws PermissionException, ShopException {
+
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
+        Discount discount;
+        if (isPrecentage)
+            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        else
+            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        shop.addDiscount(discount);
     }
 }
