@@ -10,6 +10,7 @@ import Domain.Exceptions.ProductOutOfStockExepction;
 import Domain.Exceptions.ShippingFailedException;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
+import java.util.Optional;
 
 //TODO: TAL: add pay and ship methods to this class.
 
@@ -19,12 +20,14 @@ public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
     private AdapterPayment _paymentMethod;
     private AdapterSupply _supplyMethod;
+    private ShopFacade _shopFacade;
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = new AdapterPayment();
         _supplyMethod = new AdapterSupply();
+        _shopFacade = ShopFacade.getShopFacade();
     }
 
     /*
@@ -107,5 +110,21 @@ public class ShoppingCart {
             output.append(shoppingBasket.toString()).append("\n");
         }
         return output.toString(); // Convert StringBuilder to String
+    }
+
+    public void addProduct(int productID, int shopID) {
+        Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
+                .filter(basket -> basket.getShop().getShopId().equals(shopID)).findFirst();
+
+        ShoppingBasket basket;
+        if (basketOptional.isPresent()) {
+            basket = basketOptional.get();
+        } else {
+            basket = new ShoppingBasket(_shopFacade.getShopByShopId(shopID));
+            _shoppingBaskets.add(basket);
+        }
+
+        basket.addProductToShoppingBasket(productID);
+        logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 }

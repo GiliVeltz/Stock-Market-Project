@@ -36,6 +36,26 @@ public class ShoppingCartFacade {
         _usersCarts.put(username, _guestsCarts.remove(guestID));
     }
 
+    public void addProductToUserCart(String userName, int productID, int shopID) {
+        ShoppingCart cart = _usersCarts.get(userName);
+        if (cart != null) {
+            cart.addProduct(productID, shopID);
+            logger.log(Level.INFO, "Product added to user's cart: " + userName);
+        } else {
+            logger.log(Level.WARNING, "User cart not found: " + userName);
+        }
+    }
+
+    public void addProductToGuestCart(String guestID, int productID, int shopID) {
+        ShoppingCart cart = _guestsCarts.get(guestID);
+        if (cart != null) {
+            cart.addProduct(productID, shopID);
+            logger.log(Level.INFO, "Product added to guest's cart: " + guestID);
+        } else {
+            logger.log(Level.WARNING, "Guest cart not found: " + guestID);
+        }
+    }
+
     /*
      * Remove a cart from a guest user by token.
      * This method called when a guest user leave the system.

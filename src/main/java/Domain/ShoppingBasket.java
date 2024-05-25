@@ -31,6 +31,10 @@ public class ShoppingBasket {
     public void addProductToShoppingBasket(Integer productId) {
         _productIdList.add(productId);
     }
+
+    public Shop getShop(){
+        return _shop;
+    }
  
     // Calculate and return the total price of all products in the basket
     public double calculateShoppingBasketPrice() {
