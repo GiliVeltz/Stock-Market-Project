@@ -18,7 +18,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -67,6 +69,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
 
+    @Mock
+    private Response _responseMock;
+
+    @InjectMocks
+    private RealBridge realBridge;
+
     // private fields
     private String token = "token";
     
@@ -83,7 +91,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
+
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+
     }
 
     @AfterEach
@@ -403,24 +415,29 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
 
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
-        when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
-        when(_tokenServiceMock.isGuest("Tom")).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(true);
 
-        try
-        {
-            // Verify interactions
-            verify(_shopFacadeMock, times(1)).openNewShop(Integer.valueOf(shopId), username, bankDetails, shopAddress);
-   
-            assertDoesNotThrow(() -> _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress));
-            return true;
-        }
-        catch(Exception e)
-        {
-            return false;
-        }
+        // when(_responseMock.getErrorMessage()).thenReturn("error");
+        // when(_shopServiceMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(_responseMock);
+        when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("Ron")).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("Tom")).thenReturn(false);
+        when(_tokenServiceMock.isGuest("Tom")).thenReturn(true);
+
+        // Response responseMock = mock(Response.class);
+        // when(responseMock.getErrorMessage()).thenReturn(null);
+        // when(_shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress)).thenReturn(responseMock);
+        
+        Response response = _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
+        
+        // Verify interactions
+        verify(_shopServiceMock, times(1)).openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
+        return response.getErrorMessage() == null;
+
     }
 
     @Override
