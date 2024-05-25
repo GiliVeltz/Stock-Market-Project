@@ -2,12 +2,14 @@ package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +19,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -399,27 +403,36 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestWhenUserLogoutThenHeBecomeGuest'");
     }
-
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
+        MockitoAnnotations.openMocks(this);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
+        
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
         when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("Ron")).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("Tom")).thenReturn(false);
         when(_tokenServiceMock.isGuest("Tom")).thenReturn(true);
-        when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(true);
-
-        try
-        {
-            // Verify interactions
-            verify(_shopFacadeMock, times(1)).openNewShop(Integer.valueOf(shopId), username, bankDetails, shopAddress);
-   
-            assertDoesNotThrow(() -> _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress));
-            return true;
+        
+        try{
+            when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenAnswer(invocation -> {
+                throw new IllegalArgumentException();
+             });
         }
         catch(Exception e)
         {
             return false;
         }
+
+        Response response = _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
+        
+        // Verify interactions
+        verify(_shopServiceMock, times(1)).openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
+        return response.getErrorMessage() == null;
     }
 
     @Override

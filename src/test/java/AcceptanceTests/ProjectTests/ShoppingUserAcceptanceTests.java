@@ -144,12 +144,11 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open a shop and be the founder of the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
         assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
-        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain") ); // fail - the shop name is already exist
-        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "879", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "9999", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain")); // fail - the shop name is already exist
     }
     
     // Test that a user can open write a review about the product he purchased.
