@@ -2,6 +2,7 @@ package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -419,19 +420,22 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
-        when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(true);
 
-        // when(_responseMock.getErrorMessage()).thenReturn("error");
-        // when(_shopServiceMock.isShopIdExist(Integer.valueOf("879"))).thenReturn(_responseMock);
         when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn("Ron")).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn("Tom")).thenReturn(false);
         when(_tokenServiceMock.isGuest("Tom")).thenReturn(true);
-
-        // Response responseMock = mock(Response.class);
-        // when(responseMock.getErrorMessage()).thenReturn(null);
-        // when(_shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress)).thenReturn(responseMock);
         
+        try{
+            when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenAnswer(invocation -> {
+                throw new IllegalArgumentException();
+             });
+
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
         Response response = _shopServiceMock.openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
         
         // Verify interactions

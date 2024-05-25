@@ -154,7 +154,7 @@ public class ShoppingUserAcceptanceTests{
     @Test
     public void TestUserOpenAShop() {
         assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
-        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "879", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "9999", "MasterCard", "USA") ); // fail - user is a guest
         assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain") ); // fail - the shop name is already exist
     }
     
