@@ -1,5 +1,6 @@
 package AcceptanceTests.Implementor;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public interface BridgeInterface {
     
     // SYSTEM TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
+    @BeforeEach
+    void init();
+
     @Test
     boolean testOpenMarketSystem(String username);
 
@@ -225,4 +228,5 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
+
 }

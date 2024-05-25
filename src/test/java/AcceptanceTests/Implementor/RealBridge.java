@@ -70,6 +70,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
 
+    @Mock
+    private Response _responseMock;
+
+    @InjectMocks
+    private RealBridge realBridge;
+
     // private fields
     private String token = "token";
     
@@ -86,7 +92,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
+        _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
+
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+
     }
 
     @AfterEach
@@ -405,14 +415,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
     }
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress) {
-        MockitoAnnotations.openMocks(this);
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-
         _userServiceMock = Mockito.spy(new UserService(_userFacadeMock, _tokenServiceMock, _shoppingCartFacadeMock)); 
         _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock, _tokenServiceMock, _userServiceMock));
-        
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_shopFacadeMock.isShopIdExist(Integer.valueOf("5555"))).thenReturn(false);
+
         when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn("Ron")).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn("Tom")).thenReturn(false);
@@ -422,6 +429,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
             when(_shopFacadeMock.isShopIdExist(Integer.valueOf("879"))).thenAnswer(invocation -> {
                 throw new IllegalArgumentException();
              });
+
         }
         catch(Exception e)
         {
@@ -433,6 +441,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver{
         // Verify interactions
         verify(_shopServiceMock, times(1)).openNewShop(token, Integer.valueOf(shopId), username, bankDetails, shopAddress);
         return response.getErrorMessage() == null;
+
     }
 
     @Override
