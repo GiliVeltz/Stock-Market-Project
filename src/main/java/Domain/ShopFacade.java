@@ -1,14 +1,35 @@
 package Domain;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import Exceptions.PermissionException;
+import java.util.Map;
+
 import Exceptions.ShopException;
+import Exceptions.StockMarketException;
+
 import org.springframework.web.bind.annotation.RestController;
+
+import Domain.Discounts.BaseDiscount;
+import Domain.Discounts.ConditionalDiscount;
+import Domain.Discounts.Discount;
+import Domain.Discounts.PrecentageDiscount;
 
 @RestController
 public class ShopFacade {
     private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
+
+    public enum Category {
+        GROCERY,
+        CLOTHING,
+        ELECTRONICS,
+        PHARMACY,
+        // Add more categories as needed
+    }
 
     private ShopFacade() {
         this._shopsList = new ArrayList<>();
@@ -60,14 +81,12 @@ public class ShopFacade {
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
-                if (shopToClose.checkPermission(userName, Permission.FOUNDER))
-                {
+                if (shopToClose.checkPermission(userName, Permission.FOUNDER)) {
                     getShopByShopId(shopId).notifyRemoveShop();
                     _shopsList.remove(shopToClose);
-                }
-                else
-                {
-                    throw new Exception(String.format("User %s can't cloase the Shop: %d. Only the fonder has the permission",userName, shopId));
+                } else {
+                    throw new Exception(String.format(
+                            "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
                 }
             }
         } catch (Exception e) {
@@ -112,5 +131,163 @@ public class ShopFacade {
             return shop.isOwnerOrFounderOwner(userId);
         }
         return false;
+    }
+
+    /**
+     * Adds a basic discount to the shop.
+     *
+     * @param shopId         the ID of the shop
+     * @param username       the username of the user adding the discount
+     * @param isPercentage   a flag indicating whether the discount amount is a
+     *                       percentage or a fixed value
+     * @param discountAmount the amount of the discount
+     * @param expirationDate the expiration date of the discount
+     * @throws PermissionException if the user does not have permission to add a
+     *                             discount to the shop
+     * @throws ShopException       if there is an error adding the discount to the
+     *                             shop
+     */
+    public void addBasicDiscountToShop(int shopId, String username, boolean isPrecentage, double discountAmount,
+            Date expirationDate) throws PermissionException, ShopException {
+
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
+        BaseDiscount discount;
+        if (isPrecentage)
+            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        else
+            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        shop.addDiscount(discount);
+    }
+
+    /**
+     * Adds a conditional discount to a shop.
+     *
+     * @param shopId          the ID of the shop
+     * @param username        the username of the user adding the discount
+     * @param mustHaveProducts a list of product IDs that must be present in the cart for the discount to apply
+     * @param isPercentage    a flag indicating whether the discount amount is a percentage or a fixed amount
+     * @param discountAmount  the amount of the discount
+     * @param expirationDate  the expiration date of the discount
+     * @throws PermissionException if the user does not have permission to add a discount to the shop
+     * @throws ShopException       if the shop does not exist or an error occurs while adding the discount
+     */
+    public void addConditionalDiscountToShop(int shopId, String username, List<Integer> mustHaveProducts,
+            boolean isPrecentage, double discountAmount, Date expirationDate)
+            throws PermissionException, ShopException {
+
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
+        BaseDiscount baseDiscount;
+        if (isPrecentage)
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+        else
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+
+        ConditionalDiscount discount = new ConditionalDiscount(expirationDate, mustHaveProducts, baseDiscount);
+        shop.addDiscount(discount);
+    }
+
+    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
+        Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If shopId is null, search in all shops
+        if (shopId == null) {
+            for (Shop shop : this._shopsList) {
+                List<Product> products = shop.getProductsByName(productName);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
+            }
+        }
+        // Search in a specific shop
+        else {
+            if(isShopIdExist(shopId)) {
+                Shop shop = getShopByShopId(shopId);
+                List<Product> products = shop.getProductsByName(productName);
+                productsByShop.put(shop.getShopId(), products);
+            }
+            else {
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+            }
+        }
+        return productsByShop;
+    }
+
+    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory) throws Exception {
+        Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If shopId is null, search in all shops
+        if (shopId == null) {
+            for (Shop shop : this._shopsList) {
+                List<Product> products = shop.getProductsByCategory(productCategory);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
+            }
+        }
+        // Search in a specific shop
+        else {
+            if(isShopIdExist(shopId)) {
+                Shop shop = getShopByShopId(shopId);
+                List<Product> products = shop.getProductsByCategory(productCategory);
+                productsByShop.put(shop.getShopId(), products);
+            }
+            else {
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+            }
+        }
+        return productsByShop;
+    }
+
+    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords) throws Exception {
+        //TODO: check if keywords is empty
+        Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If shopId is null, search in all shops
+        if (shopId == null) {
+            for (Shop shop : this._shopsList) {
+                List<Product> products = shop.getProductsByKeywords(keywords);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
+            }
+        }
+        // Search in a specific shop
+        else {
+            if(isShopIdExist(shopId)) {
+                Shop shop = getShopByShopId(shopId);
+                List<Product> products = shop.getProductsByKeywords(keywords);
+                productsByShop.put(shop.getShopId(), products);
+            }
+            else {
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+            }
+        }
+        return productsByShop;
+    }
+
+    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice) throws Exception {
+        Map<Integer, List<Product>> productsByShop = new HashMap<>();
+        // If shopId is null, search in all shops
+        if (shopId == null) {
+            for (Shop shop : this._shopsList) {
+                List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
+            }
+        }
+        // Search in a specific shop
+        else {
+            if(isShopIdExist(shopId)) {
+                Shop shop = getShopByShopId(shopId);
+                List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
+                productsByShop.put(shop.getShopId(), products);
+            }
+            else {
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+            }
+        }
+        return productsByShop;
     }
 }

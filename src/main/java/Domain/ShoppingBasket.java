@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.Exceptions.ProductOutOfStockExepction;
+import Exceptions.ProductOutOfStockExepction;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
-public class ShoppingBasket {
+
+public class ShoppingBasket implements Cloneable {
     private Shop _shop;
     private List<Integer> _productIdList;
     private double _basketTotalAmount;
@@ -37,16 +38,44 @@ public class ShoppingBasket {
         resetProductToPriceToAmount();
         _shop.applyDiscounts(this);
         _basketTotalAmount = 0.0;
-        for (Integer productId : productToPriceToAmount.keySet()) {
-            for (Double price : productToPriceToAmount.get(productId).keySet()) {
-                _basketTotalAmount += productToPriceToAmount.get(productId).get(price) * price;
+
+        // case where there are no discounts on the basket
+        if (productToPriceToAmount.size() == 0) {
+            for (Integer product : _productIdList) {
+                _basketTotalAmount += _shop.getProductPriceById(product);
+            }
+        } else {
+            // iterate over the productt to price to amount map and calculate the total
+            // price
+            for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : productToPriceToAmount.entrySet()) {
+                for (Map.Entry<Double, Integer> priceToAmount : entry.getValue().entrySet()) {
+                    _basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
+                }
             }
         }
         return _basketTotalAmount;
     }
 
+    public int getShopId() {
+        return _shop.getShopId();
+    }
+
     public double getShoppingBasketPrice() {
-        return calculateShoppingBasketPrice();
+        if (_basketTotalAmount == 0.0)
+            return calculateShoppingBasketPrice();
+        return _basketTotalAmount;
+    }
+
+    public List<Integer> getProductIdList() {
+        return _productIdList;
+    }
+
+    public List<Product> getProductsList() {
+        List<Product> products = new ArrayList<>();
+        for (Integer productId : _productIdList) {
+            products.add(_shop.getProductById(productId));
+        }
+        return products;
     }
 
     /*
@@ -129,10 +158,41 @@ public class ShoppingBasket {
     }
 
     @Override
+    public ShoppingBasket clone() {
+        try {
+            ShoppingBasket cloned = (ShoppingBasket) super.clone();
+            cloned._shop = this._shop;
+            cloned._productIdList = new ArrayList<>(_productIdList);
+            cloned.productToPriceToAmount = cloneProductToPriceToAmount();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // should not happen as we implement Cloneable
+        }
+    }
+
+    // clone the map
+    public Map<Integer, SortedMap<Double, Integer>> cloneProductToPriceToAmount() {
+        Map<Integer, SortedMap<Double, Integer>> clonedMap = new HashMap<>();
+        for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : productToPriceToAmount.entrySet()) {
+            SortedMap<Double, Integer> clonedInnerMap = new TreeMap<>(entry.getValue());
+            clonedMap.put(entry.getKey(), clonedInnerMap);
+        }
+        return clonedMap;
+    }
+
+    public String printAllProducts(){
+        StringBuilder sb = new StringBuilder();
+        for (Integer product : _productIdList) {
+            sb.append(_shop.getProductById(product).toString());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+    @Override
     public String toString() {
         return "ShoppingBasket{" +
                 "ShopId=" + _shop.getShopId() +
-                ", products=" + _productIdList +
+                ", products=" + printAllProducts() +
                 '}';
     }
 }
