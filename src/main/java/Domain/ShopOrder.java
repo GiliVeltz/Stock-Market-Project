@@ -1,47 +1,38 @@
 package Domain;
 
-import java.util.HashMap;
-import java.util.Map;
+//class that represents an order for the shop
 
 public class ShopOrder {
-     private Integer _orderId;
-    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <UserId, ShoppingBasketPerShop>
+    private Integer _orderId;
+    private ShoppingBasket _shoppingBasket;
     private double _totalOrderAmount;
 
     // Constructor
-    public ShopOrder(Integer orderId) {
+    public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) {
         this._orderId = orderId;
-        this._shoppingBasketMap = new HashMap<>();
-        this._totalOrderAmount = 0.0;
+        this._shoppingBasket = shoppingBasket.clone();
+        this._totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
     }
 
     public Integer getOrderId() {
         return _orderId;
     }
 
-    public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
-        return _shoppingBasketMap;
-    }
-
-    public double getOrderTotalAmount() { return _totalOrderAmount; }
-
-  
-    public void calcTotalAmount() { 
-        _totalOrderAmount = 0.0;
-        for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
+    
+    public double getOrderTotalAmount() {
+         return _totalOrderAmount; 
         }
+
+    public ShoppingBasket getShoppingBasket() {
+        return _shoppingBasket;
     }
 
-    // Helper method to print all products in the order
-    private String printAllProduct() 
-    {
-        StringBuilder output = new StringBuilder();
-        for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            output.append(entry.getValue().toString()).append("\n");
+    //Helper method to print all products in the order
+     private String printAllProduct() 
+        {
+           return _shoppingBasket.printAllProducts();
         }
-        return output.toString(); // Convert StringBuilder to String
-    }
+   
 
     @Override
     public String toString() {

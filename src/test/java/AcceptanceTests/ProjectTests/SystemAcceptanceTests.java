@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 @ExtendWith(RealBridge.class)
 public class SystemAcceptanceTests {
@@ -25,7 +24,7 @@ public class SystemAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testOpenMarketSystem() {
-        assertTrue(_bridge.testOpenMarketSystem("manager") ); // success
+        assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success
         assertFalse(_bridge.testOpenMarketSystem("guest") ); // fail
     }
     

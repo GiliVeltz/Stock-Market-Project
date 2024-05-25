@@ -22,13 +22,15 @@ public class SystemService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler, TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
+    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler,
+            TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _userService = userService;
         _externalServiceHandler = externalServiceHandler;
         _tokenService = tokenService;
         _userFacade = userFacade;
         _shoppingCartFacade = shoppingCartFacade;
-        //TODO: create it as a singleton
+        // TODO: create it as a singleton
+        _externalServiceHandler = externalServiceHandler;
     }
 
     /**
@@ -40,8 +42,8 @@ public class SystemService {
      */
     public Response openSystem(String token) {
         Response response = new Response();
-        String userId = _tokenService.extractUsername(token);
         try {
+            String userId = _tokenService.extractUsername(token);
             if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
                 if (!_tokenService.isUserAndLoggedIn(token)) {
@@ -64,12 +66,12 @@ public class SystemService {
                     return response;
                 }
 
-            // Connect to external services
-            if (!_externalServiceHandler.connectToServices()) {
-                response.setErrorMessage("Failed to connect to external services");
-                logger.log(Level.SEVERE, "Failed to connect to external services");
-                return response;
-            }
+                // Connect to external services
+                if (!_externalServiceHandler.connectToServices()) {
+                    response.setErrorMessage("Failed to connect to external services");
+                    logger.log(Level.SEVERE, "Failed to connect to external services");
+                    return response;
+                }
 
                 // Open the system
                 setSystemOpen(true);
@@ -78,7 +80,6 @@ public class SystemService {
             } else {
                 throw new Exception("Invalid session token.");
             }
-
         } catch (Exception e) {
             response.setErrorMessage("Failed to open system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to open system: " + e.getMessage(), e);
@@ -97,7 +98,7 @@ public class SystemService {
     }
 
     // TODO: AMIT: add documentation
-    public Response requestToEnterSystem(){
+    public Response requestToEnterSystem() {
         Response response = new Response();
         try {
             String token = _tokenService.generateGuestToken();
@@ -119,11 +120,11 @@ public class SystemService {
         try {
             if (_tokenService.validateToken(token)) {
                 String id = _tokenService.extractGuestId(token);
-                if(id != null){
+                if (id != null) {
                     logger.info("Guest with id: " + id + "left the system");
                     _userFacade.removeGuest(id);
                     _shoppingCartFacade.removeCartForGuest(token);
-                    response.setReturnValue("Guest left system Successfully");    
+                    response.setReturnValue("Guest left system Successfully");
                 }
             } else {
                 throw new Exception("Invalid session token.");

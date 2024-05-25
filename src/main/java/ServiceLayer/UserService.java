@@ -16,12 +16,13 @@ import Domain.UserFacade;
 public class UserService {
     private UserFacade _userFacade;
     private TokenService _tokenService;
+
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    public UserService(UserFacade userController, TokenService tokenService,
+    public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
-                _userFacade = userController;
+                _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
@@ -186,7 +187,6 @@ public class UserService {
         return response;
     }
 
-    // TODO: METAR: add documentation
     public Response getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
