@@ -312,6 +312,15 @@ public class ShopFacade {
         return productsByShop;
     }
 
+    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount) throws Exception
+    {
+        Shop shop = getShopByShopId(shopId);
+        if(shop == null)
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        
+        shop.updateProductQuantity(userName, productId, productAmount);
+    }
+
     public String getShopFounderUsername(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
