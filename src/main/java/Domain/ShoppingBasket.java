@@ -148,7 +148,6 @@ public class ShoppingBasket implements Cloneable {
      */
     public void resetProductToPriceToAmount() {
         _productToPriceToAmount = new HashMap<>();
-        _productToPriceToAmount = new HashMap<>();
 
         for (Integer productId : _productIdList) {
             double price = _shop.getProductById(productId).getPrice();
