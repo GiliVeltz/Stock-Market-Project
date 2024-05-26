@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,16 +38,28 @@ public class ShopFacadeTests {
     // Shops fields.
     private Shop _shop1;
     private Shop _shop2;
+    private Shop _shop3;
     private Product _product1;
     private Product _product2;
+    
+    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
+
 
     @BeforeEach
     public void setUp() throws ShopException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
+        _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
         _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
         _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
+        try{
+            _shop3.addProductToShop("founderName3", _product2);
+        }
+        catch(Exception e)
+        {
+            logger.log(Level.SEVERE,String.format("Failed to add product2. Error: %s",e.getMessage()),e);
+        }
     }
 
     @AfterEach
@@ -419,5 +433,63 @@ public class ShopFacadeTests {
         assertEquals(1, productsByShop.size());
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+    }
+
+    @Test
+    public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop3);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 3;
+        String founder = "founderName3";
+        
+        assertEquals(0, _product2.getProductQuantity());
+
+        // Act - try to update a product to an existing shop
+        _ShopFacadeUnderTests.updateProductQuantity(founder, shopId, _product2.getProductId(), 10);
+
+        // Assert - Verify that the product quantity is updated
+        assertEquals(10, _product2.getProductQuantity());
+    }
+
+    @Test
+    public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 3;
+        String userName = "user1";
+        
+        assertEquals(0, _product2.getProductQuantity());
+
+        // Act - try to update a product to an existing shop
+        try {
+            _ShopFacadeUnderTests.updateProductQuantity(userName, shopId, _product2.getProductId(), 10);
+            fail("Update product by user without permission should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the product quantity is updated
+            assertEquals(0, _product2.getProductQuantity());
+        }
+    }
+
+    @Test
+    public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 3;
+        String userName = "founderName3";
+        _shop1.closeShop();
+        
+        assertEquals(0, _product2.getProductQuantity());
+
+        // Act - try to update a product to an existing shop
+        try {
+            _ShopFacadeUnderTests.updateProductQuantity(userName, shopId, _product2.getProductId(), 10);
+            fail("Update product when shop is closed should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the product quantity is updated
+            assertEquals(0, _product2.getProductQuantity());
+        }
     }
 }
