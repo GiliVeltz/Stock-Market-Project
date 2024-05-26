@@ -21,7 +21,6 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario open the market system for shopping.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testOpenMarketSystem() {
         assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success

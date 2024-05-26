@@ -88,7 +88,7 @@ public class SystemService {
     }
 
     // Set system to open
-    private void setSystemOpen(boolean isOpen) {
+    public void setSystemOpen(boolean isOpen) {
         this._isOpen = isOpen;
     }
 
