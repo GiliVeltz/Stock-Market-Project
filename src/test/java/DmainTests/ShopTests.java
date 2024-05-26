@@ -30,6 +30,7 @@ import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
 import Exceptions.RoleException;
 import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 
 public class ShopTests {
 
@@ -208,7 +209,7 @@ public class ShopTests {
     }
 
     @Test
-    public void testAppointManager_WhenUserHasPermissionAndNewManagerDoesNotExist_ShouldAppointNewManager() throws ShopException, PermissionException, RoleException {
+    public void testAppointManager_WhenUserHasPermissionAndNewManagerDoesNotExist_ShouldAppointNewManager() throws StockMarketException {
         // Arrange
         String username = "user1";
         String newManagerUserName = "newManager";
@@ -244,7 +245,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testAppointManager_WhenNewManagerAlreadyExists_ShouldThrowShopException() throws ShopException, PermissionException, RoleException {
+    public void testAppointManager_WhenNewManagerAlreadyExists_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String newManagerUserName = "existingManager";
@@ -290,7 +291,7 @@ public class ShopTests {
     }
 
     @Test
-    public void testAppointOwner_WhenUserHasPermissionAndNewOwnerDoesNotExist_ShouldAppointNewOwner() throws ShopException, PermissionException, RoleException {
+    public void testAppointOwner_WhenUserHasPermissionAndNewOwnerDoesNotExist_ShouldAppointNewOwner() throws StockMarketException {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "newOwner";
@@ -322,7 +323,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testAppointOwner_WhenNewOwnerAlreadyExists_ShouldThrowShopException() throws ShopException, PermissionException, RoleException {
+    public void testAppointOwner_WhenNewOwnerAlreadyExists_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "existingOwner";
@@ -339,7 +340,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAppointOwner_WhenNewOwnerIsManager_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testAppointOwner_WhenNewOwnerIsManager_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "newOwner";
@@ -444,7 +445,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenUserHasRoleAndPermissionsAreValid_ShouldAddPermissions() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenUserHasRoleAndPermissionsAreValid_ShouldAddPermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -464,7 +465,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenUserHasRoleAndRoleExists_ShouldAddPermissions() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenUserHasRoleAndRoleExists_ShouldAddPermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -498,7 +499,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenRoleDoesNotExist_ShouldThrowShopException() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenRoleDoesNotExist_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "nonExistingRole";
@@ -516,7 +517,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenUserDoesNotHavePermission_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenUserDoesNotHavePermission_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -534,7 +535,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenUserIsNotAppointer_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenUserIsNotAppointer_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -552,7 +553,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenPermissionsIsEmpty_ShouldNotAddPermissions() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenPermissionsIsEmpty_ShouldNotAddPermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -570,7 +571,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testAddPermissions_WhenUserIsOwnerOrFounder_ShouldAddAllPermissions() throws ShopException, PermissionException, RoleException {
+    public void testAddPermissions_WhenUserIsOwnerOrFounder_ShouldAddAllPermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -666,7 +667,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testDeletePermissions_whenRoleDoesNotExist_ShouldThrowShopException() throws ShopException, PermissionException, RoleException {
+    public void testDeletePermissions_whenRoleDoesNotExist_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "nonExistingRole";
@@ -684,7 +685,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testDeletePermissions_whenUserDoesNotHavePermission_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testDeletePermissions_whenUserDoesNotHavePermission_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -702,7 +703,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testDeletePermissions_whenUserIsNotAppointer_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testDeletePermissions_whenUserIsNotAppointer_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -759,7 +760,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testFireRole_whenRoleDoesNotExist_ShouldThrowShopException() throws ShopException, PermissionException, RoleException {
+    public void testFireRole_whenRoleDoesNotExist_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "nonExistingRole";
@@ -775,7 +776,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testFireRole_whenUserIsNotAppointer_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testFireRole_whenUserIsNotAppointer_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -791,7 +792,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testFireRole_whenUserIsOwnerOrFounder_ShouldFireRole() throws ShopException, PermissionException, RoleException {
+    public void testFireRole_whenUserIsOwnerOrFounder_ShouldFireRole() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -809,7 +810,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testFireRole_whenUserIsManager_ShouldFireRole() throws ShopException, PermissionException, RoleException {
+    public void testFireRole_whenUserIsManager_ShouldFireRole() throws StockMarketException {
         // Arrange
         String username = "user1";
         String userRole = "manager";
@@ -824,7 +825,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testResign_whenUserIsOwner_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsOwner_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -851,7 +852,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testResign_whenUserIsManager_ShouldResign() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsManager_ShouldResign() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -867,7 +868,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testResign_whenUserIsManagerAndHasPermissions_ShouldRemovePermissions() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsManagerAndHasPermissions_ShouldRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -884,7 +885,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testResign_whenUserIsManagerAndHasRole_ShouldFireRole() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsManagerAndHasRole_ShouldFireRole() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -900,7 +901,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testResign_whenUserIsManagerAndHasRoleAndPermissions_ShouldFireRoleAndRemovePermissions() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsManagerAndHasRoleAndPermissions_ShouldFireRoleAndRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -918,7 +919,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testResign_whenUserIsManagerAndHasRoleAndPermissionsAndIsOwner_ShouldFireRoleAndRemovePermissions() throws ShopException, PermissionException, RoleException {
+    public void testResign_whenUserIsManagerAndHasRoleAndPermissionsAndIsOwner_ShouldFireRoleAndRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
@@ -964,7 +965,7 @@ public class ShopTests {
     // TODO: TEST IS NOT PASSING
     @Disabled
     @Test
-    public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() throws ShopException, PermissionException, RoleException {
+    public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
@@ -980,7 +981,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testsAddProductToShop_whenUserHasPermission_thenSucceeds() throws ShopException, PermissionException, RoleException, ProductAlreadyExistsException {
+    public void testsAddProductToShop_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
@@ -997,7 +998,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testsAddProductToShop_whenProductAlreadyExists_thenFails() throws ShopException, PermissionException, RoleException, ProductAlreadyExistsException {
+    public void testsAddProductToShop_whenProductAlreadyExists_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
@@ -1014,7 +1015,7 @@ public class ShopTests {
     }
 
     @Test
-    public void testUpdateProductQuantity_whenUserDoesNotHavePermission_thenFails() throws ShopException, PermissionException, RoleException {
+    public void testUpdateProductQuantity_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
@@ -1030,7 +1031,7 @@ public class ShopTests {
     }
     
     @Test
-    public void testUpdateProductQuantity_whenProductDoesNotExist_thenFails() throws ShopException, PermissionException, RoleException {
+    public void testUpdateProductQuantity_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);

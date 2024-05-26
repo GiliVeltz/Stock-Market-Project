@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import Domain.ShoppingCart;
 import Exceptions.PaymentFailedException;
 import Exceptions.ShippingFailedException;
+import Exceptions.StockMarketException;
 
 @RestController
 public class ShoppingCartFacade {
@@ -90,7 +91,7 @@ public class ShoppingCartFacade {
     }
 
     public void purchaseCartGuest(String guestID, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException {
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
@@ -100,7 +101,7 @@ public class ShoppingCartFacade {
     }
 
     public void purchaseCartUser(String username, List<Integer> busketsToBuy, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException {
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         _usersCarts.get(username).purchaseCart(busketsToBuy, cardNumber, address);
     }

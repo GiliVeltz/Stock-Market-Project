@@ -10,19 +10,14 @@ import java.util.Map;
 
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
-
-import org.springframework.web.bind.annotation.RestController;
-
 import Domain.Permission;
 import Domain.Product;
 import Domain.Shop;
 import Domain.ShopOrder;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.Discount;
 import Domain.Discounts.PrecentageDiscount;
 
-@RestController
 public class ShopFacade {
     private static ShopFacade _shopFacade;
     private List<Shop> _shopsList;
@@ -51,9 +46,9 @@ public class ShopFacade {
         return _shopFacade;
     }
 
-    public Shop getShopByShopId(Integer shopId) {
+    public Shop getShopByShopId(int shopId) {
         for (Shop shop : this._shopsList) {
-            if (shop.getShopId().equals(shopId)) {
+            if (shop.getShopId() == shopId) {
                 return shop;
             }
         }
@@ -66,9 +61,9 @@ public class ShopFacade {
      * @param shopId The ID of the shop to check.
      * @return True if the shop ID exists, false otherwise.
      */
-    public Boolean isShopIdExist(Integer shopId) {
+    public Boolean isShopIdExist(int shopId) {
         for (Shop shop : this._shopsList) {
-            if (shop.getShopId().equals(shopId)) {
+            if (shop.getShopId() == shopId) {
                 return true;
             }
         }
@@ -158,8 +153,8 @@ public class ShopFacade {
      *                             shop
      */
     public int addBasicDiscountToShop(int shopId, int productId, String username, boolean isPrecentage,
-            double discountAmount,
-            Date expirationDate) throws PermissionException, ShopException {
+            double discountAmount, Date expirationDate)
+            throws PermissionException, ShopException, StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -193,7 +188,7 @@ public class ShopFacade {
      */
     public int addConditionalDiscountToShop(int shopId, int productId, String username, List<Integer> mustHaveProducts,
             boolean isPrecentage, double discountAmount, Date expirationDate)
-            throws PermissionException, ShopException {
+            throws PermissionException, ShopException, StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -220,7 +215,7 @@ public class ShopFacade {
      *                             while removing the discount
      */
     public void removeDiscountFromShop(int shopId, int discountId, String username)
-            throws PermissionException, ShopException {
+            throws PermissionException, ShopException, StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
             throw new PermissionException(

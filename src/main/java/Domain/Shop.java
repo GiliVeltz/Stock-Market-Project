@@ -17,7 +17,7 @@ import Domain.Facades.ShopFacade.Category;
 import Exceptions.*;
 
 public class Shop {
-    private Integer _shopId;
+    private int _shopId;
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
@@ -29,6 +29,7 @@ public class Shop {
     private Double _shopRating;
     private Integer _shopRatersCounter;
     private int _nextDiscountId;
+    private boolean _isClosed;
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -49,6 +50,7 @@ public class Shop {
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             _nextDiscountId = 0;
+            _isClosed = false;
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
         } catch (Exception e) {
@@ -56,6 +58,18 @@ public class Shop {
                     + ". The Founder of the shop is: " + shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
+    }
+
+    public int getShopId() {
+        return _shopId;
+    }
+
+    public void closeShop() {
+        _isClosed = true;
+    }
+
+    public boolean isShopClosed() {
+        return _isClosed;
     }
 
     /**
@@ -170,7 +184,7 @@ public class Shop {
      * @throws RoleException
      */
     public void AppointManager(String username, String newManagerUserName, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO, "Shop - AppointManager: " + username + " trying to appoint " + newManagerUserName
                 + " as a new manager with permissions: " + permissions);
         if (!checkAtLeastOnePermission(username,
@@ -193,6 +207,9 @@ public class Shop {
                     "Shop - AppointManager: Error while appointing a new manager with founder of owner permissions.");
             throw new PermissionException("Cannot appoint manager with owner or founder permissions.");
         }
+
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot appoint new manager.");
         // All constraints checked
         Role appointer = _userToRole.get(username);
         // Here we make sure that a manager doesn't give permissions that he doesn't
@@ -218,7 +235,7 @@ public class Shop {
      * @throws RoleException
      */
     public void AppointOwner(String username, String newOwnerUserName)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO,
                 "Shop - AppointOwner: " + username + " trying to appoint " + newOwnerUserName + " as a new owner.");
         if (!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))) {
@@ -231,6 +248,9 @@ public class Shop {
             logger.log(Level.SEVERE, "Shop - AppointOwner: user " + username + " already in shop with id " + _shopId);
             throw new ShopException("User " + username + " already in shop with id " + _shopId);
         }
+
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot appoint new owner.");
         // All constraints checked
         Role owner = new Role(newOwnerUserName, _shopId, username, EnumSet.of(Permission.OWNER));
         _userToRole.putIfAbsent(newOwnerUserName, owner);
@@ -250,9 +270,11 @@ public class Shop {
      * @throws RoleException
      */
     public void addPermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO, "Shop - addPermissions: " + username + " trying to add permissions " + permissions
                 + " to user " + userRole + " in the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add permissions.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - addPermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -301,9 +323,11 @@ public class Shop {
      * @throws RoleException
      */
     public void deletePermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to delete permissions " + permissions
                 + " from user " + userRole + " in the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot delete permissions.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - deletePermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -346,9 +370,12 @@ public class Shop {
      * @throws ShopException
      * @throws PermissionException
      */
-    public void fireRole(String username, String managerUserName) throws ShopException, PermissionException {
+    public void fireRole(String username, String managerUserName)
+            throws ShopException, PermissionException, StockMarketException {
         logger.log(Level.INFO, "Shop - fireRole: " + username + " trying to fire user " + managerUserName
                 + " from the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot fire roles.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - fireRole: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -388,8 +415,10 @@ public class Shop {
      * @param username the root user to resign.
      * @throws ShopException
      */
-    public void resign(String username) throws ShopException {
+    public void resign(String username) throws ShopException, StockMarketException {
         logger.log(Level.INFO, "Shop - resign: " + username + " trying to resign from the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot resign.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - resign: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -491,9 +520,11 @@ public class Shop {
      * @throws PermissionException
      */
     public void addProductToShop(String username, Product product)
-            throws ProductAlreadyExistsException, ShopException, PermissionException {
+            throws ProductAlreadyExistsException, ShopException, PermissionException, StockMarketException {
         logger.log(Level.INFO, "Shop - addProductToShop: " + username + " trying get add product "
                 + product.getProductName() + " in the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add product.");
         if (!checkPermission(username, Permission.ADD_PRODUCT)) {
             logger.log(Level.SEVERE, "Shop - addProductToShop: user " + username
                     + " doesn't have permission to add products in shop with id " + _shopId);
@@ -512,10 +543,6 @@ public class Shop {
                 + product.getProductName() + " in the shop with id " + _shopId);
     }
 
-    public Integer getShopId() {
-        return _shopId;
-    }
-
     public Product getProductById(Integer productId) {
         return _productMap.get(productId); // Get product by ID from the map
     }
@@ -528,25 +555,29 @@ public class Shop {
         return _orderHistory;
     }
 
-    
     /**
      * Adds a discount to the shop.
      * 
      * @param discount the discount to be added
      * @return the ID of the added discount
      */
-    public int addDiscount(Discount discount) {
-
+    public int addDiscount(Discount discount) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add discount.");
         int discountId = _nextDiscountId++;
         _discounts.put(discountId, discount);
         return discountId;
     }
 
-    public void removeDiscount(int discountId) {
+    public void removeDiscount(int discountId) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot remove discount.");
         _discounts.remove(discountId);
     }
 
-    public void applyDiscounts(ShoppingBasket basket) {
+    public void applyDiscounts(ShoppingBasket basket) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot apply discounts.");
         List<Integer> expiredDiscounts = new ArrayList<>();
         basket.resetProductToPriceToAmount();
         for (int discountId : _discounts.keySet()) {
@@ -563,7 +594,9 @@ public class Shop {
         }
     }
 
-    public void addOrderToOrderHistory(ShopOrder order) {
+    public void addOrderToOrderHistory(ShopOrder order) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add order.");
         _orderHistory.add(order); // Add order to the history
     }
 

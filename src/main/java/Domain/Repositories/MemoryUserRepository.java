@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class MemoryUserRepository implements UserRepositoryInterface {
     }
 
     public List<User> getAllUsers() {
-        return (List<User>) _registeredUsers.values();
+        return new ArrayList<User>(_registeredUsers.values());
     }
 
 }
