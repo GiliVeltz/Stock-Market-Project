@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,19 +8,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.ShoppingCart;
+import Domain.Repositories.MemoryShoppingCartRepository;
+import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ShippingFailedException;
+import Exceptions.StockMarketException;
 
 @RestController
 public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
-    Map<String, ShoppingCart> _usersCarts; // <Username, ShoppingCart>
+    ShoppingCartRepositoryInterface _cartsRepo;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
 
     public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
-        _usersCarts = new HashMap<>();
+        _cartsRepo = new MemoryShoppingCartRepository();
     }
 
     /*
@@ -38,11 +42,11 @@ public class ShoppingCartFacade {
      * deleted in the guests carts.
      */
     public void addCartForUser(String guestID, String username) {
-        _usersCarts.put(username, _guestsCarts.remove(guestID));
+        _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
     }
 
     public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException {
-        ShoppingCart cart = _usersCarts.get(userName);
+        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID);
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
@@ -62,7 +66,7 @@ public class ShoppingCartFacade {
     }
 
     public void removeProductFromUserCart(String userName, int productID, int shopID) {
-        ShoppingCart cart = _usersCarts.get(userName);
+        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.removeProduct(productID, shopID);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
@@ -90,7 +94,7 @@ public class ShoppingCartFacade {
     }
 
     public void purchaseCartGuest(String guestID, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException {
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
@@ -100,8 +104,8 @@ public class ShoppingCartFacade {
     }
 
     public void purchaseCartUser(String username, List<Integer> busketsToBuy, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException {
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _usersCarts.get(username).purchaseCart(busketsToBuy, cardNumber, address);
+        _cartsRepo.getCartByUsername(username).purchaseCart(busketsToBuy, cardNumber, address);
     }
 }
