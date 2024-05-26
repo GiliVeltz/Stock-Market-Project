@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Map;
 import Domain.Shop;
 
 public class MemoryShopRepository implements ShopRepositoryInterface {
-    private Map<Integer,Shop>_shops;
+    private Map<Integer, Shop> _shops;
 
     public MemoryShopRepository(List<Shop> shops) {
         _shops = new HashMap<>();
@@ -22,12 +23,17 @@ public class MemoryShopRepository implements ShopRepositoryInterface {
 
     @Override
     public Shop getShopByID(int shopID) {
-        return _shops.get(shopID);
+        return _shops.getOrDefault(shopID, null);
     }
 
     @Override
     public void addShop(Shop shop) {
         _shops.put(shop.getShopId(), shop);
+    }
+
+    @Override
+    public List<Shop> getAllShops() {
+        return new ArrayList<>(_shops.values());
     }
 
 }

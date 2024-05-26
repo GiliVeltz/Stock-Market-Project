@@ -17,10 +17,12 @@ import Domain.ShopOrder;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.PrecentageDiscount;
+import Domain.Repositories.MemoryShopRepository;
+import Domain.Repositories.ShopRepositoryInterface;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
-    private List<Shop> _shopsList;
+    private ShopRepositoryInterface _shopRepository;
 
     public enum Category {
         GROCERY,
@@ -31,11 +33,11 @@ public class ShopFacade {
     }
 
     private ShopFacade() {
-        this._shopsList = new ArrayList<>();
+        _shopRepository = new MemoryShopRepository(new ArrayList<>());
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
-        _shopsList = shopsList;
+        _shopRepository = new MemoryShopRepository(shopsList);
     }
 
     // Public method to provide access to the _shopFacade
@@ -47,12 +49,7 @@ public class ShopFacade {
     }
 
     public Shop getShopByShopId(int shopId) {
-        for (Shop shop : this._shopsList) {
-            if (shop.getShopId() == shopId) {
-                return shop;
-            }
-        }
-        return null;
+        return _shopRepository.getShopByID(shopId);
     }
 
     /**
@@ -62,19 +59,14 @@ public class ShopFacade {
      * @return True if the shop ID exists, false otherwise.
      */
     public Boolean isShopIdExist(int shopId) {
-        for (Shop shop : this._shopsList) {
-            if (shop.getShopId() == shopId) {
-                return true;
-            }
-        }
-        return false;
+        return _shopRepository.doesShopExist(shopId);
     }
 
     public void openNewShop(Integer shopId, String userName, String bankDetails, String shopAddress) throws Exception {
         if (isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
         else
-            _shopsList.add(new Shop(shopId, userName, bankDetails, shopAddress));
+            _shopRepository.addShop(new Shop(shopId, userName, bankDetails, shopAddress));
     }
 
     // close shop only if the user is the founder of the shop
@@ -86,7 +78,7 @@ public class ShopFacade {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER)) {
                     getShopByShopId(shopId).notifyRemoveShop();
-                    _shopsList.remove(shopToClose);
+                    shopToClose.closeShop();
                 } else {
                     throw new Exception(String.format(
                             "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
@@ -231,7 +223,7 @@ public class ShopFacade {
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : this._shopsList) {
+            for (Shop shop : _shopRepository.getAllShops()) {
                 List<Product> products = shop.getProductsByName(productName);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -260,7 +252,7 @@ public class ShopFacade {
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : this._shopsList) {
+            for (Shop shop : _shopRepository.getAllShops()) {
                 List<Product> products = shop.getProductsByCategory(productCategory);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -292,7 +284,7 @@ public class ShopFacade {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : this._shopsList) {
+            for (Shop shop : _shopRepository.getAllShops()) {
                 List<Product> products = shop.getProductsByKeywords(keywords);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -317,7 +309,7 @@ public class ShopFacade {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : this._shopsList) {
+            for (Shop shop : _shopRepository.getAllShops()) {
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);

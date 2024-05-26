@@ -1,5 +1,7 @@
 package Domain.Repositories;
 
+import java.util.List;
+
 import Domain.Shop;
 
 public interface ShopRepositoryInterface {
@@ -8,4 +10,6 @@ public interface ShopRepositoryInterface {
     Shop getShopByID(int shopID);
 
     void addShop(Shop shop);
+
+    List<Shop> getAllShops();
 }
