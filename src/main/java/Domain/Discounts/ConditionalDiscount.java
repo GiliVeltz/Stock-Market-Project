@@ -32,6 +32,16 @@ public class ConditionalDiscount extends Discount {
     }
 
     /**
+     * Returns the product ID that participates in the discount.
+     * 
+     * @return the product ID that participates in the discount
+     */
+    @Override
+    public int getParticipatingProduct() {
+        return _discount.getParticipatingProduct();
+    }
+
+    /**
      * Applies the discount to the given shopping basket if the rule is satisfied.
      * 
      * @param basket the shopping basket to apply the discount to
