@@ -23,6 +23,12 @@ public interface BridgeInterface {
     @Test
     boolean testShipping(String senario);
 
+    @Test
+    boolean testAddExternalService(String newSerivceName, String peopleInfo, Integer securityIdForService);
+
+    @Test
+    boolean testChangeExternalService(String oldServiceSystemId, String newSerivceName, String newPeopleInfo);
+
     // GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @Test
