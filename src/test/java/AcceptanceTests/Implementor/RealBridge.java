@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -49,6 +50,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Mock
     private TokenService _tokenServiceMock;
+
     @Mock
     private UserService _userServiceMock;
 
@@ -134,6 +136,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean TestGuestEnterTheSystem(String shouldSeccess) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestGuestEnterTheSystem'");
+    }
+
+    @Override
+    public boolean testAddExternalService(String newSerivceName, String peopleInfo, Integer securityIdForService) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testAddExternalService'");
+    }
+
+    @Override
+    public boolean testChangeExternalService(String oldServiceSystemId, String newSerivceName, String peopleInfo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
     }
 
     @Override
@@ -423,7 +437,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestWhenUserLogoutThenHeBecomeGuest'");
     }
-
     @Override
     public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails,
             String shopAddress) {

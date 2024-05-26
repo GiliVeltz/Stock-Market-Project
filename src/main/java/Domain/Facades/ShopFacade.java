@@ -4,24 +4,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import Exceptions.PermissionException;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import Exceptions.ShopException;
-import Exceptions.StockMarketException;
-import Domain.Permission;
-import Domain.Product;
-import Domain.Shop;
-import Domain.ShopOrder;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.PrecentageDiscount;
+import Domain.Permission;
+import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
+import Domain.Shop;
+import Domain.ShopOrder;
+import Exceptions.PermissionException;
+import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
@@ -93,6 +91,28 @@ public class ShopFacade {
 
     }
 
+    // reopen a shop only if the user is the founder of the shop
+    public void reOpenShop(Integer shopId, String userName) throws Exception {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToReOpen = getShopByShopId(shopId);
+                if (shopToReOpen.checkPermission(userName, Permission.FOUNDER)) {
+                    getShopByShopId(shopId).notifyReOpenShop();
+                    shopToReOpen.reopenShop();
+                } else {
+                    throw new Exception(String.format(
+                            "User %s can't reopen the Shop: %d. Only the fonder has the permission", userName, shopId));
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
+    }
+
+
     public void addProductToShop(Integer shopId, Product product, String userName) throws Exception {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
@@ -121,6 +141,7 @@ public class ShopFacade {
      * @param shopId The ID of the shop.
      * @param userId The ID of the user.
      * @return A boolean indicating whether the user is the owner of the shop.
+     * @throws Exceptions.ShopException
      * 
      */
     public Boolean isShopOwner(Integer shopId, String userId) throws ShopException {
@@ -443,4 +464,59 @@ public class ShopFacade {
         Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
     }
+
+    public String getShopPolicyInfo(Integer shopId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getShopPolicyInfo();
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    public String getProductPolicyInfo(Integer shopId, Integer productId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getProductPolicyInfo(productId);
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    public String getShopDiscountsInfo(Integer shopId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getShopDiscountsInfo();
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    public String getProductDiscountsInfo(Integer shopId, Integer productId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getProductDiscountsInfo(productId);
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    public String getShopGeneralInfo(Integer shopId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getShopGeneralInfo();
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    public String getProductGeneralInfo(Integer shopId, Integer productId) throws Exception {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            return shop.getProductGeneralInfo(productId);
+        } else {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
 }

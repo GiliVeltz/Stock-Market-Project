@@ -56,4 +56,15 @@ public abstract class Policy<T> {
                 return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Policy{").append("\n");
+        for (Rule<T> rule : _rules)
+            sb.append(rule.toString()).append(",\n ");
+        sb.append('}');
+        return sb.toString();
+    }
+    
 }
