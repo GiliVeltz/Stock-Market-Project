@@ -7,6 +7,9 @@ import java.util.List;
 
 import Exceptions.PermissionException;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
@@ -224,6 +227,8 @@ public class ShopFacade {
         shop.removeDiscount(discountId);
     }
 
+    // this function is responsible searching a product in a shop by its name for all type of users
+    // by checking if all inputs are valid and then calling the function in shop
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error
@@ -353,5 +358,38 @@ public class ShopFacade {
             return shop.getFounderName();
         }
         return null;
+    }
+
+    /**
+     * Adds a new owner to a shop.
+     * @param username the username of the user adding the owner
+     * @param shopId the ID of the shop
+     * @param ownerUsername the username of the new owner
+     * @throws Exception
+     */
+    public void addShopOwner(String username, Integer shopId, String ownerUsername) throws Exception {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        shop.AppointOwner(username, ownerUsername);
+    }
+
+    /**
+     * Adds a new manager to a shop.
+     * @param username the username of the user adding the manager
+     * @param shopId the ID of the shop
+     * @param managerUsername the username of the new manager
+     * @param permissions the permissions to assign to the manager
+     * @throws Exception
+     */
+    public void addShopManager(String username, Integer shopId, String managerUsername, Set<String> permissions) throws Exception {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        //Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
+        shop.AppointManager(username, managerUsername, permissionsSet);
     }
 }
