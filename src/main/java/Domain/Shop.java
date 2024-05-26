@@ -13,7 +13,10 @@ import java.util.logging.Logger;
 import Domain.ShopFacade.Category;
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
+import Domain.Rules.Rule;
 import Exceptions.*;
+
+//TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
 public class Shop {
     private Integer _shopId;
@@ -694,5 +697,63 @@ public class Shop {
             throw new ProdcutPolicyException("User "+u.getUserName()+" violates the shop policy of shop with id: "+_shopId);
         }
     }
+
+    /**
+     * Adds a rule to the shop policy.
+     * @username The username of the user that tries to add the rule.
+     * @param rule The rule to add.
+     * @throws ShopException 
+     */
+    public void addRuleToShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException{
+        logger.log(Level.INFO, "Shop - addRuleToShopPolicy: User "+username+" trying to add rule to shop policy of shop with id: "+_shopId);
+        if(checkPermission(username, Permission.CHANGE_SHOP_POLICY))
+            _shopPolicy.addRule(rule);
+        logger.log(Level.FINE, "Shop - addRuleToShopPolicy: User "+username+" successfuly added a rule to shop policy of shop with id: "+_shopId);
+    }
+
+    /**
+     * Removes a rule from the shop policy.
+     * @username The username of the user that tries to remove the rule.
+     * @param rule The rule to remove.
+     * @throws ShopException 
+     */
+    public void removeRuleFromShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException{
+        logger.log(Level.INFO, "Shop - removeRuleFromShopPolicy: User "+username+" trying to remove rule from shop policy of shop with id: "+_shopId);
+        if(checkPermission(username, Permission.CHANGE_SHOP_POLICY))
+            _shopPolicy.deleteRule(rule);
+        logger.log(Level.FINE, "Shop - removeRuleFromShopPolicy: User "+username+" successfuly removed a rule from shop policy of shop with id: "+_shopId);
+    }
+
+    /**
+     * Adds a rule to the product policy of a product.
+     * @param username The username of the user that tries to add the rule.
+     * @param rule The rule to add.
+     * @param productId The id of the product to add the rule to.
+     * @throws ShopException
+     */
+    public void addRuleToProductPolicy(String username, Rule<User> rule, int productId) throws ShopException{
+        logger.log(Level.INFO, "Shop - addRuleToProductPolicy: User "+username+" trying to add rule to product policy of shop with id: "+_shopId);
+        if(checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)){
+            _productMap.get(productId).getProductPolicy().addRule(rule);
+        }
+        logger.log(Level.FINE, "Shop - addRuleToProductPolicy: User "+username+" successfuly added a rule to product policy of shop with id: "+_shopId);
+    }
+
+    /**
+     * Removes a rule from the product policy of a product.
+     * @param username The username of the user that tries to remove the rule.
+     * @param rule The rule to remove.
+     * @param productId The id of the product to remove the rule from.
+     * @throws ShopException
+     */
+    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId) throws ShopException{
+        logger.log(Level.INFO, "Shop - removeRuleFromProductPolicy: User "+username+" trying to remove rule from product policy of shop with id: "+_shopId);
+        if(checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)){
+            _productMap.get(productId).getProductPolicy().deleteRule(rule);
+        }
+        logger.log(Level.FINE, "Shop - removeRuleFromProductPolicy: User "+username+" successfuly removed a rule from product policy of shop with id: "+_shopId);
+    }
+
+    //TODO: maybe add policy facade to implement the policy logic.
 
 }

@@ -28,7 +28,18 @@ public abstract class Policy<T> {
      * @param rule the rule to be added
      */
     public void addRule(Rule<T> rule) {
-        _rules.add(rule);
+        if(!_rules.contains(rule))
+            _rules.add(rule);
+    }
+
+     /**
+     * Removes a rule from the policy.
+     *
+     * @param rule the rule to remove
+     */
+    public void deleteRule(Rule<T> rule) {
+        if(_rules.contains(rule))
+            _rules.remove(rule);
     }
 
     /**
