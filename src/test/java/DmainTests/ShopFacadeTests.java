@@ -20,34 +20,32 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import Domain.*;
-import Domain.ShopFacade.Category;
+import Domain.Facades.ShopFacade;
+import Domain.Facades.ShopFacade.Category;
 import Exceptions.ShopException;
 
 public class ShopFacadeTests {
-    
+
     // private fields.
     private List<Shop> _shopsList = new ArrayList<>();
 
     // mock fields.
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
-    
+
     // Shops fields.
     private Shop _shop1;
     private Shop _shop2;
     private Product _product1;
     private Product _product2;
 
-    public ShopFacadeTests() throws ShopException {
+    @BeforeEach
+    public void setUp() throws ShopException {
+        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
         _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
-    }
-
-    @BeforeEach
-    public void setUp() {
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
     }
 
     @AfterEach
@@ -76,13 +74,14 @@ public class ShopFacadeTests {
     public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-
+        
         // Act - try to open a new shop with a new ID
-        _ShopFacadeUnderTests.openNewShop(_shop2.getShopId(), _shop2.getFounderName(), _shop2.getBankDetails(), _shop2.getShopAddress());
-
+        _ShopFacadeUnderTests.openNewShop(_shop2.getShopId(), _shop2.getFounderName(), _shop2.getBankDetails(),
+        _shop2.getShopAddress());
+        
         // Assert - Verify that the shop is added to the list
-        assertEquals(1, _shopsList.size());
-        assertEquals(_shop2.getShopId(), _shopsList.get(0).getShopId());
+        assertEquals(1, _ShopFacadeUnderTests.getAllShops().size());
+        assertEquals(_shop2.getShopId(), _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
     }
 
     @Test
@@ -95,7 +94,7 @@ public class ShopFacadeTests {
         _ShopFacadeUnderTests.closeShop(_shop1.getShopId(), _shop1.getFounderName());
 
         // Assert - Verify that the shop is closed
-        assertEquals(0, _shopsList.size());
+        assertTrue(_shop1.isShopClosed());
     }
 
     @Test
@@ -139,7 +138,7 @@ public class ShopFacadeTests {
         _ShopFacadeUnderTests.closeShop(1, "founderName1");
 
         // Assert - Verify that the shop is closed
-        assertEquals(0, _shopsList.size());
+        assertTrue(_shopsList.get(0).isShopClosed());
     }
 
     @Test
@@ -154,7 +153,8 @@ public class ShopFacadeTests {
         // Assert - Verify that the product is added to the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(_product1.getProductName(), _shop1.getShopProducts().get(_product1.getProductId()).getProductName());
+        assertEquals(_product1.getProductName(),
+                _shop1.getShopProducts().get(_product1.getProductId()).getProductName());
     }
 
     @Test
@@ -201,7 +201,8 @@ public class ShopFacadeTests {
         Category productCategory = Category.CLOTHING;
 
         // Act - try to get products by category when shopId is null
-        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId, productCategory);
+        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId,
+                productCategory);
 
         // Assert - Verify that the products are retrieved from all shops
         assertEquals(2, productsByShop.size());
@@ -223,7 +224,8 @@ public class ShopFacadeTests {
         Category productCategory = Category.CLOTHING;
 
         // Act - try to get products by category when shopId is valid
-        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId, productCategory);
+        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId,
+                productCategory);
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());
@@ -249,7 +251,7 @@ public class ShopFacadeTests {
             assertEquals(0, e.getMessage().indexOf("Shop ID:"));
         }
     }
-    
+
     @Test
     public void testGetProductInShopByCategory_whenCategoryIsNull_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
@@ -268,7 +270,7 @@ public class ShopFacadeTests {
             assertEquals(-1, e.getMessage().indexOf("Category:"));
         }
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -289,7 +291,7 @@ public class ShopFacadeTests {
             assertEquals(0, e.getMessage().indexOf("Category:"));
         }
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -302,14 +304,15 @@ public class ShopFacadeTests {
         Category productCategory = Category.CLOTHING;
 
         // Act - try to get products by category when category is valid
-        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId, productCategory);
+        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductInShopByCategory(shopId,
+                productCategory);
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -323,14 +326,15 @@ public class ShopFacadeTests {
         keywords.add("name1");
 
         // Act - try to get products by keywords when shopId is valid
-        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId, keywords);
+        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId,
+                keywords);
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -352,7 +356,7 @@ public class ShopFacadeTests {
             assertEquals(0, e.getMessage().indexOf("Shop ID:"));
         }
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -373,7 +377,7 @@ public class ShopFacadeTests {
             assertEquals(0, e.getMessage().indexOf("Keywords:"));
         }
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -394,7 +398,7 @@ public class ShopFacadeTests {
             assertEquals(0, e.getMessage().indexOf("Keywords:"));
         }
     }
-    
+
     // TODO: GILI: check why this test failing, and fix it.
     @Disabled
     @Test
@@ -408,7 +412,8 @@ public class ShopFacadeTests {
         keywords.add("name1");
 
         // Act - try to get products by keywords when keywords are valid
-        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId, keywords);
+        Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId,
+                keywords);
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());

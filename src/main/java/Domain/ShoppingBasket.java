@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
+import Exceptions.StockMarketException;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.
@@ -53,7 +54,7 @@ public class ShoppingBasket implements Cloneable {
 
 
     // Calculate and return the total price of all products in the basket
-    public double calculateShoppingBasketPrice() {
+    public double calculateShoppingBasketPrice() throws StockMarketException {
         resetProductToPriceToAmount();
         _shop.applyDiscounts(this);
         _basketTotalAmount = 0.0;
@@ -84,7 +85,7 @@ public class ShoppingBasket implements Cloneable {
         return _shop;
     }
 
-    public double getShoppingBasketPrice() {
+    public double getShoppingBasketPrice() throws StockMarketException{
         if (_basketTotalAmount == 0.0)
             return calculateShoppingBasketPrice();
         return _basketTotalAmount;

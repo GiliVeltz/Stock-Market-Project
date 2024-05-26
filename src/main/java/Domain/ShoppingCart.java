@@ -7,11 +7,14 @@ import java.util.ArrayList;
 
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.Facades.ShopFacade;
+
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
+import Exceptions.StockMarketException;
 import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
@@ -44,7 +47,7 @@ public class ShoppingCart {
      * item.
      */
     public void purchaseCart(List<Integer> busketsToBuy, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException {
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         purchaseCartEditStock(busketsToBuy);
         try {
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
@@ -135,7 +138,7 @@ public class ShoppingCart {
      */
     public void addProduct(int productID, int shopID) throws ProdcutPolicyException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
-                .filter(basket -> basket.getShop().getShopId().equals(shopID)).findFirst();
+                .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         ShoppingBasket basket;
         if (basketOptional.isPresent()) {
@@ -151,7 +154,7 @@ public class ShoppingCart {
 
     public void removeProduct(int productID, int shopID) {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
-        .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
+                .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         if (basketOptional.isPresent()) {
             ShoppingBasket basket = basketOptional.get();
@@ -165,6 +168,5 @@ public class ShoppingCart {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
         }
     }
-    
 
 }
