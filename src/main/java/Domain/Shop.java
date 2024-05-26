@@ -85,6 +85,10 @@ public class Shop {
         return _isClosed;
     }
 
+    public void reopenShop() {
+        _isClosed = false;
+    }
+
     /**
      * Check if a username has a role in shop.
      * 
@@ -712,6 +716,14 @@ public class Shop {
         }
     }
 
+    // before reopening the shop send notificstion to all relevasnt users
+    public void notifyReOpenShop() {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String userName = entry.getKey();
+            // TODO: StoreReOpenAlert();
+        }
+    }
+
     public String getBankDetails() {
         return _bankDetails;
     }
@@ -746,6 +758,12 @@ public class Shop {
                         productId, _shopId, username));
                 throw new PermissionException(
                         String.format("User: %s does not have permission to Update product: %d", username, productId));
+            }
+
+            if(isShopClosed()){
+                logger.log(Level.SEVERE, String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
+                throw new ShopException(
+                    String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
             }
 
             isProductExist(productId);
