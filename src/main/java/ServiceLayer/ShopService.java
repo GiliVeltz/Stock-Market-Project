@@ -1,19 +1,18 @@
 package ServiceLayer;
 
-import java.util.logging.Logger;
-// import org.apache.catalina.servlets.DefaultServlet.SortManager.Order;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import Domain.Product;
-import Domain.ShopOrder;
+import org.springframework.stereotype.Service;
+
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShopFacade.Category;
+import Domain.Product;
+import Domain.ShopOrder;
 import Exceptions.StockMarketException;
 
 @Service
@@ -283,7 +282,6 @@ public class ShopService {
      *         deatails or failure.
     */
     public Response searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice)
-    // TODO: handle return products as a response and log them
     {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -785,6 +783,196 @@ public class ShopService {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
+        return response;
+    }
+
+
+
+    /**
+     * Shows the shop policy information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the desired shop.
+     * @return      A response containing the shop policy information.
+     */
+    public Response displayShopPolicyInfo(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String policy = _shopFacade.getShopPolicyInfo(shopId);
+                if (policy != null && policy.length() > 0) {
+                    response.setReturnValue(String.format("Shop policy information: \n Shop ID: %d, \n Policy: %s", shopId, policy));
+                    logger.info(String.format("Shop policy information for shop ID %d is displayed", shopId));
+                } else {
+                    response.setReturnValue(String.format("Shop policy information for shop ID %d was not found", shopId));
+                    logger.info(String.format("Shop policy information for shop ID %d was not found", shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display shop policy information for shop ID %d . Error:",
+                    shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Shows the product policy information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the shop where the product is located.
+     * @param productId The ID of the product.
+     * @return      A response containing the product policy information.
+     */
+    public Response displayProductPolicyInfo(String token, Integer shopId, Integer productId) {
+        //TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String policy = _shopFacade.getProductPolicyInfo(shopId, productId);
+                if (policy != null && policy.length() > 0) {
+                    response.setReturnValue(String.format("Product policy information: \n Product ID: %d, Shop ID: %d, \n Policy: %s", productId, shopId, policy));
+                    logger.info(String.format("Product policy information for product ID %d, of shop ID %d is displayed", productId, shopId));
+                } else {
+                    response.setReturnValue(String.format("Product policy information for product ID %d, of shop ID %d was not found", productId, shopId));
+                    logger.info(String.format("Product policy information for product ID %d, of shop ID %d was not found", productId, shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display product policy information for product: %d in shop: %d . Error:",
+                    productId, shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Shows the shop discounts information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the desired shop.
+     * @return      A response containing the shop discounts information.
+     */
+    public Response displayShopDiscountsInfo(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+
+                String discounts = _shopFacade.getShopDiscountsInfo(shopId);
+                if (discounts != null && discounts.length() > 0) {
+                    response.setReturnValue(String.format("Shop discounts information: \n Shop ID: %d, \n Discounts: %s", shopId, discounts));
+                    logger.info(String.format("Shop discounts information for shop ID %d is displayed", shopId));
+                } else {
+                    response.setReturnValue(String.format("Shop discounts information for shop ID %d was not found", shopId));
+                    logger.info(String.format("Shop discounts information for shop ID %d was not found", shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display shop discounts information for shop ID %d . Error:",
+                    shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Shows the product discounts information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the shop where the product is located.
+     * @param productId The ID of the product.
+     * @return      A response containing the product discounts information.
+     */
+    public Response displayProductDiscountsInfo(String token, Integer shopId, Integer productId) {
+        //TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String discounts = _shopFacade.getProductDiscountsInfo(shopId, productId);
+                if (discounts != null && discounts.length() > 0) {
+                    response.setReturnValue(String.format("Product discounts information: \n Product ID: %d, Shop ID: %d, \n Discounts: %s", productId, shopId, discounts));
+                    logger.info(String.format("Product discounts information for product ID %d, of shop ID %d is displayed", productId, shopId));
+                } else {
+                    response.setReturnValue(String.format("Product discounts information for product ID %d, of shop ID %d was not found", productId, shopId));
+                    logger.info(String.format("Product discounts information for product ID %d, of shop ID %d was not found", productId, shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display product discounts information for product: %d in shop: %d . Error:",
+                    productId, shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Shows the shop general information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the desired shop.
+     * @return      A response containing the shop General information.
+     */
+    public Response displayShopGeneralInfo(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+
+                String info = _shopFacade.getShopGeneralInfo(shopId);
+                if (info != null && info.length() > 0) {
+                    response.setReturnValue(String.format("Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
+                    logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                } else {
+                    response.setReturnValue(String.format("Shop general information for shop ID %d was not found", shopId));
+                    logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display shop general information for shop ID %d . Error:",
+                    shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Shows the product general information.
+     * @param token     The session token of the user performing the operation.
+     * @param shopId    The ID of the shop where the product is located.
+     * @param productId The ID of the product.
+     * @return      A response containing the product general information.
+     */
+    public Response displayProductGeneralInfo(String token, Integer shopId, Integer productId) {
+        //TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String info = _shopFacade.getProductGeneralInfo(shopId, productId);
+                if (info != null && info.length() > 0) {
+                    response.setReturnValue(String.format("Product general information: \n Product ID: %d, Shop ID: %d, \n General information: %s", productId, shopId, info));
+                    logger.info(String.format("Product general information for product ID %d, of shop ID %d is displayed", productId, shopId));
+                } else {
+                    response.setReturnValue(String.format("Product general information for product ID %d, of shop ID %d was not found", productId, shopId));
+                    logger.info(String.format("Product general information for product ID %d, of shop ID %d was not found", productId, shopId));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format(String.format("Failed to display product general information for product: %d in shop: %d . Error:",
+                    productId, shopId, e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
         return response;
     }
 

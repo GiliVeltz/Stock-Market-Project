@@ -1,7 +1,5 @@
 package Domain;
 
-import static org.mockito.Answers.values;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -17,7 +15,15 @@ import Domain.Discounts.Discount;
 import Domain.Facades.ShopFacade.Category;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
-import Exceptions.*;
+import Exceptions.DiscountExpiredException;
+import Exceptions.PermissionException;
+import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductAlreadyExistsException;
+import Exceptions.ProductDoesNotExistsException;
+import Exceptions.RoleException;
+import Exceptions.ShopException;
+import Exceptions.ShopPolicyException;
+import Exceptions.StockMarketException;
 
 //TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
@@ -125,16 +131,16 @@ public class Shop {
         return true;
     }
 
-    public List<Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
-        List<Discount> discounts = new ArrayList<>();
-        for (Discount discount : _discounts.values()) {
-            if (new Date().after(discount.getExpirationDate())) {
+    public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
+        Map<Integer, Discount> productDiscounts = new HashMap<>();
+         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            if (new Date().after(entry.getValue().getExpirationDate())) {
                 removeDiscount(_nextDiscountId);
-            } else if (discount.getParticipatingProduct() == productId) {
-                discounts.add(discount);
+            } else if (entry.getValue().getParticipatingProduct() == productId) {
+                productDiscounts.put(entry.getKey(), entry.getValue());
             }
         }
-        return discounts;
+        return productDiscounts;
     }
 
     /**
@@ -724,7 +730,7 @@ public class Shop {
     private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
-                    "Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. Product does not exist",
+                    "Shop : Error while trying to update product with id: %d to shopId: %d. Product does not exist",
                     productId, _shopId));
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }
@@ -856,6 +862,56 @@ public class Shop {
                 + " successfuly removed a rule from product policy of shop with id: " + _shopId);
     }
 
-    // TODO: maybe add policy facade to implement the policy logic.
+    public String getShopPolicyInfo() {
+        return _shopPolicy.toString();
+    }
+
+    public String getProductPolicyInfo(Integer productId) throws ProductDoesNotExistsException {
+        if (isProductExist(productId)) {
+            return _productMap.get(productId).getProductPolicyInfo();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String getShopDiscountsInfo() {
+        StringBuilder discountsBuilder = new StringBuilder();
+        for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+        }
+        return discountsBuilder.toString();
+    }
+
+    public String getProductDiscountsInfo(Integer productId) throws ProductDoesNotExistsException, StockMarketException {
+        // TODO: implement after getDiscountsByProduct is implemented
+        if (isProductExist(productId)) {
+            StringBuilder discountsBuilder = new StringBuilder();
+            for (Map.Entry<Integer, Discount> entry : getDiscountsOfProduct(productId).entrySet()) {
+                discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+            }
+            return discountsBuilder.toString();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String getShopGeneralInfo() {
+        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress + " | Shop Rating: " + _shopRating;
+    }
+
+    public String getProductGeneralInfo(Integer productId) throws ProductDoesNotExistsException {
+        if (isProductExist(productId)) {
+            return _productMap.get(productId).getProductGeneralInfo();
+        }
+        else {
+            return null;
+        }
+    }
+
+
+    //TODO: maybe add policy facade to implement the policy logic.
+
 
 }
