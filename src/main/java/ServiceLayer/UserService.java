@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
-
-import Domain.ShoppingCartFacade;
-import Domain.UserFacade;
+import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 
 @Service
 public class UserService {
@@ -22,17 +21,18 @@ public class UserService {
 
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
-                _userFacade = userFacade;
+        _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
     }
 
-    // this function is responsible for logging in a user to the system by checking the credentials and generating a token for the user
+    // this function is responsible for logging in a user to the system by checking
+    // the credentials and generating a token for the user
     public Response logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if(userName == null || userName.isEmpty() || password == null || password.isEmpty()){
+                if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
                     throw new Exception("Username or password is empty.");
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
@@ -51,13 +51,14 @@ public class UserService {
         return response;
     }
 
-    // this function is responsible for logging out a user from the system by returning a new token for a guest in the system
+    // this function is responsible for logging out a user from the system by
+    // returning a new token for a guest in the system
     public Response logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_userFacade.isUserNameExists(userName)) {
+                if (_userFacade.doesUserExist(userName)) {
                     String newToken = _tokenService.generateGuestToken();
                     logger.info("User successfuly logged out: " + userName);
                     response.setReturnValue(newToken);
@@ -79,10 +80,10 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if(userName == null || userName.isEmpty()){
+                if (userName == null || userName.isEmpty()) {
                     throw new Exception("UserName is empty.");
                 }
-                if (!_userFacade.isUserNameExists(userName)) {
+                if (!_userFacade.doesUserExist(userName)) {
                     _userFacade.register(userName, password, email);
                     _shoppingCartFacade.addCartForUser(token, userName);
                     logger.info("User registered: " + userName);
@@ -101,7 +102,8 @@ public class UserService {
     }
 
     // this function is responsible for purchasing the cart of a user or a guest
-    // by checking the token and the user type and then calling the purchaseCart function
+    // by checking the token and the user type and then calling the purchaseCart
+    // function
     public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
@@ -221,9 +223,9 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if(_tokenService.isGuest(token)){
+                if (_tokenService.isGuest(token)) {
                     _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID);
-                } else if(_tokenService.isUserAndLoggedIn(token)){
+                } else if (_tokenService.isUserAndLoggedIn(token)) {
                     _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
                 } else {
                     throw new Exception("Token is incorrect");
@@ -242,10 +244,12 @@ public class UserService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if(_tokenService.isGuest(token)){
-                    _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID, shopID);
-                } else if(_tokenService.isUserAndLoggedIn(token)){
-                    _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID, shopID);
+                if (_tokenService.isGuest(token)) {
+                    _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID,
+                            shopID);
+                } else if (_tokenService.isUserAndLoggedIn(token)) {
+                    _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID,
+                            shopID);
                 } else {
                     throw new Exception("Token is incorrect");
                 }
