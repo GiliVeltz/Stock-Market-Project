@@ -23,6 +23,11 @@ public class PrecentageDiscount extends BaseDiscount {
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
+    @Override
+    public int getParticipatingProduct() {
+        return _productId;
+    }
+
     /**
      * Applies the percentage discount to the products in the shopping basket.
      * If the product is not in the basket, the discount is not applied.
