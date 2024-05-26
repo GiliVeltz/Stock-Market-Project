@@ -144,17 +144,20 @@ public class ShopFacade {
      * Adds a basic discount to the shop.
      *
      * @param shopId         the ID of the shop
+     * @param productId      the ID of the product to discount
      * @param username       the username of the user adding the discount
      * @param isPercentage   a flag indicating whether the discount amount is a
      *                       percentage or a fixed value
      * @param discountAmount the amount of the discount
      * @param expirationDate the expiration date of the discount
+     * @return the ID of the newly added discount
      * @throws PermissionException if the user does not have permission to add a
      *                             discount to the shop
      * @throws ShopException       if there is an error adding the discount to the
      *                             shop
      */
-    public void addBasicDiscountToShop(int shopId, String username, boolean isPrecentage, double discountAmount,
+    public int addBasicDiscountToShop(int shopId, int productId, String username, boolean isPrecentage,
+            double discountAmount,
             Date expirationDate) throws PermissionException, ShopException {
 
         Shop shop = getShopByShopId(shopId);
@@ -162,16 +165,18 @@ public class ShopFacade {
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (isPrecentage)
-            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+            discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
         else
-            discount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
-        shop.addDiscount(discount);
+            discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
+        return shop.addDiscount(discount);
     }
 
     /**
      * Adds a conditional discount to a shop.
      *
      * @param shopId           the ID of the shop
+     * @param productId        the ID of the product to discount if the condition is
+     *                         met
      * @param username         the username of the user adding the discount
      * @param mustHaveProducts a list of product IDs that must be present in the
      *                         cart for the discount to apply
@@ -179,12 +184,13 @@ public class ShopFacade {
      *                         percentage or a fixed amount
      * @param discountAmount   the amount of the discount
      * @param expirationDate   the expiration date of the discount
+     * @return the ID of the newly added discount
      * @throws PermissionException if the user does not have permission to add a
      *                             discount to the shop
      * @throws ShopException       if the shop does not exist or an error occurs
      *                             while adding the discount
      */
-    public void addConditionalDiscountToShop(int shopId, String username, List<Integer> mustHaveProducts,
+    public int addConditionalDiscountToShop(int shopId, int productId, String username, List<Integer> mustHaveProducts,
             boolean isPrecentage, double discountAmount, Date expirationDate)
             throws PermissionException, ShopException {
 
@@ -193,14 +199,36 @@ public class ShopFacade {
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount baseDiscount;
         if (isPrecentage)
-            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, productId);
         else
-            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, shopId);
+            baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, productId);
 
         ConditionalDiscount discount = new ConditionalDiscount(mustHaveProducts, baseDiscount);
-        shop.addDiscount(discount);
+        return shop.addDiscount(discount);
     }
 
+    /**
+     * Removes a discount from a shop.
+     *
+     * @param shopId     the ID of the shop
+     * @param discountId the ID of the discount to remove
+     * @param username   the username of the user removing the discount
+     * @throws PermissionException if the user does not have permission to remove a
+     *                             discount from the shop
+     * @throws ShopException       if the shop does not exist or an error occurs
+     *                             while removing the discount
+     */
+    public void removeDiscountFromShop(int shopId, int discountId, String username)
+            throws PermissionException, ShopException {
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+            throw new PermissionException(
+                    "User " + username + " has no permission to remove discount from shop " + shopId);
+        shop.removeDiscount(discountId);
+    }
+
+    // this function is responsible searching a product in a shop by its name for all type of users
+    // by checking if all inputs are valid and then calling the function in shop
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error
@@ -251,7 +279,7 @@ public class ShopFacade {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
                 // If the shop has products in the requested category, add them to the map
-                if(!products.isEmpty()){
+                if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
                 }
             } else {
@@ -315,12 +343,12 @@ public class ShopFacade {
         return productsByShop;
     }
 
-    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount) throws Exception
-    {
+    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount)
+            throws Exception {
         Shop shop = getShopByShopId(shopId);
-        if(shop == null)
+        if (shop == null)
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
-        
+
         shop.updateProductQuantity(userName, productId, productAmount);
     }
 
