@@ -202,6 +202,26 @@ public class ShopFacade {
         shop.addDiscount(discount);
     }
 
+    /**
+     * Removes a discount from a shop.
+     *
+     * @param shopId     the ID of the shop
+     * @param discountId the ID of the discount to remove
+     * @param username   the username of the user removing the discount
+     * @throws PermissionException if the user does not have permission to remove a
+     *                             discount from the shop
+     * @throws ShopException       if the shop does not exist or an error occurs
+     *                             while removing the discount
+     */
+    public void removeDiscountFromShop(int shopId, int discountId, String username)
+            throws PermissionException, ShopException {
+        Shop shop = getShopByShopId(shopId);
+        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+            throw new PermissionException(
+                    "User " + username + " has no permission to remove discount from shop " + shopId);
+        shop.removeDiscount(discountId);
+    }
+
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error

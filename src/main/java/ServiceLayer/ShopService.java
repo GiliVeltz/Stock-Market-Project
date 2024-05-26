@@ -460,6 +460,32 @@ public class ShopService {
         }
     }
 
+    public Response removeDiscount(String token, int shopId, int productId) {
+        Response resp = new Response();
+        try {
+            // check for user validity
+            if (!_tokenService.validateToken(token))
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token))
+                throw new StockMarketException("User is not logged in");
+
+            // check validity of input parameters
+            if (!_shopFacade.isShopIdExist(shopId))
+                throw new StockMarketException("Shop not found");
+
+            String username = _tokenService.extractUsername(token);
+            _shopFacade.removeDiscountFromShop(shopId, productId, username);
+            resp.setReturnValue("Removed discount");
+            logger.info("Removed discount from shop: " + shopId);
+            return resp;
+
+        } catch (StockMarketException e) {
+            resp.setErrorMessage("Failed to remove discount from shop: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to remove discount from shop: " + e.getMessage(), e);
+            return resp;
+        }
+    }
+
     /**
      * Updates the quantity of a specified product in a shop.
      * 
