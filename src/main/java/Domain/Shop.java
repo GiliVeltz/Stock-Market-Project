@@ -1,5 +1,7 @@
 package Domain;
 
+import static org.mockito.Answers.values;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -25,12 +27,13 @@ public class Shop {
     private List<ShopOrder> _orderHistory;
     private Map<String, Role> _userToRole; // <userName, Role>
     private static final Logger logger = Logger.getLogger(Shop.class.getName());
-    private List<Discount> _discounts;
+    private Map<Integer, Discount> _discounts;
     private String _bankDetails;
     private String _shopAddress;
     private Double _shopRating;
     private Integer _shopRatersCounter;
     private ShopPolicy _shopPolicy;
+    private int _nextDiscountId;
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -45,12 +48,13 @@ public class Shop {
             _userToRole = new HashMap<>();
             _bankDetails = bankDetails;
             _shopAddress = shopAddress;
-            _discounts = new ArrayList<>();
+            _discounts = new HashMap<>();
             this._shopRating = -1.0;
             this._shopRatersCounter = 0;
             _shopPolicy = new ShopPolicy();
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
+            _nextDiscountId = 0;
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
         } catch (Exception e) {
@@ -90,7 +94,7 @@ public class Shop {
      * @param username the username of the user that does the action.
      * @param p        the permission needed.
      * @return true if has permission. false if hasn't.
-     * @throws ShopException
+     * @throws ShopException if the user doesn't have a role in the shop.
      */
     public boolean checkPermission(String username, Permission p) throws ShopException {
         logger.log(Level.FINE, "Shop - checkPermission: Checking if user " + username + " has permission: " + p);
@@ -424,7 +428,6 @@ public class Shop {
         return appointed;
     }
 
-
     /**
      * Helper function to retrieve all the roles that we assigned from root role.
      * 
@@ -531,23 +534,38 @@ public class Shop {
         return _orderHistory;
     }
 
-    public void addDiscount(Discount discount) {
-        _discounts.add(discount);
+    
+    /**
+     * Adds a discount to the shop.
+     * 
+     * @param discount the discount to be added
+     * @return the ID of the added discount
+     */
+    public int addDiscount(Discount discount) {
+
+        int discountId = _nextDiscountId++;
+        _discounts.put(discountId, discount);
+        return discountId;
+    }
+
+    public void removeDiscount(int discountId) {
+        _discounts.remove(discountId);
     }
 
     public void applyDiscounts(ShoppingBasket basket) {
-        List<Discount> expiredDiscounts = new ArrayList<>();
+        List<Integer> expiredDiscounts = new ArrayList<>();
         basket.resetProductToPriceToAmount();
-        for (Discount discount : _discounts) {
+        for (int discountId : _discounts.keySet()) {
+            Discount discount = _discounts.get(discountId);
             try {
                 discount.applyDiscount(basket);
             } catch (DiscountExpiredException e) {
-                logger.info("Shop - applyDiscounts: discount: " + discount + " has expired, removing it.");
-                expiredDiscounts.add(discount);
+                logger.info("Shop - applyDiscounts: discount: " + discountId + " has expired, removing it.");
+                expiredDiscounts.add(discountId);
             }
         }
-        for (Discount discount : expiredDiscounts) {
-            _discounts.remove(discount);
+        for (Integer discountId : expiredDiscounts) {
+            _discounts.remove(discountId);
         }
     }
 
@@ -639,31 +657,30 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException
-    {
+    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
         if (!_productMap.containsKey(productId)) {
-            logger.log(Level.SEVERE, String.format
-                ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. Product does not exist",productId, _shopId));
+            logger.log(Level.SEVERE, String.format(
+                    "Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. Product does not exist",
+                    productId, _shopId));
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }
         return true;
 
     }
 
-    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception
-    {
-        try{
-            if(!checkPermission(username, Permission.ADD_PRODUCT)){
-                logger.log(Level.SEVERE, String.format
-                    ("Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",productId, _shopId, username));
-                throw new PermissionException(String.format("User: %s does not have permission to Update product: %d", username, productId));
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception {
+        try {
+            if (!checkPermission(username, Permission.ADD_PRODUCT)) {
+                logger.log(Level.SEVERE, String.format(
+                        "Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
+                        productId, _shopId, username));
+                throw new PermissionException(
+                        String.format("User: %s does not have permission to Update product: %d", username, productId));
             }
-    
+
             isProductExist(productId);
             getProductById(productId).updateProductQuantity(productAmoutn);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }

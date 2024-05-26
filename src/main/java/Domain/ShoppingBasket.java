@@ -74,6 +74,7 @@ public class ShoppingBasket implements Cloneable {
         }
         return _basketTotalAmount;
     }
+    
 
     public int getShopId() {
         return _shop.getShopId();
