@@ -9,6 +9,7 @@ import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.ShopPolicyException;
@@ -23,8 +24,10 @@ public class ShoppingCart {
     private AdapterPayment _paymentMethod;
     private AdapterSupply _supplyMethod;
     private ShopFacade _shopFacade;
+    private User _user;
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
+    //TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = new AdapterPayment();
@@ -123,7 +126,14 @@ public class ShoppingCart {
         return output.toString(); // Convert StringBuilder to String
     }
 
-    public void addProduct(int productID, int shopID) {
+    /**
+     * Add a product to the shopping cart of a user.
+     * @param productID the product to add.
+     * @param shopID the shop the product is from.
+     * @param user the user that wants to add the prodcut.
+     * @throws ProdcutPolicyException
+     */
+    public void addProduct(int productID, int shopID) throws ProdcutPolicyException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId().equals(shopID)).findFirst();
 
@@ -135,7 +145,7 @@ public class ShoppingCart {
             _shoppingBaskets.add(basket);
         }
 
-        basket.addProductToShoppingBasket(productID);
+        basket.addProductToShoppingBasket(_user, productID);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 

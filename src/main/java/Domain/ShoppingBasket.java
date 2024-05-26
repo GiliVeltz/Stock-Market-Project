@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShopPolicyException;
 
@@ -31,9 +32,19 @@ public class ShoppingBasket implements Cloneable {
         _productToPriceToAmount = new HashMap<>();
     }
 
-    public void addProductToShoppingBasket(Integer productId) {
-        
+    /**
+     * Adds a product to the shopping basket after validating the user doesn't violate the product policy.
+     * @param user the user that adds the product to the basket
+     * @param productId the product id to add to the basket
+     * @throws ProdcutPolicyException 
+     */
+    public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException {
+        logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
         _productIdList.add(productId);
+        logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
     }
 
     public void removeProductFromShoppingBasket(Integer productId) {

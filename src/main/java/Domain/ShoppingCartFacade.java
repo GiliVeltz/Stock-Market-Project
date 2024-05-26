@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
 import Exceptions.PaymentFailedException;
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ShippingFailedException;
 
 @RestController
@@ -40,7 +41,7 @@ public class ShoppingCartFacade {
         _usersCarts.put(username, _guestsCarts.remove(guestID));
     }
 
-    public void addProductToUserCart(String userName, int productID, int shopID) {
+    public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException {
         ShoppingCart cart = _usersCarts.get(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID);
@@ -50,7 +51,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void addProductToGuestCart(String guestID, int productID, int shopID) {
+    public void addProductToGuestCart(String guestID, int productID, int shopID) throws ProdcutPolicyException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.addProduct(productID, shopID);
