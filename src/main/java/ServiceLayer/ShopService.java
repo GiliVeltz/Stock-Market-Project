@@ -324,22 +324,6 @@ public class ShopService {
         return response;        
     }
 
-    // function to get a purchase from shopFacade by shop ID
-    public Response getPurchaseHistory(Integer shopId) {
-        Response response = new Response();
-        try {
-            List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
-            response.setReturnValue(purchasHistory);
-            logger.info(String.format("Purchase history retrieved for Shop ID: %d", shopId));
-
-        } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to retrieve purchase history for shopID %d. Error: ", shopId,
-                    e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
-        return response;
-    }
 
     // function to check if shop exists
     public Response isShopIdExist(Integer shopId) {
@@ -405,7 +389,7 @@ public class ShopService {
 
                 String userId = _tokenService.extractUsername(token);
                 Response isAdminResponse = _userService.isSystemAdmin(userId);
-                if (_shopFacade.isShopOwner(shopId, userId) || isAdminResponse.getErrorMessage() != null) {
+                if (!_shopFacade.isShopOwner(shopId, userId) && isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User has no permission to access the shop purchase history");
                     logger.log(Level.SEVERE, "User has no permission to access the shop purchase history");
                     return response;
@@ -428,6 +412,24 @@ public class ShopService {
             logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
         }
         // TODO: check with Spring how to return this response as a data object
+        return response;
+    }
+
+
+    // function to get a purchase from shopFacade by shop ID
+    private Response getPurchaseHistory(Integer shopId) {
+        Response response = new Response();
+        try {
+            List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
+            response.setReturnValue(purchasHistory);
+            logger.info(String.format("Purchase history retrieved for Shop ID: %d", shopId));
+
+        } catch (Exception e) {
+            response.setErrorMessage(String.format("Failed to retrieve purchase history for shopID %d. Error: ", shopId,
+                    e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
         return response;
     }
 

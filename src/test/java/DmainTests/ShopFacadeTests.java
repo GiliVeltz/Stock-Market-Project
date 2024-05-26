@@ -24,6 +24,11 @@ import Domain.*;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShopFacade.Category;
 import Exceptions.ShopException;
+import ServiceLayer.Response;
+import ServiceLayer.ShopService;
+import ServiceLayer.TokenService;
+import ServiceLayer.UserService;
+import ch.qos.logback.core.subst.Token;
 
 public class ShopFacadeTests {
 
@@ -36,6 +41,10 @@ public class ShopFacadeTests {
 
     @Mock
     private ShoppingBasket _shoppingBasketMock;
+    @Mock
+    private TokenService _tokenServiceMock;
+    @Mock
+    private UserService _userServiceMock;
 
     // Shops fields.
     private Shop _shop1;
@@ -47,11 +56,13 @@ public class ShopFacadeTests {
     public void setUp() throws ShopException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
+        _tokenServiceMock = mock(TokenService.class);
+        _userServiceMock = mock(UserService.class);
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
         _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
-        
+
     }
 
     @AfterEach
@@ -80,11 +91,11 @@ public class ShopFacadeTests {
     public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        
+
         // Act - try to open a new shop with a new ID
         _ShopFacadeUnderTests.openNewShop(_shop2.getShopId(), _shop2.getFounderName(), _shop2.getBankDetails(),
-        _shop2.getShopAddress());
-        
+                _shop2.getShopAddress());
+
         // Assert - Verify that the shop is added to the list
         assertEquals(1, _ShopFacadeUnderTests.getAllShops().size());
         assertEquals(_shop2.getShopId(), _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
@@ -428,29 +439,111 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenShopOwner_thenFails() throws Exception {
+    public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer orderId = 1;
         Integer shopId = 1;
+        String userName = "not_admin";
+        String token = "Admin_Token";
+
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // when check if user is admin retuen false
+        Response response = new Response();
+        response.setErrorMessage("not admin user");
+        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(response);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
-        
+        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+
         // Act - try to get the purchase history for the shop owner
         _shop1.addOrderToOrderHistory(shopOrder);
-        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
-        
-        // Assert - Verify that the purchase history is retrieved
-        assertNotEquals(0, purchaseHistory.size());
+        // List<ShopOrder> purchaseHistory =
+        // _ShopFacadeUnderTests.getPurchaseHistory(shopId);
+
+        // Assert - Verify that the purchase history is not retrieved
+        assertNotNull(shopService.getShopPurchaseHistory(token, shopId).getErrorMessage());
+
     }
 
     @Test
-    public void testGetPurchaseHistory_whenProductPriceChange_thenFails() throws Exception {
-        // Arrange - Create a new ShopFacade object and create a new ShopOrder object and add it to the shop order list 
+    public void testGetPurchaseHistory_whenUserIsOwner_thenSuccess() throws Exception {
+        // Arrange - initialize a ShopFacade with a shop that contains a product, and a
+        // ShopOrder placed by a user. Configure the token and user services to
+        // authenticate and authorize the user as an admin.
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+        String userName = "founderName1";
+        String token = "owner_Token";
+        User user = new User("founderName1", "password1", "email1");
+        Category category = Category.CLOTHING;
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        Product product = new Product(1, "product1", category, 10);
+        _shop1.addProductToShop("founderName1", product);
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        _shop1.addOrderToOrderHistory(shopOrder);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        Response response = new Response();
+        response.setErrorMessage("user not admin");
+        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(response);
+
+       
+
+        // Act - try to get the purchase history for the system admin
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getReturnValue();
+
+        // Assert - Verify that the purchase history is not retrieved
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+        String userName = "not_admin_or_owner";
+        String token = "Admin_Token";
+        User user = new User(userName, "password1", "email1");
+        Category category = Category.CLOTHING;
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        Product product = new Product(1, "product1", category, 10);
+        _shop1.addProductToShop("founderName1", product);
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        _shop1.addOrderToOrderHistory(shopOrder);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(new Response());
+
+        // Act - try to get the purchase history for the shop owner
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getErrorMessage();
+
+        // Assert - Verify that the purchase history is not retrieved
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetPurchaseHistory_whenProductPriceChanges_thenOrderTotalRemainsUnchanged() throws Exception {
+        // Arrange
+        // Create a new ShopFacade object with a shop that has a product. A user places
+        // an order for this product.
+        _shopsList.add(_shop1);
+        ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
         Integer orderId = 1;
         Integer shopId = 1;
         User user = new User("founderName1", "password1", "email1");
@@ -459,69 +552,42 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-     
-        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
-        
-        // Act - try to get the purchase history for the shop owner and change the product price
+        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
-        //change the producr price
-        _shop1.setProductPrice(product.getProductId(), 100.0);
 
-        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
-        
-        // Assert - Verify that the purchase history is retrieved with the original price
+        // Act
+        // Change the price of the product after the order has been placed
+        _shop1.setProductPrice(product.getProductId(), 100.0);
+        List<ShopOrder> purchaseHistory = shopFacadeUnderTest.getPurchaseHistory(shopId);
+
+        // Assert
+        // Verify that the total amount of the order in the purchase history remains
+        // unchanged despite the price change
         assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
     }
 
     @Test
     public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws Exception {
-        // Arrange - Create a new ShopFacade object
+        // Arrange
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
         Integer orderId = 1;
         Integer shopId = 1;
-        User user = new User("founderName1", "password1", "email1");
-        Category category = Category.CLOTHING;
-        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        Product product = new Product(1, "product1", category, 10);
-        _shop1.addProductToShop("founderName1", product);
-        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-     
-        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
-        
-        // Act - try to get the purchase history for the shop owner
-        _shop1.addOrderToOrderHistory(shopOrder);
-        //change the producr price
-        // when(productMock.getPrice()).thenReturn(100.0);
+        User testUser = new User("founderName1", "password1", "email1");
+        Category productCategory = Category.CLOTHING;
+        ShoppingBasket testShoppingBasket = new ShoppingBasket(_shop1);
+        Product testProduct = new Product(1, "product1", productCategory, 10);
+        _shop1.addProductToShop("founderName1", testProduct);
+        testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
 
-        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
-        
-        // Assert - Verify that the purchase history is retrieved
+        ShopOrder testShopOrder = new ShopOrder(orderId, shopId, testShoppingBasket);
+
+        // Act
+        _shop1.addOrderToOrderHistory(testShopOrder);
+        List<ShopOrder> purchaseHistory = shopFacadeUnderTest.getPurchaseHistory(shopId);
+
+        // Assert
         assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
     }
 
-
-    @Test
-    public void testGetPurchaseHistory_whenShopOwner_thenSuccess() throws Exception {
-        // Arrange - Create a new ShopFacade object
-        _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer orderId = 1;
-        Integer shopId = 1;
-    
-        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
-        
-        // Act - try to get the purchase history for the shop owner
-        _shop1.addOrderToOrderHistory(shopOrder);
-        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
-        
-        // Assert - Verify that the purchase history is retrieved
-        assertNotNull(purchaseHistory);
-        assertEquals(1, purchaseHistory.size());
-    }
-
-
-  
-    
 }
