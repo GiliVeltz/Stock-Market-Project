@@ -30,6 +30,8 @@ public enum Permission {
     REMOVE_PURCHASE_METHOD, //2
     ADD_DISCOUNT_POLICY, //2
     REMOVE_DISCOUNT_METHOD, //2
+    CHANGE_PRODUCT_POLICY,
+    CHANGE_SHOP_POLICY,
 
     //APPOINT MANAGEMENT
     //APPOINT_OWNER, //3 We don't want managers to have this permission.

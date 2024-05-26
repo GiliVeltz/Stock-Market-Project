@@ -12,6 +12,7 @@ import Domain.ShoppingCart;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Exceptions.PaymentFailedException;
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
 
@@ -44,7 +45,7 @@ public class ShoppingCartFacade {
         _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
     }
 
-    public void addProductToUserCart(String userName, int productID, int shopID) {
+    public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID);
@@ -54,7 +55,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void addProductToGuestCart(String guestID, int productID, int shopID) {
+    public void addProductToGuestCart(String guestID, int productID, int shopID) throws ProdcutPolicyException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.addProduct(productID, shopID);

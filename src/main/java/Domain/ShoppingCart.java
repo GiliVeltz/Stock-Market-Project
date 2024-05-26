@@ -11,11 +11,14 @@ import Domain.Facades.ShopFacade;
 
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
+import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
+//TODO: function to add prodcut to cart?
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
@@ -24,8 +27,10 @@ public class ShoppingCart {
     private AdapterPayment _paymentMethod;
     private AdapterSupply _supplyMethod;
     private ShopFacade _shopFacade;
+    private User _user;
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
+    //TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = new AdapterPayment();
@@ -84,8 +89,14 @@ public class ShoppingCart {
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {
-                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Product out of stock for baket number: "
+                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Product out of stock for basket number: "
                         + basketId + ". Exception: " + e.getMessage(), e);
+                logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
+                for (Integer basket : boughtBasketList) {
+                    _shoppingBaskets.get(basket).cancelPurchase();
+                }
+            } catch(ShopPolicyException e){
+                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Basket "+basketId+" Validated the policy of the shop.");
                 logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
@@ -118,7 +129,14 @@ public class ShoppingCart {
         return output.toString(); // Convert StringBuilder to String
     }
 
-    public void addProduct(int productID, int shopID) {
+    /**
+     * Add a product to the shopping cart of a user.
+     * @param productID the product to add.
+     * @param shopID the shop the product is from.
+     * @param user the user that wants to add the prodcut.
+     * @throws ProdcutPolicyException
+     */
+    public void addProduct(int productID, int shopID) throws ProdcutPolicyException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
@@ -130,7 +148,7 @@ public class ShoppingCart {
             _shoppingBaskets.add(basket);
         }
 
-        basket.addProductToShoppingBasket(productID);
+        basket.addProductToShoppingBasket(_user, productID);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 
