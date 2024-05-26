@@ -125,147 +125,132 @@ public class ShopService {
         return response;
     }
 
-
     /**
-    * searches products by their name.
-    * 
-    * @param shopId    The ID of the shop to search in OR null to search in all shops.
-    * @param productName  he name of the product.
-    * @return          A response indicating the success of the operation and some products' deatails or failure.
-    */
+     * searches products by their name.
+     * 
+     * @param shopId      The ID of the shop to search in OR null to search in all
+     *                    shops.
+     * @param productName he name of the product.
+     * @return A response indicating the success of the operation and some products'
+     *         deatails or failure.
+     */
     public Response searchProductInShopByName(Integer shopId, String productName)
-    //TODO: handle return products as a response and log them
+    // TODO: handle return products as a response and log them
     {
         Response response = new Response();
-        try
-        {
+        try {
             Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
-            if (products != null)
-            {
-                //TODO: handle return products as a response and log them 
+            if (products != null) {
+                // TODO: handle return products as a response and log them
                 response.setReturnValue("Products found in shop");
                 logger.info(String.format("Products found in Shop ID: %d", shopId));
-            }
-            else
-            {
+            } else {
                 response.setReturnValue("Product not found in shop");
                 logger.info(String.format("Products not found in Shop ID: %d", shopId));
             }
-        }
-        catch (Exception e)
-        {
-            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        return response;        
+        return response;
     }
 
-/**
-    * searches products by their Category.
-    * 
-    * @param shopId    The ID of the shop to search in OR null to search in all shops.
-    * @param productCategory  The category of the product.
-    * @return          A response indicating the success of the operation and some products' deatails or failure.
-    */
+    /**
+     * searches products by their Category.
+     * 
+     * @param shopId          The ID of the shop to search in OR null to search in
+     *                        all shops.
+     * @param productCategory The category of the product.
+     * @return A response indicating the success of the operation and some products'
+     *         deatails or failure.
+     */
     public Response searchProductInShopByCategory(Integer shopId, Category productCategory)
-    //TODO: handle return products as a response and log them
+    // TODO: handle return products as a response and log them
     {
         Response response = new Response();
-        try
-        {
+        try {
             Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
-            if (products != null)
-            {
-                //TODO: handle return products as a response and log them 
+            if (products != null) {
+                // TODO: handle return products as a response and log them
                 response.setReturnValue("Products found in shop");
                 logger.info(String.format("Products found in Shop ID: %d", shopId));
-            }
-            else
-            {
+            } else {
                 response.setReturnValue("Products not found in shop");
                 logger.info(String.format("Products not found in Shop ID: %d", shopId));
             }
-        }
-        catch (Exception e)
-        {
-            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        return response;        
+        return response;
     }
 
     /**
-    * searches products by keyWords.
-    * 
-    * @param shopId    The ID of the shop to search in OR null to search in all shops.
-    * @param keywords  The list of keywords.
-    * @return          A response indicating the success of the operation and some products' deatails or failure.
-    */
+     * searches products by keyWords.
+     * 
+     * @param shopId   The ID of the shop to search in OR null to search in all
+     *                 shops.
+     * @param keywords The list of keywords.
+     * @return A response indicating the success of the operation and some products'
+     *         deatails or failure.
+     */
     public Response searchProductsInShopByKeywords(Integer shopId, List<String> keywords)
-    //TODO: handle return products as a response and log them
+    // TODO: handle return products as a response and log them
     {
         Response response = new Response();
-        try
-        {
+        try {
             Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
-            if (products != null)
-            {
-                //TODO: handle return products as a response and log them 
+            if (products != null) {
+                // TODO: handle return products as a response and log them
                 response.setReturnValue("Products found in shop");
                 logger.info(String.format("Products found in Shop ID: %d", shopId));
-            }
-            else
-            {
+            } else {
                 response.setReturnValue("Product not found in shop");
                 logger.info(String.format("Products not found in Shop ID: %d", shopId));
             }
-        }
-        catch (Exception e)
-        {
-            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        return response;        
+        return response;
     }
-
-
 
     /**
-    * Temporary function - replace filter
-    * searches products by pricing range.
-    * 
-    * @param shopId    The ID of the shop to search in OR null to search in all shops.
-    * @param minPrice  The minimum price of the product.
-    * @param maxPrice  The maximum price of the product.
-    * @return          A response indicating the success of the operation and some products' deatails or failure.
-    */
+     * Temporary function - replace filter
+     * searches products by pricing range.
+     * 
+     * @param shopId   The ID of the shop to search in OR null to search in all
+     *                 shops.
+     * @param minPrice The minimum price of the product.
+     * @param maxPrice The maximum price of the product.
+     * @return A response indicating the success of the operation and some products'
+     *         deatails or failure.
+     */
     public Response searchProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
-    //TODO: handle return products as a response and log them
+    // TODO: handle return products as a response and log them
     {
         Response response = new Response();
-        try
-        {
-            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
-            if (products != null)
-            {
-                //TODO: handle return products as a response and log them 
+        try {
+            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
+                    maxPrice);
+            if (products != null) {
+                // TODO: handle return products as a response and log them
                 response.setReturnValue("Products found in shop");
                 logger.info(String.format("Products found in Shop ID: %d", shopId));
-            }
-            else
-            {
+            } else {
                 response.setReturnValue("Product not found in shop");
                 logger.info(String.format("Products not found in Shop ID: %d", shopId));
             }
-        }
-        catch (Exception e)
-        {
-            response.setErrorMessage(String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        return response;        
+        return response;
     }
-    
 
     // function to get a purchase from shopFacade by shop ID
     public Response getPurchaseHistory(Integer shopId) {
@@ -379,13 +364,16 @@ public class ShopService {
      * 
      * @param token          The session token of the user adding the discount.
      * @param shopId         The ID of the shop to which the discount will be added.
+     * @param productId      The ID of the product to which the discount will be
+     *                       applied.
      * @param isPrecentage   A boolean indicating whether the discount is a
      *                       percentage or a fixed amount.
      * @param discountAmount The amount of the discount.
      * @param expirationDate The date on which the discount will expire.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response addShopBasicDiscount(String token, int shopId, boolean isPrecentage, double discountAmount,
+    public Response addShopBasicDiscount(String token, int shopId, int productId, boolean isPrecentage,
+            double discountAmount,
             Date expirationDate) {
         Response resp = new Response();
         try {
@@ -407,7 +395,8 @@ public class ShopService {
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            _shopFacade.addBasicDiscountToShop(shopId, username, isPrecentage, discountAmount, expirationDate);
+            _shopFacade.addBasicDiscountToShop(shopId, productId, username, isPrecentage, discountAmount,
+                    expirationDate);
             resp.setReturnValue("Added basic discount");
             logger.info("Added basic discount to shop: " + shopId);
             return resp;
@@ -426,6 +415,8 @@ public class ShopService {
      * @param token            The session token of the user adding the discount.
      * @param shopId           The ID of the shop to which the discount will be
      *                         added.
+     * @param productId        The ID of the product to which the discount will be
+     *                         applied.
      * @param mustHaveProducts A list of product IDs that must be in the shopping
      *                         basket for the discount to apply.
      * @param isPrecentage     A boolean indicating whether the discount is a
@@ -434,7 +425,7 @@ public class ShopService {
      * @param expirationDate   The date on which the discount will expire.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response addShopConditionalDiscount(String token, int shopId, List<Integer> mustHaveProducts,
+    public Response addShopConditionalDiscount(String token, int shopId, int productId, List<Integer> mustHaveProducts,
             boolean isPrecentage, double discountAmount, Date expirationDate) {
         Response resp = new Response();
         try {
@@ -456,7 +447,7 @@ public class ShopService {
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            _shopFacade.addConditionalDiscountToShop(shopId, username, mustHaveProducts, isPrecentage, discountAmount,
+            _shopFacade.addConditionalDiscountToShop(shopId, productId, username, mustHaveProducts, isPrecentage, discountAmount,
                     expirationDate);
             resp.setReturnValue("Added conditional discount");
             logger.info("Added conditional discount to shop: " + shopId);
