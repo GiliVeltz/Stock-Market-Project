@@ -392,7 +392,7 @@ public class ShopService {
             if (!isPrecentage && discountAmount < 0)
                 throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
             Date currentDate = new Date();
-            if (expirationDate.before(currentDate) || expirationDate.getTime() - currentDate.getTime() < 86400000)
+            if (expirationDate.getTime() - currentDate.getTime() < 86400000)
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
