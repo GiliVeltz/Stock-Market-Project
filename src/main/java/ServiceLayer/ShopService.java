@@ -133,8 +133,7 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductInShopByName(String token, Integer shopId, String productName)
-    {
+    public Response searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
@@ -154,20 +153,20 @@ public class ShopService {
                     response.setReturnValue(result.toString());
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
                 } else {
-                    response.setReturnValue(String.format("Products named %s were not found in %s", productName, shopIDString));
+                    response.setReturnValue(
+                            String.format("Products named %s were not found in %s", productName, shopIDString));
                     logger.info(String.format("Products named %s were not found in %s", productName, shopIDString));
                 }
-            }
-            else {
+            } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(String.format(String.format("Failed to search products named %s in %s . Error:", productName, shopIDString, e.getMessage())));
+            response.setErrorMessage(String.format(String.format("Failed to search products named %s in %s . Error:",
+                    productName, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
     }
-
 
     /**
      * searches products by their Category.
@@ -178,8 +177,7 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductInShopByCategory(String token, Integer shopId, Category productCategory)
-    {
+    public Response searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
@@ -187,7 +185,8 @@ public class ShopService {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
                 if (products != null && !products.isEmpty()) {
                     StringBuilder result = new StringBuilder();
-                    result.append("Products in the category of ").append(productCategory.toString()).append(" were found!:");
+                    result.append("Products in the category of ").append(productCategory.toString())
+                            .append(" were found!:");
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         Integer shopID = entry.getKey();
                         List<Product> productList = entry.getValue();
@@ -197,22 +196,25 @@ public class ShopService {
                         }
                     }
                     response.setReturnValue(result.toString());
-                    logger.info(String.format("Products in the category of %s were found in %s", productCategory.toString(), shopIDString));
+                    logger.info(String.format("Products in the category of %s were found in %s",
+                            productCategory.toString(), shopIDString));
                 } else {
-                    response.setReturnValue(String.format("Products in the category of %s were not found in %s", productCategory.toString(), shopIDString));
-                    logger.info(String.format("Products in the category of %s were not found in %s", productCategory.toString(), shopIDString));
+                    response.setReturnValue(String.format("Products in the category of %s were not found in %s",
+                            productCategory.toString(), shopIDString));
+                    logger.info(String.format("Products in the category of %s were not found in %s",
+                            productCategory.toString(), shopIDString));
                 }
-            }
-            else {
+            } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(String.format(String.format("Failed to search products in the category of %s in %s . Error:", productCategory.toString(), shopIDString, e.getMessage())));
+            response.setErrorMessage(
+                    String.format(String.format("Failed to search products in the category of %s in %s . Error:",
+                            productCategory.toString(), shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
     }
-
 
     /**
      * searches products by keyWords.
@@ -223,8 +225,7 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords)
-    {
+    public Response searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
         Response response = new Response();
         // Setting strings of shop ID and keywords for logging
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -238,7 +239,8 @@ public class ShopService {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
                 if (products != null && !products.isEmpty()) {
                     StringBuilder result = new StringBuilder();
-                    result.append("Products taged by one of the keywords: ").append(keywordsString).append(" were found!:");
+                    result.append("Products taged by one of the keywords: ").append(keywordsString)
+                            .append(" were found!:");
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         Integer shopID = entry.getKey();
                         List<Product> productList = entry.getValue();
@@ -248,17 +250,21 @@ public class ShopService {
                         }
                     }
                     response.setReturnValue(result.toString());
-                    logger.info(String.format("Products taged by the keywords: %s were found in %s",keywordsString,  shopIDString));
+                    logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
+                            shopIDString));
                 } else {
-                    response.setReturnValue(String.format("Products taged by the keywords: %s were not found in %s", keywordsString, shopIDString));
-                    logger.info(String.format("Products taged by the keywords: %s were not found in %s", keywordsString, shopIDString));
+                    response.setReturnValue(String.format("Products taged by the keywords: %s were not found in %s",
+                            keywordsString, shopIDString));
+                    logger.info(String.format("Products taged by the keywords: %s were not found in %s", keywordsString,
+                            shopIDString));
                 }
-            }
-            else {
+            } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(String.format(String.format("Failed to search products taged by the keywords: %s in %s . Error:", keywordsString, shopIDString, e.getMessage())));
+            response.setErrorMessage(
+                    String.format(String.format("Failed to search products taged by the keywords: %s in %s . Error:",
+                            keywordsString, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
@@ -282,10 +288,12 @@ public class ShopService {
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
             if (_tokenService.validateToken(token)) {
-                Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
+                Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
+                        maxPrice);
                 if (products != null && !products.isEmpty()) {
                     StringBuilder result = new StringBuilder();
-                    result.append("Products in the price range of ").append(minPrice.toString() + " - " + maxPrice.toString()).append(" were found!:");
+                    result.append("Products in the price range of ")
+                            .append(minPrice.toString() + " - " + maxPrice.toString()).append(" were found!:");
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         Integer shopID = entry.getKey();
                         List<Product> productList = entry.getValue();
@@ -295,22 +303,25 @@ public class ShopService {
                         }
                     }
                     response.setReturnValue(result.toString());
-                    logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice, maxPrice, shopIDString));
+                    logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
+                            maxPrice, shopIDString));
                 } else {
-                    response.setReturnValue(String.format("Products in the price range of %d - %d were not found in %s", minPrice, maxPrice, shopIDString));
-                    logger.info(String.format("Products in the price range of %d - %d were not found in %s", minPrice, maxPrice, shopIDString));
+                    response.setReturnValue(String.format("Products in the price range of %d - %d were not found in %s",
+                            minPrice, maxPrice, shopIDString));
+                    logger.info(String.format("Products in the price range of %d - %d were not found in %s", minPrice,
+                            maxPrice, shopIDString));
                 }
-            }
-            else {
+            } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(String.format(String.format("Failed to search products in the price range of %d - %d in %s . Error:", minPrice, maxPrice, shopIDString, e.getMessage())));
+            response.setErrorMessage(String
+                    .format(String.format("Failed to search products in the price range of %d - %d in %s . Error:",
+                            minPrice, maxPrice, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
     }
-    
 
     // function to get a purchase from shopFacade by shop ID
     public Response getPurchaseHistory(Integer shopId) {
@@ -586,10 +597,13 @@ public class ShopService {
 
     /**
      * Adds a new owner to a shop.
-     * @param token The session token of the user performing the update.
-     * @param username The username of the user performing the update.
-     * @param shopId The ID of the shop where the new owner is being added.
-     * @param newOwnerUsername The username of the new owner being added to the shop.
+     * 
+     * @param token            The session token of the user performing the update.
+     * @param username         The username of the user performing the update.
+     * @param shopId           The ID of the shop where the new owner is being
+     *                         added.
+     * @param newOwnerUsername The username of the new owner being added to the
+     *                         shop.
      * @return A Response object indicating the success or failure of the operation.
      */
     public Response addShopOwner(String token, String username, Integer shopId, String newOwnerUsername) {
@@ -597,13 +611,13 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if(_userService.getUserFacade().isUserNameExists(username)){
+                    if (_userService.getUserFacade().doesUserExist(username)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
                         logger.info(String.format("New owner %s added to Shop ID: %d", username, shopId));
-                    }else{
+                    } else {
                         throw new StockMarketException("User does not exist.");
-                    } 
+                    }
                 } else {
                     throw new StockMarketException("User is not logged in.");
                 }
@@ -622,14 +636,20 @@ public class ShopService {
 
     /**
      * Adds a new manager to a shop.
-     * @param token The session token of the user performing the update.
-     * @param username The username of the user performing the appointment.
-     * @param shopId The ID of the shop where the new manager is being added.
-     * @param newManagerUsername The username of the new manager being added to the shop.
-     * @param permissions The permissions granted to the new manager.
+     * 
+     * @param token              The session token of the user performing the
+     *                           update.
+     * @param username           The username of the user performing the
+     *                           appointment.
+     * @param shopId             The ID of the shop where the new manager is being
+     *                           added.
+     * @param newManagerUsername The username of the new manager being added to the
+     *                           shop.
+     * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopManager(String token, String username, Integer shopId, String newManagerUsername, Set<String> permissions) {
+    public Response addShopManager(String token, String username, Integer shopId, String newManagerUsername,
+            Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -652,7 +672,5 @@ public class ShopService {
 
         return response;
     }
-
-
 
 }

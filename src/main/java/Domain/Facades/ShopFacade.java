@@ -218,7 +218,8 @@ public class ShopFacade {
         shop.removeDiscount(discountId);
     }
 
-    // this function is responsible searching a product in a shop by its name for all type of users
+    // this function is responsible searching a product in a shop by its name for
+    // all type of users
     // by checking if all inputs are valid and then calling the function in shop
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
@@ -228,7 +229,7 @@ public class ShopFacade {
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : _shopRepository.getAllShops()) {
+            for (Shop shop : getAllShops()) {
                 List<Product> products = shop.getProductsByName(productName);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -248,6 +249,10 @@ public class ShopFacade {
         return productsByShop;
     }
 
+    public List<Shop> getAllShops() {
+        return _shopRepository.getAllShops();
+    }
+
     public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
             throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
@@ -257,7 +262,7 @@ public class ShopFacade {
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : _shopRepository.getAllShops()) {
+            for (Shop shop : getAllShops()) {
                 List<Product> products = shop.getProductsByCategory(productCategory);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -289,7 +294,7 @@ public class ShopFacade {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : _shopRepository.getAllShops()) {
+            for (Shop shop : getAllShops()) {
                 List<Product> products = shop.getProductsByKeywords(keywords);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -314,7 +319,7 @@ public class ShopFacade {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
-            for (Shop shop : _shopRepository.getAllShops()) {
+            for (Shop shop : getAllShops()) {
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
                 if (!products.isEmpty()) {
                     productsByShop.put(shop.getShopId(), products);
@@ -353,8 +358,9 @@ public class ShopFacade {
 
     /**
      * Adds a new owner to a shop.
-     * @param username the username of the user adding the owner
-     * @param shopId the ID of the shop
+     * 
+     * @param username      the username of the user adding the owner
+     * @param shopId        the ID of the shop
      * @param ownerUsername the username of the new owner
      * @throws Exception
      */
@@ -368,19 +374,23 @@ public class ShopFacade {
 
     /**
      * Adds a new manager to a shop.
-     * @param username the username of the user adding the manager
-     * @param shopId the ID of the shop
+     * 
+     * @param username        the username of the user adding the manager
+     * @param shopId          the ID of the shop
      * @param managerUsername the username of the new manager
-     * @param permissions the permissions to assign to the manager
+     * @param permissions     the permissions to assign to the manager
      * @throws Exception
      */
-    public void addShopManager(String username, Integer shopId, String managerUsername, Set<String> permissions) throws Exception {
+    public void addShopManager(String username, Integer shopId, String managerUsername, Set<String> permissions)
+            throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
-        //Here we create a set of permissions from the strings.
-        Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
+        // Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream()
+                .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
+                .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
     }
 }
