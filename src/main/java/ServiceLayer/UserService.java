@@ -216,4 +216,46 @@ public class UserService {
     public UserFacade getUserFacade() {
         return _userFacade;
     }
+
+    public Response addProduct(String token, int productID, int shopID) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if(_tokenService.isGuest(token)){
+                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID);
+                } else if(_tokenService.isUserAndLoggedIn(token)){
+                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
+                } else {
+                    throw new Exception("Token is incorrect");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to add product: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to add product: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    public Response removeProduct(String token, int productID, int shopID) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if(_tokenService.isGuest(token)){
+                    _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID, shopID);
+                } else if(_tokenService.isUserAndLoggedIn(token)){
+                    _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID, shopID);
+                } else {
+                    throw new Exception("Token is incorrect");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to remove product: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to remove product: " + e.getMessage(), e);
+        }
+        return response;
+    }
 }
