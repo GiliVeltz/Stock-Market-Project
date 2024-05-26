@@ -147,12 +147,13 @@ public class ShopFacade {
      *                       percentage or a fixed value
      * @param discountAmount the amount of the discount
      * @param expirationDate the expiration date of the discount
+     * @return the ID of the newly added discount
      * @throws PermissionException if the user does not have permission to add a
      *                             discount to the shop
      * @throws ShopException       if there is an error adding the discount to the
      *                             shop
      */
-    public void addBasicDiscountToShop(int shopId, int productId, String username, boolean isPrecentage,
+    public int addBasicDiscountToShop(int shopId, int productId, String username, boolean isPrecentage,
             double discountAmount,
             Date expirationDate) throws PermissionException, ShopException {
 
@@ -164,7 +165,7 @@ public class ShopFacade {
             discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
         else
             discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
-        shop.addDiscount(discount);
+        return shop.addDiscount(discount);
     }
 
     /**
@@ -180,12 +181,13 @@ public class ShopFacade {
      *                         percentage or a fixed amount
      * @param discountAmount   the amount of the discount
      * @param expirationDate   the expiration date of the discount
+     * @return the ID of the newly added discount
      * @throws PermissionException if the user does not have permission to add a
      *                             discount to the shop
      * @throws ShopException       if the shop does not exist or an error occurs
      *                             while adding the discount
      */
-    public void addConditionalDiscountToShop(int shopId, int productId, String username, List<Integer> mustHaveProducts,
+    public int addConditionalDiscountToShop(int shopId, int productId, String username, List<Integer> mustHaveProducts,
             boolean isPrecentage, double discountAmount, Date expirationDate)
             throws PermissionException, ShopException {
 
@@ -199,7 +201,7 @@ public class ShopFacade {
             baseDiscount = new PrecentageDiscount(expirationDate, discountAmount, productId);
 
         ConditionalDiscount discount = new ConditionalDiscount(mustHaveProducts, baseDiscount);
-        shop.addDiscount(discount);
+        return shop.addDiscount(discount);
     }
 
     /**

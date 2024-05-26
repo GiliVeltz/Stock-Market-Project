@@ -528,8 +528,18 @@ public class Shop {
         return _orderHistory;
     }
 
-    public void addDiscount(Discount discount) {
-        _discounts.put(_nextDiscountId++, discount);
+    
+    /**
+     * Adds a discount to the shop.
+     * 
+     * @param discount the discount to be added
+     * @return the ID of the added discount
+     */
+    public int addDiscount(Discount discount) {
+
+        int discountId = _nextDiscountId++;
+        _discounts.put(discountId, discount);
+        return discountId;
     }
 
     public void removeDiscount(int discountId) {
