@@ -425,4 +425,16 @@ public class ProxyBridge implements BridgeInterface{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop' in ProxyBridge class");
     }
+
+    @Override
+    public boolean testAddExternalService(String newSerivceName, String peopleInfo, Integer securityIdForService) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testAddExternalService'");
+    }
+
+    @Override
+    public boolean testChangeExternalService(String oldServiceSystemId, String newSerivceName, String newPeopleInfo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
+    }
 }
