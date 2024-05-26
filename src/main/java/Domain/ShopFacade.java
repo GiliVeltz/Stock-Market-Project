@@ -392,4 +392,53 @@ public class ShopFacade {
         Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
     }
+
+    /**
+     * Removes a manager from a shop.
+     * @param username the username of the user removing the manager
+     * @param shopId the ID of the shop
+     * @param managerUsername the username of the manager to remove
+     * @return the usernames of the managers that were removed
+     * @throws Exception
+     */
+    public Set<String> fireShopManager (String username, Integer shopId, String managerUsername) throws Exception {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        return shop.fireRole(username, managerUsername);
+    }
+
+    /**
+     * Resign a role from the shop.
+     * @param username the username of the user resigning
+     * @param shopId the ID of the shope
+     * @return the usernames of the roles that were resigned
+     * @throws Exception
+     */
+    public Set<String> resignFromRole(String username, Integer shopId) throws ShopException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        return shop.resign(username);
+    }
+
+    /**
+     * Modify the permissions of a manager in a shop.
+     * @param username the username of the user modifying the permissions
+     * @param shopId the ID of the shop
+     * @param managerUsername the username of the manager to modify
+     * @param permissions the permissions to assign to the manager
+     * @throws Exception
+     */
+    public void modifyManagerPermissions(String username, Integer shopId, String managerUsername, Set<String> permissions) throws Exception {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        //Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
+        shop.modifyPermissions(username, managerUsername, permissionsSet);
+    }
 }
