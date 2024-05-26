@@ -15,7 +15,6 @@ import Domain.ShoppingBasket;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
-import Exceptions.DiscountExpiredException;
 
 public class DiscountTest {
     /***************** Precentage Discount Tests *****************/
