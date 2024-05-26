@@ -270,14 +270,12 @@ public class Shop {
      * @param username    the username that wants to add the permissions.
      * @param userRole    the username to add the permissions to.
      * @param permissions the set of new permissions.
+     * @throws StockMarketException 
      * @implNote cannot grant permissions that the appointer doesn't have.
      * @Constraint at least one permission in the set.
-     * @throws ShopException
-     * @throws PermissionException
-     * @throws RoleException
      */
     public void modifyPermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
+            throws StockMarketException {
         logger.log(Level.INFO, "Shop - modifyPermissions: " + username + " trying to add permissions " + permissions
                 + " to user " + userRole + " in the shop with id " + _shopId);
         if (isShopClosed())
@@ -377,11 +375,10 @@ public class Shop {
      * 
      * @param username        the username that initiates the firing.
      * @param managerUserName the username to be fired.
+     * @throws StockMarketException 
      * @implNote Founder can fire anyone.
-     * @throws ShopException
-     * @throws PermissionException
      */
-    public Set<String> fireRole(String username, String managerUserName) throws ShopException, PermissionException {
+    public Set<String> fireRole(String username, String managerUserName) throws StockMarketException {
         logger.log(Level.INFO, "Shop - fireRole: " + username + " trying to fire user " + managerUserName
                 + " from the shop with id " + _shopId);
         if (isShopClosed())
@@ -424,9 +421,9 @@ public class Shop {
      * Deletes the role from the shop and all the roles he assigned recursivly.
      * 
      * @param username the root user to resign.
-     * @throws ShopException
+     * @throws StockMarketException 
      */
-    public Set<String> resign(String username) throws ShopException {
+    public Set<String> resign(String username) throws StockMarketException {
         logger.log(Level.INFO, "Shop - resign: " + username + " trying to resign from the shop with id " + _shopId);
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot resign.");
