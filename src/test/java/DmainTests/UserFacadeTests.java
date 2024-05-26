@@ -14,7 +14,7 @@ import Domain.*;
 import Domain.Facades.UserFacade;
 
 public class UserFacadeTests {
-    
+
     // private fields.
     private UserFacade _userFacadeUnderTest;
     private List<User> _registeredUsers;
@@ -23,7 +23,7 @@ public class UserFacadeTests {
     // mock fields.
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
-    
+
     // users fields.
     private User _user1 = new User("john_doe", "password123", "john.doe@example.com");
 
@@ -50,13 +50,12 @@ public class UserFacadeTests {
         // Act - try to register a new user
         try {
             _userFacadeUnderTest.register("john_doe", "password123", "john.doe@example.com");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail("Failed to register user");
         }
 
         // Assert - Verify that the user was registered successfully
-        assertEquals(true, _userFacadeUnderTest.isUserNameExists("john_doe"));
+        assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
     }
 
     @Test
@@ -69,13 +68,13 @@ public class UserFacadeTests {
         // Act - Set a new username
         try {
             _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         // Assert - Verify that the username has been updated
-        assertThrowsExactly(Exception.class, () -> _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il"));
-        assertEquals(true, _userFacadeUnderTest.isUserNameExists("john_doe"));
+        assertThrowsExactly(Exception.class,
+                () -> _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il"));
+        assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
         assertEquals(1, _userFacadeUnderTest.get_registeredUsers().size());
     }
 
