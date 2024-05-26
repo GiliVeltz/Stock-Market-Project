@@ -655,7 +655,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if(_userService.getUserFacade().isUserNameExists(username)){
+                    if(_userService.getUserFacade().doesUserExist(username)){
                         _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
                         response.setReturnValue(true);
                         logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
@@ -691,7 +691,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().isUserNameExists(username)){
+                    if (_userService.getUserFacade().doesUserExist(username)){
                         Set<String> fired = _shopFacade.fireShopManager(username, shopId, managerUsername);
                         response.setReturnValue(fired);
                         logger.info(String.format("Manager %s fired from Shop ID: %d", managerUsername, shopId));
@@ -727,7 +727,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().isUserNameExists(username)){
+                    if (_userService.getUserFacade().doesUserExist(username)){
                         Set<String> resigned = _shopFacade.resignFromRole(username, shopId);
                         response.setReturnValue(true);
                         logger.info(String.format("User %s resigned from Shop ID: %d", username, shopId));
@@ -765,7 +765,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().isUserNameExists(username)){
+                    if (_userService.getUserFacade().doesUserExist(username)){
                         _shopFacade.modifyManagerPermissions(username, shopId, managerUsername, permissions);
                         response.setReturnValue(true);
                         logger.info(String.format("Manager %s permissions modified in Shop ID: %d", managerUsername, shopId));
