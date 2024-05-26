@@ -91,6 +91,28 @@ public class ShopFacade {
 
     }
 
+    // reopen a shop only if the user is the founder of the shop
+    public void reOpenShop(Integer shopId, String userName) throws Exception {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToReOpen = getShopByShopId(shopId);
+                if (shopToReOpen.checkPermission(userName, Permission.FOUNDER)) {
+                    getShopByShopId(shopId).notifyReOpenShop();
+                    shopToReOpen.reopenShop();
+                } else {
+                    throw new Exception(String.format(
+                            "User %s can't reopen the Shop: %d. Only the fonder has the permission", userName, shopId));
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
+    }
+
+
     public void addProductToShop(Integer shopId, Product product, String userName) throws Exception {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));

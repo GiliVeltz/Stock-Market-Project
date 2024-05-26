@@ -83,7 +83,37 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to create shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to close shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return response;
+    }
+
+        /**
+     * reopen a shop with the specified shop ID and user name.
+     * 
+     * @param shopId   The ID of the existing shop to be reopen.
+     * @param userName The name of the user closing the shop (founder).
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response reOpenShop(String token, Integer shopId, String userName) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(userName)) {
+                    _shopFacade.reOpenShop(shopId, userName);
+                    logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
+                } else {
+                    throw new Exception("User is not register.");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to reopenn shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
