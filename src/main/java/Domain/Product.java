@@ -129,4 +129,13 @@ public class Product implements Cloneable {
         return _price >= minPrice && _price <= maxPrice;
     }
     
+
+    public void updateProductQuantity(int newQuantitiy)
+    {
+        _quantity = newQuantitiy;
+    }
+
+    public Integer getProductQuantity() {
+        return _quantity;
+    }
 }
