@@ -134,27 +134,41 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductInShopByName(Integer shopId, String productName)
-    // TODO: handle return products as a response and log them
+    public Response searchProductInShopByName(String token, Integer shopId, String productName)
     {
         Response response = new Response();
+        String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
-            Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
-            if (products != null) {
-                // TODO: handle return products as a response and log them
-                response.setReturnValue("Products found in shop");
-                logger.info(String.format("Products found in Shop ID: %d", shopId));
-            } else {
-                response.setReturnValue("Product not found in shop");
-                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            if (_tokenService.validateToken(token)) {
+                Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
+                if (products != null && !products.isEmpty()) {
+                    StringBuilder result = new StringBuilder();
+                    result.append("Products named ").append(productName).append(" were found!:");
+                    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        Integer shopID = entry.getKey();
+                        List<Product> productList = entry.getValue();
+                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
+                        for (Product product : productList) {
+                            result.append(product.toString()).append("\n");
+                        }
+                    }
+                    response.setReturnValue(result.toString());
+                    logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
+                } else {
+                    response.setReturnValue(String.format("Products named %s were not found in %s", productName, shopIDString));
+                    logger.info(String.format("Products named %s were not found in %s", productName, shopIDString));
+                }
+            }
+            else {
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            response.setErrorMessage(String.format(String.format("Failed to search products named %s in %s . Error:", productName, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
     }
+
 
     /**
      * searches products by their Category.
@@ -165,27 +179,41 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductInShopByCategory(Integer shopId, Category productCategory)
-    // TODO: handle return products as a response and log them
+    public Response searchProductInShopByCategory(String token, Integer shopId, Category productCategory)
     {
         Response response = new Response();
+        String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
-            Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
-            if (products != null) {
-                // TODO: handle return products as a response and log them
-                response.setReturnValue("Products found in shop");
-                logger.info(String.format("Products found in Shop ID: %d", shopId));
-            } else {
-                response.setReturnValue("Products not found in shop");
-                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            if (_tokenService.validateToken(token)) {
+                Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
+                if (products != null && !products.isEmpty()) {
+                    StringBuilder result = new StringBuilder();
+                    result.append("Products in the category of ").append(productCategory.toString()).append(" were found!:");
+                    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        Integer shopID = entry.getKey();
+                        List<Product> productList = entry.getValue();
+                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
+                        for (Product product : productList) {
+                            result.append(product.toString()).append("\n");
+                        }
+                    }
+                    response.setReturnValue(result.toString());
+                    logger.info(String.format("Products in the category of %s were found in %s", productCategory.toString(), shopIDString));
+                } else {
+                    response.setReturnValue(String.format("Products in the category of %s were not found in %s", productCategory.toString(), shopIDString));
+                    logger.info(String.format("Products in the category of %s were not found in %s", productCategory.toString(), shopIDString));
+                }
+            }
+            else {
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            response.setErrorMessage(String.format(String.format("Failed to search products in the category of %s in %s . Error:", productCategory.toString(), shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
     }
+
 
     /**
      * searches products by keyWords.
@@ -196,23 +224,42 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductsInShopByKeywords(Integer shopId, List<String> keywords)
-    // TODO: handle return products as a response and log them
+    public Response searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords)
     {
         Response response = new Response();
+        // Setting strings of shop ID and keywords for logging
+        String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
+        StringBuilder keywordsBuilder = new StringBuilder();
+        for (String keyword : keywords) {
+            keywordsBuilder.append(keyword).append(", ");
+        }
+        String keywordsString = keywordsBuilder.toString();
         try {
-            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
-            if (products != null) {
-                // TODO: handle return products as a response and log them
-                response.setReturnValue("Products found in shop");
-                logger.info(String.format("Products found in Shop ID: %d", shopId));
-            } else {
-                response.setReturnValue("Product not found in shop");
-                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            if (_tokenService.validateToken(token)) {
+                Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
+                if (products != null && !products.isEmpty()) {
+                    StringBuilder result = new StringBuilder();
+                    result.append("Products taged by one of the keywords: ").append(keywordsString).append(" were found!:");
+                    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        Integer shopID = entry.getKey();
+                        List<Product> productList = entry.getValue();
+                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
+                        for (Product product : productList) {
+                            result.append(product.toString()).append("\n");
+                        }
+                    }
+                    response.setReturnValue(result.toString());
+                    logger.info(String.format("Products taged by the keywords: %s were found in %s",keywordsString,  shopIDString));
+                } else {
+                    response.setReturnValue(String.format("Products taged by the keywords: %s were not found in %s", keywordsString, shopIDString));
+                    logger.info(String.format("Products taged by the keywords: %s were not found in %s", keywordsString, shopIDString));
+                }
+            }
+            else {
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            response.setErrorMessage(String.format(String.format("Failed to search products taged by the keywords: %s in %s . Error:", keywordsString, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
@@ -229,24 +276,37 @@ public class ShopService {
      * @return A response indicating the success of the operation and some products'
      *         deatails or failure.
      */
-    public Response searchProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+    public Response searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice)
     // TODO: handle return products as a response and log them
     {
         Response response = new Response();
+        String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
-            Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
-                    maxPrice);
-            if (products != null) {
-                // TODO: handle return products as a response and log them
-                response.setReturnValue("Products found in shop");
-                logger.info(String.format("Products found in Shop ID: %d", shopId));
-            } else {
-                response.setReturnValue("Product not found in shop");
-                logger.info(String.format("Products not found in Shop ID: %d", shopId));
+            if (_tokenService.validateToken(token)) {
+                Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice, maxPrice);
+                if (products != null && !products.isEmpty()) {
+                    StringBuilder result = new StringBuilder();
+                    result.append("Products in the price range of ").append(minPrice.toString() + " - " + maxPrice.toString()).append(" were found!:");
+                    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        Integer shopID = entry.getKey();
+                        List<Product> productList = entry.getValue();
+                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
+                        for (Product product : productList) {
+                            result.append(product.toString()).append("\n");
+                        }
+                    }
+                    response.setReturnValue(result.toString());
+                    logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice, maxPrice, shopIDString));
+                } else {
+                    response.setReturnValue(String.format("Products in the price range of %d - %d were not found in %s", minPrice, maxPrice, shopIDString));
+                    logger.info(String.format("Products in the price range of %d - %d were not found in %s", minPrice, maxPrice, shopIDString));
+                }
+            }
+            else {
+                throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to search products in shopID %d. Error: ", shopId, e.getMessage()));
+            response.setErrorMessage(String.format(String.format("Failed to search products in the price range of %d - %d in %s . Error:", minPrice, maxPrice, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;

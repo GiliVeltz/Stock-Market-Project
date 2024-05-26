@@ -202,6 +202,8 @@ public class ShopFacade {
         shop.addDiscount(discount);
     }
 
+    // this function is responsible searching a product in a shop by its name for all type of users
+    // by checking if all inputs are valid and then calling the function in shop
     public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error
