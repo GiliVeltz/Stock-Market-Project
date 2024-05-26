@@ -77,6 +77,9 @@ public class Shop {
     public boolean isShopClosed() {
         return _isClosed;
     }
+    public void setProductPrice(int productId, double price) {
+        _productMap.get(productId).setPrice(price);
+    }
 
     /**
      * Check if a username has a role in shop.

@@ -63,6 +63,11 @@ public class Product implements Cloneable {
         return _productPolicy;
     }
 
+    //set product price
+    public void setPrice(double price) {
+        _price = price;
+    }
+
     public void addProductRating(Integer rating) {
         //TODO: limit the rating to 1-5 
         Double newRating = Double.valueOf(rating);

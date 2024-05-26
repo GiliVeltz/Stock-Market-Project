@@ -10,10 +10,11 @@ public class ShopOrder {
     private double _totalOrderAmount;
 
     // Constructor
+    //TODO - Metar: check why not applying the clone method of ShoppingBasket
     public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
-        this._orderId = orderId;
-        this._shoppingBasket = shoppingBasket.clone();
-        this._totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
+        _orderId = orderId;
+        _shoppingBasket = shoppingBasket.clone();
+        _totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
     }
 
     public Integer getOrderId() {

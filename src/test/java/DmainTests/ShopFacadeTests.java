@@ -1,6 +1,7 @@
 package DmainTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -33,6 +34,9 @@ public class ShopFacadeTests {
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
 
+    @Mock
+    private ShoppingBasket _shoppingBasketMock;
+
     // Shops fields.
     private Shop _shop1;
     private Shop _shop2;
@@ -42,10 +46,12 @@ public class ShopFacadeTests {
     @BeforeEach
     public void setUp() throws ShopException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
+        _shoppingBasketMock = mock(ShoppingBasket.class);
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
         _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
+        
     }
 
     @AfterEach
@@ -420,4 +426,102 @@ public class ShopFacadeTests {
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
     }
+
+    @Test
+    public void testGetPurchaseHistory_whenShopOwner_thenFails() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
+        
+        // Act - try to get the purchase history for the shop owner
+        _shop1.addOrderToOrderHistory(shopOrder);
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
+        
+        // Assert - Verify that the purchase history is retrieved
+        assertNotEquals(0, purchaseHistory.size());
+    }
+
+    @Test
+    public void testGetPurchaseHistory_whenProductPriceChange_thenFails() throws Exception {
+        // Arrange - Create a new ShopFacade object and create a new ShopOrder object and add it to the shop order list 
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+        User user = new User("founderName1", "password1", "email1");
+        Category category = Category.CLOTHING;
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        Product product = new Product(1, "product1", category, 10);
+        _shop1.addProductToShop("founderName1", product);
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+     
+        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
+        
+        // Act - try to get the purchase history for the shop owner and change the product price
+        _shop1.addOrderToOrderHistory(shopOrder);
+        //change the producr price
+        _shop1.setProductPrice(product.getProductId(), 100.0);
+
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
+        
+        // Assert - Verify that the purchase history is retrieved with the original price
+        assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
+    }
+
+    @Test
+    public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+        User user = new User("founderName1", "password1", "email1");
+        Category category = Category.CLOTHING;
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        Product product = new Product(1, "product1", category, 10);
+        _shop1.addProductToShop("founderName1", product);
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+     
+        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
+        
+        // Act - try to get the purchase history for the shop owner
+        _shop1.addOrderToOrderHistory(shopOrder);
+        //change the producr price
+        // when(productMock.getPrice()).thenReturn(100.0);
+
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
+        
+        // Assert - Verify that the purchase history is retrieved
+        assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
+    }
+
+
+    @Test
+    public void testGetPurchaseHistory_whenShopOwner_thenSuccess() throws Exception {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer orderId = 1;
+        Integer shopId = 1;
+    
+        ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
+        ShopOrder shopOrder = new ShopOrder(orderId,shopId,shoppingBasket);
+        
+        // Act - try to get the purchase history for the shop owner
+        _shop1.addOrderToOrderHistory(shopOrder);
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
+        
+        // Assert - Verify that the purchase history is retrieved
+        assertNotNull(purchaseHistory);
+        assertEquals(1, purchaseHistory.size());
+    }
+
+
+  
+    
 }
