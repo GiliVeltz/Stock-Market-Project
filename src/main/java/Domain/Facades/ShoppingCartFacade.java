@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.ShoppingCart;
 import Exceptions.PaymentFailedException;
 import Exceptions.ShippingFailedException;
 

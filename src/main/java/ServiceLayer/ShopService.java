@@ -10,11 +10,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import Domain.Product;
-import Domain.ShopFacade;
 import Domain.ShopOrder;
-
-import Domain.ShopFacade.Category;
-
+import Domain.Facades.ShopFacade;
+import Domain.Facades.ShopFacade.Category;
 import Exceptions.StockMarketException;
 
 @Service

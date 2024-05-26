@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.ShopFacade.Category;
 import Domain.Discounts.Discount;
+import Domain.Facades.ShopFacade.Category;
 import Exceptions.*;
 
 public class Shop {

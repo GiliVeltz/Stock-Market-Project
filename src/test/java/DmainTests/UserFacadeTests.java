@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Domain.*;
+import Domain.Facades.UserFacade;
 
 public class UserFacadeTests {
     

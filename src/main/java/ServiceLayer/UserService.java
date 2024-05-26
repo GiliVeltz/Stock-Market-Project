@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
-
-import Domain.ShoppingCartFacade;
-import Domain.UserFacade;
+import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 
 @Service
 public class UserService {

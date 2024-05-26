@@ -29,6 +29,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
+import Domain.Facades.ShopFacade;
+import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 import ServiceLayer.*;
 
 // A real conection to the system.

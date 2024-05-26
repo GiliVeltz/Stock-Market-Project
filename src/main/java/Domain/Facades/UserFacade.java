@@ -1,7 +1,11 @@
-package Domain;
+package Domain.Facades;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
+
+import Domain.Order;
+import Domain.PasswordEncoderUtil;
+import Domain.User;
 
 @RestController
 public class UserFacade {

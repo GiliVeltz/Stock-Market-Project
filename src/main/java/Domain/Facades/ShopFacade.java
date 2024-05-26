@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +13,10 @@ import Exceptions.StockMarketException;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Permission;
+import Domain.Product;
+import Domain.Shop;
+import Domain.ShopOrder;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.Discount;

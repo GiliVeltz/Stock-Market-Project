@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import Domain.*;
-import Domain.ShopFacade.Category;
+import Domain.Facades.ShopFacade;
+import Domain.Facades.ShopFacade.Category;
 import Exceptions.ShopException;
 
 public class ShopFacadeTests {

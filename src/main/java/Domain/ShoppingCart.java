@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.Facades.ShopFacade;
+
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProductOutOfStockExepction;
