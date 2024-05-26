@@ -265,38 +265,43 @@ public class Shop {
     }
 
     /**
-     * Add new permissions to a manager in the shop.
+     * Modify permissions of a manager in the shop.
      * 
      * @param username    the username that wants to add the permissions.
      * @param userRole    the username to add the permissions to.
-     * @param permissions the set of permissions to add.
-     * @implNote if some of the permissions already exist, they are ignored.
-     * @throws ShopException
-     * @throws PermissionException
-     * @throws RoleException
+     * @param permissions the set of new permissions.
+     * @throws StockMarketException 
+     * @implNote cannot grant permissions that the appointer doesn't have.
+     * @Constraint at least one permission in the set.
      */
-    public void addPermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException, StockMarketException {
-        logger.log(Level.INFO, "Shop - addPermissions: " + username + " trying to add permissions " + permissions
+    public void modifyPermissions(String username, String userRole, Set<Permission> permissions)
+            throws StockMarketException {
+        logger.log(Level.INFO, "Shop - modifyPermissions: " + username + " trying to add permissions " + permissions
                 + " to user " + userRole + " in the shop with id " + _shopId);
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot add permissions.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
-                    "Shop - addPermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
+                    "Shop - modifyPermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!checkIfHasRole(userRole)) {
             logger.log(Level.SEVERE,
-                    "Shop - addPermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
+                    "Shop - modifyPermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
             throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!checkAtLeastOnePermission(username,
                 EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.ADD_PERMISSION))) {
-            logger.log(Level.SEVERE, "Shop - addPermissions: user " + username
-                    + " doesn't have permission to add permissions to other roles in shop with id " + _shopId);
+            logger.log(Level.SEVERE, "Shop - modifyPermissions: user " + username
+                    + " doesn't have permission to modify permissions to other roles in shop with id " + _shopId);
             throw new PermissionException("User " + username
                     + " doesn't have permission to change permissions in the shop with id " + _shopId);
+        }
+        if (permissions.isEmpty()) {
+            logger.log(Level.SEVERE, "Shop - modifyPermissions: user " + username
+                    + " cannot remove all permission from "+userRole+" in shop with id " + _shopId);
+            throw new PermissionException("User " + username+
+            " cannot remove all permission from "+userRole+" in shop with id " + _shopId);
         }
         Role appointer = _userToRole.get(username);
         // Here we make sure that a manager doesn't give permissions that he doesn't
@@ -306,78 +311,74 @@ public class Shop {
         }
         Role manager = _userToRole.get(userRole);
         if (manager.getAppointedBy() != username) {
-            logger.log(Level.SEVERE, "Shop - addPermissions: User " + username + " didn't appoint manager " + userRole
+            logger.log(Level.SEVERE, "Shop - modifyPermissions: User " + username + " didn't appoint manager " + userRole
                     + ". Can't change his permissions.");
             throw new PermissionException(
                     "User " + username + " didn't appoint manager " + userRole + ". Can't change his permissions.");
         }
         // All constraints checked
-        manager.addPermissions(username, permissions);
-        logger.log(Level.INFO, "Shop - addPermissions: " + username + " successfuly added permissions " + permissions
+        manager.modifyPermissions(username, permissions);
+        logger.log(Level.INFO, "Shop - modifyPermissions: " + username + " successfuly modified permissions. Now the permission are: " + permissions
                 + " to user " + userRole + " in the shop with id " + _shopId);
     }
 
-    /**
-     * Delete permissions from manager in the shop.
-     * 
-     * @param username    the username that wants to delete the permissions.
-     * @param userRole    the username to delete the permissions from.
-     * @param permissions the set of permissions to add.
-     * @implNote if some of the permissions already exist, they are ignored.
-     * @throws ShopException
-     * @throws PermissionException
-     * @throws RoleException
-     */
-    public void deletePermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException, StockMarketException {
-        logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to delete permissions " + permissions
-                + " from user " + userRole + " in the shop with id " + _shopId);
-        if (isShopClosed())
-            throw new StockMarketException("Shop is closed, cannot delete permissions.");
-        if (!checkIfHasRole(username)) {
-            logger.log(Level.SEVERE,
-                    "Shop - deletePermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
-            throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
-        }
-        if (!checkIfHasRole(userRole)) {
-            logger.log(Level.SEVERE,
-                    "Shop - deletePermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
-            throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
-        }
-        if (!checkAtLeastOnePermission(username,
-                EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.REMOVE_PERMISSION))) {
-            logger.log(Level.SEVERE, "Shop - deletePermissions: user " + username
-                    + " doesn't have permission to delete permissions to other roles in shop with id " + _shopId);
-            throw new PermissionException("User " + username
-                    + " doesn't have permission to change permissions in the shop with id " + _shopId);
-        }
-        Role manager = _userToRole.get(userRole);
-        if (manager.getAppointedBy() != username) {
-            logger.log(Level.SEVERE, "Shop - deletePermissions: User " + username + " didn't appoint manager "
-                    + userRole + ". Can't change his permissions.");
-            throw new PermissionException(
-                    "User " + username + " didn't appoint manager " + userRole + ". Can't change his permissions.");
-        }
-        // All constraints checked
-        manager.deletePermissions(username, permissions);
-        if (manager.getPermissions().isEmpty()) {
-            // TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
-        }
-        logger.log(Level.INFO, "Shop - deletePermissions: " + username + " successfuly deleted permissions "
-                + permissions + " to user " + userRole + " in the shop with id " + _shopId);
-    }
+    // /**
+    //  * Delete permissions from manager in the shop.
+    //  * 
+    //  * @param username    the username that wants to delete the permissions.
+    //  * @param userRole    the username to delete the permissions from.
+    //  * @param permissions the set of permissions to add.
+    //  * @implNote if some of the permissions already exist, they are ignored.
+    //  * @throws ShopException
+    //  * @throws PermissionException
+    //  * @throws RoleException
+    //  */
+    // public void deletePermissions(String username, String userRole, Set<Permission> permissions)
+    //         throws ShopException, PermissionException, RoleException {
+    //     logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to delete permissions " + permissions
+    //             + " from user " + userRole + " in the shop with id " + _shopId);
+    //     if (!checkIfHasRole(username)) {
+    //         logger.log(Level.SEVERE,
+    //                 "Shop - deletePermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
+    //         throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
+    //     }
+    //     if (!checkIfHasRole(userRole)) {
+    //         logger.log(Level.SEVERE,
+    //                 "Shop - deletePermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
+    //         throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
+    //     }
+    //     if (!checkAtLeastOnePermission(username,
+    //             EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.REMOVE_PERMISSION))) {
+    //         logger.log(Level.SEVERE, "Shop - deletePermissions: user " + username
+    //                 + " doesn't have permission to delete permissions to other roles in shop with id " + _shopId);
+    //         throw new PermissionException("User " + username
+    //                 + " doesn't have permission to change permissions in the shop with id " + _shopId);
+    //     }
+    //     Role manager = _userToRole.get(userRole);
+    //     if (manager.getAppointedBy() != username) {
+    //         logger.log(Level.SEVERE, "Shop - deletePermissions: User " + username + " didn't appoint manager "
+    //                 + userRole + ". Can't change his permissions.");
+    //         throw new PermissionException(
+    //                 "User " + username + " didn't appoint manager " + userRole + ". Can't change his permissions.");
+    //     }
+    //     // All constraints checked
+    //     manager.deletePermissions(username, permissions);
+    //     if (manager.getPermissions().isEmpty()) {
+    //         // TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
+    //     }
+    //     logger.log(Level.INFO, "Shop - deletePermissions: " + username + " successfuly deleted permissions "
+    //             + permissions + " to user " + userRole + " in the shop with id " + _shopId);
+    // }
 
     /**
      * Function to fire a manager/owner. All people he assigned fired too.
      * 
      * @param username        the username that initiates the firing.
      * @param managerUserName the username to be fired.
+     * @throws StockMarketException 
      * @implNote Founder can fire anyone.
-     * @throws ShopException
-     * @throws PermissionException
      */
-    public void fireRole(String username, String managerUserName)
-            throws ShopException, PermissionException, StockMarketException {
+    public Set<String> fireRole(String username, String managerUserName) throws StockMarketException {
         logger.log(Level.INFO, "Shop - fireRole: " + username + " trying to fire user " + managerUserName
                 + " from the shop with id " + _shopId);
         if (isShopClosed())
@@ -413,15 +414,16 @@ public class Shop {
         }
         logger.log(Level.INFO, "Shop - fireRole: " + username + " successfuly fired " + managerUserName
                 + " and all the users he appointed:" + appointed.remove(username) + "from the shop with id " + _shopId);
+        return appointed;
     }
 
     /**
      * Deletes the role from the shop and all the roles he assigned recursivly.
      * 
      * @param username the root user to resign.
-     * @throws ShopException
+     * @throws StockMarketException 
      */
-    public void resign(String username) throws ShopException, StockMarketException {
+    public Set<String> resign(String username) throws StockMarketException {
         logger.log(Level.INFO, "Shop - resign: " + username + " trying to resign from the shop with id " + _shopId);
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot resign.");
@@ -441,6 +443,7 @@ public class Shop {
         }
         logger.log(Level.INFO, "Shop - resign: " + username + " successfuly resigned with all the users he appointed:"
                 + appointed.remove(username) + "from the shop with id " + _shopId);
+        return appointed;
     }
 
     /**
