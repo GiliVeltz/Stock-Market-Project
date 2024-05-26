@@ -11,7 +11,7 @@ import Domain.Rules.Rule;
  *
  * @param <T> the type of the rules that define the policy
  */
-public class Policy<T> {
+public abstract class Policy<T> {
     private List<Rule<T>> _rules;
 
     /**
@@ -28,7 +28,18 @@ public class Policy<T> {
      * @param rule the rule to be added
      */
     public void addRule(Rule<T> rule) {
-        _rules.add(rule);
+        if(!_rules.contains(rule))
+            _rules.add(rule);
+    }
+
+     /**
+     * Removes a rule from the policy.
+     *
+     * @param rule the rule to remove
+     */
+    public void deleteRule(Rule<T> rule) {
+        if(_rules.contains(rule))
+            _rules.remove(rule);
     }
 
     /**
@@ -45,4 +56,15 @@ public class Policy<T> {
                 return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Policy{").append("\n");
+        for (Rule<T> rule : _rules)
+            sb.append(rule.toString()).append(",\n ");
+        sb.append('}');
+        return sb.toString();
+    }
+    
 }

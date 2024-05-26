@@ -1,6 +1,7 @@
 package Domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,22 +11,37 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.ShopFacade.Category;
 import Domain.Discounts.Discount;
-import Exceptions.*;
+import Domain.Facades.ShopFacade.Category;
+import Domain.Policies.ShopPolicy;
+import Domain.Rules.Rule;
+import Exceptions.DiscountExpiredException;
+import Exceptions.PermissionException;
+import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductAlreadyExistsException;
+import Exceptions.ProductDoesNotExistsException;
+import Exceptions.RoleException;
+import Exceptions.ShopException;
+import Exceptions.ShopPolicyException;
+import Exceptions.StockMarketException;
+
+//TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
 public class Shop {
-    private Integer _shopId;
+    private int _shopId;
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
     private Map<String, Role> _userToRole; // <userName, Role>
     private static final Logger logger = Logger.getLogger(Shop.class.getName());
-    private List<Discount> _discounts;
+    private Map<Integer, Discount> _discounts;
     private String _bankDetails;
     private String _shopAddress;
     private Double _shopRating;
     private Integer _shopRatersCounter;
+    private ShopPolicy _shopPolicy;
+    private int _nextDiscountId;
+    private boolean _isClosed;
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -40,11 +56,14 @@ public class Shop {
             _userToRole = new HashMap<>();
             _bankDetails = bankDetails;
             _shopAddress = shopAddress;
-            _discounts = new ArrayList<>();
+            _discounts = new HashMap<>();
             this._shopRating = -1.0;
             this._shopRatersCounter = 0;
+            _shopPolicy = new ShopPolicy();
             Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
             _userToRole.putIfAbsent(shopFounderUserName, founder);
+            _nextDiscountId = 0;
+            _isClosed = false;
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
         } catch (Exception e) {
@@ -52,6 +71,22 @@ public class Shop {
                     + ". The Founder of the shop is: " + shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
+    }
+
+    public int getShopId() {
+        return _shopId;
+    }
+
+    public void closeShop() {
+        _isClosed = true;
+    }
+
+    public boolean isShopClosed() {
+        return _isClosed;
+    }
+
+    public void reopenShop() {
+        _isClosed = false;
     }
 
     /**
@@ -84,7 +119,7 @@ public class Shop {
      * @param username the username of the user that does the action.
      * @param p        the permission needed.
      * @return true if has permission. false if hasn't.
-     * @throws ShopException
+     * @throws ShopException if the user doesn't have a role in the shop.
      */
     public boolean checkPermission(String username, Permission p) throws ShopException {
         logger.log(Level.FINE, "Shop - checkPermission: Checking if user " + username + " has permission: " + p);
@@ -98,6 +133,18 @@ public class Shop {
             return false;
         }
         return true;
+    }
+
+    public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
+        Map<Integer, Discount> productDiscounts = new HashMap<>();
+         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            if (new Date().after(entry.getValue().getExpirationDate())) {
+                removeDiscount(_nextDiscountId);
+            } else if (entry.getValue().getParticipatingProduct() == productId) {
+                productDiscounts.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return productDiscounts;
     }
 
     /**
@@ -166,7 +213,7 @@ public class Shop {
      * @throws RoleException
      */
     public void AppointManager(String username, String newManagerUserName, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO, "Shop - AppointManager: " + username + " trying to appoint " + newManagerUserName
                 + " as a new manager with permissions: " + permissions);
         if (!checkAtLeastOnePermission(username,
@@ -189,6 +236,9 @@ public class Shop {
                     "Shop - AppointManager: Error while appointing a new manager with founder of owner permissions.");
             throw new PermissionException("Cannot appoint manager with owner or founder permissions.");
         }
+
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot appoint new manager.");
         // All constraints checked
         Role appointer = _userToRole.get(username);
         // Here we make sure that a manager doesn't give permissions that he doesn't
@@ -214,7 +264,7 @@ public class Shop {
      * @throws RoleException
      */
     public void AppointOwner(String username, String newOwnerUserName)
-            throws ShopException, PermissionException, RoleException {
+            throws ShopException, PermissionException, RoleException, StockMarketException {
         logger.log(Level.INFO,
                 "Shop - AppointOwner: " + username + " trying to appoint " + newOwnerUserName + " as a new owner.");
         if (!checkAtLeastOnePermission(username, EnumSet.of(Permission.FOUNDER, Permission.OWNER))) {
@@ -227,6 +277,9 @@ public class Shop {
             logger.log(Level.SEVERE, "Shop - AppointOwner: user " + username + " already in shop with id " + _shopId);
             throw new ShopException("User " + username + " already in shop with id " + _shopId);
         }
+
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot appoint new owner.");
         // All constraints checked
         Role owner = new Role(newOwnerUserName, _shopId, username, EnumSet.of(Permission.OWNER));
         _userToRole.putIfAbsent(newOwnerUserName, owner);
@@ -235,36 +288,43 @@ public class Shop {
     }
 
     /**
-     * Add new permissions to a manager in the shop.
+     * Modify permissions of a manager in the shop.
      * 
      * @param username    the username that wants to add the permissions.
      * @param userRole    the username to add the permissions to.
-     * @param permissions the set of permissions to add.
-     * @implNote if some of the permissions already exist, they are ignored.
-     * @throws ShopException
-     * @throws PermissionException
-     * @throws RoleException
+     * @param permissions the set of new permissions.
+     * @throws StockMarketException
+     * @implNote cannot grant permissions that the appointer doesn't have.
+     * @Constraint at least one permission in the set.
      */
-    public void addPermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
-        logger.log(Level.INFO, "Shop - addPermissions: " + username + " trying to add permissions " + permissions
+    public void modifyPermissions(String username, String userRole, Set<Permission> permissions)
+            throws StockMarketException {
+        logger.log(Level.INFO, "Shop - modifyPermissions: " + username + " trying to add permissions " + permissions
                 + " to user " + userRole + " in the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add permissions.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
-                    "Shop - addPermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
+                    "Shop - modifyPermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!checkIfHasRole(userRole)) {
             logger.log(Level.SEVERE,
-                    "Shop - addPermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
+                    "Shop - modifyPermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
             throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!checkAtLeastOnePermission(username,
                 EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.ADD_PERMISSION))) {
-            logger.log(Level.SEVERE, "Shop - addPermissions: user " + username
-                    + " doesn't have permission to add permissions to other roles in shop with id " + _shopId);
+            logger.log(Level.SEVERE, "Shop - modifyPermissions: user " + username
+                    + " doesn't have permission to modify permissions to other roles in shop with id " + _shopId);
             throw new PermissionException("User " + username
                     + " doesn't have permission to change permissions in the shop with id " + _shopId);
+        }
+        if (permissions.isEmpty()) {
+            logger.log(Level.SEVERE, "Shop - modifyPermissions: user " + username
+                    + " cannot remove all permission from " + userRole + " in shop with id " + _shopId);
+            throw new PermissionException("User " + username +
+                    " cannot remove all permission from " + userRole + " in shop with id " + _shopId);
         }
         Role appointer = _userToRole.get(username);
         // Here we make sure that a manager doesn't give permissions that he doesn't
@@ -274,77 +334,93 @@ public class Shop {
         }
         Role manager = _userToRole.get(userRole);
         if (manager.getAppointedBy() != username) {
-            logger.log(Level.SEVERE, "Shop - addPermissions: User " + username + " didn't appoint manager " + userRole
-                    + ". Can't change his permissions.");
+            logger.log(Level.SEVERE,
+                    "Shop - modifyPermissions: User " + username + " didn't appoint manager " + userRole
+                            + ". Can't change his permissions.");
             throw new PermissionException(
                     "User " + username + " didn't appoint manager " + userRole + ". Can't change his permissions.");
         }
         // All constraints checked
-        manager.addPermissions(username, permissions);
-        logger.log(Level.INFO, "Shop - addPermissions: " + username + " successfuly added permissions " + permissions
-                + " to user " + userRole + " in the shop with id " + _shopId);
+        manager.modifyPermissions(username, permissions);
+        logger.log(Level.INFO,
+                "Shop - modifyPermissions: " + username + " successfuly modified permissions. Now the permission are: "
+                        + permissions
+                        + " to user " + userRole + " in the shop with id " + _shopId);
     }
 
-    /**
-     * Delete permissions from manager in the shop.
-     * 
-     * @param username    the username that wants to delete the permissions.
-     * @param userRole    the username to delete the permissions from.
-     * @param permissions the set of permissions to add.
-     * @implNote if some of the permissions already exist, they are ignored.
-     * @throws ShopException
-     * @throws PermissionException
-     * @throws RoleException
-     */
-    public void deletePermissions(String username, String userRole, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException {
-        logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to delete permissions " + permissions
-                + " from user " + userRole + " in the shop with id " + _shopId);
-        if (!checkIfHasRole(username)) {
-            logger.log(Level.SEVERE,
-                    "Shop - deletePermissions: user " + username + " doesn't have a role in shop with id " + _shopId);
-            throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
-        }
-        if (!checkIfHasRole(userRole)) {
-            logger.log(Level.SEVERE,
-                    "Shop - deletePermissions: user " + userRole + " doesn't have a role in shop with id " + _shopId);
-            throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
-        }
-        if (!checkAtLeastOnePermission(username,
-                EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.REMOVE_PERMISSION))) {
-            logger.log(Level.SEVERE, "Shop - deletePermissions: user " + username
-                    + " doesn't have permission to delete permissions to other roles in shop with id " + _shopId);
-            throw new PermissionException("User " + username
-                    + " doesn't have permission to change permissions in the shop with id " + _shopId);
-        }
-        Role manager = _userToRole.get(userRole);
-        if (manager.getAppointedBy() != username) {
-            logger.log(Level.SEVERE, "Shop - deletePermissions: User " + username + " didn't appoint manager "
-                    + userRole + ". Can't change his permissions.");
-            throw new PermissionException(
-                    "User " + username + " didn't appoint manager " + userRole + ". Can't change his permissions.");
-        }
-        // All constraints checked
-        manager.deletePermissions(username, permissions);
-        if (manager.getPermissions().isEmpty()) {
-            // TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
-        }
-        logger.log(Level.INFO, "Shop - deletePermissions: " + username + " successfuly deleted permissions "
-                + permissions + " to user " + userRole + " in the shop with id " + _shopId);
-    }
+    // /**
+    // * Delete permissions from manager in the shop.
+    // *
+    // * @param username the username that wants to delete the permissions.
+    // * @param userRole the username to delete the permissions from.
+    // * @param permissions the set of permissions to add.
+    // * @implNote if some of the permissions already exist, they are ignored.
+    // * @throws ShopException
+    // * @throws PermissionException
+    // * @throws RoleException
+    // */
+    // public void deletePermissions(String username, String userRole,
+    // Set<Permission> permissions)
+    // throws ShopException, PermissionException, RoleException {
+    // logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to
+    // delete permissions " + permissions
+    // + " from user " + userRole + " in the shop with id " + _shopId);
+    // if (!checkIfHasRole(username)) {
+    // logger.log(Level.SEVERE,
+    // "Shop - deletePermissions: user " + username + " doesn't have a role in shop
+    // with id " + _shopId);
+    // throw new ShopException("User " + username + " doesn't have a role in this
+    // shop with id " + _shopId);
+    // }
+    // if (!checkIfHasRole(userRole)) {
+    // logger.log(Level.SEVERE,
+    // "Shop - deletePermissions: user " + userRole + " doesn't have a role in shop
+    // with id " + _shopId);
+    // throw new ShopException("User " + userRole + " doesn't have a role in this
+    // shop with id " + _shopId);
+    // }
+    // if (!checkAtLeastOnePermission(username,
+    // EnumSet.of(Permission.FOUNDER, Permission.OWNER,
+    // Permission.REMOVE_PERMISSION))) {
+    // logger.log(Level.SEVERE, "Shop - deletePermissions: user " + username
+    // + " doesn't have permission to delete permissions to other roles in shop with
+    // id " + _shopId);
+    // throw new PermissionException("User " + username
+    // + " doesn't have permission to change permissions in the shop with id " +
+    // _shopId);
+    // }
+    // Role manager = _userToRole.get(userRole);
+    // if (manager.getAppointedBy() != username) {
+    // logger.log(Level.SEVERE, "Shop - deletePermissions: User " + username + "
+    // didn't appoint manager "
+    // + userRole + ". Can't change his permissions.");
+    // throw new PermissionException(
+    // "User " + username + " didn't appoint manager " + userRole + ". Can't change
+    // his permissions.");
+    // }
+    // // All constraints checked
+    // manager.deletePermissions(username, permissions);
+    // if (manager.getPermissions().isEmpty()) {
+    // // TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
+    // }
+    // logger.log(Level.INFO, "Shop - deletePermissions: " + username + "
+    // successfuly deleted permissions "
+    // + permissions + " to user " + userRole + " in the shop with id " + _shopId);
+    // }
 
     /**
      * Function to fire a manager/owner. All people he assigned fired too.
      * 
      * @param username        the username that initiates the firing.
      * @param managerUserName the username to be fired.
+     * @throws StockMarketException
      * @implNote Founder can fire anyone.
-     * @throws ShopException
-     * @throws PermissionException
      */
-    public void fireRole(String username, String managerUserName) throws ShopException, PermissionException {
+    public Set<String> fireRole(String username, String managerUserName) throws StockMarketException {
         logger.log(Level.INFO, "Shop - fireRole: " + username + " trying to fire user " + managerUserName
                 + " from the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot fire roles.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - fireRole: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -376,16 +452,19 @@ public class Shop {
         }
         logger.log(Level.INFO, "Shop - fireRole: " + username + " successfuly fired " + managerUserName
                 + " and all the users he appointed:" + appointed.remove(username) + "from the shop with id " + _shopId);
+        return appointed;
     }
 
     /**
      * Deletes the role from the shop and all the roles he assigned recursivly.
      * 
      * @param username the root user to resign.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public void resign(String username) throws ShopException {
+    public Set<String> resign(String username) throws StockMarketException {
         logger.log(Level.INFO, "Shop - resign: " + username + " trying to resign from the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot resign.");
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - resign: user " + username + " doesn't have a role in shop with id " + _shopId);
@@ -402,6 +481,7 @@ public class Shop {
         }
         logger.log(Level.INFO, "Shop - resign: " + username + " successfuly resigned with all the users he appointed:"
                 + appointed.remove(username) + "from the shop with id " + _shopId);
+        return appointed;
     }
 
     /**
@@ -487,9 +567,11 @@ public class Shop {
      * @throws PermissionException
      */
     public void addProductToShop(String username, Product product)
-            throws ProductAlreadyExistsException, ShopException, PermissionException {
+            throws ProductAlreadyExistsException, ShopException, PermissionException, StockMarketException {
         logger.log(Level.INFO, "Shop - addProductToShop: " + username + " trying get add product "
                 + product.getProductName() + " in the shop with id " + _shopId);
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add product.");
         if (!checkPermission(username, Permission.ADD_PRODUCT)) {
             logger.log(Level.SEVERE, "Shop - addProductToShop: user " + username
                     + " doesn't have permission to add products in shop with id " + _shopId);
@@ -508,10 +590,6 @@ public class Shop {
                 + product.getProductName() + " in the shop with id " + _shopId);
     }
 
-    public Integer getShopId() {
-        return _shopId;
-    }
-
     public Product getProductById(Integer productId) {
         return _productMap.get(productId); // Get product by ID from the map
     }
@@ -524,27 +602,48 @@ public class Shop {
         return _orderHistory;
     }
 
-    public void addDiscount(Discount discount) {
-        _discounts.add(discount);
+    /**
+     * Adds a discount to the shop.
+     * 
+     * @param discount the discount to be added
+     * @return the ID of the added discount
+     */
+    public int addDiscount(Discount discount) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add discount.");
+        int discountId = _nextDiscountId++;
+        _discounts.put(discountId, discount);
+        return discountId;
     }
 
-    public void applyDiscounts(ShoppingBasket basket) {
-        List<Discount> expiredDiscounts = new ArrayList<>();
+    public void removeDiscount(int discountId) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot remove discount.");
+        _discounts.remove(discountId);
+    }
+
+    public void applyDiscounts(ShoppingBasket basket) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot apply discounts.");
+        List<Integer> expiredDiscounts = new ArrayList<>();
         basket.resetProductToPriceToAmount();
-        for (Discount discount : _discounts) {
+        for (int discountId : _discounts.keySet()) {
+            Discount discount = _discounts.get(discountId);
             try {
                 discount.applyDiscount(basket);
             } catch (DiscountExpiredException e) {
-                logger.info("Shop - applyDiscounts: discount: " + discount + " has expired, removing it.");
-                expiredDiscounts.add(discount);
+                logger.info("Shop - applyDiscounts: discount: " + discountId + " has expired, removing it.");
+                expiredDiscounts.add(discountId);
             }
         }
-        for (Discount discount : expiredDiscounts) {
-            _discounts.remove(discount);
+        for (Integer discountId : expiredDiscounts) {
+            _discounts.remove(discountId);
         }
     }
 
-    public void addOrderToOrderHistory(ShopOrder order) {
+    public void addOrderToOrderHistory(ShopOrder order) throws StockMarketException {
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot add order.");
         _orderHistory.add(order); // Add order to the history
     }
 
@@ -617,6 +716,14 @@ public class Shop {
         }
     }
 
+    // before reopening the shop send notificstion to all relevasnt users
+    public void notifyReOpenShop() {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String userName = entry.getKey();
+            // TODO: StoreReOpenAlert();
+        }
+    }
+
     public String getBankDetails() {
         return _bankDetails;
     }
@@ -631,5 +738,198 @@ public class Shop {
         product.addProductRating(rating);
         return product.getProductRating();
     }
+
+    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, String.format(
+                    "Shop : Error while trying to update product with id: %d to shopId: %d. Product does not exist",
+                    productId, _shopId));
+            throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
+        }
+        return true;
+
+    }
+
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception {
+        try {
+            if (!checkPermission(username, Permission.ADD_PRODUCT)) {
+                logger.log(Level.SEVERE, String.format(
+                        "Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
+                        productId, _shopId, username));
+                throw new PermissionException(
+                        String.format("User: %s does not have permission to Update product: %d", username, productId));
+            }
+
+            if(isShopClosed()){
+                logger.log(Level.SEVERE, String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
+                throw new ShopException(
+                    String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
+            }
+
+            isProductExist(productId);
+            getProductById(productId).updateProductQuantity(productAmoutn);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public String getFounderName() {
+        return _shopFounder;
+    }
+
+    /**
+     * Checks if a basket is meeting the shop Policy.
+     * 
+     * @param sb the basket to check
+     * @throws ShopPolicyException
+     */
+    public void ValidateBasketMeetsShopPolicy(ShoppingBasket sb) throws ShopPolicyException {
+        logger.log(Level.FINE,
+                "Shop - ValidateBasketMeetsShopPolicy: Starting validation of basket for shop with id: " + _shopId);
+        if (!_shopPolicy.evaluate(sb)) {
+            logger.log(Level.SEVERE,
+                    "Shop - ValidateBasketMeetsShopPolicy: Basket violates the shop policy of shop with id: "
+                            + _shopId);
+            throw new ShopPolicyException("Basket violates the shop policy of shop with id: " + _shopId);
+        }
+    }
+
+    /**
+     * Checks if a user is meeting the product policy.
+     * 
+     * @param u The user that tries to add the product to basket.
+     * @param p The product which policy is being checked.
+     * @throws ProdcutPolicyException
+     */
+    public void ValidateProdcutPolicy(User u, Product p) throws ProdcutPolicyException {
+        logger.log(Level.FINE,
+                "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: " + _shopId);
+        if (!p.getProductPolicy().evaluate(u)) {
+            logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User " + u.getUserName()
+                    + " violates the product policy of product " + p.getProductName() + " in shop with id: " + _shopId);
+            throw new ProdcutPolicyException(
+                    "User " + u.getUserName() + " violates the shop policy of shop with id: " + _shopId);
+        }
+    }
+
+    /**
+     * Adds a rule to the shop policy.
+     * 
+     * @username The username of the user that tries to add the rule.
+     * @param rule The rule to add.
+     * @throws ShopException
+     */
+    public void addRuleToShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException {
+        logger.log(Level.INFO, "Shop - addRuleToShopPolicy: User " + username
+                + " trying to add rule to shop policy of shop with id: " + _shopId);
+        if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
+            _shopPolicy.addRule(rule);
+        logger.log(Level.FINE, "Shop - addRuleToShopPolicy: User " + username
+                + " successfuly added a rule to shop policy of shop with id: " + _shopId);
+    }
+
+    /**
+     * Removes a rule from the shop policy.
+     * 
+     * @username The username of the user that tries to remove the rule.
+     * @param rule The rule to remove.
+     * @throws ShopException
+     */
+    public void removeRuleFromShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException {
+        logger.log(Level.INFO, "Shop - removeRuleFromShopPolicy: User " + username
+                + " trying to remove rule from shop policy of shop with id: " + _shopId);
+        if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
+            _shopPolicy.deleteRule(rule);
+        logger.log(Level.FINE, "Shop - removeRuleFromShopPolicy: User " + username
+                + " successfuly removed a rule from shop policy of shop with id: " + _shopId);
+    }
+
+    /**
+     * Adds a rule to the product policy of a product.
+     * 
+     * @param username  The username of the user that tries to add the rule.
+     * @param rule      The rule to add.
+     * @param productId The id of the product to add the rule to.
+     * @throws ShopException
+     */
+    public void addRuleToProductPolicy(String username, Rule<User> rule, int productId) throws ShopException {
+        logger.log(Level.INFO, "Shop - addRuleToProductPolicy: User " + username
+                + " trying to add rule to product policy of shop with id: " + _shopId);
+        if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
+            _productMap.get(productId).getProductPolicy().addRule(rule);
+        }
+        logger.log(Level.FINE, "Shop - addRuleToProductPolicy: User " + username
+                + " successfuly added a rule to product policy of shop with id: " + _shopId);
+    }
+
+    /**
+     * Removes a rule from the product policy of a product.
+     * 
+     * @param username  The username of the user that tries to remove the rule.
+     * @param rule      The rule to remove.
+     * @param productId The id of the product to remove the rule from.
+     * @throws ShopException
+     */
+    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId) throws ShopException {
+        logger.log(Level.INFO, "Shop - removeRuleFromProductPolicy: User " + username
+                + " trying to remove rule from product policy of shop with id: " + _shopId);
+        if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
+            _productMap.get(productId).getProductPolicy().deleteRule(rule);
+        }
+        logger.log(Level.FINE, "Shop - removeRuleFromProductPolicy: User " + username
+                + " successfuly removed a rule from product policy of shop with id: " + _shopId);
+    }
+
+    public String getShopPolicyInfo() {
+        return _shopPolicy.toString();
+    }
+
+    public String getProductPolicyInfo(Integer productId) throws ProductDoesNotExistsException {
+        if (isProductExist(productId)) {
+            return _productMap.get(productId).getProductPolicyInfo();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String getShopDiscountsInfo() {
+        StringBuilder discountsBuilder = new StringBuilder();
+        for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+        }
+        return discountsBuilder.toString();
+    }
+
+    public String getProductDiscountsInfo(Integer productId) throws ProductDoesNotExistsException, StockMarketException {
+        // TODO: implement after getDiscountsByProduct is implemented
+        if (isProductExist(productId)) {
+            StringBuilder discountsBuilder = new StringBuilder();
+            for (Map.Entry<Integer, Discount> entry : getDiscountsOfProduct(productId).entrySet()) {
+                discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+            }
+            return discountsBuilder.toString();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String getShopGeneralInfo() {
+        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress + " | Shop Rating: " + _shopRating;
+    }
+
+    public String getProductGeneralInfo(Integer productId) throws ProductDoesNotExistsException {
+        if (isProductExist(productId)) {
+            return _productMap.get(productId).getProductGeneralInfo();
+        }
+        else {
+            return null;
+        }
+    }
+
+
+    //TODO: maybe add policy facade to implement the policy logic.
+
 
 }

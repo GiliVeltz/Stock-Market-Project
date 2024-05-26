@@ -1,5 +1,7 @@
 package Domain;
 
+import Exceptions.StockMarketException;
+
 //class that represents an order for the shop
 
 public class ShopOrder {
@@ -8,7 +10,7 @@ public class ShopOrder {
     private double _totalOrderAmount;
 
     // Constructor
-    public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) {
+    public ShopOrder(Integer orderId , Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
         this._orderId = orderId;
         this._shoppingBasket = shoppingBasket.clone();
         this._totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();

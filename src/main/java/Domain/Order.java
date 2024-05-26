@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Exceptions.StockMarketException;
+
 // calss that represents an order for the user
 public class Order {
     private Integer _orderId;
@@ -11,7 +13,7 @@ public class Order {
     private double _totalOrderAmount;
 
     // Constructor
-    public Order(Integer orderId, List<ShoppingBasket> shoppingBasket) {
+    public Order(Integer orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
         this._orderId = orderId;
         this._shoppingBasketMap = new HashMap<>();
         setShoppingBasketMap(shoppingBasket);
@@ -28,7 +30,7 @@ public class Order {
         }
     }
 
-    private void setTotalOrderAmount() {
+    private void setTotalOrderAmount() throws StockMarketException {
         _totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
             _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
@@ -39,13 +41,13 @@ public class Order {
         return _shoppingBasketMap;
     }
 
-    public double getOrderTotalAmount() { 
+    public double getOrderTotalAmount() throws StockMarketException { 
         if(_totalOrderAmount == 0.0)
             calcTotalAmount();
         return _totalOrderAmount; 
     }
 
-    public void calcTotalAmount() { 
+    public void calcTotalAmount() throws StockMarketException { 
         _totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
             _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
