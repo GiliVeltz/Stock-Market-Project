@@ -131,16 +131,16 @@ public class Shop {
         return true;
     }
 
-    public List<Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
-        List<Discount> discounts = new ArrayList<>();
-        for (Discount discount : _discounts.values()) {
-            if (new Date().after(discount.getExpirationDate())) {
+    public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
+        Map<Integer, Discount> productDiscounts = new HashMap<>();
+         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            if (new Date().after(entry.getValue().getExpirationDate())) {
                 removeDiscount(_nextDiscountId);
-            } else if (discount.getParticipatingProduct() == productId) {
-                discounts.add(discount);
+            } else if (entry.getValue().getParticipatingProduct() == productId) {
+                productDiscounts.put(entry.getKey(), entry.getValue());
             }
         }
-        return discounts;
+        return productDiscounts;
     }
 
     /**
@@ -883,10 +883,14 @@ public class Shop {
         return discountsBuilder.toString();
     }
 
-    public String getProductDiscountsInfo(Integer productId) throws ProductDoesNotExistsException {
+    public String getProductDiscountsInfo(Integer productId) throws ProductDoesNotExistsException, StockMarketException {
         // TODO: implement after getDiscountsByProduct is implemented
         if (isProductExist(productId)) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            StringBuilder discountsBuilder = new StringBuilder();
+            for (Map.Entry<Integer, Discount> entry : getDiscountsOfProduct(productId).entrySet()) {
+                discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+            }
+            return discountsBuilder.toString();
         }
         else {
             return null;
