@@ -9,8 +9,6 @@ import Exceptions.*;
 /** 
  * This class represents the role of a user in a specific shop.
  */
-//TODO: ADD TESTS
-//TODO: MODIFY MODEL CLASS IF NEEDED.
 public class Role {
     /** 
      * The username that appointed this member in the shop.
