@@ -20,7 +20,6 @@ public class Product implements Cloneable {
     private Category _category;
     private ProductPolicy _productPolicy;
     private static final Logger logger = Logger.getLogger(Product.class.getName());
-    // TODO: private List<discount>
 
     // Constructor
     public Product(Integer productId, String productName, Category category, double price) {
@@ -137,5 +136,13 @@ public class Product implements Cloneable {
 
     public Integer getProductQuantity() {
         return _quantity;
+    }
+
+    public String getProductPolicyInfo() {
+        return _productPolicy.toString();
+    }
+
+    public String getProductGeneralInfo() {
+        return "Product ID: " + _productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
     }
 }
