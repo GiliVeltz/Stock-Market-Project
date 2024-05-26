@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import Domain.Product;
@@ -584,4 +585,76 @@ public class ShopService {
             return resp;
         }
     }
+
+    /**
+     * Adds a new owner to a shop.
+     * @param token The session token of the user performing the update.
+     * @param username The username of the user performing the update.
+     * @param shopId The ID of the shop where the new owner is being added.
+     * @param newOwnerUsername The username of the new owner being added to the shop.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    public Response addShopOwner(String token, String username, Integer shopId, String newOwnerUsername) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(username)) {
+                    if(_userService.getUserFacade().isUserNameExists(username)){
+                        _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
+                        response.setReturnValue(true);
+                        logger.info(String.format("New owner %s added to Shop ID: %d", username, shopId));
+                    }else{
+                        throw new StockMarketException("User does not exist.");
+                    } 
+                } else {
+                    throw new StockMarketException("User is not logged in.");
+                }
+            } else {
+                throw new StockMarketException("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to add owner %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return response;
+    }
+
+    /**
+     * Adds a new manager to a shop.
+     * @param token The session token of the user performing the update.
+     * @param username The username of the user performing the appointment.
+     * @param shopId The ID of the shop where the new manager is being added.
+     * @param newManagerUsername The username of the new manager being added to the shop.
+     * @param permissions The permissions granted to the new manager.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    public Response addShopManager(String token, String username, Integer shopId, String newManagerUsername, Set<String> permissions) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(username)) {
+                    _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
+                    response.setReturnValue(true);
+                    logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
+                } else {
+                    throw new StockMarketException("User is not logged in.");
+                }
+            } else {
+                throw new StockMarketException("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to add manager %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return response;
+    }
+
+
+
 }

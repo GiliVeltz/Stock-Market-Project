@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductOutOfStockExepction;
+import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
@@ -30,8 +32,19 @@ public class ShoppingBasket implements Cloneable {
         _productToPriceToAmount = new HashMap<>();
     }
 
-    public void addProductToShoppingBasket(Integer productId) {
+    /**
+     * Adds a product to the shopping basket after validating the user doesn't violate the product policy.
+     * @param user the user that adds the product to the basket
+     * @param productId the product id to add to the basket
+     * @throws ProdcutPolicyException 
+     */
+    public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException {
+        logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
         _productIdList.add(productId);
+        logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
     }
 
     public void removeProductFromShoppingBasket(Integer productId) {
@@ -94,13 +107,24 @@ public class ShoppingBasket implements Cloneable {
      * If an exception is thrown, cancel the purchase of all the products that were
      * bought. This function only updates the item's stock.
      */
-    public boolean purchaseBasket() {
+    public boolean purchaseBasket() throws ShopPolicyException {
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
 
+        //HERE WE CHECK IF THE SHOP Policy is met.
+        try{
+        logger.log(Level.FINE,
+                "ShoppingBasket - purchaseBasket - Check if the shop policy is ok for shop: " + _shop.getShopId());
+        _shop.ValidateBasketMeetsShopPolicy(this);
+        }catch (ShopPolicyException e){
+            logger.log(Level.FINE,
+                "ShoppingBasket - purchaseBasket - Basket didn't meet the shop policy.");
+            throw e;
+        }
+        
         // TODO: consider the discounts using productToPriceToAmount
-
+        
         for (Integer productId : _productIdList) {
             try {
                 _shop.getProductById(productId).purchaseProduct();
