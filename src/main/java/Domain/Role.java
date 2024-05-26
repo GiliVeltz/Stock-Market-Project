@@ -128,14 +128,14 @@ public class Role {
     }
 
     /**
-     * Add permissions to this role.
-     * @param username the user that is giving the new permissions.
-     * @param permission the permissions to add.
+     * Modify permissions to this role.
+     * @param username the user that is modifying the new permissions.
+     * @param permission the new permissions.
      * @implNote If the role already has this permission its ok.
      * @Constraint username must be the one that appointed this role.
      * @throws RoleException 
      */
-    public void addPermissions(String username, Set<Permission> permissions) throws RoleException {
+    public void modifyPermissions(String username, Set<Permission> permissions) throws RoleException {
         logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
         if(isFounder() || isOwner()){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
@@ -149,29 +149,31 @@ public class Role {
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because we can't add founder of owner permissions.");
             throw new RoleException("Cannot add owner or founder permissions.");
         }
+        //Delete all permissions and set the new ones.
+        _permissions.clear();
         _permissions.addAll(permissions);
     }
 
 
-    /**
-     * Remove a permission from this role.
-     * @param username the user that is removing the permissions.
-     * @param permission the permissions to remove.
-     * @implNote if role doesn't have permission its ok.
-     * @throws RoleException 
-     */
-    public void deletePermissions(String username, Set<Permission> permissions) throws RoleException {
-        logger.log(Level.INFO, "Role - deletePermissions: "+username+" trying to delete permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
-        if(isFounder() || isOwner()){
-            logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from owner of founder. Can't delete permissions for them.");
-            throw new RoleException("Username is a founder of owner. No need to manage permissions.");
-        }
-        if(!username.equals(_appointedBy)){
-            logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from "+_username+" because "+username+" is not his appointer.");
-            throw new RoleException("Only the role that appointed this user can change permission.");
-        }
-        _permissions.removeAll(permissions);
-    }
+    // /**
+    //  * Remove a permission from this role.
+    //  * @param username the user that is removing the permissions.
+    //  * @param permission the permissions to remove.
+    //  * @implNote if role doesn't have permission its ok.
+    //  * @throws RoleException 
+    //  */
+    // public void deletePermissions(String username, Set<Permission> permissions) throws RoleException {
+    //     logger.log(Level.INFO, "Role - deletePermissions: "+username+" trying to delete permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
+    //     if(isFounder() || isOwner()){
+    //         logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from owner of founder. Can't delete permissions for them.");
+    //         throw new RoleException("Username is a founder of owner. No need to manage permissions.");
+    //     }
+    //     if(!username.equals(_appointedBy)){
+    //         logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from "+_username+" because "+username+" is not his appointer.");
+    //         throw new RoleException("Only the role that appointed this user can change permission.");
+    //     }
+    //     _permissions.removeAll(permissions);
+    // }
 
 
     public void addAppointment(String username) throws RoleException{

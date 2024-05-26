@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.ShopFacade.Category;
+import Domain.Facades.ShopFacade.Category;
+import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
 
 public class Product implements Cloneable {
@@ -17,6 +18,7 @@ public class Product implements Cloneable {
     private Double _productRating;
     private Integer _productRatersCounter;
     private Category _category;
+    private ProductPolicy _productPolicy;
     private static final Logger logger = Logger.getLogger(Product.class.getName());
     // TODO: private List<discount>
 
@@ -30,6 +32,7 @@ public class Product implements Cloneable {
         this._keywords = new HashSet<>();
         this._productRating = -1.0;
         this._productRatersCounter = 0;
+        this._productPolicy = new ProductPolicy();
     }
 
     public int getProductId() {
@@ -54,6 +57,10 @@ public class Product implements Cloneable {
 
     public Double getProductRating() {
         return _productRating;
+    }
+
+    public ProductPolicy getProductPolicy(){
+        return _productPolicy;
     }
 
     public void addProductRating(Integer rating) {
@@ -122,4 +129,13 @@ public class Product implements Cloneable {
         return _price >= minPrice && _price <= maxPrice;
     }
     
+
+    public void updateProductQuantity(int newQuantitiy)
+    {
+        _quantity = newQuantitiy;
+    }
+
+    public Integer getProductQuantity() {
+        return _quantity;
+    }
 }

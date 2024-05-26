@@ -29,5 +29,7 @@ public abstract class Discount {
         return _expirationDate;
     }
 
+    public abstract int getParticipatingProduct();
+
     protected abstract void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException;
 }

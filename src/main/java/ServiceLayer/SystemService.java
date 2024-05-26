@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.logging.Level;
 
-import Domain.ShoppingCartFacade;
-import Domain.UserFacade;
 import Domain.ExternalServices.ExternalServiceHandler;
+import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
@@ -88,7 +88,7 @@ public class SystemService {
     }
 
     // Set system to open
-    private void setSystemOpen(boolean isOpen) {
+    public void setSystemOpen(boolean isOpen) {
         this._isOpen = isOpen;
     }
 

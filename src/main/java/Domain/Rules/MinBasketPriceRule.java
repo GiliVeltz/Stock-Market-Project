@@ -1,6 +1,7 @@
 package Domain.Rules;
 
 import Domain.ShoppingBasket;
+import Exceptions.StockMarketException;
 
 /**
  * Represents a rule that checks if the total price of a shopping basket is
@@ -30,6 +31,10 @@ public class MinBasketPriceRule implements Rule<ShoppingBasket> {
      */
     @Override
     public boolean predicate(ShoppingBasket basket) {
-        return basket.getShoppingBasketPrice() >= _minPrice;
+        try {
+            return basket.getShoppingBasketPrice() >= _minPrice;
+        } catch (StockMarketException e) {
+            return false;
+        }
     }
 }
