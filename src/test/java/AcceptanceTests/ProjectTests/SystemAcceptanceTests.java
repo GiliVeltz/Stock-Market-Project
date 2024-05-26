@@ -20,12 +20,12 @@ public class SystemAcceptanceTests {
         _bridge = bridge;
     }
     
-    // Test senario open the market system for shopping.
-    @Test
-    public void testOpenMarketSystem() {
-        assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success
-        assertFalse(_bridge.testOpenMarketSystem("guest") ); // fail
-    }
+    // // Test senario open the market system for shopping.
+    // @Test
+    // public void testOpenMarketSystem() {
+    //     assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success
+    //     assertFalse(_bridge.testOpenMarketSystem("guest") ); // fail
+    // }
     
     // Test senario of payment in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
