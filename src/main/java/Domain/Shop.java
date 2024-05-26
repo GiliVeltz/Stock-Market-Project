@@ -633,7 +633,7 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException
+    public Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException
     {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format
