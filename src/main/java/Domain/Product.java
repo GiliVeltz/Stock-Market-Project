@@ -127,4 +127,8 @@ public class Product implements Cloneable {
     {
         _quantity = newQuantitiy;
     }
+
+    public Integer getProductQuantity() {
+        return _quantity;
+    }
 }
