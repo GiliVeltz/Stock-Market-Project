@@ -10,9 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import Domain.ShoppingCartFacade;
-import Domain.UserFacade;
+
+
 import Domain.ExternalServices.ExternalServiceHandler;
+import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 import Exceptions.ShopException;
 import ServiceLayer.Response;
 import ServiceLayer.SystemService;
