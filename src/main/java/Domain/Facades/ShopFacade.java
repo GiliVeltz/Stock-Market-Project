@@ -415,9 +415,10 @@ public class ShopFacade {
      * @param username the username of the user resigning
      * @param shopId the ID of the shope
      * @return the usernames of the roles that were resigned
+     * @throws StockMarketException 
      * @throws Exception
      */
-    public Set<String> resignFromRole(String username, Integer shopId) throws ShopException{
+    public Set<String> resignFromRole(String username, Integer shopId) throws StockMarketException{
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             return null;
