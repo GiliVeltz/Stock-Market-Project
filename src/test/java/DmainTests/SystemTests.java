@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -21,7 +22,7 @@ import ServiceLayer.SystemService;
 import ServiceLayer.UserService;
 import ServiceLayer.TokenService;
 
-public class SystemTest {
+public class SystemTests {
     @Mock
     private UserService _userServiceMock;
     @Mock
