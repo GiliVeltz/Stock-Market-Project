@@ -36,6 +36,7 @@ public class UserService {
                     throw new Exception("Username or password is empty.");
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
+                    _shoppingCartFacade.addCartForUser(token, userName);
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
@@ -85,7 +86,6 @@ public class UserService {
                 }
                 if (!_userFacade.doesUserExist(userName)) {
                     _userFacade.register(userName, password, email);
-                    _shoppingCartFacade.addCartForUser(token, userName);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
