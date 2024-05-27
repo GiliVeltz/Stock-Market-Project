@@ -36,13 +36,14 @@ public class ShoppingCartFacade {
     }
 
     /*
-     * Add a cart for a user by username.
-     * This methos called only when a guest user register to the system.
-     * The cart of the guest user will be added to the user's cart and then will be
-     * deleted in the guests carts.
+     * Add a cart for a user.
+     * If user already has a cart - we will use the same cart as before.
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we will use it's guest cart
      */
     public void addCartForUser(String guestID, String username) {
-        _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
+        if(_cartsRepo.getCartByUsername(username) == null){
+            _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
+        }
     }
 
     public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException {
@@ -94,7 +95,7 @@ public class ShoppingCartFacade {
     }
 
     public void purchaseCartGuest(String guestID, String cardNumber, String address)
-            throws PaymentFailedException, ShippingFailedException, StockMarketException {
+        throws PaymentFailedException, ShippingFailedException, StockMarketException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
