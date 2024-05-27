@@ -55,6 +55,13 @@ public class UserFacade {
             throw new Exception("Username already exists.");
         }
     }
+   
+    public void addOrderToUser(String username, Order order) throws ShopException {
+        User user = getUserByUsername(username);
+        if (user != null) {
+            user.addOrder(order);
+        }
+    }
 
     // function that check if a given user is an admin
     public boolean isAdmin(String userName) throws Exception {

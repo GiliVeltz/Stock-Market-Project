@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Domain.*;
+import Domain.Order;
 import Domain.Facades.UserFacade;
 
 public class UserFacadeTests {
@@ -145,4 +146,44 @@ public class UserFacadeTests {
             assertFalse(_guestIds.contains(guestId));
         }
     }
+
+    @Test
+    public void testGetPurchaseHistory_whenUserExists_thenSuccess() throws Exception {
+        // Arrange
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        String username = "testUser";
+
+        Shop testShop = new Shop(1, username, "bankDetails", "shopAddress");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(testShop);
+        List<ShoppingBasket> basketsList = new ArrayList<>();
+        basketsList.add(shoppingBasket);
+        Order order = new Order(1, basketsList);
+
+        _userFacadeUnderTest.register(username, "password", "email");
+        _userFacadeUnderTest.addOrderToUser(username, order);
+
+        // Act
+        List<Order> expectedPurchaseHistory = new ArrayList<>();
+        expectedPurchaseHistory.add(order);
+        List<Order> actualPurchaseHistory = _userFacadeUnderTest.getPurchaseHistory(username);
+
+        // Assert
+        assertEquals(expectedPurchaseHistory, actualPurchaseHistory);
+    }
+
+    @Test
+    public void testGetPurchaseHistory_whenUserDoesNotExist_thenNull() throws Exception {
+        // Arrange
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        String nonExistentUsername = "nonExistentUser";
+
+        // Act
+        List<Order> actualPurchaseHistory = _userFacadeUnderTest.getPurchaseHistory(nonExistentUsername);
+
+        // Assert
+        assertNull(actualPurchaseHistory);
+    }
+
+   
+
 }

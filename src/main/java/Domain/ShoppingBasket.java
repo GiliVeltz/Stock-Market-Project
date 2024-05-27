@@ -59,20 +59,19 @@ public class ShoppingBasket implements Cloneable {
         _shop.applyDiscounts(this);
         _basketTotalAmount = 0.0;
 
-        // case where there are no discounts on the basket
-        if (_productToPriceToAmount.size() == 0) {
-            for (Integer product : _productIdList) {
-                _basketTotalAmount += _shop.getProductPriceById(product);
-            }
-        } else {
-            // iterate over the productt to price to amount map and calculate the total
-            // price
+        // // case where there are no discounts on the basket
+        // if (_productToPriceToAmount.size() == 0) {
+        //     for (Integer product : _productIdList) {
+        //         _basketTotalAmount += _shop.getProductPriceById(product);
+        //     }
+        // } else {
+            // iterate over the productt to price to amount map and calculate the total price
             for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : _productToPriceToAmount.entrySet()) {
                 for (Map.Entry<Double, Integer> priceToAmount : entry.getValue().entrySet()) {
                     _basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
                 }
             }
-        }
+        // }
         return _basketTotalAmount;
     }
     
