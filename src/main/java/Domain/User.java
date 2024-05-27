@@ -1,5 +1,6 @@
 package Domain;
 
+import java.util.ArrayList;
 import java.util.List;
 //import java.util.logging.Logger;
 
@@ -16,6 +17,8 @@ public class User {
         _encoded_password = encoded_password;
         _isAdmin = false;
         _email = email;
+        _purchaseHistory = new ArrayList<Order>();
+        
     }
 
     public boolean isCurrUser(String username, String encoded_password) {
