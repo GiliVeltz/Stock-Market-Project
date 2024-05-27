@@ -1,6 +1,8 @@
 package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -43,11 +45,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     // real services under test
     private ShopService _shopServiceUnderTest;
     private SystemService _systemServiceUnderTest;
-    private TokenService _tokenServiceUnderTest;
     private UserService _userServiceUnderTest;
 
     // real facades to use in tests
-    private ShopFacade _shopFacade;
+    private ShopFacade _shopFacade = ShopFacade.getShopFacade();
     private ShoppingCartFacade _shoppingCartFacade;
     private UserFacade _userFacade;
     private PasswordEncoderUtil _passwordEncoder;
@@ -60,7 +61,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private TokenService _tokenServiceMock;
 
     // other private fields
-    private String token = "token";
+    private static String token = "token";
+    private Logger logger = Logger.getLogger(RealBridge.class.getName());
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
@@ -88,10 +90,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
 
-        _tokenServiceUnderTest = new TokenService();
-        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceUnderTest, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceUnderTest, _userServiceUnderTest);
-        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceUnderTest,
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
     }
 
@@ -105,6 +106,22 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testOpenMarketSystem(String username){
         // Arrange
         MockitoAnnotations.openMocks(this);
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("systemAdmin", "systemAdminPassword", "email"));
+            }
+        }, new ArrayList<>(), _passwordEncoderMock);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        _userServiceUnderTest.logIn(token, "systemAdmin", "systemAdminPassword");
 
         String token = username.equals("systemAdmin") ? "systemAdmin" : "guest";
 
@@ -119,7 +136,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         Response res = _systemServiceUnderTest.openSystem(token);
 
         // Assert
-        System.out.println("testOpenMarketSystem Error message: " + res.getErrorMessage());
+        logger.info("testOpenMarketSystem Error message: " + res.getErrorMessage());
         return res.getErrorMessage() == null;
     }
 
@@ -147,83 +164,115 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
     }
 
+    // GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @Test
+    public boolean TestGuestEnterTheSystem(String shouldSeccess){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoderMock);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
 
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
+        _userFacade.addNewGuest("existGuest");
 
+        String token = shouldSeccess.equals("newGuest") ? "newGuest" : "existGuest";
 
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId("newGuest")).thenReturn("newGuest");
+        when(_tokenServiceMock.extractGuestId("existGuest")).thenReturn("existGuest");
 
+        // Act
+        Response res = _systemServiceUnderTest.requestToEnterSystem(token);
 
+        // Assert
+        logger.info("TestGuestEnterTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+    
+    @Test
+    public boolean TestGuestRegisterToTheSystem(String username, String password, String email){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
+            {
+                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email"));
+            }
+        }, new ArrayList<>(), _passwordEncoderMock);
 
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
 
-    @Override
-    public boolean TestGuestEnterTheSystem(String shouldSeccess) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestEnterTheSystem'");
+        // Act
+        Response res = _userServiceUnderTest.register(token, username, password, email);
+
+        // Assert
+        logger.info("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+    
+    @Test
+    public boolean TestUserEnterTheSystem(String SystemStatus){
+        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");}
+    
+    @Test
+    public boolean testLoginToTheSystem(String username, String password){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email"));
+            }
+        }, new ArrayList<>(), _passwordEncoderMock);
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+
+        // Act
+        Response res = _userServiceUnderTest.logIn(token, username, password);
+
+        // Assert
+        logger.info("testLoginToTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
-    @Override
-    public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestRegisterToTheSystem'");
 
-        // // Arrange
-        // MockitoAnnotations.openMocks(this);
 
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
-        // when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
 
-        // User bob = new User("Bobi", "bobspassword", "email");
-        // List<User> registeredUsers = new ArrayList<>();
-        // registeredUsers.add(bob);
 
-        // UserFacade _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
-        // UserService _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock,
-        //         _shoppingCartFacadeMock);
 
-        // // Act
-        // Response res = _userServiceUnderTest.register(token, username, password, email);
 
-        // // Assert
-        // System.out.println("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
-        // return res.getErrorMessage() == null;
-    }
 
-    @Override
-    public boolean TestUserEnterTheSystem(String SystemStatus) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
-    }
 
-    @Override
-    public boolean testLoginToTheSystem(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");
 
-        // // Arrange
-        // MockitoAnnotations.openMocks(this);
 
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // when(_tokenServiceMock.generateUserToken(anyString())).thenReturn("success");
-        // when(_passwordEncoderMock.encodePassword("bobspassword")).thenReturn("bobspassword");
-        // when(_passwordEncoderMock.matches("bobspassword", "bobspassword")).thenReturn(true);
 
-        // User bob = new User("Bob", "bobspassword", "email");
-        // List<User> registeredUsers = new ArrayList<>();
-        // registeredUsers.add(bob);
 
-        // UserFacade _userFacadeReal = new UserFacade(registeredUsers, new ArrayList<>(), _passwordEncoderMock);
-        // UserService _userServiceUnderTest = new UserService(_userFacadeReal, _tokenServiceMock,
-        //         _shoppingCartFacadeMock);
 
-        // // Act
-        // Response res = _userServiceUnderTest.logIn(token, username, password);
 
-        // // Assert
-        // System.out.println("testLoginToTheSystem Error message: " + res.getErrorMessage());
-        // return res.getErrorMessage() == null;
-    }
 
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {

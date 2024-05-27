@@ -104,10 +104,10 @@ public class SystemService {
      * @return Response object containing the generated guest token if successful,
      * or an error message if there is a failure.
      */
-    public Response requestToEnterSystem() {
+    public Response requestToEnterSystem(String token) {
         Response response = new Response();
         try {
-            String token = _tokenService.generateGuestToken();
+            //String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
             _userFacade.addNewGuest(id);
