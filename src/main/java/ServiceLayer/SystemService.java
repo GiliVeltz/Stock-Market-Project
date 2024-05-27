@@ -43,7 +43,7 @@ public class SystemService {
     public Response openSystem(String token) {
         Response response = new Response();
         try {
-            String userId = _tokenService.extractUsername(token);
+            String username = _tokenService.extractUsername(token);
             if (_tokenService.validateToken(token)) {
                 // Check if the user is already logged in.
                 if (!_tokenService.isUserAndLoggedIn(token)) {
@@ -52,7 +52,7 @@ public class SystemService {
                     return response;
                 }
                 // Check if the user is an admin
-                Response isAdminResponse = _userService.isSystemAdmin(userId);
+                Response isAdminResponse = _userService.isSystemAdmin(username);
                 if (isAdminResponse.getErrorMessage() != null) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
@@ -75,7 +75,7 @@ public class SystemService {
 
                 // Open the system
                 setSystemOpen(true);
-                logger.info("System opened by admin: " + userId);
+                logger.info("System opened by admin: " + username);
                 response.setReturnValue("System Opened Successfully");
             } else {
                 throw new Exception("Invalid session token.");
