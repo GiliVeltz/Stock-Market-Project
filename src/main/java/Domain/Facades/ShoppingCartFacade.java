@@ -18,14 +18,24 @@ import Exceptions.StockMarketException;
 
 @RestController
 public class ShoppingCartFacade {
+    private static ShoppingCartFacade _shoppingCartFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     ShoppingCartRepositoryInterface _cartsRepo;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
 
-    public ShoppingCartFacade() {
+    private ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
     }
+    
+    // Public method to provide access to the _shoppingCartFacade
+    public static synchronized ShoppingCartFacade getShoppingCartFacade() {
+        if (_shoppingCartFacade == null) {
+            _shoppingCartFacade = new ShoppingCartFacade();
+        }
+        return _shoppingCartFacade;
+    }
+
 
     /*
      * Add a cart for a guest by token.

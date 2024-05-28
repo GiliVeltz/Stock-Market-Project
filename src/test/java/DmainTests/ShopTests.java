@@ -1065,5 +1065,4 @@ public class ShopTests {
         // Assert
         assertEquals(50, shop.getShopProducts().get(0).getProductQuantity());
     }
-
 }

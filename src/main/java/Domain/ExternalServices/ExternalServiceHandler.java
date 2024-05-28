@@ -27,4 +27,8 @@ public class ExternalServiceHandler {
         }
         return true;
     }
+
+    // TODO: add function for add external service. called from the system service.
+
+    // TODO: add fuction for change external service information. called from the system service.
 }
