@@ -242,7 +242,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email"));
             }
-        }, new ArrayList<>(), _passwordEncoderMock);
+        }, new ArrayList<>(), _passwordEncoder);
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
