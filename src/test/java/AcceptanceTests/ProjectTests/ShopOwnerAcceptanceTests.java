@@ -97,7 +97,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can close his shop in the system.
-    // @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerCloseShop(){
         assertTrue(_bridge.testShopOwnerCloseShop("Bob", "12345")); // success

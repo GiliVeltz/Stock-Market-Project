@@ -10,9 +10,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 public interface BridgeInterface {
     
-    // SYSTEM TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     @BeforeEach
     void init();
+
+    // SYSTEM TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
     boolean testOpenMarketSystem(String username);

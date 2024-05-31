@@ -12,6 +12,7 @@ import Exceptions.ShopException;
 
 @RestController
 public class UserFacade {
+    private static UserFacade _UserFacade;
     private UserRepositoryInterface _userRepository;
     private List<String> _guestIds;
     private PasswordEncoderUtil _passwordEncoder;
@@ -20,6 +21,14 @@ public class UserFacade {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
         _passwordEncoder = passwordEncoder;
+    }
+
+    // Public method to provide access to the _UserFacade
+    public static synchronized UserFacade getUserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+        if (_UserFacade == null) {
+            _UserFacade = new UserFacade(registeredUsers, guestIds, passwordEncoder);
+        }
+        return _UserFacade;
     }
 
     public boolean doesUserExist(String username) {
