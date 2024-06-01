@@ -24,7 +24,17 @@ public class TokenService {
     private final long expirationTime = 1000 * 60 * 60 * 24;
     private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    // this function recieves a username and generates a token for the user in the system
+    private static TokenService _instance;
+
+    public static synchronized TokenService getTokenService() {
+        if (_instance == null) {
+            _instance = new TokenService();
+        }
+        return _instance;
+    }
+
+    // this function recieves a username and generates a token for the user in the
+    // system
     public String generateUserToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -57,12 +67,12 @@ public class TokenService {
         return extractClaim(token, claims -> claims.get("guestId", String.class));
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> ClaimsResolver){
+    private <T> T extractClaim(String token, Function<Claims, T> ClaimsResolver) {
         final Claims claims = extractAllClaims(token);
         return ClaimsResolver.apply(claims);
-    }  
+    }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -74,22 +84,23 @@ public class TokenService {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    // check according to the token if this is a user in the system, and the user is logged in
-    public boolean isUserAndLoggedIn(String token){
+    // check according to the token if this is a user in the system, and the user is
+    // logged in
+    public boolean isUserAndLoggedIn(String token) {
         return extractUsername(token) != null;
     }
 
     // change the check in the function
-    public boolean isGuest(String token){
+    public boolean isGuest(String token) {
         return extractUsername(token) != null;
     }
 }

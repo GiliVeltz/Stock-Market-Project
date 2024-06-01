@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Order;
 import Domain.User;
-import Domain.Authenticators.*;
-import Domain.Repositories.*;
+import Domain.Authenticators.EmailValidator;
+import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Repositories.MemoryUserRepository;
+import Domain.Repositories.UserRepositoryInterface;
+import Dtos.UserDto;
 import Exceptions.ShopException;
 
 @RestController
@@ -52,19 +55,21 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    public void register(String userName, String password, String email, Date birthDate) throws Exception {
-        String encodedPass = this._passwordEncoder.encodePassword(password);
-        if (!doesUserExist(userName)) {
-            if (email == null || email.isEmpty()) {
-                throw new Exception("Email is empty.");
-            }
-            if (!_EmailValidator.isValidEmail(email)) {
-                throw new Exception("Email is not valid.");
-            }
-            if (password == null || password.isEmpty() || password.length() < 5) {
-                throw new Exception("Password is empty.");
-            }
-            _userRepository.addUser(new User(userName, encodedPass, email, birthDate));
+    public void register(UserDto userDto) throws Exception {
+        // TODO: remove the encoding - should be done in the front end
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        if (userDto.username == null || userDto.username.isEmpty()) {
+            throw new Exception("UserName is empty.");
+        }
+        if (userDto.email == null || userDto.email.isEmpty()) {
+            throw new Exception("Email is empty.");
+        }
+        if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
+            throw new Exception("Password is empty, or too short.");
+        }
+
+        if (!doesUserExist(userDto.username)) {
+            _userRepository.addUser(new User(userDto.username, encodedPass, userDto.email));
         } else {
             throw new Exception("Username already exists.");
         }

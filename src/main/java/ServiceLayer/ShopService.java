@@ -31,7 +31,7 @@ public class ShopService {
 
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
-        _tokenService = new TokenService();
+        _tokenService = TokenService.getTokenService();
         _userService = new UserService();
     }
 

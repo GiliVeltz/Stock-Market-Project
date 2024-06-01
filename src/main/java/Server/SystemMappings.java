@@ -18,6 +18,7 @@ public class SystemMappings {
         this._systemService = systemService;
     }
 
+    @GetMapping("/openSystem")
     public Response openSystem(@RequestHeader(value = "Authorization", required = true) String token) {
         Response response = _systemService.openSystem(token);
         return response;
@@ -30,7 +31,7 @@ public class SystemMappings {
     }
 
     @GetMapping("/leaveSystem")
-    public Response leaveSystem(@RequestHeader(value = "Authorization", required = false) String token) {
+    public Response leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
         Response resp = _systemService.leaveSystem(token);
         return resp;
     }

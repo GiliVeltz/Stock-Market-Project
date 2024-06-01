@@ -36,7 +36,7 @@ public class SystemService {
     public SystemService() {
         _userService = new UserService();
         _externalServiceHandler = new ExternalServiceHandler();
-        _tokenService = new TokenService();
+        _tokenService = TokenService.getTokenService();
         _userFacade = UserFacade.getUserFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }

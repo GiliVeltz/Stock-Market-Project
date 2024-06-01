@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import Domain.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.UserDto;
 
 @Service
 public class UserService {
@@ -29,7 +30,7 @@ public class UserService {
 
     public UserService() {
         _userFacade = UserFacade.getUserFacade();
-        _tokenService = new TokenService();
+        _tokenService = TokenService.getTokenService();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }
 
@@ -84,22 +85,13 @@ public class UserService {
     }
 
     // this function is responsible for registering a new user to the system
-    public Response register(String token, String userName, String password, String email, String birthYear, String birthMonth, String birthDay) {
+    public Response register(String token, UserDto userDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (userName == null || userName.isEmpty()) {
-                    throw new Exception("UserName is empty.");
-                }
-                if (!_userFacade.doesUserExist(userName)) {
-                    @SuppressWarnings("deprecation") // TODO: CHECK IF WORKS WITHOUT THAT
-                    Date birthDate = new Date(Integer.parseInt(birthYear), Integer.parseInt(birthMonth), Integer.parseInt(birthDay));
-                    _userFacade.register(userName, password, email, birthDate);
-                    logger.info("User registered: " + userName);
-                    response.setReturnValue("Registeration Succeed");
-                } else {
-                    throw new Exception("User Name Is Already Exists");
-                }
+                _userFacade.register(userDto);
+                logger.info("User registered: " + userDto.username);
+                response.setReturnValue("Registeration Succeed");
             } else {
                 throw new Exception("Invalid session token.");
             }
