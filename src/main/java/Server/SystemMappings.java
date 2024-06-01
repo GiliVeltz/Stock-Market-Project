@@ -19,8 +19,8 @@ public class SystemMappings {
     }
 
     @GetMapping("/enterSystem")
-    public Response enterSystem(@RequestHeader(value = "Authorization", required = false) String token){
-        Response resp = _systemService.requestToEnterSystem(token);
+    public Response enterSystem(){
+        Response resp = _systemService.requestToEnterSystem();
         return resp;
     }
 
