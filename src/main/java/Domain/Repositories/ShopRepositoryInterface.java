@@ -12,4 +12,6 @@ public interface ShopRepositoryInterface {
     void addShop(Shop shop);
 
     List<Shop> getAllShops();
+
+    int getUniqueShopID();
 }

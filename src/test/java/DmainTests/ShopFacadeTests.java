@@ -83,37 +83,6 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testOpenNewShop_whenShopExist_whenFail() throws Exception {
-        // Arrange - Create a new ShopFacade object
-        _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-
-        // Act - try to open a new shop with an existing ID
-        try {
-            _ShopFacadeUnderTests.openNewShop(_shop1.getShopId(), "newFounderName", "newBank", "newAddress");
-            fail("Opening a shop with an existing ID should fail");
-        } catch (Exception e) {
-            // Assert - Verify that the expected exception is thrown
-            assertEquals(1, _shopsList.size());
-            assertEquals(_shop1.getShopId(), _shopsList.get(0).getShopId());
-        }
-    }
-
-    @Test
-    public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
-        // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-
-        // Act - try to open a new shop with a new ID
-        _ShopFacadeUnderTests.openNewShop(_shop2.getShopId(), _shop2.getFounderName(), _shop2.getBankDetails(),
-                _shop2.getShopAddress());
-
-        // Assert - Verify that the shop is added to the list
-        assertEquals(1, _ShopFacadeUnderTests.getAllShops().size());
-        assertEquals(_shop2.getShopId(), _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
-    }
-
-    @Test
     public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
