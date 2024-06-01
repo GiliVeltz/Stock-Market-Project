@@ -63,11 +63,10 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public void openNewShop(Integer shopId, String userName, String bankDetails, String shopAddress) throws Exception {
-        if (isShopIdExist(shopId))
-            throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
-        else
-            _shopRepository.addShop(new Shop(shopId, userName, bankDetails, shopAddress));
+    public int openNewShop(String founder, String bankDetails, String shopAddress) throws Exception {
+        int shopId = _shopRepository.getUniqueShopID();
+        _shopRepository.addShop(new Shop(shopId, founder, bankDetails, shopAddress));
+        return shopId;
     }
 
     // close shop only if the user is the founder of the shop
@@ -111,7 +110,6 @@ public class ShopFacade {
         }
 
     }
-
 
     public void addProductToShop(Integer shopId, Product product, String userName) throws Exception {
         if (!isShopIdExist(shopId))
@@ -417,13 +415,14 @@ public class ShopFacade {
 
     /**
      * Removes a manager from a shop.
-     * @param username the username of the user removing the manager
-     * @param shopId the ID of the shop
+     * 
+     * @param username        the username of the user removing the manager
+     * @param shopId          the ID of the shop
      * @param managerUsername the username of the manager to remove
      * @return the usernames of the managers that were removed
      * @throws Exception
      */
-    public Set<String> fireShopManager (String username, Integer shopId, String managerUsername) throws Exception {
+    public Set<String> fireShopManager(String username, Integer shopId, String managerUsername) throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -433,13 +432,14 @@ public class ShopFacade {
 
     /**
      * Resign a role from the shop.
+     * 
      * @param username the username of the user resigning
-     * @param shopId the ID of the shope
+     * @param shopId   the ID of the shope
      * @return the usernames of the roles that were resigned
-     * @throws StockMarketException 
+     * @throws StockMarketException
      * @throws Exception
      */
-    public Set<String> resignFromRole(String username, Integer shopId) throws StockMarketException{
+    public Set<String> resignFromRole(String username, Integer shopId) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             return null;
@@ -449,19 +449,23 @@ public class ShopFacade {
 
     /**
      * Modify the permissions of a manager in a shop.
-     * @param username the username of the user modifying the permissions
-     * @param shopId the ID of the shop
+     * 
+     * @param username        the username of the user modifying the permissions
+     * @param shopId          the ID of the shop
      * @param managerUsername the username of the manager to modify
-     * @param permissions the permissions to assign to the manager
+     * @param permissions     the permissions to assign to the manager
      * @throws Exception
      */
-    public void modifyManagerPermissions(String username, Integer shopId, String managerUsername, Set<String> permissions) throws Exception {
+    public void modifyManagerPermissions(String username, Integer shopId, String managerUsername,
+            Set<String> permissions) throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
-        //Here we create a set of permissions from the strings.
-        Set<Permission> permissionsSet = permissions.stream().map(permissionString -> Permission.valueOf(permissionString.toUpperCase())).collect(Collectors.toSet());
+        // Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream()
+                .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
+                .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
     }
 

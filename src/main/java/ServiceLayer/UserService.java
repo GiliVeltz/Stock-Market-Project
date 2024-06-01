@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import Domain.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.PurchaseCartDetailsDto;
+import Dtos.UserDto;
 
 @Service
 public class UserService {
@@ -25,6 +27,12 @@ public class UserService {
         _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
+    }
+
+    public UserService() {
+        _userFacade = UserFacade.getUserFacade();
+        _tokenService = TokenService.getTokenService();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }
 
     // this function is responsible for logging in a user to the system by checking
@@ -78,22 +86,13 @@ public class UserService {
     }
 
     // this function is responsible for registering a new user to the system
-    public Response register(String token, String userName, String password, String email, String birthYear, String birthMonth, String birthDay) {
+    public Response register(String token, UserDto userDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (userName == null || userName.isEmpty()) {
-                    throw new Exception("UserName is empty.");
-                }
-                if (!_userFacade.doesUserExist(userName)) {
-                    @SuppressWarnings("deprecation") // TODO: CHECK IF WORKS WITHOUT THAT
-                    Date birthDate = new Date(Integer.parseInt(birthYear), Integer.parseInt(birthMonth), Integer.parseInt(birthDay));
-                    _userFacade.register(userName, password, email, birthDate);
-                    logger.info("User registered: " + userName);
-                    response.setReturnValue("Registeration Succeed");
-                } else {
-                    throw new Exception("User Name Is Already Exists");
-                }
+                _userFacade.register(userDto);
+                logger.info("User registered: " + userDto.username);
+                response.setReturnValue("Registeration Succeed");
             } else {
                 throw new Exception("Invalid session token.");
             }
@@ -107,18 +106,18 @@ public class UserService {
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
-    public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
+    public Response purchaseCart(String token, PurchaseCartDetailsDto details) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
+                    _shoppingCartFacade.purchaseCartGuest(token, details);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
+                    _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
                 }
             } else {
@@ -152,13 +151,13 @@ public class UserService {
     /**
      * Retrieves the purchase history of a specific user as an admin.
      *
-     * @param token  The session token of the admin user.
-     * @param userId The ID of the user whose purchase history is to be retrieved.
+     * @param token    The session token of the admin user.
+     * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
      * @throws Exception If the session token is invalid.
      */
-    public Response getUserPurchaseHistoryAsAdmin(String token, String userId) {
+    public Response getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -167,19 +166,19 @@ public class UserService {
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
-                String adminId = _tokenService.extractUsername(token);
-                Response isAdminResponse = isSystemAdmin(adminId);
-                if (isAdminResponse.getErrorMessage() != null) {
+                String adminUsername = _tokenService.extractUsername(token);
+                boolean isAdmin = _userFacade.isAdmin(adminUsername);
+                if (!isAdmin) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
                     return response;
                 }
                 // get purchase history of a user
-                response.setReturnValue(_userFacade.getPurchaseHistory(userId));
-                if (response.getErrorMessage() != null) {
-                    response.setErrorMessage("Failed to get purchase history from user: " + userId);
-                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
+                response.setReturnValue(_userFacade.getPurchaseHistory(username));
 
+                if (response.getErrorMessage() != null) {
+                    response.setErrorMessage("Failed to get purchase history from user: " + username);
+                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + username);
                 }
 
             } else {
@@ -214,15 +213,10 @@ public class UserService {
             response.setErrorMessage("Failed to retrieve purchase history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to retrieve purchase history: " + e.getMessage(), e);
         }
-        // TODO: check with Spring how to return this response as a data object
         return response;
     }
 
-    public UserFacade getUserFacade() {
-        return _userFacade;
-    }
-
-    public Response addProduct(String token, int productID, int shopID) {
+    public Response addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -243,7 +237,7 @@ public class UserService {
         return response;
     }
 
-    public Response removeProduct(String token, int productID, int shopID) {
+    public Response removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
