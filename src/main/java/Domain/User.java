@@ -21,6 +21,10 @@ public class User {
         
     }
 
+    public String getEncodedPassword() {
+        return _encoded_password;
+    }
+
     public boolean isCurrUser(String username, String encoded_password) {
         if (_username == username & _encoded_password == encoded_password) {
             return true;
@@ -28,24 +32,13 @@ public class User {
         return false;
     }
 
-    public String getUserName() {
-        return _username;
-    }
-
-    public String getEncodedPassword() {
-        return _encoded_password;
-    }
-
-    public String getEmail() {
-        return _email;
-    }
-
-    public void setEmail(String email) {
-        _email = email;
-    }
-
     //add order to the purchase history
     public void addOrder(Order order) {
+        if (order == null) {
+            //logger.severe("Order is null");
+            throw new IllegalArgumentException("Order is null");
+            
+        }
         _purchaseHistory.add(order);
     }
 
@@ -66,5 +59,31 @@ public class User {
      */
     public List<Order> getPurchaseHistory() {
         return _purchaseHistory;
+    }
+
+    // getters and setters:
+
+    public String getUserName() {
+        return _username;
+    }
+
+    public String getEmail() {
+        return _email;
+    }
+
+    public void setEmail(String email) {
+        _email = email;
+        }
+
+    public String getPassword() {
+        return _encoded_password;
+    }
+
+    public void setPassword(String password) {
+        _encoded_password = password;
+    }
+
+    public String toString() {
+        return "User [username=" + _username + ", encoded password= " + _encoded_password + ", email=" + _email + "]";
     }
 }
