@@ -84,7 +84,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-        _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new ArrayList<User>() {
             {
                 add(new User("Bob", "bobspassword", "email@example.com", new Date()));
             }
@@ -208,7 +208,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _passwordEncoder = new PasswordEncoderUtil();
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-        _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new ArrayList<User>() {
             {
                 add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email@example.com", new Date()));
             }

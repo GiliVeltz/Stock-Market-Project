@@ -27,6 +27,12 @@ public class UserService {
         _shoppingCartFacade = shoppingCartFacade;
     }
 
+    public UserService() {
+        _userFacade = UserFacade.getUserFacade();
+        _tokenService = new TokenService();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+    }
+
     // this function is responsible for logging in a user to the system by checking
     // the credentials and generating a token for the user
     public Response logIn(String token, String userName, String password) {

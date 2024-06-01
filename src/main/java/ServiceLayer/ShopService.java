@@ -29,6 +29,12 @@ public class ShopService {
         _userService = userService;
     }
 
+    public ShopService() {
+        _shopFacade = ShopFacade.getShopFacade();
+        _tokenService = new TokenService();
+        _userService = new UserService();
+    }
+
     /**
      * Opens a new shop with the specified shop ID and user name.
      * 
