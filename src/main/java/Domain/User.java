@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 //import java.util.logging.Logger;
 
+import Dtos.UserDto;
+
 public class User {
     private String _encoded_password;
     private String _username;
@@ -21,6 +23,15 @@ public class User {
         _isAdmin = false;
         _email = email;
         _birthDate = birthDate;
+        _purchaseHistory = new ArrayList<Order>();
+    }
+
+    public User(UserDto userDto) {
+        _username = userDto.username;
+        _encoded_password = userDto.password;
+        _isAdmin = false;
+        _email = userDto.email;
+        _birthDate = userDto.birthDate;
         _purchaseHistory = new ArrayList<Order>();
     }
 

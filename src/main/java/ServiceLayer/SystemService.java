@@ -33,6 +33,14 @@ public class SystemService {
         _externalServiceHandler = externalServiceHandler;
     }
 
+    public SystemService() {
+        _userService = new UserService();
+        _externalServiceHandler = new ExternalServiceHandler();
+        _tokenService = TokenService.getTokenService();
+        _userFacade = UserFacade.getUserFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+    }
+
     /**
      * Opens the system.
      * 
