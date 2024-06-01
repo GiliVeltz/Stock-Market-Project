@@ -24,13 +24,13 @@ public class SystemMappings {
     }
 
     @GetMapping("/enterSystem")
-    public Response enterSystem(@RequestHeader(value = "Authorization", required = false) String token){
-        Response resp = _systemService.requestToEnterSystem(token);
+    public Response enterSystem() {
+        Response resp = _systemService.requestToEnterSystem();
         return resp;
     }
 
     @GetMapping("/leaveSystem")
-    public Response leaveSystem(@RequestHeader(value = "Authorization", required = false) String token){
+    public Response leaveSystem(@RequestHeader(value = "Authorization", required = false) String token) {
         Response resp = _systemService.leaveSystem(token);
         return resp;
     }
