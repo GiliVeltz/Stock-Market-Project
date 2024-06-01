@@ -17,7 +17,6 @@ import io.jsonwebtoken.Jwts;
 // this class is responsible for generating tokens for the users in the system
 // and validating the tokens
 // and extracting the information from the token - if this is a guest or a user in the system for example
-@Service
 public class TokenService {
     @Value("${jwk.secret}")
     private String secret;
