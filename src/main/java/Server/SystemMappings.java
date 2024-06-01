@@ -18,6 +18,11 @@ public class SystemMappings {
         this._systemService = systemService;
     }
 
+    public Response openSystem(@RequestHeader(value = "Authorization", required = true) String token) {
+        Response response = _systemService.openSystem(token);
+        return response;
+    }
+
     @GetMapping("/enterSystem")
     public Response enterSystem(@RequestHeader(value = "Authorization", required = false) String token){
         Response resp = _systemService.requestToEnterSystem(token);
