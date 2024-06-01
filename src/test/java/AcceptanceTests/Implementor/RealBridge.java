@@ -33,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
+import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import ServiceLayer.*;
@@ -85,7 +86,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
             {
-                add(new User("Bob", "bobspassword", "email", new Date()));
+                add(new User("Bob", "bobspassword", "email@example.com", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
         _externalServiceHandler = new ExternalServiceHandler();
@@ -111,7 +112,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("systemAdmin", "systemAdminPassword", "email", new Date()));
+                add(new User("systemAdmin", "systemAdminPassword", "email@example.com", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
         _externalServiceHandler = new ExternalServiceHandler();
@@ -209,7 +210,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
             {
-                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email", new Date()));
+                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email@example.com", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
 
@@ -242,7 +243,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email", new Date()));
+                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoder);
 

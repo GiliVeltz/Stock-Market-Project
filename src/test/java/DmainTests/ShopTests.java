@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Producer;
 
-import Domain.PasswordEncoderUtil;
 import Domain.Permission;
 import Domain.Product;
 import Domain.Shop;
+import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
 import Domain.Facades.ShopFacade.Category;
 import Exceptions.PermissionException;
