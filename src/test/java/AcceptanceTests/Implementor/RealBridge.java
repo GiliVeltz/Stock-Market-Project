@@ -94,7 +94,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
     }
@@ -121,7 +121,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 
@@ -182,7 +182,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 
@@ -219,7 +219,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }, new ArrayList<>(), _passwordEncoderMock);
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 
@@ -254,7 +254,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }, new ArrayList<>(), _passwordEncoder);
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userServiceUnderTest);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 

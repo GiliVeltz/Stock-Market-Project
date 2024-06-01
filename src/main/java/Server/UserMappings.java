@@ -82,4 +82,14 @@ public class UserMappings {
         Response resp = _userService.getUserPurchaseHistory(token, username);
         return resp;
     }
+
+    @GetMapping("/getPersonalPurchaseHistory")
+    public Response getPersonalPurchaseHistory(@RequestHeader(value = "Authorization") String token) {
+        // example request:
+        // "http://localhost:8080/api/user/getPersonalPurchaseHistory" -H
+        // "Authorization":
+        // user_token_here"
+        Response resp = _userService.getPersonalPurchaseHistory(token);
+        return resp;
+    }
 }

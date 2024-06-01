@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
+import Domain.Facades.UserFacade;
 import Domain.Facades.ShopFacade.Category;
 import Domain.Product;
 import Domain.ShopOrder;
@@ -19,20 +20,20 @@ import Exceptions.StockMarketException;
 public class ShopService {
     private ShopFacade _shopFacade;
     private TokenService _tokenService;
-    private UserService _userService;
+    private UserFacade _userFacade;
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
-    public ShopService(ShopFacade shopFacade, TokenService tokenService, UserService userService) {
+    public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
         // _shopFacade = ShopFacade.getShopFacade();
         _shopFacade = shopFacade;
         _tokenService = tokenService;
-        _userService = userService;
+        _userFacade = userFacade;
     }
 
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
         _tokenService = TokenService.getTokenService();
-        _userService = new UserService();
+        _userFacade = UserFacade.getUserFacade();
     }
 
     /**
@@ -419,8 +420,8 @@ public class ShopService {
                 }
 
                 String userId = _tokenService.extractUsername(token);
-                Response isAdminResponse = _userService.isSystemAdmin(userId);
-                if (!_shopFacade.isShopOwner(shopId, userId) && isAdminResponse.getErrorMessage() != null) {
+                boolean isAdmin = _userFacade.isAdmin(userId);
+                if (!_shopFacade.isShopOwner(shopId, userId) && !isAdmin) {
                     response.setErrorMessage("User has no permission to access the shop purchase history");
                     logger.log(Level.SEVERE, "User has no permission to access the shop purchase history");
                     return response;
@@ -644,7 +645,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().doesUserExist(username)) {
+                    if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
                         logger.info(String.format("New owner %s added to Shop ID: %d", username, shopId));
@@ -687,7 +688,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().doesUserExist(username)) {
+                    if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
                         response.setReturnValue(true);
                         logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
@@ -725,7 +726,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().doesUserExist(username)) {
+                    if (_userFacade.doesUserExist(username)) {
                         Set<String> fired = _shopFacade.fireShopManager(username, shopId, managerUsername);
                         response.setReturnValue(fired);
                         logger.info(String.format("Manager %s fired from Shop ID: %d", managerUsername, shopId));
@@ -764,7 +765,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().doesUserExist(username)) {
+                    if (_userFacade.doesUserExist(username)) {
                         Set<String> resigned = _shopFacade.resignFromRole(username, shopId);
                         response.setReturnValue(true);
                         logger.info(String.format("User %s resigned from Shop ID: %d", username, shopId));
@@ -808,7 +809,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(username)) {
-                    if (_userService.getUserFacade().doesUserExist(username)) {
+                    if (_userFacade.doesUserExist(username)) {
                         _shopFacade.modifyManagerPermissions(username, shopId, managerUsername, permissions);
                         response.setReturnValue(true);
                         logger.info(String.format("Manager %s permissions modified in Shop ID: %d", managerUsername,

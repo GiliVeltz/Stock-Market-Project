@@ -26,6 +26,7 @@ import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShopFacade.Category;
+import Domain.Facades.UserFacade;
 import Exceptions.ShopException;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
@@ -47,7 +48,7 @@ public class ShopFacadeTests {
     @Mock
     private TokenService _tokenServiceMock;
     @Mock
-    private UserService _userServiceMock;
+    private UserFacade _userFacadeMock;
 
     // Shops fields.
     private Shop _shop1;
@@ -55,27 +56,24 @@ public class ShopFacadeTests {
     private Shop _shop3;
     private Product _product1;
     private Product _product2;
-    
-    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
+    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @BeforeEach
     public void setUp() throws ShopException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
-        _userServiceMock = mock(UserService.class);
+        _userFacadeMock = mock(UserFacade.class);
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
         _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
         _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
-        try{
+        try {
             _shop3.addProductToShop("founderName3", _product2);
-        }
-        catch(Exception e)
-        {
-            logger.log(Level.SEVERE,String.format("Failed to add product2. Error: %s",e.getMessage()),e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, String.format("Failed to add product2. Error: %s", e.getMessage()), e);
         }
     }
 
@@ -462,15 +460,13 @@ public class ShopFacadeTests {
         String userName = "not_admin";
         String token = "Admin_Token";
 
-        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userFacadeMock);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
         // when check if user is admin retuen false
-        Response response = new Response();
-        response.setErrorMessage("not admin user");
-        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(response);
+        when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
         ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
@@ -499,7 +495,7 @@ public class ShopFacadeTests {
         User user = new User("founderName1", "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userFacadeMock);
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
@@ -508,11 +504,7 @@ public class ShopFacadeTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        Response response = new Response();
-        response.setErrorMessage("user not admin");
-        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(response);
-
-       
+        when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         // Act - try to get the purchase history for the system admin
         Object result = shopService.getShopPurchaseHistory(token, shopId).getReturnValue();
@@ -533,7 +525,7 @@ public class ShopFacadeTests {
         User user = new User(userName, "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
+        ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userFacadeMock);
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
@@ -542,7 +534,7 @@ public class ShopFacadeTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userServiceMock.isSystemAdmin(userName)).thenReturn(new Response());
+        when(_userFacadeMock.isAdmin(userName)).thenReturn(true);
 
         // Act - try to get the purchase history for the shop owner
         Object result = shopService.getShopPurchaseHistory(token, shopId).getErrorMessage();
@@ -604,7 +596,6 @@ public class ShopFacadeTests {
         assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
     }
 
-
     @Test
     public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
@@ -612,7 +603,7 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer shopId = 3;
         String founder = "founderName3";
-        
+
         assertEquals(0, _product2.getProductQuantity());
 
         // Act - try to update a product to an existing shop
@@ -629,7 +620,7 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer shopId = 3;
         String userName = "user1";
-        
+
         assertEquals(0, _product2.getProductQuantity());
 
         // Act - try to update a product to an existing shop
@@ -650,7 +641,7 @@ public class ShopFacadeTests {
         Integer shopId = 3;
         String userName = "founderName3";
         _shop1.closeShop();
-        
+
         assertEquals(0, _product2.getProductQuantity());
 
         // Act - try to update a product to an existing shop
