@@ -25,10 +25,13 @@ public class UserMappings {
             @RequestParam String username,
             @RequestParam String password,
             @RequestParam String email,
+            @RequestParam String birthYear,
+            @RequestParam String birthMonth,
+            @RequestParam String birthDay,
             @RequestHeader(value = "Authorization", required = false) String token) {
         // example request:
         // http://localhost:8080/api/user/register?username=test&password=test&email=test
-        Response resp = _userService.register(token, username, password, email);
+        Response resp = _userService.register(token, username, password, email, birthYear, birthMonth, birthDay);
         return resp;
     }
 
