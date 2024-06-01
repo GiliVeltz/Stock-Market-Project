@@ -18,7 +18,7 @@
     <name>Stock Market Project</name>
 
     <properties>
-        <java.version>22</java.version>
+        <java.version>17</java.version>
 	  </properties>
     
     <!-- Define dependencies -->
