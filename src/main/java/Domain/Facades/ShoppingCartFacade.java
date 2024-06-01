@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import Domain.ShoppingCart;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
+import Dtos.PurchaseCartDetailsDto;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ShippingFailedException;
@@ -27,7 +28,7 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
     }
-    
+
     // Public method to provide access to the _shoppingCartFacade
     public static synchronized ShoppingCartFacade getShoppingCartFacade() {
         if (_shoppingCartFacade == null) {
@@ -35,7 +36,6 @@ public class ShoppingCartFacade {
         }
         return _shoppingCartFacade;
     }
-
 
     /*
      * Add a cart for a guest by token.
@@ -48,10 +48,11 @@ public class ShoppingCartFacade {
     /*
      * Add a cart for a user.
      * If user already has a cart - we will use the same cart as before.
-     * If user don't have a cart (Just registerd/ already purchase the cart) - we will use it's guest cart
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we
+     * will use it's guest cart
      */
     public void addCartForUser(String guestID, String username) {
-        if(_cartsRepo.getCartByUsername(username) == null){
+        if (_cartsRepo.getCartByUsername(username) == null) {
             _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
         }
     }
@@ -104,19 +105,20 @@ public class ShoppingCartFacade {
         _guestsCarts.remove(guestID);
     }
 
-    public void purchaseCartGuest(String guestID, String cardNumber, String address)
-        throws PaymentFailedException, ShippingFailedException, StockMarketException {
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details)
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
             allBaskets.add(i + 1);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        _guestsCarts.get(guestID).purchaseCart(allBaskets, cardNumber, address);
+        details.basketsToBuy = allBaskets;
+        _guestsCarts.get(guestID).purchaseCart(details);
     }
 
-    public void purchaseCartUser(String username, List<Integer> busketsToBuy, String cardNumber, String address)
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto details)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(busketsToBuy, cardNumber, address);
+        _cartsRepo.getCartByUsername(username).purchaseCart(details);
     }
 }

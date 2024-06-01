@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import Domain.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
 
 @Service
@@ -105,18 +106,18 @@ public class UserService {
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
-    public Response purchaseCart(String token, List<Integer> basketsToBuy, String cardNumber, String address) {
+    public Response purchaseCart(String token, PurchaseCartDetailsDto details) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, cardNumber, address);
+                    _shoppingCartFacade.purchaseCartGuest(token, details);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, basketsToBuy, cardNumber, address);
+                    _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
                 }
             } else {

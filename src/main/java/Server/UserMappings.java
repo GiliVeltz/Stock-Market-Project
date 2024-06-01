@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
 import ServiceLayer.*;
 
@@ -50,6 +51,16 @@ public class UserMappings {
         // example request:
         // "http://localhost:8080/api/user/logout" -H "Authorization: user_token_here"
         Response resp = _userService.logOut(token);
+        return resp;
+    }
+
+    @PostMapping("/purchaseCart")
+    public Response purchaseCart(@RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody(required = false) PurchaseCartDetailsDto details) {
+        // example request:
+        // "http://localhost:8080/api/user/purchaseCart" -H "
+        // Authorization: user_token_here"
+        Response resp = _userService.purchaseCart(token, details);
         return resp;
     }
 }
