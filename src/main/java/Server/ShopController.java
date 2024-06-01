@@ -8,11 +8,11 @@ import ServiceLayer.ShopService;
 
 @RestController
 @RequestMapping(path = "/api/user")
-public class ShopAPI {
+public class ShopController {
     private final ShopService _shopService;
 
     @Autowired
-    public ShopAPI(ShopService shopService) {
+    public ShopController(ShopService shopService) {
         this._shopService = shopService;
     }
 
