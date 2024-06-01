@@ -28,7 +28,7 @@ public class UserMappings {
     @PostMapping("/register")
     public Response register(
             @RequestBody UserDto userDto,
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestHeader(value = "Authorization") String token) {
         // example request:
         // http://localhost:8080/api/user/register?username=test&password=test&email=test
         Response resp = _userService.register(token, userDto);
@@ -39,7 +39,7 @@ public class UserMappings {
     public Response login(
             @RequestParam String username,
             @RequestParam String password,
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestHeader(value = "Authorization") String token) {
         // example request:
         // http://localhost:8080/api/user/login?username=test&password=test
         Response resp = _userService.logIn(token, username, password);
@@ -47,7 +47,7 @@ public class UserMappings {
     }
 
     @GetMapping("/logout")
-    public Response logout(@RequestHeader(value = "Authorization", required = false) String token) {
+    public Response logout(@RequestHeader(value = "Authorization") String token) {
         // example request:
         // "http://localhost:8080/api/user/logout" -H "Authorization: user_token_here"
         Response resp = _userService.logOut(token);
@@ -55,7 +55,7 @@ public class UserMappings {
     }
 
     @PostMapping("/purchaseCart")
-    public Response purchaseCart(@RequestHeader(value = "Authorization", required = false) String token,
+    public Response purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {
         // example request:
         // "http://localhost:8080/api/user/purchaseCart" -H "
