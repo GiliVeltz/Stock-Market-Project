@@ -16,11 +16,11 @@ import ServiceLayer.*;
 // Purpose: This class is mapping the user requests to the service layer functions.
 @RestController
 @RequestMapping(path = "/api/user")
-public class UserMappings {
+public class UserAPI {
     private final UserService _userService;
 
     @Autowired
-    public UserMappings(UserService userService) {
+    public UserAPI(UserService userService) {
         this._userService = userService;
     }
 

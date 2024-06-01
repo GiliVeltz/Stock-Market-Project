@@ -10,11 +10,11 @@ import ServiceLayer.*;
 
 @RestController
 @RequestMapping(path = "/api/system")
-public class SystemMappings {
+public class SystemAPI {
     private final SystemService _systemService;
 
     @Autowired
-    public SystemMappings(SystemService systemService) {
+    public SystemAPI(SystemService systemService) {
         this._systemService = systemService;
     }
 
