@@ -29,10 +29,37 @@ public class ExternalServiceHandler {
         return true;
     }
 
+    // add payment service when initializing the system
+    public boolean addPaymentService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        _externalServices.putIfAbsent(_idCounter, newService);
+        _idCounter++;
+        return true;
+    }
+
+    // add supply service when initializing the system
+    public boolean addSupplyService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        _externalServices.putIfAbsent(_idCounter, newService);
+        _idCounter++;
+        return true;
+    }
+
     // Add external service. called from the system service.
     public boolean addService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        boolean serviceExists = false;
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(newSerivceName)) {
+                serviceExists = true;
+                break;
+            }
+        }
+        if (serviceExists) {
+            throw new IllegalArgumentException("Service name already exists. Service name: " + newSerivceName + ".");
+        }
+
         ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
-        _externalServices.put(_idCounter, newService);
+        _externalServices.putIfAbsent(_idCounter, newService);
         _idCounter++;
         return true;
     }

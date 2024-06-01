@@ -75,6 +75,8 @@ public class SystemService {
 
                 // Open the system
                 setSystemOpen(true);
+                _externalServiceHandler.addPaymentService("PaymentService", "Tal", "123456789");
+                _externalServiceHandler.addSupplyService("SupplyService", "Tal", "123456789");
                 logger.info("System opened by admin: " + username);
                 response.setReturnValue("System Opened Successfully");
             } else {

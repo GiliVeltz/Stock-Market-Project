@@ -1,39 +1,27 @@
 package Domain.ExternalServices.PaymentService;
 
-import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
 
 import Domain.ExternalServices.ExternalService;
 import Exceptions.PaymentFailedException;
 
 // TODO: Implement the Adapter pattern
-public class AdapterPayment implements ExternalService {
+public class AdapterPayment extends ExternalService {
 
     // private fields
-    private int _id;
-    private String _serviceName;
-    private String _informationPersonName;
-    private String _informationPersonPhone;
     private static AdapterPayment _adapterPayment;
     private ProxyPayment _paymentService;
     private static final Logger logger = Logger.getLogger(AdapterPayment.class.getName());
 
-    private AdapterPayment() {
-        _paymentService = new ProxyPayment();
-    }
-
-    private AdapterPayment(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
-        _id = id;
-        _serviceName = newSerivceName;
-        _informationPersonName = informationPersonName;
-        _informationPersonPhone = informationPersonPhone;
+    public AdapterPayment(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        super(id, newSerivceName, informationPersonName, informationPersonPhone); // Explicitly invoke the constructor of the superclass
         _adapterPayment = this;
         _paymentService = new ProxyPayment();
     }
 
     public static AdapterPayment getAdapterPayment() {
-        if(_adapterPayment == null)
-            _adapterPayment = new AdapterPayment();
+        if (_adapterPayment == null)
+            _adapterPayment = new AdapterPayment(-1, "PaymentService", "Tal", "123456789");
         return _adapterPayment;
     }
 
@@ -60,31 +48,5 @@ public class AdapterPayment implements ExternalService {
     public void refound(String cardNumber) {
         logger.info("Refounding the cart");
         _paymentService.refound(cardNumber);
-    }
-
-    // getters and seeters
-
-    public String getServiceName() {
-        return _serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this._serviceName = serviceName;
-    }
-
-    public String getInformationPersonName() {
-        return _informationPersonName;
-    }
-
-    public void setInformationPersonName(String informationPersonName) {
-        this._informationPersonName = informationPersonName;
-    }
-
-    public String getInformationPersonPhone() {
-        return _informationPersonPhone;
-    }
-
-    public void setInformationPersonPhone(String informationPersonPhone) {
-        this._informationPersonPhone = informationPersonPhone;
     }
 }

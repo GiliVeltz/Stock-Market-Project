@@ -5,33 +5,22 @@ import java.util.logging.Logger;
 import Domain.ExternalServices.ExternalService;
 import Exceptions.ShippingFailedException;
 
-public class AdapterSupply implements ExternalService {
+public class AdapterSupply extends ExternalService {
 
     // private fields
-    private int _id;
-    private String _serviceName;
-    private String _informationPersonName;
-    private String _informationPersonPhone;
     private static AdapterSupply _AdapterSupply;
     private ProxySupply _supplyService;
     private static final Logger logger = Logger.getLogger(AdapterSupply.class.getName());
 
-    public AdapterSupply() {
-        _supplyService = new ProxySupply();
-    }
-
     private AdapterSupply(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
-        _id = id;
-        _serviceName = newSerivceName;
-        _informationPersonName = informationPersonName;
-        _informationPersonPhone = informationPersonPhone;
+        super(id, newSerivceName, informationPersonName, informationPersonPhone);
         _AdapterSupply = this;
         _supplyService = new ProxySupply();
     }
 
     public static AdapterSupply getAdapterPayment() {
         if(_AdapterSupply == null)
-        _AdapterSupply = new AdapterSupply();
+        _AdapterSupply = new AdapterSupply(-1, "SupplyService", "Tal", "123456789");
         return _AdapterSupply;
     }
 
@@ -53,31 +42,5 @@ public class AdapterSupply implements ExternalService {
     public void deliver(String clientAddress, String shopAddress) {
         logger.info("Delivering the cart");
         _supplyService.deliver(clientAddress, shopAddress);
-    }
-
-    // getters and seeters
-
-    public String getServiceName() {
-        return _serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this._serviceName = serviceName;
-    }
-
-    public String getInformationPersonName() {
-        return _informationPersonName;
-    }
-
-    public void setInformationPersonName(String informationPersonName) {
-        this._informationPersonName = informationPersonName;
-    }
-
-    public String getInformationPersonPhone() {
-        return _informationPersonPhone;
-    }
-
-    public void setInformationPersonPhone(String informationPersonPhone) {
-        this._informationPersonPhone = informationPersonPhone;
     }
 }
