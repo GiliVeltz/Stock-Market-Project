@@ -149,4 +149,36 @@ public class SystemService {
         return response;
     }
 
+    // add external service to the system
+    public Response addExternalService(String token, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token) & _userFacade.isAdmin(username)) {
+                    if (isSystemOpen()) {
+                        if (_externalServiceHandler.addService(newSerivceName, informationPersonName, informationPersonPhone)) {
+                            logger.info("External service: " + newSerivceName + " added by admin: " + username);
+                            response.setReturnValue("External service added successfully");
+                        } else {
+                            response.setErrorMessage("Failed to add external service");
+                            logger.log(Level.SEVERE, "Failed to add external service");
+                        }
+                    } else {
+                        response.setErrorMessage("System is not open");
+                        logger.log(Level.SEVERE, "System is not open");
+                    }
+                } else {
+                    response.setErrorMessage("User is not logged in");
+                    logger.log(Level.SEVERE, "User is not logged in");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to add external service: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to add external service: " + e.getMessage(), e);
+        }
+        return response;
+    }
 }

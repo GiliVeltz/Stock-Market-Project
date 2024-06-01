@@ -427,13 +427,13 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testAddExternalService(String newSerivceName, String peopleInfo, Integer securityIdForService) {
+    public boolean testAddExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone, Integer securityIdForService) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testAddExternalService'");
     }
 
     @Override
-    public boolean testChangeExternalService(String oldServiceSystemId, String newSerivceName, String newPeopleInfo) {
+    public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName, String newInformationPersonName, String newInformationPersonPhone) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
     }

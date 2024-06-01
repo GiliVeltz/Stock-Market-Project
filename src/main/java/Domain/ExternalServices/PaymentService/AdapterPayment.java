@@ -9,11 +9,32 @@ import Exceptions.PaymentFailedException;
 // TODO: Implement the Adapter pattern
 public class AdapterPayment implements ExternalService {
 
+    // private fields
+    private int _id;
+    private String _serviceName;
+    private String _informationPersonName;
+    private String _informationPersonPhone;
+    private static AdapterPayment _adapterPayment;
     private ProxyPayment _paymentService;
     private static final Logger logger = Logger.getLogger(AdapterPayment.class.getName());
 
-    public AdapterPayment() {
+    private AdapterPayment() {
         _paymentService = new ProxyPayment();
+    }
+
+    private AdapterPayment(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        _id = id;
+        _serviceName = newSerivceName;
+        _informationPersonName = informationPersonName;
+        _informationPersonPhone = informationPersonPhone;
+        _adapterPayment = this;
+        _paymentService = new ProxyPayment();
+    }
+
+    public static AdapterPayment getAdapterPayment() {
+        if(_adapterPayment == null)
+            _adapterPayment = new AdapterPayment();
+        return _adapterPayment;
     }
 
     @Override
@@ -41,4 +62,29 @@ public class AdapterPayment implements ExternalService {
         _paymentService.refound(cardNumber);
     }
 
+    // getters and seeters
+
+    public String getServiceName() {
+        return _serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this._serviceName = serviceName;
+    }
+
+    public String getInformationPersonName() {
+        return _informationPersonName;
+    }
+
+    public void setInformationPersonName(String informationPersonName) {
+        this._informationPersonName = informationPersonName;
+    }
+
+    public String getInformationPersonPhone() {
+        return _informationPersonPhone;
+    }
+
+    public void setInformationPersonPhone(String informationPersonPhone) {
+        this._informationPersonPhone = informationPersonPhone;
+    }
 }
