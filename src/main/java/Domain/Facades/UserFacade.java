@@ -1,5 +1,6 @@
 package Domain.Facades;
 
+import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,7 +51,7 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    public void register(String userName, String password, String email) throws Exception {
+    public void register(String userName, String password, String email, Date birthDate) throws Exception {
         String encodedPass = this._passwordEncoder.encodePassword(password);
         if (!doesUserExist(userName)) {
             if (email == null || email.isEmpty()) {
@@ -59,7 +60,7 @@ public class UserFacade {
             if (password == null || password.isEmpty() || password.length() < 5) {
                 throw new Exception("Password is empty.");
             }
-            _userRepository.addUser(new User(userName, encodedPass, email));
+            _userRepository.addUser(new User(userName, encodedPass, email, birthDate));
         } else {
             throw new Exception("Username already exists.");
         }
