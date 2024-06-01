@@ -265,4 +265,16 @@ public class UserService {
         }
         return response;
     }
+
+    // this function is responsible for changing the email of a user.
+    public Response changeEmail(String username, String email){
+        Response response = new Response();
+        try {
+            _userFacade.changeEmail(username, email);
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to change email for user: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to change email for user: " + e.getMessage(), e);
+        }
+        return response;
+    }
 }
