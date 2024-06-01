@@ -188,9 +188,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractGuestId("newGuest")).thenReturn("newGuest");
         when(_tokenServiceMock.extractGuestId("existGuest")).thenReturn("existGuest");
+        when(_tokenServiceMock.generateGuestToken()).thenReturn(token);
 
         // Act
-        Response res = _systemServiceUnderTest.requestToEnterSystem(token);
+        Response res = _systemServiceUnderTest.requestToEnterSystem();
 
         // Assert
         logger.info("TestGuestEnterTheSystem Error message: " + res.getErrorMessage());

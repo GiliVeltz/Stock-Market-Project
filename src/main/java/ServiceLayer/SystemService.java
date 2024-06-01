@@ -102,12 +102,12 @@ public class SystemService {
      * It generates a guest token and initializes a new cart with the guestID.
      *
      * @return Response object containing the generated guest token if successful,
-     * or an error message if there is a failure.
+     *         or an error message if there is a failure.
      */
-    public Response requestToEnterSystem(String token) {
+    public Response requestToEnterSystem() {
         Response response = new Response();
         try {
-            //String token = _tokenService.generateGuestToken();
+            String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
             _userFacade.addNewGuest(id);
@@ -122,7 +122,8 @@ public class SystemService {
 
     /**
      * This is the last request that will occur when a guest/user leave the system.
-     * It removes the guest from the user system, and removes the guest's shopping cart.
+     * It removes the guest from the user system, and removes the guest's shopping
+     * cart.
      *
      * @param token The session token for the guest.
      * @return Response object indicating the success or failure of the operation.
