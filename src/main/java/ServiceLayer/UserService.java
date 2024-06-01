@@ -105,7 +105,7 @@ public class UserService {
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
-    public Response purchaseCart(String token, List<Integer> busketsToBuy, String cardNumber, String address) {
+    public Response purchaseCart(String token, List<Integer> basketsToBuy, String cardNumber, String address) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -116,7 +116,7 @@ public class UserService {
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, busketsToBuy, cardNumber, address);
+                    _shoppingCartFacade.purchaseCartUser(userName, basketsToBuy, cardNumber, address);
                     response.setReturnValue("User bought card succeed");
                 }
             } else {
