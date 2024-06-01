@@ -82,7 +82,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version> <!-- Replace with the desired version -->
                 <configuration>
-                    <release>22</release>
+                    <release>17</release>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
