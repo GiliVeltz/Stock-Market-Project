@@ -9,11 +9,15 @@ import Domain.Shop;
 
 public class MemoryShopRepository implements ShopRepositoryInterface {
     private Map<Integer, Shop> _shops;
+    private int _shopIdCounter;
 
     public MemoryShopRepository(List<Shop> shops) {
         _shops = new HashMap<>();
-        for (Shop shop : shops)
+        _shopIdCounter = 0;
+        for (Shop shop : shops) {
             _shops.put(shop.getShopId(), shop);
+            _shopIdCounter++;
+        }
     }
 
     @Override
@@ -27,13 +31,18 @@ public class MemoryShopRepository implements ShopRepositoryInterface {
     }
 
     @Override
-    public void addShop(Shop shop) {
+    public synchronized void addShop(Shop shop) {
         _shops.put(shop.getShopId(), shop);
     }
 
     @Override
     public List<Shop> getAllShops() {
         return new ArrayList<>(_shops.values());
+    }
+
+    @Override
+    public synchronized int getUniqueShopID() {
+        return _shopIdCounter++;
     }
 
 }
