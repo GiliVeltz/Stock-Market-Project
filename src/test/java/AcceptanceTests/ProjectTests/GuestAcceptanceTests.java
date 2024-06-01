@@ -33,10 +33,10 @@ public class GuestAcceptanceTests {
     //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestRegisterToTheSystem() {
-        assertTrue(_bridge.TestGuestRegisterToTheSystem("Bob","bobspassword", "email") ); // success
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("Bobi","bobspassword", "email") ); // fail - already exists
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("","bobspassword", "email") ); // fail - empty username
-        assertFalse(_bridge.TestGuestRegisterToTheSystem("Mom","", "email") ); // fail - empty pasword
+        assertTrue(_bridge.TestGuestRegisterToTheSystem("Bob","bobspassword", "email@example.com") ); // success
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("Bobi","bobspassword", "email@example.com") ); // fail - already exists
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("","bobspassword", "email@example.com") ); // fail - empty username
+        assertFalse(_bridge.TestGuestRegisterToTheSystem("Mom","", "email@example.com") ); // fail - empty pasword
         assertFalse(_bridge.TestGuestRegisterToTheSystem("Mom","momspassword", "")); // fail - empty email
     }
     

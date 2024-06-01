@@ -221,8 +221,8 @@ public class ShoppingUserAcceptanceTests{
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserEditPrivateDetails() {
-        assertTrue(_bridge.TestUserEditEmail("bob","bobspassword", "newEmail") ); // success - the user secceeded to edit his email
-        assertTrue(_bridge.TestUserEditPassword("bob","newPassword", "email") ); // success - the user secceeded to edit his password
-        assertFalse(_bridge.TestUserEditUsername("newName","bobspassword", "email") ); // fail - the user can not change his user name in the system
+        assertTrue(_bridge.TestUserEditEmail("bob","bobspassword", "email@example.com") ); // success - the user secceeded to edit his email
+        assertTrue(_bridge.TestUserEditPassword("bob","newPassword", "email@example.com") ); // success - the user secceeded to edit his password
+        assertFalse(_bridge.TestUserEditUsername("newName","bobspassword", "email@example.com") ); // fail - the user can not change his user name in the system
     }
 }

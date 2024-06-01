@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import Domain.*;
+import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShopFacade.Category;
 import Exceptions.ShopException;
@@ -495,7 +496,7 @@ public class ShopFacadeTests {
         Integer shopId = 1;
         String userName = "founderName1";
         String token = "owner_Token";
-        User user = new User("founderName1", "password1", "email1");
+        User user = new User("founderName1", "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
         ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
@@ -529,7 +530,7 @@ public class ShopFacadeTests {
         Integer shopId = 1;
         String userName = "not_admin_or_owner";
         String token = "Admin_Token";
-        User user = new User(userName, "password1", "email1");
+        User user = new User(userName, "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
         ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userServiceMock);
@@ -559,7 +560,7 @@ public class ShopFacadeTests {
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
         Integer orderId = 1;
         Integer shopId = 1;
-        User user = new User("founderName1", "password1", "email1");
+        User user = new User("founderName1", "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
         Product product = new Product(1, "product1", category, 10);
@@ -586,7 +587,7 @@ public class ShopFacadeTests {
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
         Integer orderId = 1;
         Integer shopId = 1;
-        User testUser = new User("founderName1", "password1", "email1");
+        User testUser = new User("founderName1", "password1", "email1", new Date());
         Category productCategory = Category.CLOTHING;
         ShoppingBasket testShoppingBasket = new ShoppingBasket(_shop1);
         Product testProduct = new Product(1, "product1", productCategory, 10);

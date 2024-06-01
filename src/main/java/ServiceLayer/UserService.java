@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -77,7 +78,7 @@ public class UserService {
     }
 
     // this function is responsible for registering a new user to the system
-    public Response register(String token, String userName, String password, String email) {
+    public Response register(String token, String userName, String password, String email, String birthYear, String birthMonth, String birthDay) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -85,7 +86,9 @@ public class UserService {
                     throw new Exception("UserName is empty.");
                 }
                 if (!_userFacade.doesUserExist(userName)) {
-                    _userFacade.register(userName, password, email);
+                    @SuppressWarnings("deprecation") // TODO: CHECK IF WORKS WITHOUT THAT
+                    Date birthDate = new Date(Integer.parseInt(birthYear), Integer.parseInt(birthMonth), Integer.parseInt(birthDay));
+                    _userFacade.register(userName, password, email, birthDate);
                     logger.info("User registered: " + userName);
                     response.setReturnValue("Registeration Succeed");
                 } else {
@@ -259,6 +262,18 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to remove product: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to remove product: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // this function is responsible for changing the email of a user.
+    public Response changeEmail(String username, String email){
+        Response response = new Response();
+        try {
+            _userFacade.changeEmail(username, email);
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to change email for user: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to change email for user: " + e.getMessage(), e);
         }
         return response;
     }

@@ -8,10 +8,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Domain.*;
 import Domain.Order;
+import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
 
 public class UserFacadeTests {
@@ -26,7 +28,7 @@ public class UserFacadeTests {
     private PasswordEncoderUtil _passwordEncoderMock;
 
     // users fields.
-    private User _user1 = new User("john_doe", "password123", "john.doe@example.com");
+    private User _user1 = new User("john_doe", "password123", "john.doe@example.com", new Date());
 
     @BeforeEach
     public void setUp() {
@@ -50,7 +52,7 @@ public class UserFacadeTests {
 
         // Act - try to register a new user
         try {
-            _userFacadeUnderTest.register("john_doe", "password123", "john.doe@example.com");
+            _userFacadeUnderTest.register("john_doe", "password123", "john.doe@example.com", new Date());
         } catch (Exception e) {
             fail("Failed to register user");
         }
@@ -68,15 +70,47 @@ public class UserFacadeTests {
 
         // Act - Set a new username
         try {
-            _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il");
+            _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il", new Date());
         } catch (Exception e) {
         }
 
         // Assert - Verify that the username has been updated
         assertThrowsExactly(Exception.class,
-                () -> _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il"));
+                () -> _userFacadeUnderTest.register("john_doe", "password1234", "john.doe@example.co.il", new Date()));
         assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
         assertEquals(1, _userFacadeUnderTest.get_registeredUsers().size());
+    }
+
+    @Test
+    public void testRegister_whenEmailIsEmpty_thenError() {
+        // Arrange - Create a new UserFacade object
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+
+        // Act - Try to register a new user with an empty email
+        try {
+            _userFacadeUnderTest.register("john_doe", "password123", "", new Date());
+            fail("Expected an exception to be thrown");
+        } catch (Exception e) {
+            // Assert - Verify that an exception is thrown and the user is not registered
+            assertEquals(0, _userFacadeUnderTest.get_registeredUsers().size());
+        }
+    }
+
+    @Test
+    public void testRegister_whenEmailIsNotValid_thenError() {
+        // Arrange - Create a new UserFacade object
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+
+        // Act - Try to register a new user with an invalid email
+        try {
+            _userFacadeUnderTest.register("john_doe", "password123", "john.doe", new Date());
+            fail("Expected an exception to be thrown");
+        } catch (Exception e) {
+            // Assert - Verify that an exception is thrown and the user is not registered
+            assertEquals(0, _userFacadeUnderTest.get_registeredUsers().size());
+        }
     }
 
     @Test
@@ -159,7 +193,7 @@ public class UserFacadeTests {
         basketsList.add(shoppingBasket);
         Order order = new Order(1, basketsList);
 
-        _userFacadeUnderTest.register(username, "password", "email");
+        _userFacadeUnderTest.register(username, "password", "email@example.com", new Date());
         _userFacadeUnderTest.addOrderToUser(username, order);
 
         // Act
@@ -183,7 +217,4 @@ public class UserFacadeTests {
         // Assert
         assertNull(actualPurchaseHistory);
     }
-
-   
-
 }
