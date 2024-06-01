@@ -63,4 +63,13 @@ public class UserMappings {
         Response resp = _userService.purchaseCart(token, details);
         return resp;
     }
+
+    @GetMapping("/isSystemAdmin")
+    public Response isSystemAdmin(@RequestHeader(value = "Authorization") String token) {
+        // example request:
+        // "http://localhost:8080/api/user/isSystemAdmin" -H "Authorization":
+        // user_token_here"
+        Response resp = _userService.isSystemAdmin(token);
+        return resp;
+    }
 }
