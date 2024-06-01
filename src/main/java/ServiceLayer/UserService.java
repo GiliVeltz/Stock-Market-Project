@@ -152,12 +152,12 @@ public class UserService {
      * Retrieves the purchase history of a specific user as an admin.
      *
      * @param token  The session token of the admin user.
-     * @param userId The ID of the user whose purchase history is to be retrieved.
+     * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
      * @throws Exception If the session token is invalid.
      */
-    public Response getUserPurchaseHistoryAsAdmin(String token, String userId) {
+    public Response getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -166,19 +166,19 @@ public class UserService {
                     logger.log(Level.SEVERE, "User is not logged in");
                     return response;
                 }
-                String adminId = _tokenService.extractUsername(token);
-                Response isAdminResponse = isSystemAdmin(adminId);
-                if (isAdminResponse.getErrorMessage() != null) {
+                String adminUsername = _tokenService.extractUsername(token);
+                boolean isAdmin = _userFacade.isAdmin(adminUsername);
+                if (!isAdmin) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
                     return response;
                 }
                 // get purchase history of a user
-                response.setReturnValue(_userFacade.getPurchaseHistory(userId));
+                response.setReturnValue(_userFacade.getPurchaseHistory(username));
+                
                 if (response.getErrorMessage() != null) {
-                    response.setErrorMessage("Failed to get purchase history from user: " + userId);
-                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + userId);
-
+                    response.setErrorMessage("Failed to get purchase history from user: " + username);
+                    logger.log(Level.SEVERE, "Failed to get purchase history from user: " + username);
                 }
 
             } else {
@@ -213,7 +213,6 @@ public class UserService {
             response.setErrorMessage("Failed to retrieve purchase history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to retrieve purchase history: " + e.getMessage(), e);
         }
-        // TODO: check with Spring how to return this response as a data object
         return response;
     }
 
