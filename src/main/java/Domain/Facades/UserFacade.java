@@ -1,5 +1,6 @@
 package Domain.Facades;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +30,9 @@ public class UserFacade {
     }
 
     // Public method to provide access to the _UserFacade
-    public static synchronized UserFacade getUserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+    public static synchronized UserFacade getUserFacade() {
         if (_UserFacade == null) {
-            _UserFacade = new UserFacade(registeredUsers, guestIds, passwordEncoder);
+            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>(), new PasswordEncoderUtil());
         }
         return _UserFacade;
     }
@@ -67,14 +68,17 @@ public class UserFacade {
         if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
             throw new Exception("Password is empty, or too short.");
         }
+        if (!_EmailValidator.isValidEmail(userDto.email)) {
+            throw new Exception("Email is not valid.");
+        }
 
         if (!doesUserExist(userDto.username)) {
-            _userRepository.addUser(new User(userDto.username, encodedPass, userDto.email));
+            _userRepository.addUser(new User(userDto));
         } else {
             throw new Exception("Username already exists.");
         }
     }
-   
+
     public void addOrderToUser(String username, Order order) throws ShopException {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -129,7 +133,7 @@ public class UserFacade {
         if (user == null) {
             throw new Exception("Trying to change password for user - User not found.");
         }
-        if(email == null || email.isEmpty()) {
+        if (email == null || email.isEmpty()) {
             throw new Exception("Email is empty.");
         }
         if (!_EmailValidator.isValidEmail(email)) {

@@ -227,7 +227,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
 
         // Act
-        UserDto userDto = new UserDto(username, password, email);
+        UserDto userDto = new UserDto(username, password, email, new Date());
         Response res = _userServiceUnderTest.register(token, userDto);
 
         // Assert
