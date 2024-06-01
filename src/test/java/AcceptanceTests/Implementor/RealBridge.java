@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +85,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
             {
-                add(new User("Bob", "bobspassword", "email"));
+                add(new User("Bob", "bobspassword", "email", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
         _externalServiceHandler = new ExternalServiceHandler();
@@ -110,7 +111,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("systemAdmin", "systemAdminPassword", "email"));
+                add(new User("systemAdmin", "systemAdminPassword", "email", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
         _externalServiceHandler = new ExternalServiceHandler();
@@ -208,7 +209,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = UserFacade.getUserFacade(new ArrayList<User>() {
             {
-                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email"));
+                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoderMock);
 
@@ -220,7 +221,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
 
         // Act
-        Response res = _userServiceUnderTest.register(token, username, password, email);
+        Response res = _userServiceUnderTest.register(token, username, password, email, "2000", "1", "1");
 
         // Assert
         logger.info("TestGuestRegisterToTheSystem Error message: " + res.getErrorMessage());
@@ -241,7 +242,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email"));
+                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email", new Date()));
             }
         }, new ArrayList<>(), _passwordEncoder);
 
