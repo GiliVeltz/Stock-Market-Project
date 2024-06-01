@@ -216,11 +216,7 @@ public class UserService {
         return response;
     }
 
-    public UserFacade getUserFacade() {
-        return _userFacade;
-    }
-
-    public Response addProduct(String token, int productID, int shopID) {
+    public Response addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {

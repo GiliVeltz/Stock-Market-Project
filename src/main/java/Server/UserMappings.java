@@ -92,4 +92,14 @@ public class UserMappings {
         Response resp = _userService.getPersonalPurchaseHistory(token);
         return resp;
     }
+
+    @GetMapping("/addProductToShoppingCart")
+    public Response addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
+            @RequestParam int productID, @RequestParam int shopID) {
+        // example request:
+        // "http://localhost:8080/api/user/addProductToShoppingCart?productID=1&shopID=1"
+        // -H "Authorization": user_token_here"
+        Response resp = _userService.addProductToShoppingCart(token, productID, shopID);
+        return resp;
+    }
 }
