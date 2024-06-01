@@ -102,4 +102,14 @@ public class UserMappings {
         Response resp = _userService.addProductToShoppingCart(token, productID, shopID);
         return resp;
     }
+
+    @GetMapping("/removeProductFromShoppingCart")
+    public Response removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
+            @RequestParam int productID, @RequestParam int shopID) {
+        // example request:
+        // "http://localhost:8080/api/user/removeProductFromShoppingCart?productID=1&shopID=1"
+        // -H "Authorization": user_token_here"
+        Response resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
+        return resp;
+    }
 }

@@ -151,7 +151,7 @@ public class UserService {
     /**
      * Retrieves the purchase history of a specific user as an admin.
      *
-     * @param token  The session token of the admin user.
+     * @param token    The session token of the admin user.
      * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
@@ -175,7 +175,7 @@ public class UserService {
                 }
                 // get purchase history of a user
                 response.setReturnValue(_userFacade.getPurchaseHistory(username));
-                
+
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from user: " + username);
                     logger.log(Level.SEVERE, "Failed to get purchase history from user: " + username);
@@ -237,7 +237,7 @@ public class UserService {
         return response;
     }
 
-    public Response removeProduct(String token, int productID, int shopID) {
+    public Response removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
