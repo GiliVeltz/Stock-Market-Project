@@ -118,8 +118,9 @@ public class UserFacade {
         User user = getUserByUsername(username);
         if (user != null) {
             return user.getPurchaseHistory();
+        } else {
+            throw new ShopException("User not found.");
         }
-        return null;
     }
 
     // change email for a user
