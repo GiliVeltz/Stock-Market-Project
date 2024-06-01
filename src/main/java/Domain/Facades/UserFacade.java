@@ -41,13 +41,13 @@ public class UserFacade {
         return _userRepository.doesUserExist(username);
     }
 
-    public User getUserByUsername(String username) throws ShopException {
+    public User getUserByUsername(String username) throws Exception {
         if (username == null)
             throw new ShopException("Username is null.");
         return _userRepository.getUserByUsername(username);
     }
 
-    public boolean AreCredentialsCorrect(String username, String password) throws ShopException {
+    public boolean AreCredentialsCorrect(String username, String password) throws Exception {
         User user = getUserByUsername(username);
         if (user != null) {
             return this._passwordEncoder.matches(password, user.getEncodedPassword());
@@ -79,7 +79,7 @@ public class UserFacade {
         }
     }
 
-    public void addOrderToUser(String username, Order order) throws ShopException {
+    public void addOrderToUser(String username, Order order) throws Exception {
         User user = getUserByUsername(username);
         if (user != null) {
             user.addOrder(order);
@@ -118,7 +118,7 @@ public class UserFacade {
     }
 
     // function to return the purchase history for the user
-    public List<Order> getPurchaseHistory(String username) throws ShopException {
+    public List<Order> getPurchaseHistory(String username) throws Exception {
         User user = getUserByUsername(username);
         if (user != null) {
             return user.getPurchaseHistory();

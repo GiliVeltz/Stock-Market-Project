@@ -163,27 +163,37 @@ public class SystemService {
     public Response addExternalService(String token, String newSerivceName, String informationPersonName, String informationPersonPhone) {
         Response response = new Response();
         try {
-            if (_tokenService.validateToken(token)) {
-                String username = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(token) & _userFacade.isAdmin(username)) {
-                    if (isSystemOpen()) {
-                        if (_externalServiceHandler.addService(newSerivceName, informationPersonName, informationPersonPhone)) {
-                            logger.info("External service: " + newSerivceName + " added by admin: " + username);
-                            response.setReturnValue("External service added successfully");
-                        } else {
-                            response.setErrorMessage("Failed to add external service");
-                            logger.log(Level.SEVERE, "Failed to add external service");
-                        }
-                    } else {
-                        response.setErrorMessage("System is not open");
-                        logger.log(Level.SEVERE, "System is not open");
-                    }
-                } else {
-                    response.setErrorMessage("User is not logged in");
-                    logger.log(Level.SEVERE, "User is not logged in");
-                }
-            } else {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
                 throw new Exception("Invalid session token.");
+            }
+            String username = _tokenService.extractUsername(token);
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if user is admin
+            if (!_userFacade.isAdmin(username)) {
+                response.setErrorMessage("User is not admin of the system");
+                logger.log(Level.SEVERE, "User is not admin of the system");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            if (_externalServiceHandler.addExternalService(newSerivceName, informationPersonName, informationPersonPhone)) {
+                logger.info("External service: " + newSerivceName + " added by admin: " + username);
+                response.setReturnValue("External service added successfully");
+            } else {
+                response.setErrorMessage("Failed to add external service");
+                logger.log(Level.SEVERE, "Failed to add external service");
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to add external service: " + e.getMessage());

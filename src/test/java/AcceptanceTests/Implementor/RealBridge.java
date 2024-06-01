@@ -38,6 +38,7 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.UserDto;
+import Exceptions.ShopException;
 import ServiceLayer.*;
 
 // A real conection to the system.
@@ -159,8 +160,56 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Test
     public boolean testAddExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone, Integer securityIdForService){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testAddExternalService'");
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        _shopFacade = new ShopFacade();
+        _shoppingCartFacade = new ShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(){
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+            }
+        }
+        , new ArrayList<>(), _passwordEncoder);
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        try {
+            _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
+        } catch (Exception e) {
+            logger.info("testAddExternalService Error message: " + e.getMessage());
+            return false;
+        }
+
+        _externalServiceHandler.addExternalService("existSerivce", "name", "111");
+
+        Response res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
+        if(res1.getErrorMessage() != null){
+            logger.info("testAddExternalService Error message: " + res1.getErrorMessage());
+            return false;
+        }
+
+        Response res2 = _systemServiceUnderTest.openSystem(token);
+        if(res2.getErrorMessage() != null){
+            logger.info("testAddExternalService Error message: " + res2.getErrorMessage());
+            return false;
+        }
+
+        // Act
+        Response res = _systemServiceUnderTest.addExternalService(token, newSerivceName, informationPersonName, informationPersonPhone);
+
+        // Assert
+        logger.info("testAddExternalService Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
     @Test

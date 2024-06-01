@@ -24,7 +24,7 @@ public class ShoppingCartFacade {
     ShoppingCartRepositoryInterface _cartsRepo;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
 
-    private ShoppingCartFacade() {
+    public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
     }

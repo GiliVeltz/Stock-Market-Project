@@ -46,7 +46,13 @@ public class ExternalServiceHandler {
     }
 
     // Add external service. called from the system service.
-    public boolean addService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+    public boolean addExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        // check validation of the arguments
+        if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
+            throw new IllegalArgumentException("One or more of the arguments are null");
+        }
+
+        // check if service name already exists
         boolean serviceExists = false;
         for (ExternalService service : _externalServices.values()) {
             if (service.getServiceName().equals(newSerivceName)) {

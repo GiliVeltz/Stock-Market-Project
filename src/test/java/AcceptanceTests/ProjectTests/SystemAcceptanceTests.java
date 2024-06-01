@@ -45,7 +45,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of adding a new external service to the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddExternalService() {
         assertTrue(_bridge.testAddExternalService("newSerivceName", "name", "phone", 111) ); // success

@@ -21,7 +21,8 @@ public class ExternalService {
     }
 
     public boolean ConnectToService(){
-        throw new UnsupportedOperationException("ConnectToService for service " + _serviceName + " not supported yet.");
+        logger.warning("ConnectToService for service " + _serviceName + " not supported yet.");
+        return true;
     }
 
     // getters and seeters
