@@ -130,4 +130,10 @@ public class ShopController {
     public Response resignFromRole(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.resignFromRole(token, shopId);
     }
+
+    @PostMapping("/modifyManagerPermissions")
+    public Response modifyManagerPermissions(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam String managerUsername, @RequestBody Set<String> permissions) {
+        return _shopService.modifyManagerPermissions(token, shopId, managerUsername, permissions);
+    }
 }
