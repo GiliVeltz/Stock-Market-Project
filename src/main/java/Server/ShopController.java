@@ -33,5 +33,4 @@ public class ShopController {
     public Response closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }
-
 }
