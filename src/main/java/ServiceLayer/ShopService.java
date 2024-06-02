@@ -103,8 +103,8 @@ public class ShopService {
     /**
      * reopen a shop with the specified shop ID and user name.
      * 
-     * @param token    The session token of the user reopening the shop.
-     * @param shopId   The ID of the existing shop to be reopen.
+     * @param token  The session token of the user reopening the shop.
+     * @param shopId The ID of the existing shop to be reopen.
      * @return A response indicating the success or failure of the operation.
      */
     public Response reOpenShop(String token, Integer shopId) {
@@ -167,6 +167,7 @@ public class ShopService {
     /**
      * searches products by their name.
      * 
+     * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName he name of the product.
@@ -174,6 +175,7 @@ public class ShopService {
      *         deatails or failure.
      */
     public Response searchProductInShopByName(String token, Integer shopId, String productName) {
+        // TODO: return product dtos here instead of just a string (so it will be easy to render in UI)
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {

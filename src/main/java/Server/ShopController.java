@@ -38,4 +38,11 @@ public class ShopController {
     public Response reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
     }
+  
+    @GetMapping("/searchProductInShopByName")
+    public Response search(@RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Integer shopId,
+            @RequestParam String query) {
+        return _shopService.searchProductInShopByName(token, shopId, query);
+    }
 }
