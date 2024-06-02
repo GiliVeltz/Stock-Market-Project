@@ -3,8 +3,11 @@ package Domain.Discounts;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonSerializable.Base;
+
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Dtos.ConditionalDiscountDto;
 import Exceptions.DiscountExpiredException;
 
 /**
@@ -29,6 +32,10 @@ public class ConditionalDiscount extends Discount {
         super(discount.getExpirationDate());
         _discount = discount;
         _rule = (basket) -> mustHaveProducts.stream().allMatch((productId) -> basket.getProductCount(productId) > 0);
+    }
+
+    public ConditionalDiscount(ConditionalDiscountDto dto) {
+        this(dto.mustHaveProducts, dto.isPrecentage ? new PrecentageDiscount(dto) : new FixedDiscount(dto));
     }
 
     /**

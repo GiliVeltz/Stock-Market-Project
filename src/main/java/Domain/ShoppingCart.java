@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
+import Dtos.PurchaseCartDetailsDto;
 
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
@@ -30,11 +31,11 @@ public class ShoppingCart {
     private User _user;
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
-    //TODO: Add user to constructor
+    // TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = new AdapterPayment();
-        _supplyMethod = new AdapterSupply();
+        _paymentMethod = AdapterPayment.getAdapterPayment();;
+        _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
     }
 
@@ -46,28 +47,28 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(List<Integer> busketsToBuy, String cardNumber, String address)
+    public void purchaseCart(PurchaseCartDetailsDto details)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
-        purchaseCartEditStock(busketsToBuy);
+        purchaseCartEditStock(details.basketsToBuy);
         try {
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
                 double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.checkIfPaymentOk(cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.checkIfDeliverOk(address, shoppingBasket.getShopAddress());
+                _paymentMethod.checkIfPaymentOk(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
+                _supplyMethod.checkIfDeliverOk(details.address, shoppingBasket.getShopAddress());
             }
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
                 double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.pay(cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.deliver(address, shoppingBasket.getShopAddress());
+                _paymentMethod.pay(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
+                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
             }
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(busketsToBuy);
+            cancelPurchaseEditStock(details.basketsToBuy);
             throw new PaymentFailedException("Payment failed");
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(busketsToBuy);
-            _paymentMethod.refound(cardNumber);
+            cancelPurchaseEditStock(details.basketsToBuy);
+            _paymentMethod.refound(details.cardNumber);
             throw new ShippingFailedException("Shipping failed");
         }
 
@@ -95,8 +96,9 @@ public class ShoppingCart {
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
-            } catch(ShopPolicyException e){
-                logger.log(Level.SEVERE, "ShoppingCart - purchaseCart - Basket "+basketId+" Validated the policy of the shop.");
+            } catch (ShopPolicyException e) {
+                logger.log(Level.SEVERE,
+                        "ShoppingCart - purchaseCart - Basket " + basketId + " Validated the policy of the shop.");
                 logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
@@ -131,9 +133,10 @@ public class ShoppingCart {
 
     /**
      * Add a product to the shopping cart of a user.
+     * 
      * @param productID the product to add.
-     * @param shopID the shop the product is from.
-     * @param user the user that wants to add the prodcut.
+     * @param shopID    the shop the product is from.
+     * @param user      the user that wants to add the prodcut.
      * @throws ProdcutPolicyException
      */
     public void addProduct(int productID, int shopID) throws ProdcutPolicyException {

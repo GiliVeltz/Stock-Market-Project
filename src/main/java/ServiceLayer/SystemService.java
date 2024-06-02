@@ -33,6 +33,14 @@ public class SystemService {
         _externalServiceHandler = externalServiceHandler;
     }
 
+    public SystemService() {
+        _userService = new UserService();
+        _externalServiceHandler = new ExternalServiceHandler();
+        _tokenService = TokenService.getTokenService();
+        _userFacade = UserFacade.getUserFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+    }
+
     /**
      * Opens the system.
      * 
@@ -75,6 +83,8 @@ public class SystemService {
 
                 // Open the system
                 setSystemOpen(true);
+                _externalServiceHandler.addPaymentService("PaymentService", "Tal", "123456789");
+                _externalServiceHandler.addSupplyService("SupplyService", "Tal", "123456789");
                 logger.info("System opened by admin: " + username);
                 response.setReturnValue("System Opened Successfully");
             } else {
@@ -102,12 +112,12 @@ public class SystemService {
      * It generates a guest token and initializes a new cart with the guestID.
      *
      * @return Response object containing the generated guest token if successful,
-     * or an error message if there is a failure.
+     *         or an error message if there is a failure.
      */
-    public Response requestToEnterSystem(String token) {
+    public Response requestToEnterSystem() {
         Response response = new Response();
         try {
-            //String token = _tokenService.generateGuestToken();
+            String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
             _userFacade.addNewGuest(id);
@@ -122,7 +132,8 @@ public class SystemService {
 
     /**
      * This is the last request that will occur when a guest/user leave the system.
-     * It removes the guest from the user system, and removes the guest's shopping cart.
+     * It removes the guest from the user system, and removes the guest's shopping
+     * cart.
      *
      * @param token The session token for the guest.
      * @return Response object indicating the success or failure of the operation.
@@ -148,4 +159,46 @@ public class SystemService {
         return response;
     }
 
+    // add external service to the system
+    public Response addExternalService(String token, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        Response response = new Response();
+        try {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
+                throw new Exception("Invalid session token.");
+            }
+            String username = _tokenService.extractUsername(token);
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if user is admin
+            if (!_userFacade.isAdmin(username)) {
+                response.setErrorMessage("User is not admin of the system");
+                logger.log(Level.SEVERE, "User is not admin of the system");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            if (_externalServiceHandler.addExternalService(newSerivceName, informationPersonName, informationPersonPhone)) {
+                logger.info("External service: " + newSerivceName + " added by admin: " + username);
+                response.setReturnValue("External service added successfully");
+            } else {
+                response.setErrorMessage("Failed to add external service");
+                logger.log(Level.SEVERE, "Failed to add external service");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to add external service: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to add external service: " + e.getMessage(), e);
+        }
+        return response;
+    }
 }

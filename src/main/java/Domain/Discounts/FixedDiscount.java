@@ -5,6 +5,7 @@ import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Dtos.BasicDiscountDto;
 
 public class FixedDiscount extends BaseDiscount {
     private double _discountTotal;
@@ -19,6 +20,10 @@ public class FixedDiscount extends BaseDiscount {
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
+    }
+
+    public FixedDiscount(BasicDiscountDto dto) {
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
     }
 
     @Override

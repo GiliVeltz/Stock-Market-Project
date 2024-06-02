@@ -1,7 +1,7 @@
 package Domain.ExternalServices;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents an external service handler.
@@ -9,10 +9,11 @@ import java.util.List;
  */
 public class ExternalServiceHandler {
 
-    private List<ExternalService> externalServices;
+    private Map<Integer, ExternalService> _externalServices; // uniqe id for each external service
+    int _idCounter = 0;
 
     public ExternalServiceHandler() {
-        this.externalServices = new ArrayList<ExternalService>();
+        _externalServices = new HashMap<>();
     }
 
     /**
@@ -20,7 +21,7 @@ public class ExternalServiceHandler {
      * @return true if all services are successfully connected, false otherwise.
      */
     public boolean connectToServices() {
-        for (ExternalService externalService : externalServices) {
+        for (ExternalService externalService : _externalServices.values()) {
             if (!externalService.ConnectToService()) {
                 return false;
             }
@@ -28,7 +29,46 @@ public class ExternalServiceHandler {
         return true;
     }
 
-    // TODO: add function for add external service. called from the system service.
+    // add payment service when initializing the system
+    public boolean addPaymentService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        _externalServices.putIfAbsent(_idCounter, newService);
+        _idCounter++;
+        return true;
+    }
+
+    // add supply service when initializing the system
+    public boolean addSupplyService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        _externalServices.putIfAbsent(_idCounter, newService);
+        _idCounter++;
+        return true;
+    }
+
+    // Add external service. called from the system service.
+    public boolean addExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        // check validation of the arguments
+        if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
+            throw new IllegalArgumentException("One or more of the arguments are null");
+        }
+
+        // check if service name already exists
+        boolean serviceExists = false;
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(newSerivceName)) {
+                serviceExists = true;
+                break;
+            }
+        }
+        if (serviceExists) {
+            throw new IllegalArgumentException("Service name already exists. Service name: " + newSerivceName + ".");
+        }
+
+        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        _externalServices.putIfAbsent(_idCounter, newService);
+        _idCounter++;
+        return true;
+    }
 
     // TODO: add fuction for change external service information. called from the system service.
 }
