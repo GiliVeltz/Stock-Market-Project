@@ -175,6 +175,7 @@ public class ShopService {
      *         deatails or failure.
      */
     public Response searchProductInShopByName(String token, Integer shopId, String productName) {
+        // TODO: return product dtos here instead of just a string (so it will be easy to render in UI)
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
