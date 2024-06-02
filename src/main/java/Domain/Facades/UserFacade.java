@@ -58,7 +58,7 @@ public class UserFacade {
     // this function is used to register a new user to the system.
     public void register(UserDto userDto) throws Exception {
         // TODO: remove the encoding - should be done in the front end
-        userDto.password = this._passwordEncoder.encodePassword(userDto.password);
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new Exception("UserName is empty.");
         }
