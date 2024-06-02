@@ -15,6 +15,7 @@ import Domain.Permission;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
+import Dtos.ShopDto;
 import Domain.Shop;
 import Domain.ShopOrder;
 import Exceptions.PermissionException;
@@ -23,6 +24,8 @@ import Exceptions.StockMarketException;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
+
+    private UserFacade _userFacade;
     private ShopRepositoryInterface _shopRepository;
 
     public enum Category {
@@ -35,10 +38,12 @@ public class ShopFacade {
 
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
+        _userFacade = UserFacade.getUserFacade();
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
         _shopRepository = new MemoryShopRepository(shopsList);
+        _userFacade = UserFacade.getUserFacade();
     }
 
     // Public method to provide access to the _shopFacade
@@ -63,9 +68,9 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public int openNewShop(String founder, String bankDetails, String shopAddress) throws Exception {
+    public int openNewShop(String founder, ShopDto shopDto) throws Exception {
         int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, founder, bankDetails, shopAddress));
+        _shopRepository.addShop(new Shop(shopId, founder, shopDto));
         return shopId;
     }
 
@@ -76,7 +81,7 @@ public class ShopFacade {
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
-                if (shopToClose.checkPermission(userName, Permission.FOUNDER)) {
+                if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     getShopByShopId(shopId).notifyRemoveShop();
                     shopToClose.closeShop();
                 } else {

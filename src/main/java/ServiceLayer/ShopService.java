@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Facades.ShopFacade.Category;
+import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
 import Exceptions.StockMarketException;
@@ -39,19 +40,18 @@ public class ShopService {
     /**
      * Opens a new shop with the specified shop ID and user name.
      * 
-     * @param shopId      The ID of the new shop to be opened.
-     * @param founder     The name of the user opening the shop (founder).
+     * @param token       The session token of the user opening the shop.
      * @param bankDetails The bank details of the shop.
      * @param shopAddress The address of the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response openNewShop(String token, String bankDetails, String shopAddress) {
+    public Response openNewShop(String token, ShopDto shopDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String founder = _tokenService.extractUsername(token);
-                    int shopId = _shopFacade.openNewShop(founder, bankDetails, shopAddress);
+                    int shopId = _shopFacade.openNewShop(founder, shopDto);
                     logger.info(String.format("New shop created by: %s with Shop ID: %d", founder, shopId));
                 } else {
                     throw new Exception("Only register users can open shop.");
@@ -72,19 +72,20 @@ public class ShopService {
     /**
      * Close a shop with the specified shop ID and user name.
      * 
-     * @param shopId   The ID of the existing shop to be closed.
-     * @param userName The name of the user closing the shop (founder).
+     * @param token  The session token of the user closing the shop.
+     * @param shopId The ID of the existing shop to be closed.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response closeShop(String token, Integer shopId, String userName) {
+    public Response closeShop(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
-                    throw new Exception("User is not register.");
+                    throw new Exception("User is not registered or not logged in.");
                 }
             } else {
                 throw new Exception("Invalid session token.");
@@ -92,7 +93,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to close shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to close shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
