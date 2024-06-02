@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
@@ -75,5 +77,18 @@ public class ShopController {
     @GetMapping("/getShopPurchaseHistory")
     public Response getShopPurchaseHistory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopPurchaseHistory(token, shopId);
+    }
+
+    @PostMapping("/addShopBasicDiscount")
+    public Response addShopBasicDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestBody BasicDiscountDto discountDto) {
+        return _shopService.addShopBasicDiscount(token, shopId, discountDto);
+    }
+
+    @PostMapping("/addShopConditionalDiscount")
+    public Response addShopConditionalDiscount(@RequestHeader("Authorization") String token,
+            @RequestParam Integer shopId,
+            @RequestBody ConditionalDiscountDto discountDto) {
+        return _shopService.addShopConditionalDiscount(token, shopId, discountDto);
     }
 }
