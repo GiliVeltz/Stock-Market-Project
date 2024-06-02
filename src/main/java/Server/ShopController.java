@@ -119,4 +119,10 @@ public class ShopController {
             @RequestBody Set<String> permissions) {
         return _shopService.addShopManager(token, shopId, newManagerUsername, permissions);
     }
+
+    @PostMapping("/fireShopManager")
+    public Response fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam String managerUsername) {
+        return _shopService.fireShopManager(token, shopId, managerUsername);
+    }
 }

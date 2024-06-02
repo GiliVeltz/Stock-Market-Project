@@ -682,17 +682,17 @@ public class ShopService {
      * Fires a manager from a shop.
      * 
      * @param token           The session token of the user performing the update.
-     * @param username        The username of the user performing the fire.
      * @param shopId          The ID of the shop where the manager is being fired.
      * @param managerUsername The username of the manager being fired from the shop.
      * @return A Response object indicating the success and the set of usernames
      *         fired or failure of the operation.
      */
-    public Response fireShopManager(String token, String username, Integer shopId, String managerUsername) {
+    public Response fireShopManager(String token, Integer shopId, String managerUsername) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         Set<String> fired = _shopFacade.fireShopManager(username, shopId, managerUsername);
                         response.setReturnValue(fired);
