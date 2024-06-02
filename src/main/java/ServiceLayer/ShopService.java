@@ -103,14 +103,15 @@ public class ShopService {
     /**
      * reopen a shop with the specified shop ID and user name.
      * 
+     * @param token    The session token of the user reopening the shop.
      * @param shopId   The ID of the existing shop to be reopen.
-     * @param userName The name of the user closing the shop (founder).
      * @return A response indicating the success or failure of the operation.
      */
-    public Response reOpenShop(String token, Integer shopId, String userName) {
+    public Response reOpenShop(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.reOpenShop(shopId, userName);
                     logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
@@ -123,7 +124,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to reopenn shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to reopenn shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
