@@ -139,9 +139,9 @@ public class ShopService {
     /**
      * Adds a product to the specified shop.
      * 
-     * @param shopId   The ID of the shop to which the product will be added.
-     * @param userName The name of the user adding the product.
-     * @param productDto  The product to be added to the shop.
+     * @param shopId     The ID of the shop to which the product will be added.
+     * @param userName   The name of the user adding the product.
+     * @param productDto The product to be added to the shop.
      * @return A response indicating the success or failure of the operation.
      */
     public Response addProductToShop(String token, Integer shopId, String userName, ProductDto productDto) {
@@ -151,7 +151,7 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
-                    productDto._productName, userName, shopId));
+                            productDto._productName, userName, shopId));
                 } else {
                     throw new Exception(String.format("User %s does not have permissions", userName));
                 }
@@ -161,7 +161,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: %d to shopID %d by user %s. Error: ",
-            productDto._productName, shopId, userName, e.getMessage()));
+                    productDto._productName, shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -567,7 +567,6 @@ public class ShopService {
      * Updates the quantity of a specified product in a shop.
      * 
      * @param token         The session token of the user performing the update.
-     * @param userName      The username of the user performing the update.
      * @param shopId        The ID of the shop where the product quantity is being
      *                      updated.
      * @param productId     The ID of the product whose quantity is being updated.
@@ -576,8 +575,8 @@ public class ShopService {
      * @throws StockMarketException if the session token is invalid, the user is not
      *                              logged in, or the shop ID does not exist.
      */
-    public Response updateProductQuantity(String token, String userName, Integer shopId, Integer productId,
-            Integer productAmount) throws StockMarketException {
+    public Response updateProductQuantity(String token, Integer shopId, Integer productId, Integer productAmount)
+            throws StockMarketException {
         Response resp = new Response();
         if (!_tokenService.validateToken(token))
             throw new StockMarketException("Invalid session token.");
@@ -586,6 +585,7 @@ public class ShopService {
         if (!_shopFacade.isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop Id: %d not found", shopId));
 
+        String userName = _tokenService.extractUsername(token);
         try {
             _shopFacade.updateProductQuantity(userName, shopId, productId, productAmount);
             logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
