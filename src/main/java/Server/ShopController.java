@@ -1,5 +1,7 @@
 package Server;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,11 +40,35 @@ public class ShopController {
     public Response reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
     }
-  
+
     @GetMapping("/searchProductInShopByName")
-    public Response search(@RequestHeader("Authorization") String token,
+    public Response searchProductInShopByName(@RequestHeader("Authorization") String token,
             @RequestParam(required = false) Integer shopId,
             @RequestParam String query) {
         return _shopService.searchProductInShopByName(token, shopId, query);
+    }
+
+    // TODO: uncomment this after merging Or's changes (category enum)
+    // @GetMapping("/searchProductInShopByCategory")
+    // public Response searchByCategory(@RequestHeader("Authorization") String
+    // token,
+    // @RequestParam(required = false) Integer shopId,
+    // @RequestParam Category category) {
+    // return _shopService.searchProductInShopByCategory(token, shopId, category);
+    // }
+
+    @GetMapping("/searchProductsInShopByKeywords")
+    public Response searchProducstInShopByKeywords(@RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Integer shopId,
+            @RequestParam List<String> keywords) {
+        return _shopService.searchProductsInShopByKeywords(token, shopId, keywords);
+    }
+
+    @GetMapping("/searchProductsInShopByPriceRange")
+    public Response searchProductsInShopByPriceRange(@RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Integer shopId,
+            @RequestParam Double minPrice,
+            @RequestParam Double maxPrice) {
+        return _shopService.searchProductsInShopByPriceRange(token, shopId, minPrice, maxPrice);
     }
 }
