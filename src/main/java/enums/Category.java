@@ -7,4 +7,6 @@ public enum Category {
     ELECTRONICS,
     PHARMACY,
     // Add more categories as needed
+
+    DEFAULT_VAL //should be last!
 }

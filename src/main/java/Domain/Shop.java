@@ -937,6 +937,8 @@ public class Shop {
         }
     }
 
+    // return the anoumt of product 
+    public Integer getAmoutOfProductInShop() { return _productMap.size();}
 
     //TODO: maybe add policy facade to implement the policy logic.
 

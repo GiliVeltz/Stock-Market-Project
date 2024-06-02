@@ -29,32 +29,18 @@ import enums.Permission;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
-    private Integer _shopIdCounter;
-    private Integer _productIdCounter;
 
     private UserFacade _userFacade;
     private ShopRepositoryInterface _shopRepository;
 
-    public enum Category {
-        GROCERY,
-        CLOTHING,
-        ELECTRONICS,
-        PHARMACY,
-        // Add more categories as needed
-    }
-
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
-        _productIdCounter = 0;
-        _shopIdCounter = 0;
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
         _shopRepository = new MemoryShopRepository(shopsList);
         _userFacade = UserFacade.getUserFacade();
-        _productIdCounter = 0;
-        _shopIdCounter = 0;
     }
 
     // Public method to provide access to the _shopFacade
@@ -79,9 +65,10 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public void openNewShop(String userName, String bankDetails, String shopAddress) throws Exception {
+    public Integer openNewShop(String userName, ShopDto shopDto) throws Exception {
         int shopId = _shopRepository.getUniqueShopID();    
-        _shopRepository.addShop(new Shop(shopId, userName, bankDetails, shopAddress));
+        _shopRepository.addShop(new Shop(shopId, userName, shopDto.bankDetails, shopDto.shopAddress));
+        return shopId;
     }
 
     // close shop only if the user is the founder of the shop
@@ -126,25 +113,13 @@ public class ShopFacade {
 
     }
 
-    // // generate new shop id
-    // private synchronized Integer getNewShopId(){
-    //     Integer val = _shopIdCounter;
-    //     _shopIdCounter++;
-    //     return val;
-    // }
-
-    // // generate new product id
-    // private synchronized Integer getNewProductId(){
-    //     Integer val = _productIdCounter;
-    //     _productIdCounter++;
-    //     return val;
-    // }
 
     public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws Exception {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
         else{
-            Product newProduct = new Product(getNewProductId(), productDto._productName, productDto._category, productDto._price);
+            int productId = _shopRepository.getUniqueProductID();
+            Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
             getShopByShopId(shopId).addProductToShop(userName, newProduct);
         }
     }
@@ -288,7 +263,7 @@ public class ShopFacade {
             throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If category is null, raise an error
-        if (productCategory == null) {
+        if (productCategory == Category.DEFAULT_VAL) {
             throw new Exception("Product category is null.");
         }
         // If shopId is null, search in all shops

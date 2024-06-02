@@ -26,6 +26,7 @@ import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Dtos.ProductDto;
+import Dtos.ShopDto;
 import Domain.Facades.UserFacade;
 import Exceptions.ShopException;
 import ServiceLayer.Response;
@@ -55,6 +56,7 @@ public class ShopFacadeTests {
     private Shop _shop1;
     private Shop _shop2;
     private Shop _shop3;
+    private ShopDto _shop4;
     private ProductDto _product1;
     private Product _product2;
 
@@ -69,6 +71,7 @@ public class ShopFacadeTests {
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
+        _shop4 = new ShopDto("bank4", "addresss4");
         _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         try{
@@ -89,12 +92,11 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to open a new shop with a new ID
-        _ShopFacadeUnderTests.openNewShop(_shop2.getFounderName(), _shop2.getBankDetails(),
-                _shop2.getShopAddress());
+        Integer shopId =_ShopFacadeUnderTests.openNewShop("founderName4", _shop4);
 
         // Assert - Verify that the shop is added to the list
         assertEquals(1, _ShopFacadeUnderTests.getAllShops().size());
-        assertEquals(0, _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
+        assertEquals(0, _ShopFacadeUnderTests.getAllShops().get(shopId).getShopId());
     }
 
     @Test
@@ -271,7 +273,7 @@ public class ShopFacadeTests {
         _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer shopId = 1;
-        Category productCategory = null;
+        Category productCategory = Category.DEFAULT_VAL;
 
         // Act - try to get products by category when category is null
         try {
