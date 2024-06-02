@@ -1,6 +1,7 @@
 package Server;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -99,8 +100,20 @@ public class ShopController {
     }
 
     @PostMapping("/updateProductQuantity")
-    public Response updateProductQuantity(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
-            @RequestParam Integer productId, @RequestParam Integer quantity) {
+    public Response updateProductQuantity(@RequestHeader("Authorization") String token,
+            @RequestBody Map<String, Object> body) {
+        int shopId = body.get("shopId") == null ? null : (int) body.get("shopId");
+        int productId = body.get("productId") == null ? null : (int) body.get("productId");
+        int quantity = body.get("quantity") == null ? null : (int) body.get("quantity");
+
         return _shopService.updateProductQuantity(token, shopId, productId, quantity);
+    }
+
+    @PostMapping("/addShopOwner")
+    public Response addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> body) {
+        int shopId = body.get("shopId") == null ? null : (int) body.get("shopId");
+        String newOwnerUsername = body.get("newOwnerUsername") == null ? null : (String) body.get("newOwnerUsername");
+
+        return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 }
