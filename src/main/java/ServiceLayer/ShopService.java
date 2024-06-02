@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Facades.ShopFacade.Category;
+import Dtos.BasicDiscountDto;
 import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
@@ -445,9 +446,7 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
-    public Response addShopBasicDiscount(String token, int shopId, int productId, boolean isPrecentage,
-            double discountAmount,
-            Date expirationDate) {
+    public Response addShopBasicDiscount(String token, int shopId, BasicDiscountDto basicDiscountDto) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -459,17 +458,17 @@ public class ShopService {
             // check validity of input parameters
             if (!_shopFacade.isShopIdExist(shopId))
                 throw new StockMarketException("Shop not found");
-            if (isPrecentage && (discountAmount < 0 || discountAmount > 100))
+            if (basicDiscountDto.isPrecentage
+                    && (basicDiscountDto.discountAmount < 0 || basicDiscountDto.discountAmount > 100))
                 throw new StockMarketException("Invalid discount amount - precentage should be between 0% and 100%");
-            if (!isPrecentage && discountAmount < 0)
+            if (!basicDiscountDto.isPrecentage && basicDiscountDto.discountAmount < 0)
                 throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
             Date currentDate = new Date();
-            if (expirationDate.getTime() - currentDate.getTime() < 86400000)
+            if (basicDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000)
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            int discountId = _shopFacade.addBasicDiscountToShop(shopId, productId, username, isPrecentage,
-                    discountAmount, expirationDate);
+            int discountId = _shopFacade.addBasicDiscountToShop(shopId, username, basicDiscountDto);
             resp.setReturnValue(discountId);
             logger.info("Added basic discount to shop: " + shopId + " with id " + discountId);
             return resp;

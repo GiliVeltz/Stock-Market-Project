@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
+import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Domain.Permission;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
+import Dtos.BasicDiscountDto;
 import Dtos.ShopDto;
 import Domain.Shop;
 import Domain.ShopOrder;
@@ -158,31 +160,25 @@ public class ShopFacade {
     /**
      * Adds a basic discount to the shop.
      *
-     * @param shopId         the ID of the shop
-     * @param productId      the ID of the product to discount
-     * @param username       the username of the user adding the discount
-     * @param isPercentage   a flag indicating whether the discount amount is a
-     *                       percentage or a fixed value
-     * @param discountAmount the amount of the discount
-     * @param expirationDate the expiration date of the discount
-     * @return the ID of the newly added discount
+     * @param shopId      the ID of the shop
+     * @param username    the username of the user adding the discount
+     * @param discountDto the discount DTO
      * @throws PermissionException if the user does not have permission to add a
      *                             discount to the shop
      * @throws ShopException       if there is an error adding the discount to the
      *                             shop
      */
-    public int addBasicDiscountToShop(int shopId, int productId, String username, boolean isPrecentage,
-            double discountAmount, Date expirationDate)
+    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
             throws PermissionException, ShopException, StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
-        if (isPrecentage)
-            discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
+        if (discountDto.isPrecentage)
+            discount = new PrecentageDiscount(discountDto);
         else
-            discount = new PrecentageDiscount(expirationDate, discountAmount, productId);
+            discount = new FixedDiscount(discountDto);
         return shop.addDiscount(discount);
     }
 
