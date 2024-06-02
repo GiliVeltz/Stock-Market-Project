@@ -141,4 +141,10 @@ public class ShopController {
     public Response displayShopPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.displayShopPolicyInfo(token, shopId);
     }
+
+    @PostMapping("/displayProductPolicyInfo")
+    public Response displayProductPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId) {
+        return _shopService.displayProductPolicyInfo(token, shopId, productId);
+    }
 }
