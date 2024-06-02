@@ -762,7 +762,6 @@ public class ShopService {
      * 
      * @param token           The session token of the user performing the
      *                        modification.
-     * @param username        The username of the user performing the modification.
      * @param shopId          The ID of the shop where the manager's permissions are
      *                        being modified.
      * @param managerUsername The username of the manager whose permissions are
@@ -770,12 +769,13 @@ public class ShopService {
      * @param permissions     The new set of permissions for the manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response modifyManagerPermissions(String token, String username, Integer shopId, String managerUsername,
+    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername,
             Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.modifyManagerPermissions(username, shopId, managerUsername, permissions);
                         response.setReturnValue(true);
