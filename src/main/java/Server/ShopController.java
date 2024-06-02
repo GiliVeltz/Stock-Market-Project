@@ -33,4 +33,9 @@ public class ShopController {
     public Response closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }
+
+    @GetMapping("/reopenShop")
+    public Response reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.reOpenShop(token, shopId);
+    }
 }
