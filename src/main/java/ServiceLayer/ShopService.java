@@ -72,19 +72,20 @@ public class ShopService {
     /**
      * Close a shop with the specified shop ID and user name.
      * 
-     * @param shopId   The ID of the existing shop to be closed.
-     * @param userName The name of the user closing the shop (founder).
+     * @param token  The session token of the user closing the shop.
+     * @param shopId The ID of the existing shop to be closed.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response closeShop(String token, Integer shopId, String userName) {
+    public Response closeShop(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
-                    throw new Exception("User is not register.");
+                    throw new Exception("User is not registered or not logged in.");
                 }
             } else {
                 throw new Exception("Invalid session token.");
@@ -92,7 +93,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to close shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to close shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
