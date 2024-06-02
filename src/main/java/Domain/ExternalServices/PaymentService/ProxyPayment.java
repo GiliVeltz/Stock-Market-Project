@@ -1,6 +1,5 @@
 package Domain.ExternalServices.PaymentService;
 
-// TODO: PROXY
 public class ProxyPayment {
 
     public ProxyPayment() {

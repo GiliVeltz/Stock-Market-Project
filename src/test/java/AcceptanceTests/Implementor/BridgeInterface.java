@@ -25,10 +25,10 @@ public interface BridgeInterface {
     boolean testShipping(String senario);
 
     @Test
-    boolean testAddExternalService(String newSerivceName, String peopleInfo, Integer securityIdForService);
+    boolean testAddExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone, Integer securityIdForService);
 
     @Test
-    boolean testChangeExternalService(String oldServiceSystemId, String newSerivceName, String newPeopleInfo);
+    boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName, String newInformationPersonName, String newInformationPersonPhone);
 
     // GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     

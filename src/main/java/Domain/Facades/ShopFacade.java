@@ -33,7 +33,7 @@ public class ShopFacade {
         // Add more categories as needed
     }
 
-    private ShopFacade() {
+    public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
     }
 

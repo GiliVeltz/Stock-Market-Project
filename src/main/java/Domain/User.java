@@ -132,4 +132,8 @@ public class User {
     public String toString() {
         return "User [username=" + _username + ", encoded password= " + _encoded_password + ", email=" + _email + ", birth date=" + _birthDate.toString() + "]";
     }
+
+    public void setIsSystemAdmin(boolean b) {
+        _isAdmin = true;
+    }
 }

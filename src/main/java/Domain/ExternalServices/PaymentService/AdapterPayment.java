@@ -1,19 +1,28 @@
 package Domain.ExternalServices.PaymentService;
 
-import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
 
 import Domain.ExternalServices.ExternalService;
 import Exceptions.PaymentFailedException;
 
 // TODO: Implement the Adapter pattern
-public class AdapterPayment implements ExternalService {
+public class AdapterPayment extends ExternalService {
 
+    // private fields
+    private static AdapterPayment _adapterPayment;
     private ProxyPayment _paymentService;
     private static final Logger logger = Logger.getLogger(AdapterPayment.class.getName());
 
-    public AdapterPayment() {
+    public AdapterPayment(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        super(id, newSerivceName, informationPersonName, informationPersonPhone); // Explicitly invoke the constructor of the superclass
+        _adapterPayment = this;
         _paymentService = new ProxyPayment();
+    }
+
+    public static AdapterPayment getAdapterPayment() {
+        if (_adapterPayment == null)
+            _adapterPayment = new AdapterPayment(-1, "PaymentService", "Tal", "123456789");
+        return _adapterPayment;
     }
 
     @Override
@@ -40,5 +49,4 @@ public class AdapterPayment implements ExternalService {
         logger.info("Refounding the cart");
         _paymentService.refound(cardNumber);
     }
-
 }

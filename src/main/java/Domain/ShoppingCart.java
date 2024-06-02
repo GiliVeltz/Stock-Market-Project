@@ -34,8 +34,8 @@ public class ShoppingCart {
     // TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = new AdapterPayment();
-        _supplyMethod = new AdapterSupply();
+        _paymentMethod = AdapterPayment.getAdapterPayment();;
+        _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
     }
 
