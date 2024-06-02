@@ -15,6 +15,7 @@ import Domain.Permission;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
+import Dtos.ShopDto;
 import Domain.Shop;
 import Domain.ShopOrder;
 import Exceptions.PermissionException;
@@ -67,9 +68,9 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public int openNewShop(String founder, String bankDetails, String shopAddress) throws Exception {
+    public int openNewShop(String founder, ShopDto shopDto) throws Exception {
         int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, founder, bankDetails, shopAddress));
+        _shopRepository.addShop(new Shop(shopId, founder, shopDto));
         return shopId;
     }
 
