@@ -1,9 +1,11 @@
 package Domain;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
@@ -40,6 +42,41 @@ public class ShoppingCart {
     }
 
     /*
+     * This method is responsible for calculating the price of the cart.
+     * Used for visualisation after selecting a basket.
+     */
+    public double getCartPriceUser(List<Integer> basketsToBuy) {
+        double overallPrice = 0;
+
+        try{
+            for (Integer basketNum : basketsToBuy) {
+                ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+                overallPrice += amountToPay;
+            }
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.SEVERE, "ShoppingCart - getCartPriceUser - StockMarketException: " + e.getMessage(), e);
+        }
+        return overallPrice;
+    }
+
+    public double getCartPriceGuest() {
+        double overallPrice = 0;
+
+        try{
+            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
+                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+                overallPrice += amountToPay;
+            }
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.SEVERE, "ShoppingCart - getCartPriceGuest - StockMarketException: " + e.getMessage(), e);
+        }
+        return overallPrice;
+    }
+
+    /*
      * This method is responsible for purchasing the cart.
      * It first calls the purchaseCart method of the shopping cart which reaponsible
      * for changing the item's stock.
@@ -50,17 +87,27 @@ public class ShoppingCart {
     public void purchaseCart(PurchaseCartDetailsDto details)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         purchaseCartEditStock(details.basketsToBuy);
+        Map<Double, String> priceToShopDetails = new HashMap<>();
+        double overallPrice = 0;
+
+        for (Integer basketNum : details.getBasketsToBuy()) {
+            ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+            double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+            overallPrice += amountToPay;
+            priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
+        }
+
         try {
-            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
-                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.checkIfPaymentOk(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.checkIfDeliverOk(details.address, shoppingBasket.getShopAddress());
+            _paymentMethod.checkIfPaymentOk(details.cardNumber);
+            _supplyMethod.checkIfDeliverOk(details.address);
+            
+            _paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
+
+            for (Integer basketNum : details.getBasketsToBuy()) {
+                ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to deliver too.
             }
-            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
-                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.pay(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
-            }
+            
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
@@ -68,10 +115,9 @@ public class ShoppingCart {
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
-            _paymentMethod.refound(details.cardNumber);
+            _paymentMethod.refound(details.cardNumber, overallPrice);
             throw new ShippingFailedException("Shipping failed");
         }
-
     }
 
     /*
