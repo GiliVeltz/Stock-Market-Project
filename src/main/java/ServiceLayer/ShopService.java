@@ -536,7 +536,7 @@ public class ShopService {
         }
     }
 
-    public Response removeDiscount(String token, int shopId, int productId) {
+    public Response removeDiscount(String token, int shopId, int discountId) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -550,7 +550,7 @@ public class ShopService {
                 throw new StockMarketException("Shop not found");
 
             String username = _tokenService.extractUsername(token);
-            _shopFacade.removeDiscountFromShop(shopId, productId, username);
+            _shopFacade.removeDiscountFromShop(shopId, discountId, username);
             resp.setReturnValue("Removed discount");
             logger.info("Removed discount from shop: " + shopId);
             return resp;

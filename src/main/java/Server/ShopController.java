@@ -91,4 +91,10 @@ public class ShopController {
             @RequestBody ConditionalDiscountDto discountDto) {
         return _shopService.addShopConditionalDiscount(token, shopId, discountDto);
     }
+
+    @GetMapping("/removeShopDiscount")
+    public Response removeShopDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer discountId) {
+        return _shopService.removeDiscount(token, shopId, discountId);
+    }
 }
