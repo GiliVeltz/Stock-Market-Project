@@ -71,4 +71,9 @@ public class ShopController {
             @RequestParam Double maxPrice) {
         return _shopService.searchProductsInShopByPriceRange(token, shopId, minPrice, maxPrice);
     }
+
+    @GetMapping("/getShopPurchaseHistory")
+    public Response getShopPurchaseHistory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopPurchaseHistory(token, shopId);
+    }
 }
