@@ -12,13 +12,15 @@ import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Domain.Facades.ShopFacade.Category;
+import Dtos.ProductDto;
+import Dtos.ProductDto;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
 import Exceptions.StockMarketException;
+import enums.Category;
 
 @Service
 public class ShopService {
@@ -139,17 +141,17 @@ public class ShopService {
      * 
      * @param shopId   The ID of the shop to which the product will be added.
      * @param userName The name of the user adding the product.
-     * @param product  The product to be added to the shop.
+     * @param productDto  The product to be added to the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response addProductToShop(String token, Integer shopId, String userName, Product product) {
+    public Response addProductToShop(String token, Integer shopId, String userName, ProductDto productDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
-                    _shopFacade.addProductToShop(shopId, product, userName);
+                    _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
-                            product.getProductName(), product.getProductId(), userName, shopId));
+                    productDto._productName, userName, shopId));
                 } else {
                     throw new Exception(String.format("User %s does not have permissions", userName));
                 }
@@ -159,8 +161,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: %d to shopID %d by user %s. Error: ",
-                    product.getProductName(),
-                    product.getProductId(), shopId, userName, e.getMessage()));
+            productDto._productName, shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 

@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.Facades.ShopFacade.Category;
 import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
+import enums.Category;
 
 public class Product implements Cloneable {
     private Integer _productId;

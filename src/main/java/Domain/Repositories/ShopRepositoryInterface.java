@@ -14,4 +14,6 @@ public interface ShopRepositoryInterface {
     List<Shop> getAllShops();
 
     int getUniqueShopID();
+
+    int getUniqueProductID();
 }

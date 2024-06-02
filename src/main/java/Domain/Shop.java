@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Domain.Discounts.Discount;
-import Domain.Facades.ShopFacade.Category;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
 import Dtos.ShopDto;
@@ -25,6 +24,8 @@ import Exceptions.RoleException;
 import Exceptions.ShopException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
+import enums.Category;
+import enums.Permission;
 
 //TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
@@ -936,6 +937,8 @@ public class Shop {
         }
     }
 
+    // return the anoumt of product 
+    public Integer getAmoutOfProductInShop() { return _productMap.size();}
 
     //TODO: maybe add policy facade to implement the policy logic.
 

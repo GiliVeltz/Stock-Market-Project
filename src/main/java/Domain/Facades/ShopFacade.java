@@ -12,32 +12,26 @@ import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
-import Domain.Permission;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ShopDto;
+import Dtos.ProductDto;
 import Domain.Shop;
 import Domain.ShopOrder;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
+import enums.Category;
+import enums.Permission;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
 
     private UserFacade _userFacade;
     private ShopRepositoryInterface _shopRepository;
-
-    public enum Category {
-        GROCERY,
-        CLOTHING,
-        ELECTRONICS,
-        PHARMACY,
-        // Add more categories as needed
-    }
 
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
@@ -71,9 +65,9 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public int openNewShop(String founder, ShopDto shopDto) throws Exception {
-        int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, founder, shopDto));
+    public Integer openNewShop(String userName, ShopDto shopDto) throws Exception {
+        int shopId = _shopRepository.getUniqueShopID();    
+        _shopRepository.addShop(new Shop(shopId, userName, shopDto.bankDetails, shopDto.shopAddress));
         return shopId;
     }
 
@@ -119,11 +113,15 @@ public class ShopFacade {
 
     }
 
-    public void addProductToShop(Integer shopId, Product product, String userName) throws Exception {
+
+    public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws Exception {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
-        else
-            getShopByShopId(shopId).addProductToShop(userName, product);
+        else{
+            int productId = _shopRepository.getUniqueProductID();
+            Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
+            getShopByShopId(shopId).addProductToShop(userName, newProduct);
+        }
     }
 
     /**
@@ -265,7 +263,7 @@ public class ShopFacade {
             throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If category is null, raise an error
-        if (productCategory == null) {
+        if (productCategory == Category.DEFAULT_VAL) {
             throw new Exception("Product category is null.");
         }
         // If shopId is null, search in all shops
