@@ -599,18 +599,18 @@ public class ShopService {
      * Adds a new owner to a shop.
      * 
      * @param token            The session token of the user performing the update.
-     * @param username         The username of the user performing the update.
      * @param shopId           The ID of the shop where the new owner is being
      *                         added.
      * @param newOwnerUsername The username of the new owner being added to the
      *                         shop.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopOwner(String token, String username, Integer shopId, String newOwnerUsername) {
+    public Response addShopOwner(String token, Integer shopId, String newOwnerUsername) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
@@ -627,7 +627,8 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add owner %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+                    String.format("Failed to add owner %s to shopID %d. Error: ", newOwnerUsername, shopId,
+                            e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
