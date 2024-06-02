@@ -137,31 +137,37 @@ public class ShopController {
         return _shopService.modifyManagerPermissions(token, shopId, managerUsername, permissions);
     }
 
-    @PostMapping("/displayShopPolicyInfo")
+    @GetMapping("/displayShopPolicyInfo")
     public Response displayShopPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.displayShopPolicyInfo(token, shopId);
     }
 
-    @PostMapping("/displayProductPolicyInfo")
+    @GetMapping("/displayProductPolicyInfo")
     public Response displayProductPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam Integer productId) {
         return _shopService.displayProductPolicyInfo(token, shopId, productId);
     }
 
-    @PostMapping("/displayShopDiscountsInfo")
+    @GetMapping("/displayShopDiscountsInfo")
     public Response displayShopDiscountsInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId) {
         return _shopService.displayShopDiscountsInfo(token, shopId);
     }
 
-    @PostMapping("/displayProductDiscountsInfo")
+    @GetMapping("/displayProductDiscountsInfo")
     public Response displayProductDiscountsInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId, @RequestParam Integer productId) {
         return _shopService.displayProductDiscountsInfo(token, shopId, productId);
     }
 
-    @PostMapping("/displayShopGeneralInfo")
+    @GetMapping("/displayShopGeneralInfo")
     public Response displayShopGeneralInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.displayShopGeneralInfo(token, shopId);
+    }
+
+    @GetMapping("/displayProductGeneralInfo")
+    public Response displayProductGeneralInfo(@RequestHeader("Authorization") String token,
+            @RequestParam Integer shopId, @RequestParam Integer productId) {
+        return _shopService.displayProductGeneralInfo(token, shopId, productId);
     }
 }
