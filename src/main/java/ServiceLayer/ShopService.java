@@ -721,17 +721,17 @@ public class ShopService {
     /**
      * Resigns from a role in a shop.
      * 
-     * @param token    The session token of the user performing the resignation.
-     * @param username The username of the user resigning from the role.
-     * @param shopId   The ID of the shop where the user is resigning from the role.
+     * @param token  The session token of the user performing the resignation.
+     * @param shopId The ID of the shop where the user is resigning from the role.
      * @return A Response object indicating the success and the set of usernames
      *         resigned or failure of the operation.
      */
-    public Response resignFromRole(String token, String username, Integer shopId) {
+    public Response resignFromRole(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         Set<String> resigned = _shopFacade.resignFromRole(username, shopId);
                         response.setReturnValue(true);

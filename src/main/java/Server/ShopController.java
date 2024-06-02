@@ -125,4 +125,9 @@ public class ShopController {
             @RequestParam String managerUsername) {
         return _shopService.fireShopManager(token, shopId, managerUsername);
     }
+
+    @PostMapping("/resignFromRole")
+    public Response resignFromRole(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.resignFromRole(token, shopId);
+    }
 }
