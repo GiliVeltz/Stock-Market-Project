@@ -97,4 +97,10 @@ public class ShopController {
             @RequestParam Integer discountId) {
         return _shopService.removeDiscount(token, shopId, discountId);
     }
+
+    @PostMapping("/updateProductQuantity")
+    public Response updateProductQuantity(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam Integer quantity) {
+        return _shopService.updateProductQuantity(token, shopId, productId, quantity);
+    }
 }
