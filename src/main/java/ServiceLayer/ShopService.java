@@ -416,13 +416,8 @@ public class ShopService {
                     return response;
                 } else {
                     // get purchase history of a shop
-                    response = getPurchaseHistory(shopId);
-                    if (response.getErrorMessage() != null) {
-                        response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
-                        logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);
-                        return response;
-                    }
-
+                    List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
+                    response.setReturnValue(purchasHistory);
                 }
 
             } else {
@@ -433,23 +428,6 @@ public class ShopService {
             logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
         }
         // TODO: check with Spring how to return this response as a data object
-        return response;
-    }
-
-    // function to get a purchase from shopFacade by shop ID
-    private Response getPurchaseHistory(Integer shopId) {
-        Response response = new Response();
-        try {
-            List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
-            response.setReturnValue(purchasHistory);
-            logger.info(String.format("Purchase history retrieved for Shop ID: %d", shopId));
-
-        } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to retrieve purchase history for shopID %d. Error: ", shopId,
-                    e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
         return response;
     }
 
