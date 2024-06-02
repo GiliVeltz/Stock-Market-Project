@@ -21,16 +21,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Producer;
 
 import Domain.PasswordEncoderUtil;
-import Domain.Permission;
 import Domain.Product;
 import Domain.Shop;
 import Domain.Facades.UserFacade;
-import Domain.Facades.ShopFacade.Category;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
 import Exceptions.RoleException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
+import enums.Category;
+import enums.Permission;
 
 public class ShopTests {
 

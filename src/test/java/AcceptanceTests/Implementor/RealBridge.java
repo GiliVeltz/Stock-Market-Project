@@ -259,21 +259,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getErrorMessage() == null;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         // TODO Auto-generated method stub

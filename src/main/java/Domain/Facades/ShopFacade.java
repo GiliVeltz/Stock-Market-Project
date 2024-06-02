@@ -11,34 +11,35 @@ import java.util.stream.Collectors;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.PrecentageDiscount;
-import Domain.Permission;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
+import Dtos.ProductDto;
 import Domain.Shop;
 import Domain.ShopOrder;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
+import enums.Category;
+import enums.Permission;
 
 public class ShopFacade {
     private static ShopFacade _shopFacade;
     private ShopRepositoryInterface _shopRepository;
+    private Integer _shopIdCounter;
+    private Integer _productIdCounter;
 
-    public enum Category {
-        GROCERY,
-        CLOTHING,
-        ELECTRONICS,
-        PHARMACY,
-        // Add more categories as needed
-    }
 
     private ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
+        _productIdCounter = 0;
+        _shopIdCounter = 0;
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
         _shopRepository = new MemoryShopRepository(shopsList);
+        _productIdCounter = 0;
+        _shopIdCounter = 0;
     }
 
     // Public method to provide access to the _shopFacade
@@ -63,11 +64,8 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public void openNewShop(Integer shopId, String userName, String bankDetails, String shopAddress) throws Exception {
-        if (isShopIdExist(shopId))
-            throw new Exception(String.format("Shop ID: %d is already exist.", shopId));
-        else
-            _shopRepository.addShop(new Shop(shopId, userName, bankDetails, shopAddress));
+    public void openNewShop(String userName, String bankDetails, String shopAddress) throws Exception {
+            _shopRepository.addShop(new Shop(getNewShopId(), userName, bankDetails, shopAddress));
     }
 
     // close shop only if the user is the founder of the shop
@@ -112,12 +110,27 @@ public class ShopFacade {
 
     }
 
+    // generate new shop id
+    private synchronized Integer getNewShopId(){
+        Integer val = _shopIdCounter;
+        _shopIdCounter++;
+        return val;
+    }
 
-    public void addProductToShop(Integer shopId, Product product, String userName) throws Exception {
+    // generate new product id
+    private synchronized Integer getNewProductId(){
+        Integer val = _productIdCounter;
+        _productIdCounter++;
+        return val;
+    }
+
+    public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws Exception {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
-        else
-            getShopByShopId(shopId).addProductToShop(userName, product);
+        else{
+            Product newProduct = new Product(getNewProductId(), productDto._productName, productDto._category, productDto._price);
+            getShopByShopId(shopId).addProductToShop(userName, newProduct);
+        }
     }
 
     /**

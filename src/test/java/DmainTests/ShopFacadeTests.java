@@ -24,13 +24,14 @@ import org.mockito.Mock;
 
 import Domain.*;
 import Domain.Facades.ShopFacade;
-import Domain.Facades.ShopFacade.Category;
+import Dtos.ProductDto;
 import Exceptions.ShopException;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
 import ServiceLayer.UserService;
 import ch.qos.logback.core.subst.Token;
+import enums.Category;
 
 public class ShopFacadeTests {
 
@@ -52,7 +53,7 @@ public class ShopFacadeTests {
     private Shop _shop1;
     private Shop _shop2;
     private Shop _shop3;
-    private Product _product1;
+    private ProductDto _product1;
     private Product _product2;
     
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
@@ -67,8 +68,8 @@ public class ShopFacadeTests {
         _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
-        _product1 = new Product(1, "name1", Category.CLOTHING, 1.0);
-        _product2 = new Product(2, "name2", Category.CLOTHING, 1.0);
+        _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         try{
             _shop3.addProductToShop("founderName3", _product2);
         }
@@ -84,34 +85,17 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testOpenNewShop_whenShopExist_whenFail() throws Exception {
-        // Arrange - Create a new ShopFacade object
-        _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-
-        // Act - try to open a new shop with an existing ID
-        try {
-            _ShopFacadeUnderTests.openNewShop(_shop1.getShopId(), "newFounderName", "newBank", "newAddress");
-            fail("Opening a shop with an existing ID should fail");
-        } catch (Exception e) {
-            // Assert - Verify that the expected exception is thrown
-            assertEquals(1, _shopsList.size());
-            assertEquals(_shop1.getShopId(), _shopsList.get(0).getShopId());
-        }
-    }
-
-    @Test
     public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to open a new shop with a new ID
-        _ShopFacadeUnderTests.openNewShop(_shop2.getShopId(), _shop2.getFounderName(), _shop2.getBankDetails(),
+        _ShopFacadeUnderTests.openNewShop(_shop2.getFounderName(), _shop2.getBankDetails(),
                 _shop2.getShopAddress());
 
         // Assert - Verify that the shop is added to the list
         assertEquals(1, _ShopFacadeUnderTests.getAllShops().size());
-        assertEquals(_shop2.getShopId(), _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
+        assertEquals(0, _ShopFacadeUnderTests.getAllShops().get(0).getShopId());
     }
 
     @Test
@@ -183,8 +167,7 @@ public class ShopFacadeTests {
         // Assert - Verify that the product is added to the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(_product1.getProductName(),
-                _shop1.getShopProducts().get(_product1.getProductId()).getProductName());
+        assertEquals(_product1._productName, _shop1.getShopProducts().get(0).getProductName());
     }
 
     @Test
