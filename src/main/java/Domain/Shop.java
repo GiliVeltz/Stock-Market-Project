@@ -15,6 +15,7 @@ import Domain.Discounts.Discount;
 import Domain.Facades.ShopFacade.Category;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
+import Dtos.ShopDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
@@ -71,6 +72,10 @@ public class Shop {
                     + ". The Founder of the shop is: " + shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
+    }
+
+    public Shop(int shopId, String founderUsername, ShopDto shopDto) throws ShopException {
+        this(shopId, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
     }
 
     public int getShopId() {
