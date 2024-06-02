@@ -7,12 +7,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.catalina.valves.rewrite.RewriteCond.Condition;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Facades.ShopFacade.Category;
 import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
 import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
@@ -498,8 +500,8 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
-    public Response addShopConditionalDiscount(String token, int shopId, int productId, List<Integer> mustHaveProducts,
-            boolean isPrecentage, double discountAmount, Date expirationDate) {
+    public Response addShopConditionalDiscount(String token, int shopId,
+            ConditionalDiscountDto conditionalDiscountDto) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -511,18 +513,18 @@ public class ShopService {
             // check validity of input parameters
             if (!_shopFacade.isShopIdExist(shopId))
                 throw new StockMarketException("Shop not found");
-            if (isPrecentage && (discountAmount < 0 || discountAmount > 100))
+            if (conditionalDiscountDto.isPrecentage
+                    && (conditionalDiscountDto.discountAmount < 0 || conditionalDiscountDto.discountAmount > 100))
                 throw new StockMarketException("Invalid discount amount - precentage should be between 0% and 100%");
-            if (!isPrecentage && discountAmount < 0)
+            if (!conditionalDiscountDto.isPrecentage && conditionalDiscountDto.discountAmount < 0)
                 throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
             Date currentDate = new Date();
-            if (expirationDate.before(currentDate) || expirationDate.getTime() - currentDate.getTime() < 86400000)
+            if (conditionalDiscountDto.expirationDate.before(currentDate)
+                    || conditionalDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000)
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            int discountId = _shopFacade.addConditionalDiscountToShop(shopId, productId, username, mustHaveProducts,
-                    isPrecentage, discountAmount,
-                    expirationDate);
+            int discountId = _shopFacade.addConditionalDiscountToShop(shopId, username, conditionalDiscountDto);
             resp.setReturnValue(discountId);
             logger.info("Added conditional discount to shop: " + shopId + " with id " + discountId);
             return resp;
