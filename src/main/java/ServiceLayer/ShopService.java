@@ -640,8 +640,6 @@ public class ShopService {
      * 
      * @param token              The session token of the user performing the
      *                           update.
-     * @param username           The username of the user performing the
-     *                           appointment.
      * @param shopId             The ID of the shop where the new manager is being
      *                           added.
      * @param newManagerUsername The username of the new manager being added to the
@@ -649,12 +647,13 @@ public class ShopService {
      * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopManager(String token, String username, Integer shopId, String newManagerUsername,
+    public Response addShopManager(String token, Integer shopId, String newManagerUsername,
             Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
                         response.setReturnValue(true);
@@ -671,7 +670,8 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add manager %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+                    String.format("Failed to add manager %s to shopID %d. Error: ", newManagerUsername, shopId,
+                            e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
