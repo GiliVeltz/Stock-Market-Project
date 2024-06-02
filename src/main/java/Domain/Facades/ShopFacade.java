@@ -102,7 +102,7 @@ public class ShopFacade {
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToReOpen = getShopByShopId(shopId);
-                if (shopToReOpen.checkPermission(userName, Permission.FOUNDER)) {
+                if (shopToReOpen.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     getShopByShopId(shopId).notifyReOpenShop();
                     shopToReOpen.reopenShop();
                 } else {
