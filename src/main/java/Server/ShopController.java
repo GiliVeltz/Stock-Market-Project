@@ -136,4 +136,9 @@ public class ShopController {
             @RequestParam String managerUsername, @RequestBody Set<String> permissions) {
         return _shopService.modifyManagerPermissions(token, shopId, managerUsername, permissions);
     }
+
+    @PostMapping("/displayShopPolicyInfo")
+    public Response displayShopPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.displayShopPolicyInfo(token, shopId);
+    }
 }
