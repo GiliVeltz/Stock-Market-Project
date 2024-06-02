@@ -103,8 +103,8 @@ public class ShopService {
     /**
      * reopen a shop with the specified shop ID and user name.
      * 
-     * @param token    The session token of the user reopening the shop.
-     * @param shopId   The ID of the existing shop to be reopen.
+     * @param token  The session token of the user reopening the shop.
+     * @param shopId The ID of the existing shop to be reopen.
      * @return A response indicating the success or failure of the operation.
      */
     public Response reOpenShop(String token, Integer shopId) {
@@ -167,6 +167,7 @@ public class ShopService {
     /**
      * searches products by their name.
      * 
+     * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName he name of the product.
