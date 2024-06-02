@@ -175,7 +175,8 @@ public class ShopService {
      *         deatails or failure.
      */
     public Response searchProductInShopByName(String token, Integer shopId, String productName) {
-        // TODO: return product dtos here instead of just a string (so it will be easy to render in UI)
+        // TODO: return product dtos here instead of just a string (so it will be easy
+        // to render in UI)
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
@@ -363,23 +364,6 @@ public class ShopService {
         return response;
     }
 
-    // function to check if shop exists
-    public Response isShopIdExist(Integer shopId) {
-        Response response = new Response();
-        try {
-            Boolean isExist = _shopFacade.isShopIdExist(shopId);
-            response.setReturnValue(isExist);
-            logger.info(String.format("Shop ID: %d exists: %b", shopId, isExist));
-
-        } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to check if shopID %d exists. Error: ", shopId, e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
-        return response;
-    }
-
     public Response isShopOwner(Integer shopId, String userId) {
         Response response = new Response();
         try {
@@ -418,8 +402,7 @@ public class ShopService {
                     return response;
                 }
                 // check if the shop exist with
-                Response isShopExistResponse = isShopIdExist(shopId);
-                if (isShopExistResponse.getErrorMessage() != null) {
+                if (!_shopFacade.isShopIdExist(shopId)) {
                     response.setErrorMessage("Shop not found");
                     logger.log(Level.SEVERE, "Shop not found");
                     return response;
