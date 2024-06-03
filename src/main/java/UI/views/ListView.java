@@ -15,8 +15,8 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 
 @PageTitle("list")
-@Route(value = "")
-@RouteAlias(value = "")
+@Route(value = "/example")
+@RouteAlias(value = "/example")
 public class ListView extends VerticalLayout {
 
     public ListView() {
