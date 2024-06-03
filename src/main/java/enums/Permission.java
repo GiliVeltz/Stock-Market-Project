@@ -1,4 +1,4 @@
-package Domain;
+package enums;
 /**
  * This enum represents the permissions that a user with a role in a specific shop has. 
  */

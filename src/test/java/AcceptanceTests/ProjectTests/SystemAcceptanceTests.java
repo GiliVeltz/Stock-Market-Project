@@ -45,22 +45,22 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of adding a new external service to the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddExternalService() {
-        assertTrue(_bridge.testAddExternalService("newSerivceName", "peopleInfo", 111) ); // success
-        assertFalse(_bridge.testAddExternalService("existSerivce", "peopleInfo", 222) ); // fail - already exist
-        assertFalse(_bridge.testAddExternalService("", "peopleInfo", 222) ); // fail - empty name
-        assertFalse(_bridge.testAddExternalService("existSerivce", "", 222) ); // fail - empty info person
+        assertTrue(_bridge.testAddExternalService("newSerivceName", "name", "phone", 111) ); // success
+        assertFalse(_bridge.testAddExternalService("existSerivce", "name", "phone", 222) ); // fail - already exist
+        assertFalse(_bridge.testAddExternalService("", "name", "phone", 222) ); // fail - empty name
+        assertFalse(_bridge.testAddExternalService("existSerivce", "", "", 222) ); // fail - empty info person
     }
     
     // Test senario of change info of external service in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testChangeExternalService() {
-        assertTrue(_bridge.testChangeExternalService("111", "newSerivceName", "peopleInfo") ); // success
-        assertFalse(_bridge.testChangeExternalService("222", "newSerivceName", "success") ); // fail - non exist external service with this id in the system
-        assertFalse(_bridge.testChangeExternalService("222", "", "peopleInfo") ); // fail - empty name
-        assertFalse(_bridge.testChangeExternalService("222", "newSerivceName", "") ); // fail - empty info person
+        assertTrue(_bridge.testChangeExternalService(111, "newSerivceName", "name", "phone") ); // success
+        assertFalse(_bridge.testChangeExternalService(222, "newSerivceName", "name", "phone") ); // fail - non exist external service with this id in the system
+        assertFalse(_bridge.testChangeExternalService(222, "", "name", "phone") ); // fail - empty name
+        assertFalse(_bridge.testChangeExternalService(222, "newSerivceName", "", "") ); // fail - empty info person
     }
 }

@@ -7,14 +7,20 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.catalina.valves.rewrite.RewriteCond.Condition;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Domain.Facades.ShopFacade.Category;
+import Dtos.ProductDto;
+import Dtos.ProductDto;
+import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
+import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
 import Exceptions.StockMarketException;
+import enums.Category;
 
 @Service
 public class ShopService {
@@ -39,19 +45,18 @@ public class ShopService {
     /**
      * Opens a new shop with the specified shop ID and user name.
      * 
-     * @param shopId      The ID of the new shop to be opened.
-     * @param founder     The name of the user opening the shop (founder).
+     * @param token       The session token of the user opening the shop.
      * @param bankDetails The bank details of the shop.
      * @param shopAddress The address of the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response openNewShop(String token, String bankDetails, String shopAddress) {
+    public Response openNewShop(String token, ShopDto shopDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String founder = _tokenService.extractUsername(token);
-                    int shopId = _shopFacade.openNewShop(founder, bankDetails, shopAddress);
+                    int shopId = _shopFacade.openNewShop(founder, shopDto);
                     logger.info(String.format("New shop created by: %s with Shop ID: %d", founder, shopId));
                 } else {
                     throw new Exception("Only register users can open shop.");
@@ -72,19 +77,20 @@ public class ShopService {
     /**
      * Close a shop with the specified shop ID and user name.
      * 
-     * @param shopId   The ID of the existing shop to be closed.
-     * @param userName The name of the user closing the shop (founder).
+     * @param token  The session token of the user closing the shop.
+     * @param shopId The ID of the existing shop to be closed.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response closeShop(String token, Integer shopId, String userName) {
+    public Response closeShop(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
-                    throw new Exception("User is not register.");
+                    throw new Exception("User is not registered or not logged in.");
                 }
             } else {
                 throw new Exception("Invalid session token.");
@@ -92,7 +98,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to close shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to close shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -102,14 +108,15 @@ public class ShopService {
     /**
      * reopen a shop with the specified shop ID and user name.
      * 
-     * @param shopId   The ID of the existing shop to be reopen.
-     * @param userName The name of the user closing the shop (founder).
+     * @param token  The session token of the user reopening the shop.
+     * @param shopId The ID of the existing shop to be reopen.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response reOpenShop(String token, Integer shopId, String userName) {
+    public Response reOpenShop(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.reOpenShop(shopId, userName);
                     logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
@@ -122,7 +129,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to reopenn shopID %d by user %s. Error: ", shopId, userName, e.getMessage()));
+                    String.format("Failed to reopenn shopID %d. Error: ", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -132,19 +139,19 @@ public class ShopService {
     /**
      * Adds a product to the specified shop.
      * 
-     * @param shopId   The ID of the shop to which the product will be added.
-     * @param userName The name of the user adding the product.
-     * @param product  The product to be added to the shop.
+     * @param shopId     The ID of the shop to which the product will be added.
+     * @param userName   The name of the user adding the product.
+     * @param productDto The product to be added to the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response addProductToShop(String token, Integer shopId, String userName, Product product) {
+    public Response addProductToShop(String token, Integer shopId, String userName, ProductDto productDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
-                    _shopFacade.addProductToShop(shopId, product, userName);
+                    _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
-                            product.getProductName(), product.getProductId(), userName, shopId));
+                            productDto._productName, userName, shopId));
                 } else {
                     throw new Exception(String.format("User %s does not have permissions", userName));
                 }
@@ -154,8 +161,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: %d to shopID %d by user %s. Error: ",
-                    product.getProductName(),
-                    product.getProductId(), shopId, userName, e.getMessage()));
+                    productDto._productName, shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -165,6 +171,7 @@ public class ShopService {
     /**
      * searches products by their name.
      * 
+     * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName he name of the product.
@@ -172,6 +179,8 @@ public class ShopService {
      *         deatails or failure.
      */
     public Response searchProductInShopByName(String token, Integer shopId, String productName) {
+        // TODO: return product dtos here instead of just a string (so it will be easy
+        // to render in UI)
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
@@ -359,23 +368,6 @@ public class ShopService {
         return response;
     }
 
-    // function to check if shop exists
-    public Response isShopIdExist(Integer shopId) {
-        Response response = new Response();
-        try {
-            Boolean isExist = _shopFacade.isShopIdExist(shopId);
-            response.setReturnValue(isExist);
-            logger.info(String.format("Shop ID: %d exists: %b", shopId, isExist));
-
-        } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to check if shopID %d exists. Error: ", shopId, e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
-        return response;
-    }
-
     public Response isShopOwner(Integer shopId, String userId) {
         Response response = new Response();
         try {
@@ -414,8 +406,7 @@ public class ShopService {
                     return response;
                 }
                 // check if the shop exist with
-                Response isShopExistResponse = isShopIdExist(shopId);
-                if (isShopExistResponse.getErrorMessage() != null) {
+                if (!_shopFacade.isShopIdExist(shopId)) {
                     response.setErrorMessage("Shop not found");
                     logger.log(Level.SEVERE, "Shop not found");
                     return response;
@@ -429,13 +420,8 @@ public class ShopService {
                     return response;
                 } else {
                     // get purchase history of a shop
-                    response = getPurchaseHistory(shopId);
-                    if (response.getErrorMessage() != null) {
-                        response.setErrorMessage("Failed to get purchase history from shop: " + shopId);
-                        logger.log(Level.SEVERE, "Failed to get purchase history from shop: " + shopId);
-                        return response;
-                    }
-
+                    List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
+                    response.setReturnValue(purchasHistory);
                 }
 
             } else {
@@ -446,23 +432,6 @@ public class ShopService {
             logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
         }
         // TODO: check with Spring how to return this response as a data object
-        return response;
-    }
-
-    // function to get a purchase from shopFacade by shop ID
-    private Response getPurchaseHistory(Integer shopId) {
-        Response response = new Response();
-        try {
-            List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
-            response.setReturnValue(purchasHistory);
-            logger.info(String.format("Purchase history retrieved for Shop ID: %d", shopId));
-
-        } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to retrieve purchase history for shopID %d. Error: ", shopId,
-                    e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-
         return response;
     }
 
@@ -480,9 +449,7 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
-    public Response addShopBasicDiscount(String token, int shopId, int productId, boolean isPrecentage,
-            double discountAmount,
-            Date expirationDate) {
+    public Response addShopBasicDiscount(String token, int shopId, BasicDiscountDto basicDiscountDto) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -494,17 +461,17 @@ public class ShopService {
             // check validity of input parameters
             if (!_shopFacade.isShopIdExist(shopId))
                 throw new StockMarketException("Shop not found");
-            if (isPrecentage && (discountAmount < 0 || discountAmount > 100))
+            if (basicDiscountDto.isPrecentage
+                    && (basicDiscountDto.discountAmount < 0 || basicDiscountDto.discountAmount > 100))
                 throw new StockMarketException("Invalid discount amount - precentage should be between 0% and 100%");
-            if (!isPrecentage && discountAmount < 0)
+            if (!basicDiscountDto.isPrecentage && basicDiscountDto.discountAmount < 0)
                 throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
             Date currentDate = new Date();
-            if (expirationDate.getTime() - currentDate.getTime() < 86400000)
+            if (basicDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000)
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            int discountId = _shopFacade.addBasicDiscountToShop(shopId, productId, username, isPrecentage,
-                    discountAmount, expirationDate);
+            int discountId = _shopFacade.addBasicDiscountToShop(shopId, username, basicDiscountDto);
             resp.setReturnValue(discountId);
             logger.info("Added basic discount to shop: " + shopId + " with id " + discountId);
             return resp;
@@ -534,8 +501,8 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
-    public Response addShopConditionalDiscount(String token, int shopId, int productId, List<Integer> mustHaveProducts,
-            boolean isPrecentage, double discountAmount, Date expirationDate) {
+    public Response addShopConditionalDiscount(String token, int shopId,
+            ConditionalDiscountDto conditionalDiscountDto) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -547,18 +514,18 @@ public class ShopService {
             // check validity of input parameters
             if (!_shopFacade.isShopIdExist(shopId))
                 throw new StockMarketException("Shop not found");
-            if (isPrecentage && (discountAmount < 0 || discountAmount > 100))
+            if (conditionalDiscountDto.isPrecentage
+                    && (conditionalDiscountDto.discountAmount < 0 || conditionalDiscountDto.discountAmount > 100))
                 throw new StockMarketException("Invalid discount amount - precentage should be between 0% and 100%");
-            if (!isPrecentage && discountAmount < 0)
+            if (!conditionalDiscountDto.isPrecentage && conditionalDiscountDto.discountAmount < 0)
                 throw new StockMarketException("Invalid discount amount - fixed amount should be positive");
             Date currentDate = new Date();
-            if (expirationDate.before(currentDate) || expirationDate.getTime() - currentDate.getTime() < 86400000)
+            if (conditionalDiscountDto.expirationDate.before(currentDate)
+                    || conditionalDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000)
                 throw new StockMarketException("Invalid expiration date - should be at least one day into the future");
 
             String username = _tokenService.extractUsername(token);
-            int discountId = _shopFacade.addConditionalDiscountToShop(shopId, productId, username, mustHaveProducts,
-                    isPrecentage, discountAmount,
-                    expirationDate);
+            int discountId = _shopFacade.addConditionalDiscountToShop(shopId, username, conditionalDiscountDto);
             resp.setReturnValue(discountId);
             logger.info("Added conditional discount to shop: " + shopId + " with id " + discountId);
             return resp;
@@ -570,7 +537,7 @@ public class ShopService {
         }
     }
 
-    public Response removeDiscount(String token, int shopId, int productId) {
+    public Response removeDiscount(String token, int shopId, int discountId) {
         Response resp = new Response();
         try {
             // check for user validity
@@ -584,7 +551,7 @@ public class ShopService {
                 throw new StockMarketException("Shop not found");
 
             String username = _tokenService.extractUsername(token);
-            _shopFacade.removeDiscountFromShop(shopId, productId, username);
+            _shopFacade.removeDiscountFromShop(shopId, discountId, username);
             resp.setReturnValue("Removed discount");
             logger.info("Removed discount from shop: " + shopId);
             return resp;
@@ -600,33 +567,30 @@ public class ShopService {
      * Updates the quantity of a specified product in a shop.
      * 
      * @param token         The session token of the user performing the update.
-     * @param userName      The username of the user performing the update.
      * @param shopId        The ID of the shop where the product quantity is being
      *                      updated.
      * @param productId     The ID of the product whose quantity is being updated.
      * @param productAmount The new quantity amount of the product.
      * @return A Response object indicating the success or failure of the operation.
-     * @throws StockMarketException if the session token is invalid, the user is not
-     *                              logged in, or the shop ID does not exist.
      */
-    public Response updateProductQuantity(String token, String userName, Integer shopId, Integer productId,
-            Integer productAmount) throws StockMarketException {
+    public Response updateProductQuantity(String token, Integer shopId, Integer productId, Integer productAmount) {
         Response resp = new Response();
-        if (!_tokenService.validateToken(token))
-            throw new StockMarketException("Invalid session token.");
-        if (!_tokenService.isUserAndLoggedIn(token))
-            throw new StockMarketException("User is not logged in");
-        if (!_shopFacade.isShopIdExist(shopId))
-            throw new StockMarketException(String.format("Shop Id: %d not found", shopId));
-
         try {
+            if (!_tokenService.validateToken(token))
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token))
+                throw new StockMarketException("User is not logged in");
+            if (!_shopFacade.isShopIdExist(shopId))
+                throw new StockMarketException(String.format("Shop Id: %d not found", shopId));
+
+            String userName = _tokenService.extractUsername(token);
             _shopFacade.updateProductQuantity(userName, shopId, productId, productAmount);
             logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
             return resp;
         } catch (Exception e) {
             resp.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
             logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
-                    userName, shopId, e.getMessage()), e);
+                    productId, shopId, e.getMessage()), e);
             return resp;
         }
     }
@@ -635,18 +599,18 @@ public class ShopService {
      * Adds a new owner to a shop.
      * 
      * @param token            The session token of the user performing the update.
-     * @param username         The username of the user performing the update.
      * @param shopId           The ID of the shop where the new owner is being
      *                         added.
      * @param newOwnerUsername The username of the new owner being added to the
      *                         shop.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopOwner(String token, String username, Integer shopId, String newOwnerUsername) {
+    public Response addShopOwner(String token, Integer shopId, String newOwnerUsername) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
@@ -663,7 +627,8 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add owner %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+                    String.format("Failed to add owner %s to shopID %d. Error: ", newOwnerUsername, shopId,
+                            e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -675,8 +640,6 @@ public class ShopService {
      * 
      * @param token              The session token of the user performing the
      *                           update.
-     * @param username           The username of the user performing the
-     *                           appointment.
      * @param shopId             The ID of the shop where the new manager is being
      *                           added.
      * @param newManagerUsername The username of the new manager being added to the
@@ -684,12 +647,13 @@ public class ShopService {
      * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopManager(String token, String username, Integer shopId, String newManagerUsername,
+    public Response addShopManager(String token, Integer shopId, String newManagerUsername,
             Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
                         response.setReturnValue(true);
@@ -706,7 +670,8 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add manager %s to shopID %d. Error: ", username, shopId, e.getMessage()));
+                    String.format("Failed to add manager %s to shopID %d. Error: ", newManagerUsername, shopId,
+                            e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -717,17 +682,17 @@ public class ShopService {
      * Fires a manager from a shop.
      * 
      * @param token           The session token of the user performing the update.
-     * @param username        The username of the user performing the fire.
      * @param shopId          The ID of the shop where the manager is being fired.
      * @param managerUsername The username of the manager being fired from the shop.
      * @return A Response object indicating the success and the set of usernames
      *         fired or failure of the operation.
      */
-    public Response fireShopManager(String token, String username, Integer shopId, String managerUsername) {
+    public Response fireShopManager(String token, Integer shopId, String managerUsername) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         Set<String> fired = _shopFacade.fireShopManager(username, shopId, managerUsername);
                         response.setReturnValue(fired);
@@ -756,17 +721,17 @@ public class ShopService {
     /**
      * Resigns from a role in a shop.
      * 
-     * @param token    The session token of the user performing the resignation.
-     * @param username The username of the user resigning from the role.
-     * @param shopId   The ID of the shop where the user is resigning from the role.
+     * @param token  The session token of the user performing the resignation.
+     * @param shopId The ID of the shop where the user is resigning from the role.
      * @return A Response object indicating the success and the set of usernames
      *         resigned or failure of the operation.
      */
-    public Response resignFromRole(String token, String username, Integer shopId) {
+    public Response resignFromRole(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         Set<String> resigned = _shopFacade.resignFromRole(username, shopId);
                         response.setReturnValue(true);
@@ -797,7 +762,6 @@ public class ShopService {
      * 
      * @param token           The session token of the user performing the
      *                        modification.
-     * @param username        The username of the user performing the modification.
      * @param shopId          The ID of the shop where the manager's permissions are
      *                        being modified.
      * @param managerUsername The username of the manager whose permissions are
@@ -805,12 +769,13 @@ public class ShopService {
      * @param permissions     The new set of permissions for the manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response modifyManagerPermissions(String token, String username, Integer shopId, String managerUsername,
+    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername,
             Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(username)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
                         _shopFacade.modifyManagerPermissions(username, shopId, managerUsername, permissions);
                         response.setReturnValue(true);

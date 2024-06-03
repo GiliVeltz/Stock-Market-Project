@@ -5,13 +5,23 @@ import java.util.logging.Logger;
 import Domain.ExternalServices.ExternalService;
 import Exceptions.ShippingFailedException;
 
-public class AdapterSupply implements ExternalService {
+public class AdapterSupply extends ExternalService {
 
+    // private fields
+    private static AdapterSupply _AdapterSupply;
     private ProxySupply _supplyService;
     private static final Logger logger = Logger.getLogger(AdapterSupply.class.getName());
 
-    public AdapterSupply() {
+    private AdapterSupply(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+        super(id, newSerivceName, informationPersonName, informationPersonPhone);
+        _AdapterSupply = this;
         _supplyService = new ProxySupply();
+    }
+
+    public static AdapterSupply getAdapterPayment() {
+        if(_AdapterSupply == null)
+        _AdapterSupply = new AdapterSupply(-1, "SupplyService", "Tal", "123456789");
+        return _AdapterSupply;
     }
 
     @Override
@@ -33,5 +43,4 @@ public class AdapterSupply implements ExternalService {
         logger.info("Delivering the cart");
         _supplyService.deliver(clientAddress, shopAddress);
     }
-
 }

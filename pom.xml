@@ -37,7 +37,7 @@
             <version>5.8.1</version> <!-- Updated to the latest available version -->
             <scope>compile</scope>
         </dependency>
- 
+
         <!-- Junit -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
