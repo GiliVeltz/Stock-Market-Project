@@ -11,3 +11,9 @@ Link to exel Use-Cases: https://docs.google.com/spreadsheets/d/1-20lpZteCvqh29Lt
 ## How to run
 
 execute the following command from the terminal to run the server: `mvn spring-boot:run`
+
+## Running the application
+
+The project is a standard Maven project. To run it from the command line,
+type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
+http://localhost:8080 in your browser.
