@@ -1,6 +1,7 @@
 package DmainTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,16 @@ public class ProductTest {
 
         // Assert
         assertEquals(9, product.getProductQuantity());
+    }
+
+    @Test
+    public void testPurchaseProduct_whenProductOutOfStock_thenExceptionThrown() {
+        // Arrange - Create a new Product object.
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(0);
+
+        // Act & Assert
+        assertThrows(ProductOutOfStockExepction.class, () -> {product.purchaseProduct();});
     }
 
 }
