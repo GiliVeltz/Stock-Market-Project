@@ -203,7 +203,8 @@ public class ShopFacadeTests {
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
+    // TODO: GILI: check why this test failing, and fix it. 
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws Exception {
@@ -219,7 +220,7 @@ public class ShopFacadeTests {
                 productCategory);
 
         // Assert - Verify that the products are retrieved from all shops
-        assertEquals(2, productsByShop.size());
+        assertEquals(2, productsByShop.size()); 
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertTrue(productsByShop.containsKey(_shop2.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
@@ -227,6 +228,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
@@ -286,6 +288,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenCategoryIsInvalid_thenRaiseError() throws Exception {
@@ -307,6 +310,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenCategoryIsValid_thenSuccess() throws Exception {
@@ -328,6 +332,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
@@ -350,6 +355,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws Exception {
@@ -372,6 +378,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws Exception {
@@ -393,6 +400,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws Exception {
@@ -414,6 +422,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsAreValid_thenSuccess() throws Exception {
@@ -440,7 +449,6 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer orderId = 1;
         Integer shopId = 1;
         String userName = "not_admin";
         String token = "Admin_Token";
@@ -454,7 +462,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
 
         // Act - try to get the purchase history for the shop owner
         _shop1.addOrderToOrderHistory(shopOrder);
@@ -484,7 +492,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -514,7 +522,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -543,7 +551,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(orderId, shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
 
         // Act
@@ -571,7 +579,7 @@ public class ShopFacadeTests {
         _shop1.addProductToShop("founderName1", testProduct);
         testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
 
-        ShopOrder testShopOrder = new ShopOrder(orderId, shopId, testShoppingBasket);
+        ShopOrder testShopOrder = new ShopOrder(shopId, testShoppingBasket);
 
         // Act
         _shop1.addOrderToOrderHistory(testShopOrder);
