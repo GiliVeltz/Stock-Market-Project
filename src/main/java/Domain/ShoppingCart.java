@@ -36,7 +36,8 @@ public class ShoppingCart {
     // TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();;
+        _paymentMethod = AdapterPayment.getAdapterPayment();
+        ;
         _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
     }
@@ -48,14 +49,13 @@ public class ShoppingCart {
     public double getCartPriceUser(List<Integer> basketsToBuy) {
         double overallPrice = 0;
 
-        try{
+        try {
             for (Integer basketNum : basketsToBuy) {
                 ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
                 double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
                 overallPrice += amountToPay;
             }
-        }
-        catch (StockMarketException e) {
+        } catch (StockMarketException e) {
             logger.log(Level.SEVERE, "ShoppingCart - getCartPriceUser - StockMarketException: " + e.getMessage(), e);
         }
         return overallPrice;
@@ -64,13 +64,12 @@ public class ShoppingCart {
     public double getCartPriceGuest() {
         double overallPrice = 0;
 
-        try{
+        try {
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
                 double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
                 overallPrice += amountToPay;
             }
-        }
-        catch (StockMarketException e) {
+        } catch (StockMarketException e) {
             logger.log(Level.SEVERE, "ShoppingCart - getCartPriceGuest - StockMarketException: " + e.getMessage(), e);
         }
         return overallPrice;
@@ -100,14 +99,27 @@ public class ShoppingCart {
         try {
             _paymentMethod.checkIfPaymentOk(details.cardNumber);
             _supplyMethod.checkIfDeliverOk(details.address);
-            
+
             _paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
 
+            List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
             for (Integer basketNum : details.getBasketsToBuy()) {
                 ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
-                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to deliver too.
+                shoppingBasketsForOrder.add(shoppingBasket);
+                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
+                                                                                         // deliver too.
             }
-            
+
+            if (_user != null) {
+                Order order = new Order(shoppingBasketsForOrder);
+                _user.addOrder(order);
+            }
+
+            for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
+                ShopOrder shopOrder = new ShopOrder(shoppingBasket.getShop().getShopId(), shoppingBasket);
+                shoppingBasket.getShop().addOrderToOrderHistory(shopOrder);
+            }
+
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
