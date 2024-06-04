@@ -44,4 +44,18 @@ public class ProductTest {
         assertThrows(ProductOutOfStockExepction.class, () -> {product.purchaseProduct();});
     }
 
+    @Test
+    public void testCancelPurchase_whenProductPurchased_thenStockUpdated() throws ProductOutOfStockExepction {
+        // Arrange - Create a new Product object.
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(10);
+        product.purchaseProduct();
+
+        // Act
+        product.cancelPurchase();
+
+        // Assert
+        assertEquals(10, product.getProductQuantity());
+    }
+
 }
