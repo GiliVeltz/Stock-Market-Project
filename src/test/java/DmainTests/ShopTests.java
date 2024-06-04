@@ -84,46 +84,84 @@ public class ShopTests {
         assertEquals(true, result);
     }
 
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testCheckPermission_WhenUsernameIsNull_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = null;
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkPermission(username, Permission.ADD_PRODUCT);
+        try{
+            // Act
+            shop.checkPermission(username, Permission.ADD_PRODUCT); 
+            fail("null username should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
     }
 
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testCheckPermission_WhenUsernameDoesNotExist_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = "nonExistingUser";
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkPermission(username, Permission.ADD_PRODUCT);
+        try
+        {
+            // Act
+            shop.checkPermission(username, Permission.ADD_PRODUCT);
+            fail("Not exist username should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    public void testCheckPermission_WhenUsernameExistsButDoesNotHavePermission_ReturnsFalse() throws ShopException {
+        // Arrange
+        boolean result = true;
+        String username = "user1";
+        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+        try{
+            // Act
+            shop.checkPermission(username, Permission.ADD_PRODUCT);
+            fail("Username without Permission should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
     }
 
-    // TODO: TEST IS NOT PASSING
+    // TODO: Vladi add test check permission for user name with diffrent permissions 
+    // trying to use shop.addRuleToShopPolicy
     @Disabled
     @Test
-    public void testCheckPermission_WhenUsernameExistsButDoesNotHavePermission_ReturnsFalse() throws ShopException {
+    public void testCheckPermission_WhenUsernameExistsInShopRoleButDoesNotHavePermission_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkPermission(username, Permission.ADD_PRODUCT);
+        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+        try{
+            // Act
+            shop.checkPermission(username, Permission.ADD_PRODUCT);
+            fail("Username without Permission should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
@@ -142,52 +180,69 @@ public class ShopTests {
         assertEquals(true, result);
     }
 
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testCheckAtLeastOnePermission_WhenUsernameIsNull_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = null;
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkAtLeastOnePermission(username, permissions);
+        try{
+            // Act
+            shop.checkAtLeastOnePermission(username, permissions);
+            fail("null username should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
     }
 
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testCheckAtLeastOnePermission_WhenUsernameDoesNotExist_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = "nonExistingUser";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkAtLeastOnePermission(username, permissions);
+
+        try{
+            // Act
+            shop.checkAtLeastOnePermission(username, permissions);
+            fail("nonExistingUser username should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
     }
 
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testCheckAtLeastOnePermission_WhenUsernameExistsButDoesNotHavePermission_ReturnsFalse() throws ShopException {
         // Arrange
+        boolean result = true;
         String username = "user1";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.DELETE_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        
-        // Act
-        boolean result = shop.checkAtLeastOnePermission(username, permissions);
+        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+           
+        try{
+            // Act
+            shop.checkAtLeastOnePermission(username, permissions);
+            fail("Username without role should raise an error");
+        }
+        catch(Exception e)
+        {
+            result = false;
+        }
         
         // Assert
         assertFalse(result);
@@ -227,7 +282,7 @@ public class ShopTests {
         assertTrue(shop.checkPermission(newManagerUserName, Permission.ADD_PRODUCT));
     }
     
-    // TODO: TEST IS NOT PASSING
+    // TODO: Vladi permission test 
     @Disabled
     @Test
     public void testAppointManager_WhenUserDoesNotHavePermission_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
@@ -308,6 +363,7 @@ public class ShopTests {
     }
     
     // TODO: TEST IS NOT PASSING
+    // TODO: Vladi permission test
     @Disabled
     @Test
     public void testAppointOwner_WhenUserDoesNotHavePermission_ShouldThrowPermissionException() throws ShopException, PermissionException, RoleException {
@@ -338,6 +394,7 @@ public class ShopTests {
     }
     
     // TODO: TEST IS NOT PASSING
+    // TODO: Vladi permission test
     @Disabled
     @Test
     public void testAppointOwner_WhenNewOwnerIsManager_ShouldThrowPermissionException() throws StockMarketException {
@@ -443,6 +500,7 @@ public class ShopTests {
     }
     
     // TODO: TEST IS NOT PASSING
+    // TODO: Vladi permission test
     @Disabled
     @Test
     public void testmodifyPermissions_WhenUserHasRoleAndPermissionsAreValid_ShouldmodifyPermissions() throws StockMarketException {
@@ -463,6 +521,7 @@ public class ShopTests {
     }
     
     // TODO: TEST IS NOT PASSING
+    // TODO: Vladi permission test
     @Disabled
     @Test
     public void testmodifyPermissions_WhenUserHasRoleAndRoleExists_ShouldmodifyPermissions() throws StockMarketException {
