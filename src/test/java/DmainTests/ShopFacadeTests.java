@@ -203,7 +203,8 @@ public class ShopFacadeTests {
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
+    // TODO: GILI: check why this test failing, and fix it. 
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws Exception {
@@ -219,7 +220,7 @@ public class ShopFacadeTests {
                 productCategory);
 
         // Assert - Verify that the products are retrieved from all shops
-        assertEquals(2, productsByShop.size());
+        assertEquals(2, productsByShop.size()); 
         assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertTrue(productsByShop.containsKey(_shop2.getShopId()));
         assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
@@ -227,6 +228,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
@@ -286,6 +288,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenCategoryIsInvalid_thenRaiseError() throws Exception {
@@ -307,6 +310,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductInShopByCategory_whenCategoryIsValid_thenSuccess() throws Exception {
@@ -328,6 +332,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
@@ -350,6 +355,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws Exception {
@@ -372,6 +378,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws Exception {
@@ -393,6 +400,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws Exception {
@@ -414,6 +422,7 @@ public class ShopFacadeTests {
     }
 
     // TODO: GILI: check why this test failing, and fix it.
+    // Bug number #308
     @Disabled
     @Test
     public void testGetProductsInShopByKeywords_whenKeywordsAreValid_thenSuccess() throws Exception {
