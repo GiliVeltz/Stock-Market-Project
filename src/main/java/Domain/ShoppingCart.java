@@ -37,9 +37,9 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
-        ;
         _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
+        _user = null;
     }
 
     /*
@@ -228,6 +228,10 @@ public class ShoppingCart {
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
         }
+    }
+
+    public void setOwner(User user) {
+        _user = user;
     }
 
 }

@@ -1027,7 +1027,7 @@ public class ShopTests {
     public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.DELETE_PRODUCT);
@@ -1043,7 +1043,7 @@ public class ShopTests {
     public void testsAddProductToShop_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
@@ -1060,7 +1060,7 @@ public class ShopTests {
     public void testsAddProductToShop_whenProductAlreadyExists_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
@@ -1077,7 +1077,7 @@ public class ShopTests {
     public void testUpdateProductQuantity_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.DELETE_PRODUCT);
@@ -1093,7 +1093,7 @@ public class ShopTests {
     public void testUpdateProductQuantity_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
@@ -1111,7 +1111,7 @@ public class ShopTests {
     public void testUpdateProductQuantity_whenUserHasPermission_thenSucceeds() throws Exception {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product product = new Product("product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);

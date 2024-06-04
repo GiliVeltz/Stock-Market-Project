@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
 import Domain.ShoppingCart;
+import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Dtos.PurchaseCartDetailsDto;
@@ -51,9 +52,11 @@ public class ShoppingCartFacade {
      * If user don't have a cart (Just registerd/ already purchase the cart) - we
      * will use it's guest cart
      */
-    public void addCartForUser(String guestID, String username) {
+    public void addCartForUser(String guestID, String username) throws Exception {
         if (_cartsRepo.getCartByUsername(username) == null) {
-            _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
+            ShoppingCart cart = _guestsCarts.get(guestID);
+            cart.setOwner(UserFacade.getUserFacade().getUserByUsername(username));
+            _cartsRepo.addCartForUser(username, cart);
         }
     }
 

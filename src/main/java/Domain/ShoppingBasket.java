@@ -40,12 +40,18 @@ public class ShoppingBasket implements Cloneable {
      * @throws ProdcutPolicyException 
      */
     public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException {
-        logger.log(Level.FINE,
+        if (user != null) {
+            logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
-        _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
-        _productIdList.add(productId);
-        logger.log(Level.FINE,
+            _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
+            _productIdList.add(productId);
+            logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        }
+        else {
+            _productIdList.add(productId);
+        }
+        
     }
 
     public void removeProductFromShoppingBasket(Integer productId) {

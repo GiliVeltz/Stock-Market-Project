@@ -1,17 +1,10 @@
 package Domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import Exceptions.StockMarketException;
 
 //class that represents an order for the shop
-@Entity
 public class ShopOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    IDGenerator idGen = IDGenerator.getInstance();
     private Integer _orderId;
     private ShoppingBasket _shoppingBasket;
     private double _totalOrderAmount;
@@ -19,6 +12,7 @@ public class ShopOrder {
     // Constructor
     //TODO - Metar: check why not applying the clone method of ShoppingBasket
     public ShopOrder(Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
+        this._orderId = idGen.getNextID();
         _shoppingBasket = shoppingBasket.clone();
         _totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
     }
