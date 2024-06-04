@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Exceptions.*;
+import enums.Permission;
 
 /** 
  * This class represents the role of a user in a specific shop.

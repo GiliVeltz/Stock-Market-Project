@@ -10,13 +10,16 @@ import Domain.Shop;
 public class MemoryShopRepository implements ShopRepositoryInterface {
     private Map<Integer, Shop> _shops;
     private int _shopIdCounter;
+    private int _productIdCounter;
 
     public MemoryShopRepository(List<Shop> shops) {
         _shops = new HashMap<>();
         _shopIdCounter = 0;
+        _productIdCounter = 0;
         for (Shop shop : shops) {
             _shops.put(shop.getShopId(), shop);
             _shopIdCounter++;
+            _productIdCounter += shop.getAmoutOfProductInShop();
         }
     }
 
@@ -44,5 +47,8 @@ public class MemoryShopRepository implements ShopRepositoryInterface {
     public synchronized int getUniqueShopID() {
         return _shopIdCounter++;
     }
+
+    @Override
+    public synchronized int getUniqueProductID() { return _productIdCounter++;}
 
 }
