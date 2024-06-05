@@ -116,12 +116,12 @@ public class ShoppingCartFacade {
             allBaskets.add(i + 1);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details);
+        _guestsCarts.get(guestID).purchaseCart(details, 1); // To be changed to real order id.
     }
 
     public void purchaseCartUser(String username, PurchaseCartDetailsDto details)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details);
+        _cartsRepo.getCartByUsername(username).purchaseCart(details, 1); // To be changed to real order id.
     }
 }

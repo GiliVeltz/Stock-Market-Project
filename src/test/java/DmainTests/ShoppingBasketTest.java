@@ -38,10 +38,10 @@ public class ShoppingBasketTest {
         User buyer = new User("username1", "password1", "email1", date);
         Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
-        Product product = new Product("product1", Category.ELECTRONICS, 100.0);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product);
-        Product product2 = new Product("product2", Category.ELECTRONICS, 100.0);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(10);
         shop.addProductToShop("ownerUsername", product2);
         shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
@@ -67,10 +67,10 @@ public class ShoppingBasketTest {
         User buyer = new User("username1", "password1", "email1", date);
         Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
-        Product product = new Product("product1", Category.ELECTRONICS, 100.0);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product);
-        Product product2 = new Product("product2", Category.ELECTRONICS, 100.0);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(0);
         shop.addProductToShop("ownerUsername", product2);
         shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
@@ -96,10 +96,10 @@ public class ShoppingBasketTest {
         User buyer = new User("username1", "password1", "email1", date);
         Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
-        Product product = new Product("product1", Category.ELECTRONICS, 100.0);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product);
-        Product product2 = new Product("product2", Category.ELECTRONICS, 100.0);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(1);
         shop.addProductToShop("ownerUsername", product2);
         shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());

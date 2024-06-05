@@ -8,14 +8,13 @@ import Exceptions.StockMarketException;
 
 // calss that represents an order for the user
 public class Order {
-    IDGenerator idGen = IDGenerator.getInstance();
     private Integer _orderId;
     private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> 
     private double _totalOrderAmount;
 
     // Constructor
-    public Order(List<ShoppingBasket> shoppingBasket) throws StockMarketException {
-        this._orderId = idGen.getNextID();
+    public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
+        this._orderId = orderId;
         this._shoppingBasketMap = new HashMap<>();
         setShoppingBasketMap(shoppingBasket);
         this._totalOrderAmount = 0.0;

@@ -118,8 +118,8 @@ public class ShopFacade {
         if (!isShopIdExist(shopId))
             throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
         else{
-            //int productId = _shopRepository.getUniqueProductID();
-            Product newProduct = new Product(productDto._productName, productDto._category, productDto._price);
+            int productId = _shopRepository.getUniqueProductID();
+            Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
             getShopByShopId(shopId).addProductToShop(userName, newProduct);
         }
     }

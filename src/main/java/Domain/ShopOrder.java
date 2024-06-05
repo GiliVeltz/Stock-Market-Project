@@ -4,15 +4,14 @@ import Exceptions.StockMarketException;
 
 //class that represents an order for the shop
 public class ShopOrder {
-    IDGenerator idGen = IDGenerator.getInstance();
     private Integer _orderId;
     private ShoppingBasket _shoppingBasket;
     private double _totalOrderAmount;
 
     // Constructor
     //TODO - Metar: check why not applying the clone method of ShoppingBasket
-    public ShopOrder(Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
-        this._orderId = idGen.getNextID();
+    public ShopOrder(int orderId, Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
+        this._orderId = orderId;
         _shoppingBasket = shoppingBasket.clone();
         _totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();
     }

@@ -59,7 +59,7 @@ public class UserTests {
     public void testAddOrder_whenNewOrder_thenOrderAdded() throws StockMarketException {
         // Arrange - Create a new User object
         User user = new User("john_doe", "password123", "email@example.com", new Date());
-        Order order = new Order(new ArrayList<ShoppingBasket>());
+        Order order = new Order(1, new ArrayList<ShoppingBasket>());
         
         // Act - try to add a new order
         user.addOrder(order);

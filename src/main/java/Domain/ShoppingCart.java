@@ -83,7 +83,7 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details)
+    public void purchaseCart(PurchaseCartDetailsDto details, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         purchaseCartEditStock(details.basketsToBuy);
         Map<Double, String> priceToShopDetails = new HashMap<>();
@@ -111,12 +111,12 @@ public class ShoppingCart {
             }
 
             if (_user != null) {
-                Order order = new Order(shoppingBasketsForOrder);
+                Order order = new Order(ordersId, shoppingBasketsForOrder);
                 _user.addOrder(order);
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
-                ShopOrder shopOrder = new ShopOrder(shoppingBasket.getShop().getShopId(), shoppingBasket);
+                ShopOrder shopOrder = new ShopOrder(ordersId, shoppingBasket.getShop().getShopId(), shoppingBasket);
                 shoppingBasket.getShop().addOrderToOrderHistory(shopOrder);
             }
 

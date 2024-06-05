@@ -10,7 +10,6 @@ import Exceptions.ProductOutOfStockExepction;
 import enums.Category;
 
 public class Product implements Cloneable {
-    IDGenerator idGen = IDGenerator.getInstance();
     private Integer _productId;
     private String _productName;
     private double _price;
@@ -23,8 +22,8 @@ public class Product implements Cloneable {
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Constructor
-    public Product(String productName, Category category, double price) {
-        this._productId = idGen.getNextID();
+    public Product(int productId, String productName, Category category, double price) {
+        this._productId = productId;
         this._productName = productName;
         this._category = category;
         this._price = price;
