@@ -17,6 +17,7 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
 import Dtos.UserDto;
 import Exceptions.ShopException;
+import Exceptions.UserException;
 
 public class UserFacadeTests {
 
@@ -29,6 +30,9 @@ public class UserFacadeTests {
     @Mock
     private PasswordEncoderUtil _passwordEncoderMock;
 
+    @Mock
+    private User _userMock;
+
     // users fields.
     private User _user1 = new User("john_doe", "password123", "john.doe@example.com", new Date());
 
@@ -37,6 +41,7 @@ public class UserFacadeTests {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _registeredUsers = new ArrayList<>();
         _guestIds = new ArrayList<>();
+        _userMock = mock(User.class);
     }
 
     @AfterEach
@@ -70,13 +75,6 @@ public class UserFacadeTests {
         _registeredUsers.add(_user1);
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
-
-        // Act - Set a new username
-        try {
-            _userFacadeUnderTest
-                    .register(new UserDto("john_doe", "password1234", "john.doe@example.co.il", new Date()));
-        } catch (Exception e) {
-        }
 
         // Assert - Verify that the username has been updated
         assertThrowsExactly(Exception.class,
@@ -217,7 +215,193 @@ public class UserFacadeTests {
         String nonExistentUsername = "nonExistentUser";
 
         // Act
-        assertThrows(ShopException.class, () -> _userFacadeUnderTest.getPurchaseHistory(nonExistentUsername));
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.getPurchaseHistory(nonExistentUsername));
     }
 
+    @Test
+    public void testgetUserByUsername_whenUserIsNull_thenError() throws Exception {
+        // Arrange
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        String userIsNull = null;
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.getUserByUsername(userIsNull));
+    }
+
+    @Test
+    public void testgetUserByUsername_whenUserExist_thenSuccess() throws Exception {
+        // Arrange
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+       User ansUser = _userFacadeUnderTest.getUserByUsername("john_doe");
+
+        // Act
+        assertEquals(ansUser.getUserName(),"john_doe");
+    }
+
+    @Test
+    public void testgetUserByUsername_whenUserDoesNotExist_thenError() throws Exception {
+        // Arrange
+        String userTest = "John_lennon";
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.getUserByUsername(userTest));
+    }
+
+    @Test
+    public void testAreCredentialsCorrect_whenUserDoesNotExist_thenError() throws Exception {
+        // Arrange
+        String userTest = "John_lennon";
+        String password = "5555";
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
+    }
+
+    @Test
+    public void testAreCredentialsCorrect_whenUserisNull_thenError() throws Exception {
+        // Arrange
+        String userTest = null;
+        String password = "5555";
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
+    }
+
+    @Test
+    public void testAreCredentialsCorrect_whenCredentislIsCorrect_thenSuccess() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        String password = "5555";
+        _registeredUsers.add(_user1);
+
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_passwordEncoderMock.matches(password, _user1.getEncodedPassword())).thenReturn(true);
+
+        // Act
+        assertTrue( _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
+    }
+
+    @Test
+    public void testAddOrderToUser_whenOrderIsNull_thenError() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        _registeredUsers.add(_user1);
+        Order order = null;
+
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(IllegalArgumentException.class, () -> _userFacadeUnderTest.addOrderToUser(userTest, order));
+    }    
+
+    @Test
+    public void testIsAdmin_whenUserIsNot_thenError() throws Exception {
+        // Arrange
+        String userTest = "notAdmin";
+
+        _registeredUsers.add(_userMock);        
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        when(_userMock.isAdmin()).thenReturn(false);
+        when(_userMock.getUserName()).thenReturn(userTest);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.isAdmin(userTest));
+    }  
+
+    @Test
+    public void testIsAdmin_whenUserIsAdmin_thenSuccess() throws Exception {
+        // Arrange
+        String userTest = "Admin";
+
+        when(_userMock.getUserName()).thenReturn(userTest);
+        when(_userMock.isAdmin()).thenReturn(true);
+        _registeredUsers.add(_userMock);     
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertTrue( _userFacadeUnderTest.isAdmin(userTest));
+    }  
+
+    @Test
+    public void testAddNewGuest_whenGuestIdExist_thenError() throws Exception {
+        // Arrange
+        String guestId = "guest";
+
+        _guestIds.add(guestId);     
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(IllegalArgumentException.class, () -> _userFacadeUnderTest.addNewGuest(guestId));
+    }  
+
+    @Test
+    public void testAddNewGuest_whenGuestIdNotExist_thenSuccess() throws Exception {
+        // Arrange
+        String guestId = "guest";
+   
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest.addNewGuest(guestId);
+
+        // Act
+        assertTrue( _guestIds.contains(guestId));
+    }
+
+    @Test
+    public void testChangeEmail_whenEmailIsNull_thenError() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        String email = null;
+        
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
+    }
+
+    @Test
+    public void testChangeEmail_whenEmailIsEmpty_thenError() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "";
+        
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
+    }
+
+    @Test
+    public void testChangeEmail_whenEmailIsInValid_thenError() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "555555";
+        
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+
+        // Act
+        assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
+    }
+
+    @Test
+    public void testChangeEmail_whenEmailIsCurrect_thenSuccess() throws Exception {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "MyEmail5@gmail.com";
+        
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest.changeEmail(userTest,email);
+
+        // Act
+        User ansUser = _userFacadeUnderTest.getUserByUsername("john_doe");
+        assertEquals(email, ansUser.getEmail());
+    }
+    
 }
