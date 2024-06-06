@@ -11,10 +11,12 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class HeaderComponent extends HorizontalLayout {
 
+    private Button loginButton;
+
     public HeaderComponent() {
         // Create the buttons
         Button registerButton = new Button("Register");
-        Button loginButton = new Button("Login");
+        loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
         Button profileButton = new Button("My Profile");
@@ -53,8 +55,18 @@ public class HeaderComponent extends HorizontalLayout {
         // Create login dialog
         Dialog loginDialog = createLoginDialog();
 
+        // Create logout confirmation dialog
+        Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
+
         // Add click listener to the login button
-        loginButton.addClickListener(event -> loginDialog.open());
+        loginButton.addClickListener(event -> {
+            if (loginButton.getText().equals("Login")) {
+                loginDialog.open();
+            } else {
+                // Open the logout confirmation dialog
+                logoutConfirmationDialog.open();
+            }
+        });
 
         // Add click listener to the register button
         registerButton.addClickListener(event -> registrationDialog.open());
@@ -90,10 +102,16 @@ public class HeaderComponent extends HorizontalLayout {
             dialog.close();
         });
 
+        submitButton.addClassName("pointer-cursor");
+
         Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        cancelButton.addClassName("pointer-cursor");
 
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
@@ -125,6 +143,9 @@ public class HeaderComponent extends HorizontalLayout {
             System.out.println("Username: " + username);
             System.out.println("Password: " + password);
 
+            // Simulate a successful login
+            handleLogin();
+
             // Close the dialog after submission
             dialog.close();
         });
@@ -133,11 +154,59 @@ public class HeaderComponent extends HorizontalLayout {
 
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
 
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
 
         return dialog;
+    }
+
+    private Dialog createLogoutConfirmationDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create confirmation message
+        Span message = new Span("Are you sure you want to logout?");
+
+        // Create buttons
+        Button confirmButton = new Button("Yes", event -> {
+            // Handle logout confirmation
+            handleLogout();
+
+            // Close the dialog after confirmation
+            dialog.close();
+        });
+
+        confirmButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("No", event -> dialog.close());
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(confirmButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add confirmation message and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(message, buttonLayout);
+        dialog.add(dialogLayout);
+
+        return dialog;
+    }
+
+    private void handleLogin() {
+        // Change the login button text to "Logout"
+        loginButton.setText("Logout");
+        System.out.println("User logged in");
+    }
+
+    private void handleLogout() {
+        // Change the login button text back to "Login"
+        loginButton.setText("Login");
+        System.out.println("User logged out");
     }
 }
