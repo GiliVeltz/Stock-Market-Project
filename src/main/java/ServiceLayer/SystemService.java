@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.ExternalServiceDto;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
@@ -159,8 +160,8 @@ public class SystemService {
         return response;
     }
 
-    // add external service to the system
-    public Response addExternalService(String token, String newSerivceName, String informationPersonName, String informationPersonPhone) {
+     // add external service to the system
+     public Response addExternalService(String token, ExternalServiceDto externalServiceDto) {
         Response response = new Response();
         try {
             // check validation of token
@@ -184,12 +185,13 @@ public class SystemService {
                 logger.log(Level.SEVERE, "System is not open");
             }
             // check validation of the arguments
-            if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
+            if(externalServiceDto.getServiceName() == null || externalServiceDto.getServiceName().length() == 0 || externalServiceDto.getInformationPersonName() == null
+             || externalServiceDto.getInformationPersonName().length() == 0 || externalServiceDto.getInformationPersonPhone() == null || externalServiceDto.getInformationPersonPhone().length() == 0) {
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
             }
-            if (_externalServiceHandler.addExternalService(newSerivceName, informationPersonName, informationPersonPhone)) {
-                logger.info("External service: " + newSerivceName + " added by admin: " + username);
+            if (_externalServiceHandler.addExternalService(externalServiceDto)) {
+                logger.info("External service: " + externalServiceDto.getServiceName() + " added by admin: " + username);
                 response.setReturnValue("External service added successfully");
             } else {
                 response.setErrorMessage("Failed to add external service");
