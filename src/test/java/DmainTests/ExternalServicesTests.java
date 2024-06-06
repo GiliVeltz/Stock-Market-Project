@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import Domain.ExternalServices.ExternalServiceHandler;
+import Dtos.ExternalServiceDto;
 
 public class ExternalServicesTests {
     
@@ -27,9 +28,10 @@ public class ExternalServicesTests {
     public void testAddExternalService_whenServiceNameIsEmpty_ReturnsFalse() {
         // Arrange
         ExternalServiceHandler externalServiceHandler = mock(ExternalServiceHandler.class);
-        when(externalServiceHandler.addExternalService("", "name", "phone")).thenReturn(false);
+        ExternalServiceDto serviceDto = new ExternalServiceDto("", "name", "phone");
+        when(externalServiceHandler.addExternalService(serviceDto)).thenReturn(false);
         // Act
-        boolean result = externalServiceHandler.addExternalService("", "name", "phone");
+        boolean result = externalServiceHandler.addExternalService(serviceDto);
         // Assert
         assertFalse(result);
     }
@@ -38,9 +40,11 @@ public class ExternalServicesTests {
     public void testAddExternalService_whenInformationPersonNameIsEmpty_ReturnsFalse() {
         // Arrange
         ExternalServiceHandler externalServiceHandler = mock(ExternalServiceHandler.class);
-        when(externalServiceHandler.addExternalService("newSerivceName", "", "phone")).thenReturn(false);
+        ExternalServiceDto serviceDto = new ExternalServiceDto("newSerivceName", "", "phone");
+
+        when(externalServiceHandler.addExternalService(serviceDto)).thenReturn(false);
         // Act
-        boolean result = externalServiceHandler.addExternalService("newSerivceName", "", "phone");
+        boolean result = externalServiceHandler.addExternalService(serviceDto);
         // Assert
         assertFalse(result);
     }
@@ -49,9 +53,12 @@ public class ExternalServicesTests {
     public void testAddExternalService_whenInformationPersonPhoneIsEmpty_ReturnsFalse() {
         // Arrange
         ExternalServiceHandler externalServiceHandler = mock(ExternalServiceHandler.class);
-        when(externalServiceHandler.addExternalService("newSerivceName", "name", "")).thenReturn(false);
+        ExternalServiceDto serviceDto = new ExternalServiceDto("newSerivceName", "name", "");
+
+        when(externalServiceHandler.addExternalService(serviceDto)).thenReturn(false);
+    
         // Act
-        boolean result = externalServiceHandler.addExternalService("newSerivceName", "name", "");
+        boolean result = externalServiceHandler.addExternalService(serviceDto);
         // Assert
         assertFalse(result);
     }
@@ -60,9 +67,12 @@ public class ExternalServicesTests {
     public void testAddExternalService_whenServiceNameAlreadyExists_ReturnsFalse() {
         // Arrange
         ExternalServiceHandler externalServiceHandler = mock(ExternalServiceHandler.class);
-        when(externalServiceHandler.addExternalService("existSerivce", "name", "phone")).thenReturn(false);
+        ExternalServiceDto serviceDto = new ExternalServiceDto("existSerivce", "name", "phone");
+        
+        when(externalServiceHandler.addExternalService(serviceDto)).thenReturn(false);
+        
         // Act
-        boolean result = externalServiceHandler.addExternalService("existSerivce", "name", "phone");
+        boolean result = externalServiceHandler.addExternalService(serviceDto);
         // Assert
         assertFalse(result);
     }
@@ -71,9 +81,10 @@ public class ExternalServicesTests {
     public void testChangeExternalService_whenNewService_returnsTrue() {
         // Arrange
         ExternalServiceHandler externalServiceHandler = mock(ExternalServiceHandler.class);
-        when(externalServiceHandler.addExternalService("newSerivceName", "name", "phone")).thenReturn(true);
+        ExternalServiceDto serviceDto = new ExternalServiceDto("newSerivceName", "name", "phone");
+        when(externalServiceHandler.addExternalService(serviceDto)).thenReturn(true);
         // Act
-        boolean result = externalServiceHandler.addExternalService("newSerivceName", "name", "phone");
+        boolean result = externalServiceHandler.addExternalService(serviceDto);
         // Assert
         assertTrue(result);
         assertTrue(result);

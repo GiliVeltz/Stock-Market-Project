@@ -37,6 +37,7 @@ import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
+import Dtos.ExternalServiceDto;
 import Dtos.UserDto;
 import Exceptions.ShopException;
 import ServiceLayer.*;
@@ -189,8 +190,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("testAddExternalService Error message: " + e.getMessage());
             return false;
         }
+        ExternalServiceDto externalServiceDto = new ExternalServiceDto("existSerivce", "name", "111");
 
-        _externalServiceHandler.addExternalService("existSerivce", "name", "111");
+        _externalServiceHandler.addExternalService(externalServiceDto);
 
         Response res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
         if(res1.getErrorMessage() != null){
@@ -203,9 +205,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("testAddExternalService Error message: " + res2.getErrorMessage());
             return false;
         }
-
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(newSerivceName, informationPersonName, informationPersonPhone);
         // Act
-        Response res = _systemServiceUnderTest.addExternalService(token, newSerivceName, informationPersonName, informationPersonPhone);
+        Response res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
 
         // Assert
         logger.info("testAddExternalService Error message: " + res.getErrorMessage());

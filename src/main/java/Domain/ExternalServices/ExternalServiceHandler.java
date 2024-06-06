@@ -3,6 +3,8 @@ package Domain.ExternalServices;
 import java.util.HashMap;
 import java.util.Map;
 
+import Dtos.ExternalServiceDto;
+
 /**
  * This class represents an external service handler.
  * It manages a list of external services.
@@ -46,25 +48,26 @@ public class ExternalServiceHandler {
     }
 
     // Add external service. called from the system service.
-    public boolean addExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone) {
+    public boolean addExternalService(ExternalServiceDto externalServiceDto) {
         // check validation of the arguments
-        if(newSerivceName == null || newSerivceName.length() == 0 || informationPersonName == null || informationPersonName.length() == 0 || informationPersonPhone == null || informationPersonPhone.length() == 0) {
-            throw new IllegalArgumentException("One or more of the arguments are null");
+        if(externalServiceDto.getServiceName() == null || externalServiceDto.getServiceName().length() == 0 || externalServiceDto.getInformationPersonName() == null
+        || externalServiceDto.getInformationPersonName().length() == 0 || externalServiceDto.getInformationPersonPhone() == null || externalServiceDto.getInformationPersonPhone().length() == 0){
+                      throw new IllegalArgumentException("One or more of the arguments are null");
         }
 
         // check if service name already exists
         boolean serviceExists = false;
         for (ExternalService service : _externalServices.values()) {
-            if (service.getServiceName().equals(newSerivceName)) {
+            if (service.getServiceName().equals(externalServiceDto.getServiceName())) {
                 serviceExists = true;
                 break;
             }
         }
         if (serviceExists) {
-            throw new IllegalArgumentException("Service name already exists. Service name: " + newSerivceName + ".");
+            throw new IllegalArgumentException("Service name already exists. Service name: " + externalServiceDto.getServiceName() + ".");
         }
 
-        ExternalService newService = new ExternalService(_idCounter, newSerivceName, informationPersonName, informationPersonPhone);
+        ExternalService newService = new ExternalService(_idCounter, externalServiceDto.getServiceName(), externalServiceDto.getInformationPersonName(), externalServiceDto.getInformationPersonPhone());
         _externalServices.putIfAbsent(_idCounter, newService);
         _idCounter++;
         return true;
