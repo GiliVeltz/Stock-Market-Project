@@ -29,7 +29,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of payment in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testPayment() {
         assertTrue(_bridge.testPayment("true cards details") ); // success
@@ -37,7 +37,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of shipping in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShipping() {
         assertTrue(_bridge.testShipping("true shipping details") ); // success
