@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
 import Domain.ShoppingCart;
+import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Dtos.PurchaseCartDetailsDto;
@@ -51,10 +52,13 @@ public class ShoppingCartFacade {
      * If user don't have a cart (Just registerd/ already purchase the cart) - we
      * will use it's guest cart
      */
-    public void addCartForUser(String guestID, String username) {
-        if (_cartsRepo.getCartByUsername(username) == null) {
-            _cartsRepo.addCartForUser(username, _guestsCarts.get(guestID));
+    public void addCartForUser(String guestID, User user) {
+        if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
+            _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
         }
+        
+        // add the user to the cart
+        _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }
 
     public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {

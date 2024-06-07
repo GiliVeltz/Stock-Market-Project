@@ -152,6 +152,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
 
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
@@ -165,6 +166,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
         , new ArrayList<>(), _passwordEncoder);
 
+        _shoppingCartFacade.addCartForGuest("manager");
+        
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
@@ -208,6 +211,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
 
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
@@ -224,11 +228,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
+                
+        _shoppingCartFacade.addCartForGuest("manager");
 
         try {
             _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
         } catch (Exception e) {
-            logger.info("testAddExternalService Error message: " + e.getMessage());
+            logger.info("testChangeExternalService Error message: " + e.getMessage());
             return false;
         }
         ExternalServiceDto externalServiceDto = new ExternalServiceDto(0, "existSerivce", "name", "111");
@@ -237,13 +243,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         Response res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
         if(res1.getErrorMessage() != null){
-            logger.info("testAddExternalService Error message: " + res1.getErrorMessage());
+            logger.info("testChangeExternalService Error message: " + res1.getErrorMessage());
             return false;
         }
 
         Response res2 = _systemServiceUnderTest.openSystem(token);
         if(res2.getErrorMessage() != null){
-            logger.info("testAddExternalService Error message: " + res2.getErrorMessage());
+            logger.info("testChangeExternalService Error message: " + res2.getErrorMessage());
             return false;
         }
         ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name", "111");
@@ -332,7 +338,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Test
     public boolean TestUserEnterTheSystem(String SystemStatus) {
-        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");
+        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
     }
 
     @Test
@@ -349,12 +355,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>(), _passwordEncoder);
 
+        _shoppingCartFacade.addCartForGuest(username);
+
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
 
         // Act
         Response res = _userServiceUnderTest.logIn(token, username, password);
