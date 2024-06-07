@@ -33,9 +33,18 @@ public class ShoppingCart {
 
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();;
+        _paymentMethod = AdapterPayment.getAdapterPayment();
         _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
+        _user = null;
+    }
+    
+    // for tests
+    public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
+        _shoppingBaskets = new ArrayList<>();
+        _paymentMethod = paymentMethod;
+        _supplyMethod = supplyMethod;
+        _shopFacade = shopFacade;
         _user = null;
     }
 
@@ -80,7 +89,7 @@ public class ShoppingCart {
      * bought.
      * This function only updates the item's stock.
      */
-    private void purchaseCartEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
+    public void purchaseCartEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - purchaseCart - Start purchasing cart.");
         List<Integer> boughtBasketList = new ArrayList<>();
 
@@ -104,7 +113,11 @@ public class ShoppingCart {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
             }
+        }
 
+        // If the purchase was successful, delete the baskets from the cart.
+        for (Integer basket : boughtBasketList) {
+            _shoppingBaskets.remove(_shoppingBaskets.get(basket));
         }
     }
 
@@ -112,10 +125,10 @@ public class ShoppingCart {
      * Go through the list of baskets to cancel and cancel the purchase of them.
      * This function only updates the item's stock.
      */
-    private void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
+    public void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - cancelPurchase - Canceling purchase of all baskets.");
         for (Integer basketId : busketsToBuy) {
-            _shoppingBaskets.get(basketId).cancelPurchase();
+            getShoppingBasket(basketId).cancelPurchase();
         }
     }
 
@@ -141,9 +154,17 @@ public class ShoppingCart {
      * @throws ProductDoesNotExistsException 
      */
     public void addProduct(int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
+        // Check if the product exists in the shop.
+        if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
+            logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
+            throw new ProductDoesNotExistsException("Product does not exists in shop: " + shopID);
+        }
+
+        // basketOptional is the basket of the user for the shop.
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
+        // create a new basket if the user does not have a basket for this shop.
         ShoppingBasket basket;
         if (basketOptional.isPresent()) {
             basket = basketOptional.get();
@@ -152,6 +173,7 @@ public class ShoppingCart {
             _shoppingBaskets.add(basket);
         }
 
+        // add the product to the basket.
         basket.addProductToShoppingBasket(_user, productID);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
@@ -179,4 +201,18 @@ public class ShoppingCart {
         _user = user;
     }
 
+    // Get shopping baskets of the cart.
+    public List<ShoppingBasket> getShoppingBaskets() {
+        return _shoppingBaskets;
+    }
+
+    // Get a shopping basket by index.
+    public ShoppingBasket getShoppingBasket(int i) {
+        return getShoppingBaskets().get(i);
+    }
+
+    // for tests
+    public void addShoppingBasket(ShoppingBasket basket) {
+        _shoppingBaskets.add(basket);
+    }
 }
