@@ -751,10 +751,17 @@ public class Shop {
         return _shopAddress;
     }
 
-    public Double addProductRating(Integer productId, Integer rating) {
-        // TODO: limit the rating to 1-5
+    public void addProductRating(Integer productId, Integer rating) throws StockMarketException {
+        if(!isProductExist(productId))
+            throw new StockMarketException(String.format("Product ID: %d doesn't exist.", productId));
+
         Product product = _productMap.get(productId);
         product.addProductRating(rating);
+    }
+
+    public Double getProductRating(Integer productId)
+    {
+        Product product = _productMap.get(productId);
         return product.getProductRating();
     }
 
