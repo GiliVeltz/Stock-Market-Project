@@ -28,15 +28,15 @@ public class ShoppingCart {
     private AdapterPayment _paymentMethod;
     private AdapterSupply _supplyMethod;
     private ShopFacade _shopFacade;
-    private User _user;
+    private User _user; // if the user is null, the cart is for a guest.
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
-    // TODO: Add user to constructor
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();;
         _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
+        _user = null;
     }
 
     /*
@@ -156,6 +156,7 @@ public class ShoppingCart {
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 
+    // Remove a product from the shopping cart of a user.
     public void removeProduct(int productID, int shopID) {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
@@ -171,6 +172,11 @@ public class ShoppingCart {
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
         }
+    }
+
+    // Set the user of the cart.
+    public void SetUser(User user) {
+        _user = user;
     }
 
 }
