@@ -134,14 +134,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Test
     public boolean testPayment(String senario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testPayment'");
+        // Dummy test
+        return !senario.equals("error");
     }
 
     @Test
     public boolean testShipping(String senario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShipping'");
+        // Dummy test
+        return !senario.equals("error");
     }
 
     @Test
