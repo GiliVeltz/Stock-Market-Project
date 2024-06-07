@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.Alert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
@@ -135,4 +136,18 @@ public class UserFacade {
         }
         user.setEmail(email);
     }
+
+    public void sendAlert(String userName, Alert alert,boolean isLoggenIn) throws Exception {
+        User user = getUserByUsername(userName);
+        if(alert == null || alert.isEmpty()) {
+            throw new UserException("Alert is empty.");
+        }
+        ) {
+            
+        }
+    
+
+    }
+
+    
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
+import Domain.Alerts.Alert;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -269,6 +270,21 @@ public class UserService {
             response.setErrorMessage("Failed to change email for user: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change email for user: " + e.getMessage(), e);
         }
+        return response;
+    }
+    //remove
+
+    public Response sendAlert(String userName, Alert alert) {
+        Response response = new Response();
+        try {
+            //TODO: check if user is logged in by userName
+            boolean isLoggedIn = true;
+            _userFacade.sendAlert(userName, alert,);
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to send alert: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to send alert: " + e.getMessage(), e);
+        }
+
         return response;
     }
 }

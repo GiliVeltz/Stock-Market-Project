@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 //import java.util.logging.Logger;
 
+import Domain.Alerts.Alerts;
 import Dtos.UserDto;
 
 public class User {
@@ -15,6 +16,8 @@ public class User {
     private String _email;
     private Date _birthDate;
     private List<Order> _purchaseHistory;
+    private Alerts _alerts;  // object that hold the user's alerts
+    
     // private static final Logger logger =
     // Logger.getLogger(UserFacade.class.getName());
 
@@ -25,6 +28,7 @@ public class User {
         _email = email;
         _birthDate = birthDate;
         _purchaseHistory = new ArrayList<Order>();
+        _alerts = new Alerts();
     }
 
     public User(UserDto userDto) {
@@ -132,5 +136,9 @@ public class User {
 
     public void setIsSystemAdmin(boolean b) {
         _isAdmin = true;
+    }
+
+    public Alerts getAlerts() {
+        return _alerts;
     }
 }
