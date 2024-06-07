@@ -1,21 +1,11 @@
 package AcceptanceTests.Implementor;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,9 +16,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -39,7 +27,6 @@ import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
 import Dtos.UserDto;
-import Exceptions.ShopException;
 import ServiceLayer.*;
 
 // A real conection to the system.
@@ -190,7 +177,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("testAddExternalService Error message: " + e.getMessage());
             return false;
         }
-        ExternalServiceDto externalServiceDto = new ExternalServiceDto("existSerivce", "name", "111");
+        ExternalServiceDto externalServiceDto = new ExternalServiceDto(-1, "existSerivce", "name", "111");
 
         _externalServiceHandler.addExternalService(externalServiceDto);
 
@@ -205,7 +192,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("testAddExternalService Error message: " + res2.getErrorMessage());
             return false;
         }
-        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(newSerivceName, informationPersonName, informationPersonPhone);
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName, informationPersonPhone);
+
         // Act
         Response res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
 
@@ -216,8 +204,66 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Test
     public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName, String newInformationPersonName, String newInformationPersonPhone){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        _shopFacade = new ShopFacade();
+        _shoppingCartFacade = new ShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(){
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+            }
+        }
+        , new ArrayList<>(), _passwordEncoder);
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        try {
+            _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
+        } catch (Exception e) {
+            logger.info("testAddExternalService Error message: " + e.getMessage());
+            return false;
+        }
+        ExternalServiceDto externalServiceDto = new ExternalServiceDto(0, "existSerivce", "name", "111");
+
+        _externalServiceHandler.addExternalService(externalServiceDto);
+
+        Response res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
+        if(res1.getErrorMessage() != null){
+            logger.info("testAddExternalService Error message: " + res1.getErrorMessage());
+            return false;
+        }
+
+        Response res2 = _systemServiceUnderTest.openSystem(token);
+        if(res2.getErrorMessage() != null){
+            logger.info("testAddExternalService Error message: " + res2.getErrorMessage());
+            return false;
+        }
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name", "111");
+
+        // Act
+        Response res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto, newSerivceName);
+        Response res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token, externalServiceDto2, newInformationPersonName);
+        Response res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token, externalServiceDto2, newInformationPersonPhone);
+
+        // Assert
+        if(res3.getErrorMessage() != null)
+            logger.info("changeExternalServiceName Error message: " + res3.getErrorMessage());
+        if(res4.getErrorMessage() != null)
+            logger.info("changeExternalServiceInformationPersonName Error message: " + res4.getErrorMessage());
+        if(res5.getErrorMessage() != null)
+        logger.info("changeExternalServiceInformationPersonPhone Error message: " + res5.getErrorMessage());
+        
+        return res3.getErrorMessage() == null && res4.getErrorMessage() == null && res5.getErrorMessage() == null;
     }
 
     // GUEST TESTS
