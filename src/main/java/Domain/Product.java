@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
+import Exceptions.StockMarketException;
 import enums.Category;
 
 public class Product implements Cloneable {
@@ -67,8 +68,10 @@ public class Product implements Cloneable {
         _price = price;
     }
 
-    public void addProductRating(Integer rating) {
-        //TODO: limit the rating to 1-5 
+    public void addProductRating(Integer rating) throws StockMarketException {
+        if(rating > 5 || rating < 1)
+            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
+
         Double newRating = Double.valueOf(rating);
         if (_productRating == -1.0) {
             _productRating = newRating;

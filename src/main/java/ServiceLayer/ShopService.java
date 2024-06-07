@@ -1029,4 +1029,33 @@ public class ShopService {
         return response;
     }
 
+    public Response addProductRating(String token, Integer shopId, Integer productId) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::addProductRating entring"));
+            if (!_tokenService.validateToken(token)) 
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token)) 
+                throw new StockMarketException("User is not logged in.");
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username))
+                throw new StockMarketException(String.format("User does not exist.",username));
+
+            _shopFacade.addProductRating(shopId, productId, productId);
+            response.setReturnValue(String.format("Success to add rating to productID: %d in ShopID: %d .", productId,shopId));
+
+        }
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+      
+            response.setErrorMessage(String.format(
+                "ShopService::addProductRating fsiled to rsting productId: %d in ShopId: %d with error %s", 
+                productId, shopId, e.getMessage()));
+
+        }
+        return response;
+    }
+
 }
