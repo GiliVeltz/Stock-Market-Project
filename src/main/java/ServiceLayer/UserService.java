@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
+import Domain.User;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -44,7 +45,8 @@ public class UserService {
                     throw new Exception("Username or password is empty.");
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
-                    _shoppingCartFacade.addCartForUser(token, userName);
+                    User user = _userFacade.getUserByUsername(userName);
+                    _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
                     response.setReturnValue(_tokenService.generateUserToken(userName));
                     logger.info("User " + userName + " Logged In Succesfully");
                 } else {
