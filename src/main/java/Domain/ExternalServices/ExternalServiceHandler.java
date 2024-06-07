@@ -73,5 +73,108 @@ public class ExternalServiceHandler {
         return true;
     }
 
-    // TODO: add fuction for change external service information. called from the system service.
+    // This function changes the external service name when given service id and new service name.
+    public boolean changeExternalServiceName(int serviceId, String newServiceName) {
+        // check validation of the arguments
+        if(newServiceName == null || newServiceName.length() == 0){
+            throw new IllegalArgumentException("One or more of the arguments are null");
+        }
+
+        // check if service id exists
+        if (!_externalServices.containsKey(serviceId)) {
+            throw new IllegalArgumentException("Service id not found. Service id: " + serviceId + ".");
+        }
+
+        // check if service name already exists
+        boolean serviceExists = false;
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(newServiceName)) {
+                serviceExists = true;
+                break;
+            }
+        }
+        if (serviceExists) {
+            throw new IllegalArgumentException("Service name already exists. Service name: " + newServiceName + ".");
+        }
+
+        ExternalService service = _externalServices.get(serviceId);
+        service.setServiceName(newServiceName);
+        return true;
+    }
+
+    // This function changes the external service information person name when given service id and new information person name.
+    public boolean changeExternalServiceInformationPersonName(int serviceId, String newInformationPersonName) {
+        // check validation of the arguments
+        if(newInformationPersonName == null || newInformationPersonName.length() == 0){
+            throw new IllegalArgumentException("One or more of the arguments are null");
+        }
+
+        // check if service id exists
+        if (!_externalServices.containsKey(serviceId)) {
+            throw new IllegalArgumentException("Service id not found. Service id: " + serviceId + ".");
+        }
+
+        ExternalService service = _externalServices.get(serviceId);
+        service.setInformationPersonName(newInformationPersonName);
+        return true;
+    }
+
+    // This function changes the external service information person phone when given service id and new information person phone.
+    public boolean changeExternalServiceInformationPersonPhone(int serviceId, String newInformationPersonPhone) {
+        // check validation of the arguments
+        if(newInformationPersonPhone == null || newInformationPersonPhone.length() == 0){
+            throw new IllegalArgumentException("One or more of the arguments are null");
+        }
+
+        // check if service id exists
+        if (!_externalServices.containsKey(serviceId)) {
+            throw new IllegalArgumentException("Service id not found. Service id: " + serviceId + ".");
+        }
+
+        ExternalService service = _externalServices.get(serviceId);
+        service.setInformationPersonPhone(newInformationPersonPhone);
+        return true;
+    }
+
+    public int getServiceIdByName(String serviceName){
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(serviceName)) {
+                return service.getServiceId();
+            }
+        }
+        throw new IllegalArgumentException("Service id not found. Service name: " + serviceName + ".");
+    }
+
+    // get external service by id
+    public ExternalService getExternalServiceById(int serviceId) {
+        if (!_externalServices.containsKey(serviceId)) {
+            throw new IllegalArgumentException("Service id not found. Service id: " + serviceId + ".");
+        }
+        return _externalServices.get(serviceId);
+    }
+
+    // get external service by name
+    public ExternalService getExternalServiceByName(String serviceName) {
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(serviceName)) {
+                return service;
+            }
+        }
+        throw new IllegalArgumentException("Service name not found. Service name: " + serviceName + ".");
+    }
+
+    // is service exists by id
+    public boolean isServiceExistsById(int serviceId) {
+        return _externalServices.containsKey(serviceId);
+    }
+
+    // is service exists by name
+    public boolean isServiceExistsByName(String serviceName) {
+        for (ExternalService service : _externalServices.values()) {
+            if (service.getServiceName().equals(serviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
