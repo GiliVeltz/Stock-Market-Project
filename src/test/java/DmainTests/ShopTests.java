@@ -980,8 +980,6 @@ public class ShopTests {
         assertFalse(shop.checkPermission("manager", Permission.ADD_PRODUCT));
     }
     
-    // TODO: TEST IS NOT PASSING
-    @Disabled
     @Test
     public void testAddShopRating_whenRatingIsNegative_ShouldThrowIllegalArgumentException() throws ShopException {
         // Arrange
@@ -1005,6 +1003,18 @@ public class ShopTests {
 
         // Assert
         assertEquals(5, shop.getShopRating());
+    }
+
+    @Test
+    public void testAddShopRating_whenRatingIsAboveFive_ShouldThrowIllegalArgumentException() throws ShopException {
+        // Arrange
+        int rating = 6;
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            shop.addShopRating(rating);
+        });
     }
 
     // TODO: TEST IS NOT PASSING

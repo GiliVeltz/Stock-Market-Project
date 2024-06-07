@@ -1,8 +1,17 @@
 package DmainTests;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import java.util.Date;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +22,11 @@ import Domain.Product;
 import Domain.Shop;
 import Domain.ShoppingBasket;
 import Domain.User;
+import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductAlreadyExistsException;
 import Exceptions.ProductDoesNotExistsException;
+import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import org.mockito.Mockito;
@@ -419,4 +431,169 @@ public class ShoppingBasketTests {
         // Assert
         assertTrue(actual == 0);
     }
+
+    @Test
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndEverythingInStock_thenReturnedTrue() throws ProdcutPolicyException,
+     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(10);
+        shop.addProductToShop("ownerUsername", product2);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+
+        // Act
+        boolean result = shoppingBasket.purchaseBasket();
+        
+        // Assert
+        assertTrue(result);
+        assertEquals(product.getProductQuantity(), 0);
+        assertEquals(product2.getProductQuantity(), Integer.valueOf(9));
+    }
+
+    @Test
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondCompletlyNotInStock_thenReturnedFalseAndRestockFirstProduct() throws ProdcutPolicyException,
+     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(0);
+        shop.addProductToShop("ownerUsername", product2);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+
+        // Act
+        boolean result = shoppingBasket.purchaseBasket();
+        
+        // Assert
+        assertFalse(result);
+        assertEquals(product.getProductQuantity(), 3);
+        assertEquals(product2.getProductQuantity(), 0);
+    }
+
+    @Test
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondSomeInStock_thenReturnedFalseAndRestockProducts() throws ProdcutPolicyException,
+     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(1);
+        shop.addProductToShop("ownerUsername", product2);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+
+        // Act
+        boolean result = shoppingBasket.purchaseBasket();
+        
+        // Assert
+        assertFalse(result);
+        assertEquals(product.getProductQuantity(), 3);
+        assertEquals(product2.getProductQuantity(), 1);
+    }
+
+    @Test
+    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenThrowsShopPolicyException() throws ProdcutPolicyException,
+     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shopMock);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shopMock.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(10);
+        shopMock.addProductToShop("ownerUsername", product2);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        doThrow(new ShopPolicyException("Basket does not meet shop policy")).when(shopMock).ValidateBasketMeetsShopPolicy(shoppingBasket);
+
+        // Act & Assert
+        assertThrows(ShopPolicyException.class, () -> {
+            shoppingBasket.purchaseBasket();
+        });
+        assertEquals(product.getProductQuantity(), 3);
+        assertEquals(product2.getProductQuantity(), 10);
+    }
+
+    // @Test
+    // public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForOneBuyer_thenOneReturnTrueAndOneFalse() throws ProdcutPolicyException,
+    //  ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    //     // Arrange
+    //     Date date = new Date();
+    //     date.setTime(0);
+    //     User buyer = new User("username1", "password1", "email1", date);
+    //     User buyer2 = new User("username2", "password2", "email2", date);
+    //     Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+    //     ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+    //     ShoppingBasket shoppingBasket2 = new ShoppingBasket(shop);
+    //     Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+    //     product.updateProductQuantity(2);
+    //     shop.addProductToShop("ownerUsername", product);
+    //     Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+    //     product2.updateProductQuantity(1);
+    //     shop.addProductToShop("ownerUsername", product2);
+
+    //     shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+    //     shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+    //     shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId());
+    //     shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId());
+    //     ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+
+    //     // Task for first thread
+    //     Runnable task1 = () -> {
+    //         boolean result = shoppingBasket.purchaseBasket();
+    //     };
+
+    //     // Task for second thread
+    //     Runnable task2 = () -> {
+    //         boolean result2 = shoppingBasket2.purchaseBasket();
+    //     };
+
+    //     // Execute tasks
+    //     executor.submit(task1);
+    //     executor.submit(task2);
+
+    //     executor.shutdown(); // shut down executor service
+
+    //     // Act
+        
+    //     // Assert
+    //     assertTrue((result && !result2) || (!result && result2));
+    //     assertEquals(product.getProductQuantity(), 3);
+    //     assertEquals(product2.getProductQuantity(), 1);
+    // }
 }

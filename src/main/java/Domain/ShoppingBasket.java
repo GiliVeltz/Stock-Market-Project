@@ -113,8 +113,6 @@ public class ShoppingBasket implements Cloneable {
             throw e;
         }
         
-        // TODO: consider the discounts using productToPriceToAmount
-        
         for (Integer productId : _productIdList) {
             try {
                 _shop.getProductById(productId).purchaseProduct();
