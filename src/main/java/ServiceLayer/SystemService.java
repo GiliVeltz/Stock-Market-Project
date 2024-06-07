@@ -203,4 +203,148 @@ public class SystemService {
         }
         return response;
     }
+
+    // change external service name
+    public Response changeExternalServiceName(String token, ExternalServiceDto externalServiceDto, String newServiceName) {
+        Response response = new Response();
+        try {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
+                throw new Exception("Invalid session token.");
+            }
+            String username = _tokenService.extractUsername(token);
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if user is admin
+            if (!_userFacade.isAdmin(username)) {
+                response.setErrorMessage("User is not admin of the system");
+                logger.log(Level.SEVERE, "User is not admin of the system");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(newServiceName == null || newServiceName.length() == 0){
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            // check if service id and name exists
+            if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
+                response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+            }
+            if (_externalServiceHandler.changeExternalServiceName(externalServiceDto.getId(), newServiceName)) {
+                logger.info("External service: " + externalServiceDto.getServiceName() + " name changed to: " + newServiceName + " by admin: " + username);
+                response.setReturnValue("External service name changed successfully");
+            } else {
+                response.setErrorMessage("Failed to change external service name");
+                logger.log(Level.SEVERE, "Failed to change external service name");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to change external service name: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to change external service name: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // change external service information person name
+    public Response changeExternalServiceInformationPersonName(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonName){
+        Response response = new Response();
+        try {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
+                throw new Exception("Invalid session token.");
+            }
+            String username = _tokenService.extractUsername(token);
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if user is admin
+            if (!_userFacade.isAdmin(username)) {
+                response.setErrorMessage("User is not admin of the system");
+                logger.log(Level.SEVERE, "User is not admin of the system");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(newServiceInformationPersonName == null || newServiceInformationPersonName.length() == 0){
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            // check if service id and name exists
+            if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
+                response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+            }
+            if (_externalServiceHandler.changeExternalServiceInformationPersonName(externalServiceDto.getId(), newServiceInformationPersonName)) {
+                logger.info("External service: " + externalServiceDto.getServiceName() + " information person name changed to: " + newServiceInformationPersonName + " by admin: " + username);
+                response.setReturnValue("External service information person name changed successfully");
+            } else {
+                response.setErrorMessage("Failed to change external service information person name");
+                logger.log(Level.SEVERE, "Failed to change external service information person name");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to change external service information person name: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to change external service information person name: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // change external service information person phone
+    public Response changeExternalServiceInformationPersonPhone(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonPhone){
+        Response response = new Response();
+        try {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
+                throw new Exception("Invalid session token.");
+            }
+            String username = _tokenService.extractUsername(token);
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if user is admin
+            if (!_userFacade.isAdmin(username)) {
+                response.setErrorMessage("User is not admin of the system");
+                logger.log(Level.SEVERE, "User is not admin of the system");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(newServiceInformationPersonPhone == null || newServiceInformationPersonPhone.length() == 0){
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            // check if service id and name exists
+            if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
+                response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+            }
+            if (_externalServiceHandler.changeExternalServiceInformationPersonPhone(externalServiceDto.getId(), newServiceInformationPersonPhone)) {
+                logger.info("External service: " + externalServiceDto.getServiceName() + " information person phone changed to: " + newServiceInformationPersonPhone + " by admin: " + username);
+                response.setReturnValue("External service information person phone changed successfully");
+            } else {
+                response.setErrorMessage("Failed to change external service information person phone");
+                logger.log(Level.SEVERE, "Failed to change external service information person phone");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to change external service information person phone: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to change external service information person phone: " + e.getMessage(), e);
+        }
+        return response;
+    }
 }
