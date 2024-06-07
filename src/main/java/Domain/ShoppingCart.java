@@ -20,7 +20,6 @@ import Exceptions.StockMarketException;
 import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
-//TODO: function to add prodcut to cart?
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
