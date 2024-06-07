@@ -12,7 +12,7 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
-import Exceptions.ShopException;
+import Exceptions.UserException;
 
 @RestController
 public class UserFacade {
@@ -43,7 +43,9 @@ public class UserFacade {
 
     public User getUserByUsername(String username) throws Exception {
         if (username == null)
-            throw new ShopException("Username is null.");
+            throw new UserException("Username is null.");
+        if (!doesUserExist(username))
+            throw new UserException(String.format("Username %s does not exist.",username));
         return _userRepository.getUserByUsername(username);
     }
 
@@ -81,18 +83,13 @@ public class UserFacade {
 
     public void addOrderToUser(String username, Order order) throws Exception {
         User user = getUserByUsername(username);
-        if (user != null) {
-            user.addOrder(order);
-        }
+        user.addOrder(order);
     }
 
     // function that check if a given user is an admin
     public boolean isAdmin(String userName) throws Exception {
         User user = getUserByUsername(userName);
-        if (user != null) {
-            return user.isAdmin();
-        } else
-            throw new Exception("User not found.");
+        return user.isAdmin();
     }
 
     private boolean isGuestExists(String id) {
@@ -123,21 +120,18 @@ public class UserFacade {
         if (user != null) {
             return user.getPurchaseHistory();
         } else {
-            throw new ShopException("User not found.");
+            throw new UserException("User not found.");
         }
     }
 
     // change email for a user
     public void changeEmail(String username, String email) throws Exception {
         User user = getUserByUsername(username);
-        if (user == null) {
-            throw new Exception("Trying to change password for user - User not found.");
-        }
         if (email == null || email.isEmpty()) {
-            throw new Exception("Email is empty.");
+            throw new UserException("Email is empty.");
         }
         if (!_EmailValidator.isValidEmail(email)) {
-            throw new Exception("Email is not valid.");
+            throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
     }

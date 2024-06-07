@@ -8,6 +8,12 @@ Link to exel Acceptance-Tests: https://docs.google.com/spreadsheets/d/11zTxZ4zcf
 
 Link to exel Use-Cases: https://docs.google.com/spreadsheets/d/1-20lpZteCvqh29Lt1lmqYKUh4ZyNEZbTjioOIZ-S6GU/edit#gid=0
 
-## How to run
+## How to run the server
 
 execute the following command from the terminal to run the server: `mvn spring-boot:run`
+
+## Running the application
+
+The project is a standard Maven project. To run it from the command line,
+type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
+http://localhost:8080 in your browser.
