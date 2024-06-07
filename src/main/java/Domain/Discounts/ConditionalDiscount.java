@@ -1,12 +1,8 @@
 package Domain.Discounts;
 
-import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonSerializable.Base;
-
 import Domain.ShoppingBasket;
-import Domain.Rules.Rule;
 import Dtos.ConditionalDiscountDto;
 import Exceptions.DiscountExpiredException;
 

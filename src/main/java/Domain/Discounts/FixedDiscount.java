@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
-import Domain.Rules.Rule;
 import Dtos.BasicDiscountDto;
 
 public class FixedDiscount extends BaseDiscount {

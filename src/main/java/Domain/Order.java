@@ -24,12 +24,15 @@ public class Order {
     public Integer getOrderId() {
         return _orderId;
     }
+
+    // This method is used to set the shoppingBasketMap when creating the order
     private void setShoppingBasketMap(List<ShoppingBasket> shoppingBaskets){
         for (ShoppingBasket basket : shoppingBaskets) {
             _shoppingBasketMap.put(basket.getShopId(), basket.clone());
         }
     }
 
+    // This method is used to set the total order amount when creating the order
     private void setTotalOrderAmount() throws StockMarketException {
         _totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
@@ -37,16 +40,7 @@ public class Order {
         }
     }
 
-    public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
-        return _shoppingBasketMap;
-    }
-
-    public double getOrderTotalAmount() throws StockMarketException { 
-        if(_totalOrderAmount == 0.0)
-            calcTotalAmount();
-        return _totalOrderAmount; 
-    }
-
+    // This method is used to calculate the total order amount
     public void calcTotalAmount() throws StockMarketException { 
         _totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
@@ -66,9 +60,9 @@ public class Order {
     }
 
     private String printAllProducts(ShoppingBasket shoppingBasket) {
-       return shoppingBasket.printAllProducts();
-        
+        return shoppingBasket.printAllProducts();
     }
+    
     @Override
     public String toString() {
         return "Order{" +
@@ -76,5 +70,17 @@ public class Order {
                 ", totalAmount=" + _totalOrderAmount +
                 ", products= \n" + printAllShopAndProducts() +
                 '}';
+    }
+
+    // Getters
+
+    public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
+        return _shoppingBasketMap;
+    }
+
+    public double getOrderTotalAmount() throws StockMarketException { 
+        if(_totalOrderAmount == 0.0)
+            calcTotalAmount();
+        return _totalOrderAmount; 
     }
 }

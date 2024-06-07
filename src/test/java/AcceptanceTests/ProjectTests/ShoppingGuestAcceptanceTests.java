@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import AcceptanceTests.Implementor.BridgeInterface;
 import org.junit.jupiter.api.Disabled;
 import AcceptanceTests.Implementor.RealBridge;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 @ExtendWith(RealBridge.class)
 

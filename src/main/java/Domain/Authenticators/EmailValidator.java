@@ -14,9 +14,6 @@ public class EmailValidator {
 
     // Method to validate an email address
     public boolean isValidEmail(String email) {
-        if (email == null) {
-            return false;
-        }
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }

@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
-import Domain.Rules.Rule;
 import Dtos.BasicDiscountDto;
 
 public class PrecentageDiscount extends BaseDiscount {
