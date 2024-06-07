@@ -201,7 +201,7 @@ public class ShoppingCartTests {
         }
 
         // Assert
-        assertTrue(shoppingCartUnderTest.getCartSize() == 0);
+        assertTrue(shoppingCartUnderTest.getCartSize() == 1);
     }
 
     @Test

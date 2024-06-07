@@ -114,11 +114,6 @@ public class ShoppingCart {
                 }
             }
         }
-
-        // If the purchase was successful, delete the baskets from the cart.
-        for (Integer basket : boughtBasketList) {
-            _shoppingBaskets.remove(_shoppingBaskets.get(basket));
-        }
     }
 
     /*
