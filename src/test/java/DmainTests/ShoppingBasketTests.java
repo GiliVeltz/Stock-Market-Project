@@ -2,7 +2,10 @@ package DmainTests;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -450,7 +453,7 @@ public class ShoppingBasketTests {
         boolean result = shoppingBasket.purchaseBasket();
         
         // Assert
-        assertEquals(result, true);
+        assertTrue(result);
         assertEquals(product.getProductQuantity(), 0);
         assertEquals(product2.getProductQuantity(), Integer.valueOf(9));
     }
@@ -479,7 +482,7 @@ public class ShoppingBasketTests {
         boolean result = shoppingBasket.purchaseBasket();
         
         // Assert
-        assertEquals(result, false);
+        assertFalse(result);
         assertEquals(product.getProductQuantity(), 3);
         assertEquals(product2.getProductQuantity(), 0);
     }
@@ -510,8 +513,36 @@ public class ShoppingBasketTests {
         boolean result = shoppingBasket.purchaseBasket();
         
         // Assert
-        assertEquals(result, false);
+        assertFalse(result);
         assertEquals(product.getProductQuantity(), 3);
         assertEquals(product2.getProductQuantity(), 1);
+    }
+
+    @Test
+    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenReturnedFalse() throws ProdcutPolicyException,
+     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shopMock);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shopMock.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(10);
+        shopMock.addProductToShop("ownerUsername", product2);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        doThrow(new ShopPolicyException("Basket does not meet shop policy")).when(shopMock).ValidateBasketMeetsShopPolicy(shoppingBasket);
+
+        // Act & Assert
+        assertThrows(ShopPolicyException.class, () -> {
+            shoppingBasket.purchaseBasket();
+        });
+        assertEquals(product.getProductQuantity(), 3);
+        assertEquals(product2.getProductQuantity(), 10);
     }
 }
