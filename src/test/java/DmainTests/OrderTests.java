@@ -20,6 +20,7 @@ import Domain.ShoppingBasket;
 import Domain.User;
 import Dtos.ShopDto;
 import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -77,13 +78,18 @@ public class OrderTests {
         ShoppingBasket basket = new ShoppingBasket(shopMock);
 
         Product product = new Product(1, "product1", Category.CLOTHING , 1.0);
-        when(shopMock.getProductById(1)).thenReturn(product);
+        try {
+            when(shopMock.getProductById(1)).thenReturn(product);
+        } catch (ProductDoesNotExistsException e) {
+            e.printStackTrace();
+            fail("Expected ProductDoesNotExistsException to be thrown");
+        }
 
         try {
             basket.addProductToShoppingBasket(userMock, 1);
-        } catch (ProdcutPolicyException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            fail("Expected ProdcutPolicyException to be thrown");
+            fail("Expected ProdcutPolicyException or PoductDoesNotExistsException to be thrown");
         }
         shoppingBasket.add(basket);
         Order orderUnderTest = null;
@@ -116,15 +122,20 @@ public class OrderTests {
 
         Product product1 = new Product(1, "product1", Category.CLOTHING , 1.0);
         Product product2 = new Product(2, "product2", Category.ELECTRONICS , 2.0);
-        when(shopMock.getProductById(1)).thenReturn(product1);
-        when(shopMock.getProductById(2)).thenReturn(product2);
+        try {
+            when(shopMock.getProductById(1)).thenReturn(product1);
+            when(shopMock.getProductById(2)).thenReturn(product2);
+        } catch (ProductDoesNotExistsException e) {
+            e.printStackTrace();
+            fail("Expected ProductDoesNotExistsException to be thrown");
+        }
 
         try {
             basket.addProductToShoppingBasket(userMock, 1);
             basket.addProductToShoppingBasket(userMock, 2);
-        } catch (ProdcutPolicyException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            fail("Expected ProdcutPolicyException to be thrown");
+            fail("Expected ProdcutPolicyException or PoductDoesNotExistsException to be thrown");
         }
         shoppingBasket.add(basket);
         Order orderUnderTest = null;

@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
 import Exceptions.ShopPolicyException;
@@ -33,13 +34,8 @@ public class ShoppingBasket implements Cloneable {
         _productToPriceToAmount = new HashMap<>();
     }
 
-    /**
-     * Adds a product to the shopping basket after validating the user doesn't violate the product policy.
-     * @param user the user that adds the product to the basket
-     * @param productId the product id to add to the basket
-     * @throws ProdcutPolicyException 
-     */
-    public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException {
+    // Adds a product to the shopping basket after validating the user doesn't violate the product policy.
+    public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException, ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
         _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
@@ -75,26 +71,20 @@ public class ShoppingBasket implements Cloneable {
         return _basketTotalAmount;
     }
     
-
-    public int getShopId() {
-        return _shop.getShopId();
-    }
-
-    public Shop getShop(){
-        return _shop;
-    }
-
+    // Return the total price of all products in the basket
     public double getShoppingBasketPrice() throws StockMarketException{
         if (_basketTotalAmount == 0.0)
             return calculateShoppingBasketPrice();
         return _basketTotalAmount;
     }
 
+    // Return the list of product IDs in the basket
     public List<Integer> getProductIdList() {
         return _productIdList;
     }
 
-    public List<Product> getProductsList() {
+    // Return the list of products in the basket
+    public List<Product> getProductsList() throws ProductDoesNotExistsException {
         List<Product> products = new ArrayList<>();
         for (Integer productId : _productIdList) {
             products.add(_shop.getProductById(productId));
@@ -107,7 +97,7 @@ public class ShoppingBasket implements Cloneable {
      * If an exception is thrown, cancel the purchase of all the products that were
      * bought. This function only updates the item's stock.
      */
-    public boolean purchaseBasket() throws ShopPolicyException {
+    public boolean purchaseBasket() throws ShopPolicyException, ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
@@ -146,7 +136,8 @@ public class ShoppingBasket implements Cloneable {
         return true;
     }
 
-    public void cancelPurchase() {
+    // Cancel the purchase of all products in the basket
+    public void cancelPurchase() throws ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: "
                         + _shop.getShopId());
@@ -155,6 +146,7 @@ public class ShoppingBasket implements Cloneable {
         }
     }
 
+    // Return the number of times a product appears in the basket
     public int getProductCount(Integer productId) {
         int count = 0;
 
@@ -169,8 +161,9 @@ public class ShoppingBasket implements Cloneable {
      * Resets the product to price to amount mapping in the shopping basket.
      * This method iterates through the product list and updates the mapping
      * based on the product ID, price, and quantity.
+     * @throws ProductDoesNotExistsException 
      */
-    public void resetProductToPriceToAmount() {
+    public void resetProductToPriceToAmount() throws ProductDoesNotExistsException {
         _productToPriceToAmount = new HashMap<>();
 
         for (Integer productId : _productIdList) {
@@ -185,14 +178,7 @@ public class ShoppingBasket implements Cloneable {
         }
     }
 
-    public String getShopBankDetails() {
-        return _shop.getBankDetails();
-    }
-
-    public String getShopAddress() {
-        return _shop.getShopAddress();
-    }
-
+    // Clone the shopping basket, using for the clone method when finich order
     @Override
     public ShoppingBasket clone() {
         try {
@@ -216,10 +202,15 @@ public class ShoppingBasket implements Cloneable {
         return clonedMap;
     }
 
+    // Print all products in the basket
     public String printAllProducts() {
         StringBuilder sb = new StringBuilder();
         for (Integer product : _productIdList) {
-            sb.append(_shop.getProductById(product).toString());
+            try {
+                sb.append(_shop.getProductById(product).toString());
+            } catch (ProductDoesNotExistsException e) {
+                return "Error while printAllProduct: " + e.getMessage();
+            }
             sb.append("\n");
         }
         return sb.toString();
@@ -241,4 +232,22 @@ public class ShoppingBasket implements Cloneable {
         return this._productIdList.isEmpty(); 
     }
     
+    // getters and setters
+    
+    public int getShopId() {
+        return _shop.getShopId();
+    }
+
+    public Shop getShop(){
+        return _shop;
+    }
+
+    public String getShopBankDetails() {
+        return _shop.getBankDetails();
+    }
+
+    public String getShopAddress() {
+        return _shop.getShopAddress();
+    }
+
 }

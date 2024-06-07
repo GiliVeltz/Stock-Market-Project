@@ -1,11 +1,9 @@
 package DmainTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,11 +27,8 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Domain.Facades.UserFacade;
 import Exceptions.ShopException;
-import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
-import ServiceLayer.UserService;
-import ch.qos.logback.core.subst.Token;
 import enums.Category;
 
 public class ShopFacadeTests {
@@ -481,7 +476,6 @@ public class ShopFacadeTests {
         // authenticate and authorize the user as an admin.
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer orderId = 1;
         Integer shopId = 1;
         String userName = "founderName1";
         String token = "owner_Token";
@@ -511,7 +505,6 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer orderId = 1;
         Integer shopId = 1;
         String userName = "not_admin_or_owner";
         String token = "Admin_Token";
@@ -543,7 +536,6 @@ public class ShopFacadeTests {
         // an order for this product.
         _shopsList.add(_shop1);
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
-        Integer orderId = 1;
         Integer shopId = 1;
         User user = new User("founderName1", "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
@@ -570,7 +562,6 @@ public class ShopFacadeTests {
         // Arrange
         _shopsList.add(_shop1);
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
-        Integer orderId = 1;
         Integer shopId = 1;
         User testUser = new User("founderName1", "password1", "email1", new Date());
         Category productCategory = Category.CLOTHING;
