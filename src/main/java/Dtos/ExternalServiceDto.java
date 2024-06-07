@@ -1,18 +1,25 @@
 package Dtos;
 
 public class ExternalServiceDto {
+    private int id;
     private String serviceName;
     private String informationPersonName;
     private String informationPersonPhone;
     
     // Constructor
-    public ExternalServiceDto(String serviceName, String informationPersonName, String informationPersonPhone) {
+    public ExternalServiceDto(int id, String serviceName, String informationPersonName, String informationPersonPhone) {
+        this.id = id;
         this.serviceName = serviceName;
         this.informationPersonName = informationPersonName;
         this.informationPersonPhone = informationPersonPhone;
     }
     
     // Getters and Setters
+    
+    public int getId() {
+        return id;
+    }
+
     public String getServiceName() {
         return serviceName;
     }
