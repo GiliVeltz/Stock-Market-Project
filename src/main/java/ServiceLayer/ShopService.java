@@ -7,12 +7,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.catalina.valves.rewrite.RewriteCond.Condition;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Dtos.ProductDto;
 import Dtos.ProductDto;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;

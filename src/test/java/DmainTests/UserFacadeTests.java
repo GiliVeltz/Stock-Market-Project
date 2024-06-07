@@ -16,7 +16,6 @@ import Domain.Order;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
 import Dtos.UserDto;
-import Exceptions.ShopException;
 import Exceptions.UserException;
 
 public class UserFacadeTests {

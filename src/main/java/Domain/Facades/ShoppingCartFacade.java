@@ -2,7 +2,6 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +13,7 @@ import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
 
@@ -57,7 +57,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException {
+    public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID);
@@ -67,7 +67,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void addProductToGuestCart(String guestID, int productID, int shopID) throws ProdcutPolicyException {
+    public void addProductToGuestCart(String guestID, int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.addProduct(productID, shopID);

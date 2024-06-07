@@ -90,6 +90,7 @@ public class Shop {
     public boolean isShopClosed() {
         return _isClosed;
     }
+    
     public void setProductPrice(int productId, double price) {
         _productMap.get(productId).setPrice(price);
     }
@@ -599,7 +600,13 @@ public class Shop {
                 + product.getProductName() + " in the shop with id " + _shopId);
     }
 
-    public Product getProductById(Integer productId) {
+    public Product getProductById(Integer productId) throws ProductDoesNotExistsException {
+        // check if product exists
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, "Shop - getProductById: Error while trying to get product with id: " + productId
+                    + " from shop with id " + _shopId);
+            throw new ProductDoesNotExistsException("Product with ID " + productId + " does not exist.");
+        }
         return _productMap.get(productId); // Get product by ID from the map
     }
 

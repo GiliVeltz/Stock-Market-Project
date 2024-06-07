@@ -27,6 +27,10 @@ public class ExternalService {
 
     // getters and seeters
 
+    public int getId() {
+        return _id;
+    }
+
     public String getServiceName() {
         return _serviceName;
     }

@@ -39,7 +39,7 @@ public class ShopOrder {
     //Helper method to print all products in the order
      private String printAllProduct() 
         {
-           return _shoppingBasket.printAllProducts();
+            return _shoppingBasket.printAllProducts();
         }
    
 

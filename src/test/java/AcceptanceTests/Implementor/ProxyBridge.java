@@ -1,7 +1,5 @@
 package AcceptanceTests.Implementor;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 

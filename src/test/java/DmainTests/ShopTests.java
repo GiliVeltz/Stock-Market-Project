@@ -5,25 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Producer;
-
 import Domain.Product;
 import Domain.Shop;
-import Domain.Authenticators.PasswordEncoderUtil;
-import Domain.Facades.UserFacade;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
 import Exceptions.RoleException;
@@ -34,10 +24,6 @@ import enums.Permission;
 
 public class ShopTests {
 
-    // Shop feilds for tests
-    Shop _shop1;
-
-    
     @BeforeEach
     public void setUp() {
     }
@@ -1093,7 +1079,6 @@ public class ShopTests {
     public void testUpdateProductQuantity_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);

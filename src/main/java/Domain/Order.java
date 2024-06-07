@@ -74,9 +74,9 @@ public class Order {
     }
 
     private String printAllProducts(ShoppingBasket shoppingBasket) {
-       return shoppingBasket.printAllProducts();
-        
+        return shoppingBasket.printAllProducts();
     }
+    
     @Override
     public String toString() {
         return "Order{" +
