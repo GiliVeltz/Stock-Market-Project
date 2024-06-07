@@ -55,12 +55,12 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of change info of external service in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testChangeExternalService() {
-        assertTrue(_bridge.testChangeExternalService(111, "newSerivceName", "name", "phone") ); // success
+        assertTrue(_bridge.testChangeExternalService(0, "newSerivceName", "name", "phone") ); // success
         assertFalse(_bridge.testChangeExternalService(222, "newSerivceName", "name", "phone") ); // fail - non exist external service with this id in the system
-        assertFalse(_bridge.testChangeExternalService(222, "", "name", "phone") ); // fail - empty name
-        assertFalse(_bridge.testChangeExternalService(222, "newSerivceName", "", "") ); // fail - empty info person
+        assertFalse(_bridge.testChangeExternalService(0, "", "name", "phone") ); // fail - empty name
+        assertFalse(_bridge.testChangeExternalService(0, "newSerivceName", "", "") ); // fail - empty info person
     }
 }
