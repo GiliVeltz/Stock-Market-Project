@@ -1,7 +1,5 @@
 import java.util.logging.Logger;
 
-import io.jsonwebtoken.io.IOException;
-
 import java.util.logging.LogManager;
 
 public class LoggingExample {

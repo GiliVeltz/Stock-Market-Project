@@ -13,6 +13,7 @@ import Dtos.PurchaseCartDetailsDto;
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
 import Exceptions.ProdcutPolicyException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
@@ -80,7 +81,7 @@ public class ShoppingCart {
      * bought.
      * This function only updates the item's stock.
      */
-    private void purchaseCartEditStock(List<Integer> busketsToBuy) {
+    private void purchaseCartEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - purchaseCart - Start purchasing cart.");
         List<Integer> boughtBasketList = new ArrayList<>();
 
@@ -112,7 +113,7 @@ public class ShoppingCart {
      * Go through the list of baskets to cancel and cancel the purchase of them.
      * This function only updates the item's stock.
      */
-    private void cancelPurchaseEditStock(List<Integer> busketsToBuy) {
+    private void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - cancelPurchase - Canceling purchase of all baskets.");
         for (Integer basketId : busketsToBuy) {
             _shoppingBaskets.get(basketId).cancelPurchase();
@@ -138,8 +139,9 @@ public class ShoppingCart {
      * @param shopID    the shop the product is from.
      * @param user      the user that wants to add the prodcut.
      * @throws ProdcutPolicyException
+     * @throws ProductDoesNotExistsException 
      */
-    public void addProduct(int productID, int shopID) throws ProdcutPolicyException {
+    public void addProduct(int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
