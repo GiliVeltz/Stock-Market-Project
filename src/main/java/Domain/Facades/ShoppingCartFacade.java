@@ -81,7 +81,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void removeProductFromUserCart(String userName, int productID, int shopID) {
+    public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.removeProduct(productID, shopID);
@@ -91,7 +91,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void removeProductFromGuestCart(String guestID, int productID, int shopID) {
+    public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.removeProduct(productID, shopID);
