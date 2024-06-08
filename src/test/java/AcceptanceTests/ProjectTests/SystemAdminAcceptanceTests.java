@@ -29,9 +29,9 @@ public class SystemAdminAcceptanceTests {
         
         @Test
         public void testSystemManagerViewHistoryPurcaseInShops() {
-            assertTrue(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", "shopId1") ); // success
-            assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", "shopId2") ); // fail - invalid shop Id
-            assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInShops("guest", "shopId1") ); // fail - not the system manager
+            assertTrue(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", 0) ); // success
+            assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", -1) ); // fail - invalid shop Id
+            assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInShops("guest", 0) ); // fail - not the system manager
         }
     
 }

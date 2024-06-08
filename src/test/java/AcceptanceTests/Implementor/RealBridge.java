@@ -24,7 +24,10 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
+import Dtos.ShopDto;
 import Dtos.UserDto;
+import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 import ServiceLayer.*;
 
 // A real conection to the system.
@@ -410,8 +413,46 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Test
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId){
-        return true;
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User manager = new User("manager", _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+                new Date());
+        manager.setIsSystemAdmin(true);
+
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(manager);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+        
+        try {
+            _shopFacade.openNewShop(namanger, shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testSystemManagerViewHistoryPurcaseInShops Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(namanger);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // Act
+        Response res = _shopServiceUnderTest.getShopPurchaseHistory(token, shopId);
+
+        // Assert
+        logger.info("testSystemManagerViewHistoryPurcaseInShops Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
     //  --------------------------------------------------------------------------------------------------------------------------------------------------------------

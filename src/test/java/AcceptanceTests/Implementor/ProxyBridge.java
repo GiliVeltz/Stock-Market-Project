@@ -296,7 +296,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId) {
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInShops' in ProxyBridge class");
     }
 

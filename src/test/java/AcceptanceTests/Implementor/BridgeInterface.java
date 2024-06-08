@@ -226,7 +226,7 @@ public interface BridgeInterface {
     boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName);
 
     @Test
-    boolean testSystemManagerViewHistoryPurcaseInShops(String userName, String shopId);
+    boolean testSystemManagerViewHistoryPurcaseInShops(String userName, Integer shopId);
 
     // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
