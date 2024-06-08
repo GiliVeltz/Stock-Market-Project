@@ -158,7 +158,12 @@ public class ShoppingBasketTests {
         }
 
         // Act
-        shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+        try {
+            shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+            fail("Expected ProductDoesNotExistsException exception not thrown");
+        } catch (ProductDoesNotExistsException e) {
+            e.printStackTrace();
+        }
         
         // Assert
         assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
