@@ -509,4 +509,12 @@ public class ShopFacade {
         shop.addProductRating(productId,rating);
     }
 
+    public void addShopRating(Integer shopId, Integer rating) throws StockMarketException{   
+        if (!isShopIdExist(shopId)) 
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        Shop shop = getShopByShopId(shopId);
+        shop.addShopRating(rating);
+    }
+
 }
