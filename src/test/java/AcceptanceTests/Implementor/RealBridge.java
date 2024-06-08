@@ -373,6 +373,49 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getErrorMessage() == null;
     }
 
+    // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User manager = new User(managerName, _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+                new Date());
+        manager.setIsSystemAdmin(true);
+        User guest = new User("guest", _passwordEncoder.encodePassword("guest"), "email@email.com", new Date());
+        User user = new User("userName", _passwordEncoder.encodePassword("userName"), "email@email.com", new Date());
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(manager);
+                add(guest);
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(managerName);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // Act
+        Response res = _userServiceUnderTest.getUserPurchaseHistory(token, userName);
+
+        // Assert
+        logger.info("testSystemManagerViewHistoryPurcaseInUsers Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId){
+        return true;
+    }
+
+    //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         // TODO Auto-generated method stub
@@ -786,18 +829,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testOpenMarketSystem(String username, String shopId, String permission) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testOpenMarketSystem'");
-    }
-
-    @Override
-    public boolean testSystemManagerViewHistoryPurcaseInUsers(String namanger, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInUsers'");
-    }
-
-    @Override
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInShops'");
     }
 
     @Override

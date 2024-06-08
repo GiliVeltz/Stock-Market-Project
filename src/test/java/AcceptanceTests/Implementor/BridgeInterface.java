@@ -223,10 +223,10 @@ public interface BridgeInterface {
     // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
-    boolean testSystemManagerViewHistoryPurcaseInUsers(String namanger, String shopId);
+    boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName);
 
     @Test
-    boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId);
+    boolean testSystemManagerViewHistoryPurcaseInShops(String userName, String shopId);
 
     // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
