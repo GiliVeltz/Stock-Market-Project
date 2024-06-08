@@ -75,7 +75,7 @@ public class Shop {
         }
     }
 
-    public Shop(int shopId, String founderUsername, ShopDto shopDto) throws ShopException {
+    public Shop(int shopId, String founderUsername, ShopDto shopDto) throws StockMarketException {
         this(shopId, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
     }
 
@@ -104,9 +104,9 @@ public class Shop {
      * 
      * @param username the username to check.
      * @return True - if has role. False - if doesn't have.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public boolean checkIfHasRole(String username) throws ShopException {
+    public boolean checkIfHasRole(String username) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - checkIfHasRole: Checking if user " + username + " has a role in shop with id: " + _shopId);
         if (username == null) {
@@ -116,7 +116,7 @@ public class Shop {
     }
 
     // get role of the user in the shop
-    public Role getRole(String username) throws ShopException {
+    public Role getRole(String username) throws StockMarketException {
         if (!checkIfHasRole(username)) {
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
         }
@@ -129,9 +129,9 @@ public class Shop {
      * @param username the username of the user that does the action.
      * @param p        the permission needed.
      * @return true if has permission. false if hasn't.
-     * @throws ShopException if the user doesn't have a role in the shop.
+     * @throws StockMarketException if the user doesn't have a role in the shop.
      */
-    public boolean checkPermission(String username, Permission p) throws ShopException {
+    public boolean checkPermission(String username, Permission p) throws StockMarketException {
         logger.log(Level.FINE, "Shop - checkPermission: Checking if user " + username + " has permission: " + p);
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
@@ -163,9 +163,9 @@ public class Shop {
      * @param username    the username of the user that does the action.
      * @param permissions the permissions set.
      * @return true if has permission. false if hasn't.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public boolean checkAtLeastOnePermission(String username, Set<Permission> permissions) throws ShopException {
+    public boolean checkAtLeastOnePermission(String username, Set<Permission> permissions) throws StockMarketException {
         logger.log(Level.FINE, "Shop - checkAtLeastOnePermission: Checking if user " + username
                 + " has at least one permission from the set: " + permissions);
         if (!checkIfHasRole(username)) {
@@ -186,9 +186,9 @@ public class Shop {
      * @param username    the username of the user that does the action.
      * @param permissions the permissions needed.
      * @return true if has permission. false if hasn't.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public boolean checkAllPermission(String username, Set<Permission> permissions) throws ShopException {
+    public boolean checkAllPermission(String username, Set<Permission> permissions) throws StockMarketException {
         logger.log(Level.FINE, "Shop - checkAllPermission: Checking if user " + username
                 + " has all permissions from the set: " + permissions);
         if (!checkIfHasRole(username)) {
@@ -499,9 +499,9 @@ public class Shop {
      * 
      * @param username the root role username.
      * @return a set of all usernames that were appointed from the root username.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    private Set<String> getAllAppointed(String username) throws ShopException {
+    private Set<String> getAllAppointed(String username) throws StockMarketException {
         logger.log(Level.FINE, "ShoppingCart - getAllAppointed: Getting all the appointed users by " + username);
         Set<String> appointed = new HashSet<>();
         collectAppointedUsers(username, appointed);
@@ -513,9 +513,9 @@ public class Shop {
      * 
      * @param username  the current username we collect.
      * @param appointed the collected set of users to some point.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    private void collectAppointedUsers(String username, Set<String> appointed) throws ShopException {
+    private void collectAppointedUsers(String username, Set<String> appointed) throws StockMarketException {
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE, "Shop - collectAppointedUsers: user " + username
                     + " doesn't have a role in shop with id " + _shopId);
@@ -532,7 +532,7 @@ public class Shop {
         }
     }
 
-    public String getRolesInfo(String username) throws PermissionException, ShopException {
+    public String getRolesInfo(String username) throws StockMarketException {
         logger.log(Level.INFO,
                 "Shop - getRolesInfo: " + username + " trying get all roles info from the shop with id " + _shopId);
         if (!checkPermission(username, Permission.GET_ROLES_INFO)) {
@@ -722,7 +722,7 @@ public class Shop {
         return this._orderHistory;
     }
 
-    public Boolean isOwnerOrFounderOwner(String userId) throws ShopException {
+    public Boolean isOwnerOrFounderOwner(String userId) throws StockMarketException {
         Role role = getRole(userId);
         return isOwnerOrFounder(role);
     }
@@ -776,7 +776,7 @@ public class Shop {
 
     }
 
-    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws Exception {
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws StockMarketException {
         try {
             if (!checkPermission(username, Permission.ADD_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
@@ -794,8 +794,8 @@ public class Shop {
 
             isProductExist(productId);
             getProductById(productId).updateProductQuantity(productAmoutn);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        } catch (StockMarketException e) {
+            throw new StockMarketException(e.getMessage());
         }
     }
 
@@ -807,9 +807,9 @@ public class Shop {
      * Checks if a basket is meeting the shop Policy.
      * 
      * @param sb the basket to check
-     * @throws ShopPolicyException
+     * @throws StockMarketException
      */
-    public void ValidateBasketMeetsShopPolicy(ShoppingBasket sb) throws ShopPolicyException {
+    public void ValidateBasketMeetsShopPolicy(ShoppingBasket sb) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - ValidateBasketMeetsShopPolicy: Starting validation of basket for shop with id: " + _shopId);
         if (!_shopPolicy.evaluate(sb)) {
@@ -825,9 +825,9 @@ public class Shop {
      * 
      * @param u The user that tries to add the product to basket.
      * @param p The product which policy is being checked.
-     * @throws ProdcutPolicyException
+     * @throws StockMarketException
      */
-    public void ValidateProdcutPolicy(User u, Product p) throws ProdcutPolicyException {
+    public void ValidateProdcutPolicy(User u, Product p) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: " + _shopId);
         if (!p.getProductPolicy().evaluate(u)) {
@@ -843,9 +843,9 @@ public class Shop {
      * 
      * @username The username of the user that tries to add the rule.
      * @param rule The rule to add.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public void addRuleToShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException {
+    public void addRuleToShopPolicy(String username, Rule<ShoppingBasket> rule) throws StockMarketException {
         logger.log(Level.INFO, "Shop - addRuleToShopPolicy: User " + username
                 + " trying to add rule to shop policy of shop with id: " + _shopId);
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
@@ -859,9 +859,9 @@ public class Shop {
      * 
      * @username The username of the user that tries to remove the rule.
      * @param rule The rule to remove.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public void removeRuleFromShopPolicy(String username, Rule<ShoppingBasket> rule) throws ShopException {
+    public void removeRuleFromShopPolicy(String username, Rule<ShoppingBasket> rule) throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromShopPolicy: User " + username
                 + " trying to remove rule from shop policy of shop with id: " + _shopId);
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
@@ -876,9 +876,9 @@ public class Shop {
      * @param username  The username of the user that tries to add the rule.
      * @param rule      The rule to add.
      * @param productId The id of the product to add the rule to.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public void addRuleToProductPolicy(String username, Rule<User> rule, int productId) throws ShopException {
+    public void addRuleToProductPolicy(String username, Rule<User> rule, int productId) throws StockMarketException {
         logger.log(Level.INFO, "Shop - addRuleToProductPolicy: User " + username
                 + " trying to add rule to product policy of shop with id: " + _shopId);
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
@@ -894,9 +894,9 @@ public class Shop {
      * @param username  The username of the user that tries to remove the rule.
      * @param rule      The rule to remove.
      * @param productId The id of the product to remove the rule from.
-     * @throws ShopException
+     * @throws StockMarketException
      */
-    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId) throws ShopException {
+    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId) throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromProductPolicy: User " + username
                 + " trying to remove rule from product policy of shop with id: " + _shopId);
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
@@ -910,7 +910,7 @@ public class Shop {
         return _shopPolicy.toString();
     }
 
-    public String getProductPolicyInfo(Integer productId) throws ProductDoesNotExistsException {
+    public String getProductPolicyInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductPolicyInfo();
         }
@@ -927,7 +927,7 @@ public class Shop {
         return discountsBuilder.toString();
     }
 
-    public String getProductDiscountsInfo(Integer productId) throws ProductDoesNotExistsException, StockMarketException {
+    public String getProductDiscountsInfo(Integer productId) throws StockMarketException {
         // TODO: implement after getDiscountsByProduct is implemented
         if (isProductExist(productId)) {
             StringBuilder discountsBuilder = new StringBuilder();
@@ -945,7 +945,7 @@ public class Shop {
         return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress + " | Shop Rating: " + _shopRating;
     }
 
-    public String getProductGeneralInfo(Integer productId) throws ProductDoesNotExistsException {
+    public String getProductGeneralInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductGeneralInfo();
         }

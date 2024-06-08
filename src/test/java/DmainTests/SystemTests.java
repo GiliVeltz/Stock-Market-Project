@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
-import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 import ServiceLayer.Response;
 import ServiceLayer.SystemService;
 import ServiceLayer.UserService;
@@ -49,7 +49,7 @@ public class SystemTests {
     }
 
     @Test
-    public void testOpenSystem_WhenSystemAlreadyOpen_ReturnsFalse() throws ShopException {
+    public void testOpenSystem_WhenSystemAlreadyOpen_ReturnsFalse() throws StockMarketException {
         // Arrange
         String token = "Admin_Token";
         _systemService.setSystemOpen(true);
@@ -67,7 +67,7 @@ public class SystemTests {
     }
 
     @Test
-    public void testOpenSystem_WhenUserNotLoggedIn_ReturnsFalse() throws Exception {
+    public void testOpenSystem_WhenUserNotLoggedIn_ReturnsFalse() throws StockMarketException {
         // Arrange
         String token = "Admin_Token";
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
@@ -84,7 +84,7 @@ public class SystemTests {
     }
 
     @Test
-    public void testOpenSystem_WhenUserTokenIsNotValid_ReturnsFalse() throws Exception {
+    public void testOpenSystem_WhenUserTokenIsNotValid_ReturnsFalse() throws StockMarketException {
         // Arrange
         String token = "Admin_Token";
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
@@ -101,7 +101,7 @@ public class SystemTests {
     }
 
     @Test
-    public void testOpenSystem_WhenNotConnectedToAllExternalServices_ReturnsFalse() throws Exception {
+    public void testOpenSystem_WhenNotConnectedToAllExternalServices_ReturnsFalse() throws StockMarketException {
         // Arrange
         String token = "Admin_Token";
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
@@ -118,7 +118,7 @@ public class SystemTests {
     }
 
     @Test
-    public void testOpenSystem_WhenAllConditionsSatisfied_success() throws Exception {
+    public void testOpenSystem_WhenAllConditionsSatisfied_success() throws StockMarketException {
         // Arrange
         String token = "Admin_Token";
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");

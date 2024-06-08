@@ -4,7 +4,7 @@ import java.util.List;
 
 import Domain.ShoppingBasket;
 import Dtos.ConditionalDiscountDto;
-import Exceptions.DiscountExpiredException;
+import Exceptions.StockMarketException;
 
 /**
  * Represents a conditional discount that applies a base discount to a shopping
@@ -48,10 +48,10 @@ public class ConditionalDiscount extends Discount {
      * Applies the discount to the given shopping basket if the rule is satisfied.
      * 
      * @param basket the shopping basket to apply the discount to
-     * @throws DiscountExpiredException if the discount has expired
+     * @throws StockMarketException if the discount has expired
      */
     @Override
-    protected void applyDiscountLogic(ShoppingBasket basket) throws DiscountExpiredException {
+    protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (_rule.predicate(basket))
             _discount.applyDiscount(basket);
     }
