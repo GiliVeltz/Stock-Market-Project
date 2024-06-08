@@ -14,12 +14,12 @@ import Domain.Discounts.PrecentageDiscount;
 import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
-import Dtos.BasicDiscountDto;
-import Dtos.ConditionalDiscountDto;
-import Dtos.ShopDto;
-import Dtos.ProductDto;
 import Domain.Shop;
 import Domain.ShopOrder;
+import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
+import Dtos.ProductDto;
+import Dtos.ShopDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
@@ -289,7 +289,7 @@ public class ShopFacade {
     public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords) throws StockMarketException {
         // If keywords is null, raise an error
         if (keywords == null || keywords.isEmpty()) {
-            throw new StockMarketException("Product keywords is null.");
+            throw new StockMarketException("Product keywords is null or empty.");
         }
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops

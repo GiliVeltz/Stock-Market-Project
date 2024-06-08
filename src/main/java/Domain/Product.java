@@ -30,6 +30,8 @@ public class Product implements Cloneable {
         this._price = price;
         this._quantity = 0;
         this._keywords = new HashSet<>();
+        this._keywords.add(productName);
+        this._keywords.add(category.toString());
         this._productRating = -1.0;
         this._productRatersCounter = 0;
         this._productPolicy = new ProductPolicy();
@@ -120,7 +122,7 @@ public class Product implements Cloneable {
     }
 
     public boolean isKeywordExist(String keyword) {
-        return _keywords.contains(keyword);
+        return _keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
     }
 
     public boolean isKeywordListExist(List<String> keywords) {
