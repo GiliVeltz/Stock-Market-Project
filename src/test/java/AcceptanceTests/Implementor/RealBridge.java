@@ -24,7 +24,10 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
+import Dtos.ShopDto;
 import Dtos.UserDto;
+import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 import ServiceLayer.*;
 
 // A real conection to the system.
@@ -372,6 +375,87 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         logger.info("testLoginToTheSystem Error message: " + res.getErrorMessage());
         return res.getErrorMessage() == null;
     }
+
+    // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User manager = new User(managerName, _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+                new Date());
+        manager.setIsSystemAdmin(true);
+        User guest = new User("guest", _passwordEncoder.encodePassword("guest"), "email@email.com", new Date());
+        User user = new User("userName", _passwordEncoder.encodePassword("userName"), "email@email.com", new Date());
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(manager);
+                add(guest);
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(managerName);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // Act
+        Response res = _userServiceUnderTest.getUserPurchaseHistory(token, userName);
+
+        // Assert
+        logger.info("testSystemManagerViewHistoryPurcaseInUsers Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User manager = new User("manager", _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+                new Date());
+        manager.setIsSystemAdmin(true);
+
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(manager);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+        
+        try {
+            _shopFacade.openNewShop(namanger, shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testSystemManagerViewHistoryPurcaseInShops Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(namanger);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // Act
+        Response res = _shopServiceUnderTest.getShopPurchaseHistory(token, shopId);
+
+        // Assert
+        logger.info("testSystemManagerViewHistoryPurcaseInShops Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+
+    //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
@@ -786,18 +870,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testOpenMarketSystem(String username, String shopId, String permission) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testOpenMarketSystem'");
-    }
-
-    @Override
-    public boolean testSystemManagerViewHistoryPurcaseInUsers(String namanger, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInUsers'");
-    }
-
-    @Override
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInShops'");
     }
 
     @Override
