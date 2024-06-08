@@ -21,6 +21,7 @@ import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShopPolicyException;
+import Exceptions.StockMarketException;
 import enums.Category;
 
 public class ShoppingCartTests {
@@ -275,5 +276,56 @@ public class ShoppingCartTests {
 
         // Assert
         assertTrue(shoppingCartUnderTest.getCartSize() == 1);
+    }
+
+    @Test
+    public void testRemoveProduct_whenProductDoesNotExists_shouldThrowProductDoesNotExistsException() throws ProductDoesNotExistsException, ProdcutPolicyException {
+        // Arrange
+        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+        Product product = new Product(1, "product", Category.CLOTHING, 10);
+        when(shopMock.getProductById(1)).thenThrow(new ProductDoesNotExistsException("Product does not exists"));
+        Mockito.doNothing().when(shopMock).ValidateProdcutPolicy(Mockito.any(User.class), Mockito.any(Product.class));
+        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shopMock);
+    
+        // Act
+        try {
+            shoppingCartUnderTest.removeProduct(1, 1);
+            fail("Expected StockMarketException");
+        } catch (StockMarketException e) {
+            // Assert
+            assertTrue(e.getMessage().contains("Trying to remove product from shopping cart, but no shopping basket found for shop: 1"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRemoveProduct_whenProductExists_shouldRemoveProduct() throws ProductDoesNotExistsException, ProdcutPolicyException {
+        // Arrange
+        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+        Product product = new Product(1, "product", Category.CLOTHING, 10);
+        when(shopMock.getProductById(1)).thenReturn(product);
+        when(shopMock.getShopId()).thenReturn(1);
+        Mockito.doNothing().when(shopMock).ValidateProdcutPolicy(Mockito.any(User.class), Mockito.any(Product.class));
+        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shopMock);
+        when(userMock.getUserName()).thenReturn("userMock");
+
+        shoppingCartUnderTest.SetUser(userMock);
+        shoppingCartUnderTest.addProduct(1, 1);
+    
+        // Act
+        try {
+            shoppingCartUnderTest.removeProduct(1, 1);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            fail("Unexpected StockMarketException");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        // Assert
+        assertTrue(shoppingCartUnderTest.getCartSize() == 0);
     }
 }

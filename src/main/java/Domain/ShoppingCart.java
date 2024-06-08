@@ -174,7 +174,7 @@ public class ShoppingCart {
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID) {
+    public void removeProduct(int productID, int shopID) throws StockMarketException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
@@ -188,6 +188,7 @@ public class ShoppingCart {
             }
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
+            throw new StockMarketException("Trying to remove product from shopping cart, but no shopping basket found for shop: " + shopID);
         }
     }
 
