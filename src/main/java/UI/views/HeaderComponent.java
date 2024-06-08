@@ -221,59 +221,71 @@ public class HeaderComponent extends HorizontalLayout {
 
     private void handleLogin(String username, String password) {
         RestTemplate restTemplate = new RestTemplate();
-        UserDto userDto = new UserDto(username, null, password);
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+        .then(String.class, token -> {
+            if (token != null && !token.isEmpty()) {
+                System.out.println("Token: " + token);
 
-        // Assuming you have a method to get the JWT token
-        String token = getTokenFromLocalStorage(); 
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", token);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("username", username);
+                params.put("password", password);
+                HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(params, headers);
 
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("password", password);
-        HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(params, headers);
+                ResponseEntity<String> response = restTemplate.exchange(
+                        "http://localhost:"+_serverPort+"/api/user/login",
+                        HttpMethod.GET,
+                        requestEntity,
+                        String.class);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:"+_serverPort+"/api/user/login",
-                HttpMethod.POST,
-                requestEntity,
-                String.class);
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Notification.show("Login successful");
+                    System.out.println(response.getBody());
+                } else {
+                    Notification.show("Login failed");
+                }
+            } else {
+                System.out.println("Token not found in local storage.");
+                Notification.show("Login failed");
+            }
+        });
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Notification.show("Login successful");
-            // Change the login button text to "Logout"
-            loginButton.setText("Logout");
-            System.out.println(response.getBody());
-        } else {
-            Notification.show("Login failed");
-        }
+
     }
 
     private void handleRegistration(String username, String email, String password){
         RestTemplate restTemplate = new RestTemplate();
         UserDto userDto = new UserDto(username, email, password);
 
-        // Assuming you have a method to get the JWT token
-        String token = getTokenFromLocalStorage(); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+        .then(String.class, token -> {
+            if (token != null && !token.isEmpty()) {
+                System.out.println("Token: " + token);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", token);
 
-        HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
+                HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:"+_serverPort+"/api/user/register",
-                HttpMethod.POST,
-                requestEntity,
-                String.class);
+                ResponseEntity<String> response = restTemplate.exchange(
+                        "http://localhost:"+_serverPort+"/api/user/register",
+                        HttpMethod.POST,
+                        requestEntity,
+                        String.class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Notification.show("Registration successful");
-            System.out.println(response.getBody());
-        } else {
-            Notification.show("Registration failed");
-        }
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Notification.show("Registration successful");
+                    System.out.println(response.getBody());
+                } else {
+                    Notification.show("Registration failed");
+                }
+            } else {
+                System.out.println("Token not found in local storage.");
+                Notification.show("Registration failed");
+            }
+        });
     }
 
     private void handleLogout() {
@@ -282,8 +294,5 @@ public class HeaderComponent extends HorizontalLayout {
         System.out.println("User logged out");
     }
 
-    private String getTokenFromLocalStorage() {
-        // Example method to retrieve JWT token from local storage
-        return UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');").toString();
-    }
+    
 }

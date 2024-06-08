@@ -83,6 +83,7 @@ public class TokenService {
     // this function validates the token
     public boolean validateToken(String token) {
         try {
+            System.out.println("Server is checking Token: "+token);
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
