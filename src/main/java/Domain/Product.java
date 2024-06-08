@@ -81,7 +81,7 @@ public class Product implements Cloneable {
         _productRatersCounter++;
     }
 
-    public void purchaseProduct() throws ProductOutOfStockExepction {
+    public void purchaseProduct() throws StockMarketException {
         if (_quantity == 0) {
             logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");

@@ -12,10 +12,6 @@ import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
 import Dtos.PurchaseCartDetailsDto;
-import Exceptions.PaymentFailedException;
-import Exceptions.ProdcutPolicyException;
-import Exceptions.ProductDoesNotExistsException;
-import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
 
 @RestController
@@ -61,7 +57,7 @@ public class ShoppingCartFacade {
         _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }
 
-    public void addProductToUserCart(String userName, int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
+    public void addProductToUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID);
@@ -71,7 +67,7 @@ public class ShoppingCartFacade {
         }
     }
 
-    public void addProductToGuestCart(String guestID, int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
+    public void addProductToGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.addProduct(productID, shopID);
@@ -109,8 +105,7 @@ public class ShoppingCartFacade {
         _guestsCarts.remove(guestID);
     }
 
-    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details)
-            throws PaymentFailedException, ShippingFailedException, StockMarketException {
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details) throws StockMarketException {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
@@ -120,8 +115,7 @@ public class ShoppingCartFacade {
         _guestsCarts.get(guestID).purchaseCart(details);
     }
 
-    public void purchaseCartUser(String username, PurchaseCartDetailsDto details)
-            throws PaymentFailedException, ShippingFailedException, StockMarketException {
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         _cartsRepo.getCartByUsername(username).purchaseCart(details);
     }

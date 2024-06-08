@@ -16,6 +16,7 @@ import Domain.Order;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
 import Dtos.UserDto;
+import Exceptions.StockMarketException;
 import Exceptions.UserException;
 
 public class UserFacadeTests {
@@ -76,7 +77,7 @@ public class UserFacadeTests {
         when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
 
         // Assert - Verify that the username has been updated
-        assertThrowsExactly(Exception.class,
+        assertThrowsExactly(StockMarketException.class,
                 () -> _userFacadeUnderTest
                         .register(new UserDto("john_doe", "password1234", "john.doe@example.co.il", new Date())));
         assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
@@ -184,7 +185,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserExists_thenSuccess() throws Exception {
+    public void testGetPurchaseHistory_whenUserExists_thenSuccess() throws StockMarketException {
         // Arrange
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         String username = "testUser";
@@ -208,7 +209,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserDoesNotExist_thenNull() throws Exception {
+    public void testGetPurchaseHistory_whenUserDoesNotExist_thenNull() throws StockMarketException {
         // Arrange
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         String nonExistentUsername = "nonExistentUser";
@@ -218,7 +219,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testgetUserByUsername_whenUserIsNull_thenError() throws Exception {
+    public void testgetUserByUsername_whenUserIsNull_thenError() throws StockMarketException {
         // Arrange
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         String userIsNull = null;
@@ -228,7 +229,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testgetUserByUsername_whenUserExist_thenSuccess() throws Exception {
+    public void testgetUserByUsername_whenUserExist_thenSuccess() throws StockMarketException {
         // Arrange
         _registeredUsers.add(_user1);
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
@@ -239,7 +240,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testgetUserByUsername_whenUserDoesNotExist_thenError() throws Exception {
+    public void testgetUserByUsername_whenUserDoesNotExist_thenError() throws StockMarketException {
         // Arrange
         String userTest = "John_lennon";
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
@@ -249,7 +250,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testAreCredentialsCorrect_whenUserDoesNotExist_thenError() throws Exception {
+    public void testAreCredentialsCorrect_whenUserDoesNotExist_thenError() throws StockMarketException {
         // Arrange
         String userTest = "John_lennon";
         String password = "5555";
@@ -260,7 +261,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testAreCredentialsCorrect_whenUserisNull_thenError() throws Exception {
+    public void testAreCredentialsCorrect_whenUserisNull_thenError() throws StockMarketException {
         // Arrange
         String userTest = null;
         String password = "5555";
@@ -271,7 +272,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testAreCredentialsCorrect_whenCredentislIsCorrect_thenSuccess() throws Exception {
+    public void testAreCredentialsCorrect_whenCredentislIsCorrect_thenSuccess() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         String password = "5555";
@@ -285,7 +286,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testAddOrderToUser_whenOrderIsNull_thenError() throws Exception {
+    public void testAddOrderToUser_whenOrderIsNull_thenError() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         _registeredUsers.add(_user1);
@@ -298,7 +299,7 @@ public class UserFacadeTests {
     }    
 
     @Test
-    public void testIsAdmin_whenUserIsNot_thenError() throws Exception {
+    public void testIsAdmin_whenUserIsNot_thenError() throws StockMarketException {
         // Arrange
         String userTest = "notAdmin";
 
@@ -312,7 +313,7 @@ public class UserFacadeTests {
     }  
 
     @Test
-    public void testIsAdmin_whenUserIsAdmin_thenSuccess() throws Exception {
+    public void testIsAdmin_whenUserIsAdmin_thenSuccess() throws StockMarketException {
         // Arrange
         String userTest = "Admin";
 
@@ -326,7 +327,7 @@ public class UserFacadeTests {
     }  
 
     @Test
-    public void testAddNewGuest_whenGuestIdExist_thenError() throws Exception {
+    public void testAddNewGuest_whenGuestIdExist_thenError() throws StockMarketException {
         // Arrange
         String guestId = "guest";
 
@@ -338,7 +339,7 @@ public class UserFacadeTests {
     }  
 
     @Test
-    public void testAddNewGuest_whenGuestIdNotExist_thenSuccess() throws Exception {
+    public void testAddNewGuest_whenGuestIdNotExist_thenSuccess() throws StockMarketException {
         // Arrange
         String guestId = "guest";
    
@@ -350,7 +351,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testChangeEmail_whenEmailIsNull_thenError() throws Exception {
+    public void testChangeEmail_whenEmailIsNull_thenError() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         String email = null;
@@ -363,7 +364,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testChangeEmail_whenEmailIsEmpty_thenError() throws Exception {
+    public void testChangeEmail_whenEmailIsEmpty_thenError() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         String email = "";
@@ -376,7 +377,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testChangeEmail_whenEmailIsInValid_thenError() throws Exception {
+    public void testChangeEmail_whenEmailIsInValid_thenError() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         String email = "555555";
@@ -389,7 +390,7 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testChangeEmail_whenEmailIsCurrect_thenSuccess() throws Exception {
+    public void testChangeEmail_whenEmailIsCurrect_thenSuccess() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
         String email = "MyEmail5@gmail.com";

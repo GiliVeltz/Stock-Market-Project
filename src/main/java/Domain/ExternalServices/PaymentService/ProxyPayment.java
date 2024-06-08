@@ -11,12 +11,10 @@ public class ProxyPayment {
     }
 
     public void pay(String cardNumber, String shopBankDetails, double amountToPay) {
-        // TODO Auto-generated method stub
         return;
     }
 
     public void refound(String cardNumber) {
-        // TODO Auto-generated method stub
         return;
     }
     

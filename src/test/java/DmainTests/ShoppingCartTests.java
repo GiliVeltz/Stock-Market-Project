@@ -19,7 +19,6 @@ import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
-import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -59,10 +58,9 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testAddProduct_whenProductDoesNotExists_shouldThrowProductDoesNotExistsException() throws ProdcutPolicyException, ProductDoesNotExistsException {
+    public void testAddProduct_whenProductDoesNotExists_shouldThrowProductDoesNotExistsException() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        Product product = new Product(1, "product", Category.CLOTHING, 10);
         when(shopMock.getProductById(1)).thenReturn(null);
         Mockito.doNothing().when(shopMock).ValidateProdcutPolicy(Mockito.any(User.class), Mockito.any(Product.class));
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shopMock);
@@ -84,7 +82,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testAddProduct_whenProductExists_shouldAddProduct() throws ProdcutPolicyException, ProductDoesNotExistsException {
+    public void testAddProduct_whenProductExists_shouldAddProduct() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         Product product = new Product(1, "product", Category.CLOTHING, 10);
@@ -134,7 +132,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testCancelPurchaseEditStock_whenBasketsToBuyIsNotEmpty_shouldCancelPurchase() throws ProductDoesNotExistsException {
+    public void testCancelPurchaseEditStock_whenBasketsToBuyIsNotEmpty_shouldCancelPurchase() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
@@ -180,7 +178,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testPurchaseCartEditStock_whenBasketsToBuyIsNotEmpty_shouldPurchaseCart() throws ProductDoesNotExistsException, ShopPolicyException {
+    public void testPurchaseCartEditStock_whenBasketsToBuyIsNotEmpty_shouldPurchaseCart() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
@@ -206,7 +204,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testPurchaseCartEditStock_whenProductOutOfStock_shouldThrowProductOutOfStockExepction() throws ProductDoesNotExistsException, ShopPolicyException, ProductOutOfStockExepction {
+    public void testPurchaseCartEditStock_whenProductOutOfStock_shouldThrowProductOutOfStockExepction() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
@@ -233,7 +231,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testPurchaseCartEditStock_whenProductOutOfStock_shouldCancelPurchase() throws ProductDoesNotExistsException, ShopPolicyException, ProductOutOfStockExepction {
+    public void testPurchaseCartEditStock_whenProductOutOfStock_shouldCancelPurchase() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
@@ -256,7 +254,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testPurchaseCartEditStock_whenShopPolicyException_shouldCancelPurchase() throws ProductDoesNotExistsException, ShopPolicyException {
+    public void testPurchaseCartEditStock_whenShopPolicyException_shouldCancelPurchase() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
@@ -279,10 +277,9 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testRemoveProduct_whenProductDoesNotExists_shouldThrowProductDoesNotExistsException() throws ProductDoesNotExistsException, ProdcutPolicyException {
+    public void testRemoveProduct_whenProductDoesNotExists_shouldThrowProductDoesNotExistsException() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        Product product = new Product(1, "product", Category.CLOTHING, 10);
         when(shopMock.getProductById(1)).thenThrow(new ProductDoesNotExistsException("Product does not exists"));
         Mockito.doNothing().when(shopMock).ValidateProdcutPolicy(Mockito.any(User.class), Mockito.any(Product.class));
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shopMock);
@@ -301,7 +298,7 @@ public class ShoppingCartTests {
     }
 
     @Test
-    public void testRemoveProduct_whenProductExists_shouldRemoveProduct() throws ProductDoesNotExistsException, ProdcutPolicyException {
+    public void testRemoveProduct_whenProductExists_shouldRemoveProduct() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
         Product product = new Product(1, "product", Category.CLOTHING, 10);
