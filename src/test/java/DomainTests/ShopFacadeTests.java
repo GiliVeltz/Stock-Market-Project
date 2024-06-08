@@ -1,4 +1,4 @@
-package DmainTests;
+package DomainTests;
 
 import java.util.ArrayList;
 import java.util.Date;

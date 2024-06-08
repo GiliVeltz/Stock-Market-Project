@@ -768,7 +768,7 @@ public class Shop {
     private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
-                    "Shop : Error while trying to update product with id: %d to shopId: %d. Product does not exist",
+                    "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",
                     productId, _shopId));
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }

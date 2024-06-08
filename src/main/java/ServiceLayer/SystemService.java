@@ -1,10 +1,9 @@
 package ServiceLayer;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
-
-import java.util.logging.Level;
 
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
@@ -145,7 +144,7 @@ public class SystemService {
             if (_tokenService.validateToken(token)) {
                 String id = _tokenService.extractGuestId(token);
                 if (id != null) {
-                    logger.info("Guest with id: " + id + "left the system");
+                    logger.info("Guest with id: " + id + " left the system");
                     _userFacade.removeGuest(id);
                     _shoppingCartFacade.removeCartForGuest(token);
                     response.setReturnValue("Guest left system Successfully");
