@@ -136,7 +136,7 @@ public class Role {
      * @Constraint username must be the one that appointed this role.
      * @throws RoleException 
      */
-    public void modifyPermissions(String username, Set<Permission> permissions) throws RoleException {
+    public void modifyPermissions(String username, Set<Permission> permissions) throws StockMarketException {
         logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
         if(isFounder() || isOwner()){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
@@ -144,7 +144,7 @@ public class Role {
         }
         if(!username.equals(_appointedBy)){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because "+username+" is not his appointer.");
-            throw new RoleException("Only the role that appointed this user can change permission.");
+            throw new RoleException("Only the user that appointed this user can modify the permissions.");
         }
         if(permissions.contains(Permission.OWNER) || permissions.contains(Permission.FOUNDER)){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because we can't add founder of owner permissions.");
