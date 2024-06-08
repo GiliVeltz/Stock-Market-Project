@@ -148,7 +148,7 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
-                    logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
+                    logger.info(String.format("New product %s :: added by: %s to Shop ID: %d",
                             productDto._productName, userName, shopId));
                 } else {
                     throw new Exception(String.format("User %s does not have permissions", userName));
@@ -158,7 +158,7 @@ public class ShopService {
             }
 
         } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to add product %s :: %d to shopID %d by user %s. Error: ",
+            response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: ",
                     productDto._productName, shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -995,8 +995,7 @@ public class ShopService {
      * @return A response containing the product general information.
      */
     public Response displayProductGeneralInfo(String token, Integer shopId, Integer productId) {
-        // TODO: Decide on correct way to implement - Objects(discounts) or
-        // Strings(Policy)
+        // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {

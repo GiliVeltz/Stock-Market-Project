@@ -218,7 +218,7 @@ public interface BridgeInterface {
     // STORE MANAGER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
-    boolean testOpenMarketSystem(String username, String shopId, String permission);
+    boolean testPermissionForShopManager(String username, Integer shopId, String permission);
 
     // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 

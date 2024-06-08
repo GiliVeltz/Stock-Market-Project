@@ -2,8 +2,11 @@ package AcceptanceTests.Implementor;
 
 import static org.mockito.Mockito.when;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
@@ -24,11 +27,13 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
+import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import ServiceLayer.*;
+import enums.Category;
 
 // A real conection to the system.
 // The code is tested on the real information on te system.
@@ -455,6 +460,53 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getErrorMessage() == null;
     }
 
+    // STORE MANAGER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public boolean testPermissionForShopManager(String username, Integer shopId, String permission) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn(username)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("founder")).thenReturn(true);
+
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("shopManager", "shopManagerPassword", "email@email.com", new Date()));
+                add(new User("founder", "founderPassword", "email@email.com", new Date()));
+            }
+        }, new ArrayList<>(), _passwordEncoderMock);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        _shopServiceUnderTest.openNewShop(token, shopDto);
+        
+        Set<String> permissions = new HashSet<>();
+        if(permission.equals("possiblePermission")){
+            permissions.add("ADD_PRODUCT");
+        }
+        
+        _shopServiceUnderTest.addShopManager(token, shopId, username, permissions);
+
+        // Act
+        Response res = _shopServiceUnderTest.addProductToShop(token, shopId, username, new ProductDto("productName", Category.CLOTHING, 100));
+
+        // Assert
+        logger.info("testPermissionForShopManager Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
+
     //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -864,12 +916,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             String productNameNew, String productAmount, String productAmountNew) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerEditProductInShop'");
-    }
-
-    @Override
-    public boolean testOpenMarketSystem(String username, String shopId, String permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testOpenMarketSystem'");
     }
 
     @Override
