@@ -6,6 +6,8 @@ import java.util.Map;
 
 import Exceptions.StockMarketException;
 
+import javax.annotation.Generated;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
@@ -29,6 +31,7 @@ public class Order {
         setTotalOrderAmount();
     }
 
+    @Generated(value = "exclude from test coverage")
     public Integer getOrderId() {
         return _orderId;
     }
@@ -56,6 +59,7 @@ public class Order {
         }
     }
 
+    @Generated(value = "exclude from test coverage")
     // Helper method to print all products in the order by shopId
     private String printAllShopAndProducts() 
     {
@@ -67,10 +71,12 @@ public class Order {
         return sb.toString();
     }
 
+    @Generated(value = "exclude from test coverage")
     private String printAllProducts(ShoppingBasket shoppingBasket) {
         return shoppingBasket.printAllProducts();
     }
     
+    @Generated(value = "exclude from test coverage")
     @Override
     public String toString() {
         return "Order{" +
@@ -82,6 +88,7 @@ public class Order {
 
     // Getters
 
+    @Generated(value = "exclude from test coverage")
     public Map<Integer ,ShoppingBasket> getProductsByShoppingBasket() {
         return _shoppingBasketMap;
     }

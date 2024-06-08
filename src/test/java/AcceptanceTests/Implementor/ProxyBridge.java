@@ -286,8 +286,8 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testPermissionForShopManager(String username, Integer shopId, String permission) {
-        throw new UnsupportedOperationException("Unimplemented method 'testPermissionForShopManager' in ProxyBridge class");
+    public boolean testOpenMarketSystem(String username, String shopId, String permission) {
+        throw new UnsupportedOperationException("Unimplemented method 'testOpenMarketSystem' in ProxyBridge class");
     }
 
     @Override
@@ -296,7 +296,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId) {
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testSystemManagerViewHistoryPurcaseInShops' in ProxyBridge class");
     }
 

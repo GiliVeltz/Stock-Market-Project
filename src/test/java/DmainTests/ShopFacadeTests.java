@@ -26,7 +26,7 @@ import Domain.Facades.ShopFacade;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Domain.Facades.UserFacade;
-import Exceptions.StockMarketException;
+import Exceptions.ShopException;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
 import enums.Category;
@@ -58,7 +58,7 @@ public class ShopFacadeTests {
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @BeforeEach
-    public void setUp() throws StockMarketException {
+    public void setUp() throws ShopException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
@@ -82,7 +82,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testOpenNewShop_whenShopNew_whenSuccess() throws StockMarketException {
+    public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -95,7 +95,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws StockMarketException {
+    public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -108,7 +108,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsCloseShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
+    public void testsCloseShop_whenShopNotExist_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -139,7 +139,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testCloseShop_whenUserHasPermission_thenSuccess() throws StockMarketException {
+    public void testCloseShop_whenUserHasPermission_thenSuccess() throws Exception {
         // Arrange
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -152,7 +152,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsAddProductToShop_whenShopExist_thenAddProductSuccess() throws StockMarketException {
+    public void testsAddProductToShop_whenShopExist_thenAddProductSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -167,7 +167,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsAddProductToShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
+    public void testsAddProductToShop_whenShopNotExist_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -202,7 +202,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -226,7 +226,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -245,7 +245,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsInvalid_thenRaiseError() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenShopIdIsInvalid_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -264,7 +264,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetProductInShopByCategory_whenCategoryIsNull_thenRaiseError() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenCategoryIsNull_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -286,7 +286,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenCategoryIsInvalid_thenRaiseError() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenCategoryIsInvalid_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -308,7 +308,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenCategoryIsValid_thenSuccess() throws StockMarketException {
+    public void testGetProductInShopByCategory_whenCategoryIsValid_thenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -330,7 +330,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws StockMarketException {
+    public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -353,7 +353,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws StockMarketException {
+    public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -376,7 +376,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws StockMarketException {
+    public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -398,7 +398,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws StockMarketException {
+    public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -420,7 +420,7 @@ public class ShopFacadeTests {
     // Bug number #308
     @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsAreValid_thenSuccess() throws StockMarketException {
+    public void testGetProductsInShopByKeywords_whenKeywordsAreValid_thenSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -440,7 +440,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws StockMarketException {
+    public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -470,7 +470,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserIsOwner_thenSuccess() throws StockMarketException {
+    public void testGetPurchaseHistory_whenUserIsOwner_thenSuccess() throws Exception {
         // Arrange - initialize a ShopFacade with a shop that contains a product, and a
         // ShopOrder placed by a user. Configure the token and user services to
         // authenticate and authorize the user as an admin.
@@ -501,7 +501,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws StockMarketException {
+    public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -530,7 +530,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenProductPriceChanges_thenOrderTotalRemainsUnchanged() throws StockMarketException {
+    public void testGetPurchaseHistory_whenProductPriceChanges_thenOrderTotalRemainsUnchanged() throws Exception {
         // Arrange
         // Create a new ShopFacade object with a shop that has a product. A user places
         // an order for this product.
@@ -558,7 +558,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws StockMarketException {
+    public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws Exception {
         // Arrange
         _shopsList.add(_shop1);
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
@@ -581,7 +581,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws StockMarketException {
+    public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop3);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -598,7 +598,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws StockMarketException {
+    public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -618,7 +618,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws StockMarketException {
+    public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws Exception {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);

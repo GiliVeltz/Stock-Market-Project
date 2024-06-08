@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
@@ -20,6 +21,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario open the market system for shopping.
+    // @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testOpenMarketSystem() {
         assertTrue(_bridge.testOpenMarketSystem("systemAdmin") ); // success
@@ -27,6 +29,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of payment in the system.
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testPayment() {
         assertTrue(_bridge.testPayment("true cards details") ); // success
@@ -34,6 +37,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of shipping in the system.
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShipping() {
         assertTrue(_bridge.testShipping("true shipping details") ); // success
@@ -41,6 +45,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of adding a new external service to the system.
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddExternalService() {
         assertTrue(_bridge.testAddExternalService("newSerivceName", "name", "phone", 111) ); // success
@@ -50,6 +55,7 @@ public class SystemAcceptanceTests {
     }
     
     // Test senario of change info of external service in the system.
+    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testChangeExternalService() {
         assertTrue(_bridge.testChangeExternalService(0, "newSerivceName", "name", "phone") ); // success

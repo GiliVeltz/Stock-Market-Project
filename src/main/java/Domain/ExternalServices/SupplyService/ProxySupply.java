@@ -11,6 +11,7 @@ public class ProxySupply {
     }
 
     public void deliver(String address, String shopAddress) {
+        // TODO Auto-generated method stub
         return;
     }
     

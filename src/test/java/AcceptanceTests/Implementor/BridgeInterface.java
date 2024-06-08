@@ -218,15 +218,15 @@ public interface BridgeInterface {
     // STORE MANAGER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
-    boolean testPermissionForShopManager(String username, Integer shopId, String permission);
+    boolean testOpenMarketSystem(String username, String shopId, String permission);
 
     // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
-    boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName);
+    boolean testSystemManagerViewHistoryPurcaseInUsers(String namanger, String shopId);
 
     @Test
-    boolean testSystemManagerViewHistoryPurcaseInShops(String userName, Integer shopId);
+    boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, String shopId);
 
     // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 

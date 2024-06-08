@@ -64,29 +64,29 @@ public class ShopFacade {
         return _shopRepository.doesShopExist(shopId);
     }
 
-    public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
+    public Integer openNewShop(String userName, ShopDto shopDto) throws Exception {
         int shopId = _shopRepository.getUniqueShopID();    
         _shopRepository.addShop(new Shop(shopId, userName, shopDto.bankDetails, shopDto.shopAddress));
         return shopId;
     }
 
     // close shop only if the user is the founder of the shop
-    public void closeShop(Integer shopId, String userName) throws StockMarketException {
+    public void closeShop(Integer shopId, String userName) throws Exception {
         try {
             if (!isShopIdExist(shopId))
-                throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+                throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     getShopByShopId(shopId).notifyRemoveShop();
                     shopToClose.closeShop();
                 } else {
-                    throw new StockMarketException(String.format(
+                    throw new Exception(String.format(
                             "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
                 }
             }
-        } catch (StockMarketException e) {
-            throw new StockMarketException(e.getMessage());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
 
     }
@@ -113,9 +113,9 @@ public class ShopFacade {
     }
 
 
-    public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws StockMarketException {
+    public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws Exception {
         if (!isShopIdExist(shopId))
-            throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
         else{
             int productId = _shopRepository.getUniqueProductID();
             Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
@@ -147,7 +147,7 @@ public class ShopFacade {
      * @throws Exceptions.ShopException
      * 
      */
-    public Boolean isShopOwner(Integer shopId, String userId) throws StockMarketException {
+    public Boolean isShopOwner(Integer shopId, String userId) throws ShopException {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             return shop.isOwnerOrFounderOwner(userId);
@@ -166,7 +166,8 @@ public class ShopFacade {
      * @throws ShopException       if there is an error adding the discount to the
      *                             shop
      */
-    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto) throws StockMarketException {
+    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
+            throws PermissionException, ShopException, StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -191,7 +192,8 @@ public class ShopFacade {
      * @throws ShopException       if the shop does not exist or an error occurs
      *                             while adding the discount
      */
-    public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto) throws StockMarketException {
+    public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto)
+            throws PermissionException, ShopException, StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -212,7 +214,8 @@ public class ShopFacade {
      * @throws ShopException       if the shop does not exist or an error occurs
      *                             while removing the discount
      */
-    public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
+    public void removeDiscountFromShop(int shopId, int discountId, String username)
+            throws PermissionException, ShopException, StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
             throw new PermissionException(
@@ -223,11 +226,11 @@ public class ShopFacade {
     // this function is responsible searching a product in a shop by its name for
     // all type of users
     // by checking if all inputs are valid and then calling the function in shop
-    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error
         if (productName == null) {
-            throw new StockMarketException("Product name is null.");
+            throw new Exception("Product name is null.");
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -245,7 +248,7 @@ public class ShopFacade {
                 List<Product> products = shop.getProductsByName(productName);
                 productsByShop.put(shop.getShopId(), products);
             } else {
-                throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
@@ -255,11 +258,12 @@ public class ShopFacade {
         return _shopRepository.getAllShops();
     }
 
-    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
+            throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If category is null, raise an error
         if (productCategory == Category.DEFAULT_VAL) {
-            throw new StockMarketException("Product category is null.");
+            throw new Exception("Product category is null.");
         }
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -280,16 +284,17 @@ public class ShopFacade {
                     productsByShop.put(shop.getShopId(), products);
                 }
             } else {
-                throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords)
+            throws Exception {
         // If keywords is null, raise an error
         if (keywords == null || keywords.isEmpty()) {
-            throw new StockMarketException("Product keywords is null.");
+            throw new Exception("Product keywords is null.");
         }
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
@@ -308,13 +313,14 @@ public class ShopFacade {
                 List<Product> products = shop.getProductsByKeywords(keywords);
                 productsByShop.put(shop.getShopId(), products);
             } else {
-                throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+            throws Exception {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -332,16 +338,17 @@ public class ShopFacade {
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
                 productsByShop.put(shop.getShopId(), products);
             } else {
-                throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+                throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
             }
         }
         return productsByShop;
     }
 
-    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount) throws StockMarketException {
+    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount)
+            throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
 
         shop.updateProductQuantity(userName, productId, productAmount);
     }
@@ -360,12 +367,12 @@ public class ShopFacade {
      * @param username      the username of the user adding the owner
      * @param shopId        the ID of the shop
      * @param ownerUsername the username of the new owner
-     * @throws StockMarketException
+     * @throws Exception
      */
-    public void addShopOwner(String username, Integer shopId, String ownerUsername) throws StockMarketException {
+    public void addShopOwner(String username, Integer shopId, String ownerUsername) throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
     }
@@ -377,7 +384,7 @@ public class ShopFacade {
      * @param shopId          the ID of the shop
      * @param managerUsername the username of the new manager
      * @param permissions     the permissions to assign to the manager
-     * @throws StockMarketException
+     * @throws Exception
      */
     public void addShopManager(String username, Integer shopId, String managerUsername, Set<String> permissions)
             throws Exception {
@@ -399,12 +406,12 @@ public class ShopFacade {
      * @param shopId          the ID of the shop
      * @param managerUsername the username of the manager to remove
      * @return the usernames of the managers that were removed
-     * @throws StockMarketException
+     * @throws Exception
      */
-    public Set<String> fireShopManager(String username, Integer shopId, String managerUsername) throws StockMarketException {
+    public Set<String> fireShopManager(String username, Integer shopId, String managerUsername) throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         return shop.fireRole(username, managerUsername);
     }
@@ -416,6 +423,7 @@ public class ShopFacade {
      * @param shopId   the ID of the shope
      * @return the usernames of the roles that were resigned
      * @throws StockMarketException
+     * @throws Exception
      */
     public Set<String> resignFromRole(String username, Integer shopId) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
@@ -432,13 +440,13 @@ public class ShopFacade {
      * @param shopId          the ID of the shop
      * @param managerUsername the username of the manager to modify
      * @param permissions     the permissions to assign to the manager
-     * @throws StockMarketException
+     * @throws Exception
      */
     public void modifyManagerPermissions(String username, Integer shopId, String managerUsername,
-            Set<String> permissions) throws StockMarketException {
+            Set<String> permissions) throws Exception {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         // Here we create a set of permissions from the strings.
         Set<Permission> permissionsSet = permissions.stream()
@@ -447,48 +455,48 @@ public class ShopFacade {
         shop.modifyPermissions(username, managerUsername, permissionsSet);
     }
 
-    public String getShopPolicyInfo(Integer shopId) throws StockMarketException {
+    public String getShopPolicyInfo(Integer shopId) throws Exception {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             return shop.getShopPolicyInfo();
         } else {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
 
-    public String getProductPolicyInfo(Integer shopId, Integer productId) throws StockMarketException {
+    public String getProductPolicyInfo(Integer shopId, Integer productId) throws Exception {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             return shop.getProductPolicyInfo(productId);
         } else {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
 
-    public String getShopDiscountsInfo(Integer shopId) throws StockMarketException {
+    public String getShopDiscountsInfo(Integer shopId) throws Exception {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             return shop.getShopDiscountsInfo();
         } else {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
 
-    public String getProductDiscountsInfo(Integer shopId, Integer productId) throws StockMarketException {
+    public String getProductDiscountsInfo(Integer shopId, Integer productId) throws Exception {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             return shop.getProductDiscountsInfo(productId);
         } else {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
 
-    public String getShopGeneralInfo(Integer shopId) throws StockMarketException {
+    public String getShopGeneralInfo(Integer shopId) throws Exception {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             return shop.getShopGeneralInfo();
         } else {
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+            throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
 
@@ -499,14 +507,6 @@ public class ShopFacade {
         } else {
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
         }
-    }
-
-    public void addProductRating(Integer shopId, Integer productId, Integer rating) throws StockMarketException{   
-        if (!isShopIdExist(shopId)) 
-            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
-
-        Shop shop = getShopByShopId(shopId);
-        shop.addProductRating(productId,rating);
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
@@ -34,7 +35,7 @@ public class ShoppingBasket implements Cloneable {
     }
 
     // Adds a product to the shopping basket after validating the user doesn't violate the product policy.
-    public void addProductToShoppingBasket(User user, Integer productId) throws StockMarketException {
+    public void addProductToShoppingBasket(User user, Integer productId) throws ProdcutPolicyException, ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
         _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
@@ -43,13 +44,7 @@ public class ShoppingBasket implements Cloneable {
                 "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
     }
 
-    public void removeProductFromShoppingBasket(Integer productId) throws StockMarketException {
-        // check if the product is in the basket
-        if (!_productIdList.contains(productId)) {
-            logger.log(Level.SEVERE,
-                    "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + productId + " is not in the basket of shop with id " + _shop.getShopId());
-            throw new ProductDoesNotExistsException("Product with id " + productId + " is not in the basket");
-        }
+    public void removeProductFromShoppingBasket(Integer productId) {
         _productIdList.remove(productId);
     }
 
@@ -89,7 +84,7 @@ public class ShoppingBasket implements Cloneable {
     }
 
     // Return the list of products in the basket
-    public List<Product> getProductsList() throws StockMarketException {
+    public List<Product> getProductsList() throws ProductDoesNotExistsException {
         List<Product> products = new ArrayList<>();
         for (Integer productId : _productIdList) {
             products.add(_shop.getProductById(productId));
@@ -102,7 +97,7 @@ public class ShoppingBasket implements Cloneable {
      * If an exception is thrown, cancel the purchase of all the products that were
      * bought. This function only updates the item's stock.
      */
-    public boolean purchaseBasket() throws StockMarketException {
+    public boolean purchaseBasket() throws ShopPolicyException, ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
@@ -140,7 +135,7 @@ public class ShoppingBasket implements Cloneable {
     }
 
     // Cancel the purchase of all products in the basket
-    public void cancelPurchase() throws StockMarketException {
+    public void cancelPurchase() throws ProductDoesNotExistsException {
         logger.log(Level.FINE,
                 "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: "
                         + _shop.getShopId());
@@ -164,9 +159,9 @@ public class ShoppingBasket implements Cloneable {
      * Resets the product to price to amount mapping in the shopping basket.
      * This method iterates through the product list and updates the mapping
      * based on the product ID, price, and quantity.
-     * @throws StockMarketException 
+     * @throws ProductDoesNotExistsException 
      */
-    public void resetProductToPriceToAmount() throws StockMarketException {
+    public void resetProductToPriceToAmount() throws ProductDoesNotExistsException {
         _productToPriceToAmount = new HashMap<>();
 
         for (Integer productId : _productIdList) {

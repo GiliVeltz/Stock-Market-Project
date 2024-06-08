@@ -1,6 +1,6 @@
 package Exceptions;
 
-public class ProdcutPolicyException extends StockMarketException {
+public class ProdcutPolicyException extends Exception {
     public ProdcutPolicyException(String message) {
         super(message);
     }

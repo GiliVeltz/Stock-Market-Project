@@ -20,6 +20,7 @@ import Exceptions.StockMarketException;
 import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
+//TODO: function to add prodcut to cart?
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
@@ -33,18 +34,9 @@ public class ShoppingCart {
 
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();
+        _paymentMethod = AdapterPayment.getAdapterPayment();;
         _supplyMethod = AdapterSupply.getAdapterPayment();
         _shopFacade = ShopFacade.getShopFacade();
-        _user = null;
-    }
-    
-    // for tests
-    public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
-        _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = paymentMethod;
-        _supplyMethod = supplyMethod;
-        _shopFacade = shopFacade;
         _user = null;
     }
 
@@ -56,7 +48,8 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details) throws StockMarketException {
+    public void purchaseCart(PurchaseCartDetailsDto details)
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         purchaseCartEditStock(details.basketsToBuy);
         try {
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
@@ -88,7 +81,7 @@ public class ShoppingCart {
      * bought.
      * This function only updates the item's stock.
      */
-    public void purchaseCartEditStock(List<Integer> busketsToBuy) throws StockMarketException {
+    private void purchaseCartEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - purchaseCart - Start purchasing cart.");
         List<Integer> boughtBasketList = new ArrayList<>();
 
@@ -112,6 +105,7 @@ public class ShoppingCart {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
             }
+
         }
     }
 
@@ -119,10 +113,10 @@ public class ShoppingCart {
      * Go through the list of baskets to cancel and cancel the purchase of them.
      * This function only updates the item's stock.
      */
-    public void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws StockMarketException {
+    private void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
         logger.log(Level.FINE, "ShoppingCart - cancelPurchase - Canceling purchase of all baskets.");
         for (Integer basketId : busketsToBuy) {
-            getShoppingBasket(basketId).cancelPurchase();
+            _shoppingBaskets.get(basketId).cancelPurchase();
         }
     }
 
@@ -147,18 +141,10 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException 
      */
-    public void addProduct(int productID, int shopID) throws StockMarketException {
-        // Check if the product exists in the shop.
-        if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
-            logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
-            throw new ProductDoesNotExistsException("Product does not exists in shop: " + shopID);
-        }
-
-        // basketOptional is the basket of the user for the shop.
+    public void addProduct(int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
-        // create a new basket if the user does not have a basket for this shop.
         ShoppingBasket basket;
         if (basketOptional.isPresent()) {
             basket = basketOptional.get();
@@ -167,13 +153,12 @@ public class ShoppingCart {
             _shoppingBaskets.add(basket);
         }
 
-        // add the product to the basket.
         basket.addProductToShoppingBasket(_user, productID);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID) throws StockMarketException {
+    public void removeProduct(int productID, int shopID) {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
@@ -187,7 +172,6 @@ public class ShoppingCart {
             }
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
-            throw new StockMarketException("Trying to remove product from shopping cart, but no shopping basket found for shop: " + shopID);
         }
     }
 
@@ -196,18 +180,4 @@ public class ShoppingCart {
         _user = user;
     }
 
-    // Get shopping baskets of the cart.
-    public List<ShoppingBasket> getShoppingBaskets() {
-        return _shoppingBaskets;
-    }
-
-    // Get a shopping basket by index.
-    public ShoppingBasket getShoppingBasket(int i) {
-        return getShoppingBaskets().get(i);
-    }
-
-    // for tests
-    public void addShoppingBasket(ShoppingBasket basket) {
-        _shoppingBaskets.add(basket);
-    }
 }

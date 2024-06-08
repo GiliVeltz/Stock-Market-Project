@@ -18,6 +18,8 @@ import Domain.Product;
 import Domain.Shop;
 import Domain.ShoppingBasket;
 import Domain.User;
+import Dtos.ShopDto;
+import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import enums.Category;

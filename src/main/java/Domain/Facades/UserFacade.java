@@ -11,7 +11,6 @@ import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
-import Exceptions.StockMarketException;
 import Exceptions.UserException;
 
 @RestController
@@ -41,7 +40,7 @@ public class UserFacade {
         return _userRepository.doesUserExist(username);
     }
 
-    public User getUserByUsername(String username) throws StockMarketException {
+    public User getUserByUsername(String username) throws Exception {
         if (username == null)
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
@@ -49,7 +48,7 @@ public class UserFacade {
         return _userRepository.getUserByUsername(username);
     }
 
-    public boolean AreCredentialsCorrect(String username, String password) throws StockMarketException {
+    public boolean AreCredentialsCorrect(String username, String password) throws Exception {
         User user = getUserByUsername(username);
         if (user != null) {
             return this._passwordEncoder.matches(password, user.getEncodedPassword());
@@ -58,36 +57,36 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    public void register(UserDto userDto) throws StockMarketException {
+    public void register(UserDto userDto) throws Exception {
         // TODO: remove the encoding - should be done in the front end
-        //String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         if (userDto.username == null || userDto.username.isEmpty()) {
-            throw new StockMarketException("UserName is empty.");
+            throw new Exception("UserName is empty.");
         }
         if (userDto.email == null || userDto.email.isEmpty()) {
-            throw new StockMarketException("Email is empty.");
+            throw new Exception("Email is empty.");
         }
         if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
-            throw new StockMarketException("Password is empty, or too short.");
+            throw new Exception("Password is empty, or too short.");
         }
         if (!_EmailValidator.isValidEmail(userDto.email)) {
-            throw new StockMarketException("Email is not valid.");
+            throw new Exception("Email is not valid.");
         }
 
         if (!doesUserExist(userDto.username)) {
             _userRepository.addUser(new User(userDto));
         } else {
-            throw new StockMarketException("Username already exists.");
+            throw new Exception("Username already exists.");
         }
     }
 
-    public void addOrderToUser(String username, Order order) throws StockMarketException {
+    public void addOrderToUser(String username, Order order) throws Exception {
         User user = getUserByUsername(username);
         user.addOrder(order);
     }
 
     // function that check if a given user is an admin
-    public boolean isAdmin(String userName) throws StockMarketException {
+    public boolean isAdmin(String userName) throws Exception {
         User user = getUserByUsername(userName);
         return user.isAdmin();
     }
@@ -115,7 +114,7 @@ public class UserFacade {
     }
 
     // function to return the purchase history for the user
-    public List<Order> getPurchaseHistory(String username) throws StockMarketException {
+    public List<Order> getPurchaseHistory(String username) throws Exception {
         User user = getUserByUsername(username);
         if (user != null) {
             return user.getPurchaseHistory();
@@ -125,7 +124,7 @@ public class UserFacade {
     }
 
     // change email for a user
-    public void changeEmail(String username, String email) throws StockMarketException {
+    public void changeEmail(String username, String email) throws Exception {
         User user = getUserByUsername(username);
         if (email == null || email.isEmpty()) {
             throw new UserException("Email is empty.");

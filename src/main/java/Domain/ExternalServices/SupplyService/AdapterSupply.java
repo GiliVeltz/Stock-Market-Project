@@ -4,7 +4,6 @@ import java.util.logging.Logger;
 
 import Domain.ExternalServices.ExternalService;
 import Exceptions.ShippingFailedException;
-import Exceptions.StockMarketException;
 
 public class AdapterSupply extends ExternalService {
 
@@ -34,7 +33,7 @@ public class AdapterSupply extends ExternalService {
         return true;
     }
 
-    public void checkIfDeliverOk(String address, String shopAddress) throws StockMarketException {
+    public void checkIfDeliverOk(String address, String shopAddress) throws ShippingFailedException {
         logger.info("Checking if the delivery is valid");
         if (!_supplyService.checkIfDeliverOk(address, shopAddress))
             throw new ShippingFailedException("Shipping failed");
