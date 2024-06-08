@@ -56,8 +56,7 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details)
-            throws PaymentFailedException, ShippingFailedException, StockMarketException {
+    public void purchaseCart(PurchaseCartDetailsDto details) throws StockMarketException {
         purchaseCartEditStock(details.basketsToBuy);
         try {
             for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
@@ -89,7 +88,7 @@ public class ShoppingCart {
      * bought.
      * This function only updates the item's stock.
      */
-    public void purchaseCartEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
+    public void purchaseCartEditStock(List<Integer> busketsToBuy) throws StockMarketException {
         logger.log(Level.FINE, "ShoppingCart - purchaseCart - Start purchasing cart.");
         List<Integer> boughtBasketList = new ArrayList<>();
 
@@ -120,7 +119,7 @@ public class ShoppingCart {
      * Go through the list of baskets to cancel and cancel the purchase of them.
      * This function only updates the item's stock.
      */
-    public void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws ProductDoesNotExistsException {
+    public void cancelPurchaseEditStock(List<Integer> busketsToBuy) throws StockMarketException {
         logger.log(Level.FINE, "ShoppingCart - cancelPurchase - Canceling purchase of all baskets.");
         for (Integer basketId : busketsToBuy) {
             getShoppingBasket(basketId).cancelPurchase();
@@ -148,7 +147,7 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException 
      */
-    public void addProduct(int productID, int shopID) throws ProdcutPolicyException, ProductDoesNotExistsException {
+    public void addProduct(int productID, int shopID) throws StockMarketException {
         // Check if the product exists in the shop.
         if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
@@ -174,7 +173,7 @@ public class ShoppingCart {
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID) {
+    public void removeProduct(int productID, int shopID) throws StockMarketException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
@@ -188,6 +187,7 @@ public class ShoppingCart {
             }
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
+            throw new StockMarketException("Trying to remove product from shopping cart, but no shopping basket found for shop: " + shopID);
         }
     }
 

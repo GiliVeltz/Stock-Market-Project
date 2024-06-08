@@ -1,4 +1,4 @@
-package DmainTests;
+package DomainTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +26,7 @@ public class ProductTests {
     }
 
     @Test
-    public void testPurchaseProduct_whenProductInStock_thenStockUpdated() throws ProductOutOfStockExepction {
+    public void testPurchaseProduct_whenProductInStock_thenStockUpdated() throws StockMarketException {
         // Arrange - Create a new Product object.
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(10);
@@ -49,7 +49,7 @@ public class ProductTests {
     }
 
     @Test
-    public void testCancelPurchase_whenProductPurchased_thenStockUpdated() throws ProductOutOfStockExepction {
+    public void testCancelPurchase_whenProductPurchased_thenStockUpdated() throws StockMarketException {
         // Arrange - Create a new Product object.
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(10);

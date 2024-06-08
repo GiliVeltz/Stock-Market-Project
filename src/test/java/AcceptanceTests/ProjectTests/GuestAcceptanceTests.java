@@ -21,7 +21,6 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the guest can enter the system.
-    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestEnterTheSystem() {
         assertTrue(_bridge.TestGuestEnterTheSystem("newGuest") ); // success
@@ -29,7 +28,6 @@ public class GuestAcceptanceTests {
     }
     
     // Test if the user can register to the system.
-    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestGuestRegisterToTheSystem() {
         assertTrue(_bridge.TestGuestRegisterToTheSystem("Bob","bobspassword", "email@example.com") ); // success
@@ -48,7 +46,6 @@ public class GuestAcceptanceTests {
     // }
     
     // Test if the user can login to the system.
-    //@Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogin() {
         assertTrue(_bridge.testLoginToTheSystem("Bob","bobspassword") ); // success

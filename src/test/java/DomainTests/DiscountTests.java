@@ -1,4 +1,4 @@
-package DmainTests;
+package DomainTests;
 
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;

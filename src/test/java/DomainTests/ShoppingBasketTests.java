@@ -1,4 +1,4 @@
-package DmainTests;
+package DomainTests;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,9 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import java.util.Date;
 
@@ -22,9 +19,7 @@ import Domain.Product;
 import Domain.Shop;
 import Domain.ShoppingBasket;
 import Domain.User;
-import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
-import Exceptions.ProductAlreadyExistsException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
@@ -53,7 +48,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testAddProductToShoppingBasket_whenProductIsNotInBasket_shouldAddProductToBasket() throws ProductDoesNotExistsException {
+    public void testAddProductToShoppingBasket_whenProductIsNotInBasket_shouldAddProductToBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -73,7 +68,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testAddProductToShoppingBasket_whenProductIsInBasket_shouldTheProductAddedMoreToBasket() throws ProductDoesNotExistsException {
+    public void testAddProductToShoppingBasket_whenProductIsInBasket_shouldTheProductAddedMoreToBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -102,7 +97,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testAddProductToShoppingBasket_whenProductIsNotInShop_shouldThrowProdcutPolicyException() throws ProductDoesNotExistsException {
+    public void testAddProductToShoppingBasket_whenProductIsNotInShop_shouldThrowProdcutPolicyException() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -121,7 +116,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testRemoveProductFromShoppingBasket_whenProductIsInBasket_shouldRemoveProductFromBasket() throws ProductDoesNotExistsException {
+    public void testRemoveProductFromShoppingBasket_whenProductIsInBasket_shouldRemoveProductFromBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -143,7 +138,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testRemoveProductFromShoppingBasket_whenProductIsNotInBasket_shouldNotRemoveProductFromBasket() throws ProductDoesNotExistsException {
+    public void testRemoveProductFromShoppingBasket_whenProductIsNotInBasket_shouldNotRemoveProductFromBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -158,7 +153,12 @@ public class ShoppingBasketTests {
         }
 
         // Act
-        shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+        try {
+            shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+            fail("Expected ProductDoesNotExistsException exception not thrown");
+        } catch (ProductDoesNotExistsException e) {
+            e.printStackTrace();
+        }
         
         // Assert
         assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
@@ -183,7 +183,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testCalculateShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws ProductDoesNotExistsException {
+    public void testCalculateShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -236,14 +236,14 @@ public class ShoppingBasketTests {
         // Assert
         try {
             assertTrue(actual.getProductsList().size() == 0);
-        } catch (ProductDoesNotExistsException e) {
+        } catch (StockMarketException e) {
             e.printStackTrace();
-            fail("Unexpected ProductDoesNotExistsException exception thrown");
+            fail("Unexpected StockMarketException exception thrown");
         }
     }
 
     @Test
-    public void testClone_whenBasketIsNotEmpty_shouldReturnClonedBasket() throws ProductDoesNotExistsException {
+    public void testClone_whenBasketIsNotEmpty_shouldReturnClonedBasket() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -286,7 +286,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws ProductDoesNotExistsException {
+    public void testGetShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -337,9 +337,9 @@ public class ShoppingBasketTests {
         int actual = -1;
         try {
             actual = shoppingBasketUnderTest.getProductsList().size();
-        } catch (ProductDoesNotExistsException e) {
+        } catch (StockMarketException e) {
             e.printStackTrace();
-            fail("Unexpected ProductDoesNotExistsException exception thrown");
+            fail("Unexpected StockMarketException exception thrown");
         }
         
         // Assert
@@ -347,7 +347,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductsList_whenBasketIsNotEmpty_shouldReturnAllProducts() throws ProductDoesNotExistsException {
+    public void testGetProductsList_whenBasketIsNotEmpty_shouldReturnAllProducts() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -384,7 +384,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductIdList_whenBasketIsNotEmpty_shouldReturnAllProductIds() throws ProductDoesNotExistsException {
+    public void testGetProductIdList_whenBasketIsNotEmpty_shouldReturnAllProductIds() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -433,8 +433,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndEverythingInStock_thenReturnedTrue() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndEverythingInStock_thenReturnedTrue() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -462,8 +461,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondCompletlyNotInStock_thenReturnedFalseAndRestockFirstProduct() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondCompletlyNotInStock_thenReturnedFalseAndRestockFirstProduct() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -491,8 +489,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondSomeInStock_thenReturnedFalseAndRestockProducts() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondSomeInStock_thenReturnedFalseAndRestockProducts() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -522,8 +519,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenThrowsShopPolicyException() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenThrowsShopPolicyException() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -550,8 +546,7 @@ public class ShoppingBasketTests {
     }
 
     // @Test
-    // public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForOneBuyer_thenOneReturnTrueAndOneFalse() throws ProdcutPolicyException,
-    //  ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    // public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForOneBuyer_thenOneReturnTrueAndOneFalse() throws StockMarketException {
     //     // Arrange
     //     Date date = new Date();
     //     date.setTime(0);

@@ -42,7 +42,7 @@ public class Role {
      * @param permissions the permission given to this role.
      * @throws RoleException 
      */
-    public Role(String username, int storeId, String appointedBy, Set<Permission> permissions) throws RoleException{
+    public Role(String username, int storeId, String appointedBy, Set<Permission> permissions) throws StockMarketException{
         logger.log(Level.INFO, "Role - constructor: Creating a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
         if(username == null){
             logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because username is null.");
@@ -136,7 +136,7 @@ public class Role {
      * @Constraint username must be the one that appointed this role.
      * @throws RoleException 
      */
-    public void modifyPermissions(String username, Set<Permission> permissions) throws RoleException {
+    public void modifyPermissions(String username, Set<Permission> permissions) throws StockMarketException {
         logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
         if(isFounder() || isOwner()){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
@@ -144,7 +144,7 @@ public class Role {
         }
         if(!username.equals(_appointedBy)){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because "+username+" is not his appointer.");
-            throw new RoleException("Only the role that appointed this user can change permission.");
+            throw new RoleException("Only the user that appointed this user can modify the permissions.");
         }
         if(permissions.contains(Permission.OWNER) || permissions.contains(Permission.FOUNDER)){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because we can't add founder of owner permissions.");
@@ -163,7 +163,7 @@ public class Role {
     //  * @implNote if role doesn't have permission its ok.
     //  * @throws RoleException 
     //  */
-    // public void deletePermissions(String username, Set<Permission> permissions) throws RoleException {
+    // public void deletePermissions(String username, Set<Permission> permissionsRoleException {
     //     logger.log(Level.INFO, "Role - deletePermissions: "+username+" trying to delete permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
     //     if(isFounder() || isOwner()){
     //         logger.log(Level.SEVERE, "Role - deletePermissions: Error while deleting permissions from owner of founder. Can't delete permissions for them.");
@@ -177,7 +177,7 @@ public class Role {
     // }
 
 
-    public void addAppointment(String username) throws RoleException{
+    public void addAppointment(String username) throws StockMarketException{
         logger.log(Level.INFO, "Role - addAppointment: "+_username+" trying to appoint user "+username+" in the shop with id "+_storeId);
         if(_appointments.contains(username)){
             logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he was already appointed by "+_username);
@@ -195,7 +195,7 @@ public class Role {
         logger.log(Level.INFO, "Role - addAppointment: "+_username+" successfuly appointed user "+username+" in the shop with id "+_storeId);
     }
 
-    public void deleteAppointment(String username) throws RoleException{
+    public void deleteAppointment(String username) throws StockMarketException{
         logger.log(Level.INFO, "Role - deleteAppointment: "+_username+" trying delete user "+username+" that was appointed by him in the shop with id "+_storeId);
         if(!_appointments.contains(username)){
             logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he is not appointed by "+_username);
