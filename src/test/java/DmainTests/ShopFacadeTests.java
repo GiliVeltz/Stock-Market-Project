@@ -1,12 +1,5 @@
 package DmainTests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,18 +8,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
+import Domain.Facades.UserFacade;
+import Domain.Product;
+import Domain.Shop;
+import Domain.ShopOrder;
+import Domain.ShoppingBasket;
+import Domain.User;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
-import Domain.Facades.UserFacade;
-import Exceptions.ShopException;
+import Exceptions.StockMarketException;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
 import enums.Category;
@@ -54,11 +56,12 @@ public class ShopFacadeTests {
     private ShopDto _shop4;
     private ProductDto _product1;
     private Product _product2;
+    private Product _product3;
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @BeforeEach
-    public void setUp() throws ShopException {
+    public void setUp() throws StockMarketException {
         _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
@@ -69,8 +72,10 @@ public class ShopFacadeTests {
         _shop4 = new ShopDto("bank4", "addresss4");
         _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
+        _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
         try{
-            _shop3.addProductToShop("founderName3", _product2);
+            _shop2.addProductToShop("founderName2", _product2);
+            _shop3.addProductToShop("founderName3", _product3);
         } catch (Exception e) {
             logger.log(Level.SEVERE, String.format("Failed to add product2. Error: %s", e.getMessage()), e);
         }
@@ -82,7 +87,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testOpenNewShop_whenShopNew_whenSuccess() throws Exception {
+    public void testOpenNewShop_whenShopNew_whenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -95,7 +100,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws Exception {
+    public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -108,7 +113,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsCloseShop_whenShopNotExist_thenRaiseError() throws Exception {
+    public void testsCloseShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -139,7 +144,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testCloseShop_whenUserHasPermission_thenSuccess() throws Exception {
+    public void testCloseShop_whenUserHasPermission_thenSuccess() throws StockMarketException {
         // Arrange
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -152,7 +157,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsAddProductToShop_whenShopExist_thenAddProductSuccess() throws Exception {
+    public void testsAddProductToShop_whenShopExist_thenAddProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -167,7 +172,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsAddProductToShop_whenShopNotExist_thenRaiseError() throws Exception {
+    public void testsAddProductToShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
@@ -198,14 +203,12 @@ public class ShopFacadeTests {
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it. 
-    // Bug number #308
-    @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws Exception {
+    public void testGetProductInShopByCategory_whenShopIdIsNull_thenSearchInAllShops() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
+        _shopsList.add(_shop3);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer shopId = null;
         Category productCategory = Category.CLOTHING;
@@ -216,22 +219,20 @@ public class ShopFacadeTests {
 
         // Assert - Verify that the products are retrieved from all shops
         assertEquals(2, productsByShop.size()); 
-        assertTrue(productsByShop.containsKey(_shop1.getShopId()));
         assertTrue(productsByShop.containsKey(_shop2.getShopId()));
-        assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+        assertTrue(productsByShop.containsKey(_shop3.getShopId()));
         assertEquals(1, productsByShop.get(_shop2.getShopId()).size());
+        assertEquals(1, productsByShop.get(_shop3.getShopId()).size());
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
+    public void testGetProductInShopByCategory_whenShopIdIsValid_thenSearchInSpecificShop() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
+        _shopsList.add(_shop3);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 1;
+        Integer shopId = 2;
         Category productCategory = Category.CLOTHING;
 
         // Act - try to get products by category when shopId is valid
@@ -240,17 +241,17 @@ public class ShopFacadeTests {
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());
-        assertTrue(productsByShop.containsKey(_shop1.getShopId()));
-        assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+        assertTrue(productsByShop.containsKey(_shop2.getShopId()));
+        assertEquals(1, productsByShop.get(_shop2.getShopId()).size());
     }
 
     @Test
-    public void testGetProductInShopByCategory_whenShopIdIsInvalid_thenRaiseError() throws Exception {
+    public void testGetProductInShopByCategory_whenShopIdIsInvalid_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 3;
+        Integer shopId = 5;
         Category productCategory = Category.CLOTHING;
 
         // Act - try to get products by category when shopId is invalid
@@ -264,7 +265,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetProductInShopByCategory_whenCategoryIsNull_thenRaiseError() throws Exception {
+    public void testGetProductInShopByCategory_whenCategoryIsNull_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -282,36 +283,11 @@ public class ShopFacadeTests {
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
+
     @Test
-    public void testGetProductInShopByCategory_whenCategoryIsInvalid_thenRaiseError() throws Exception {
+    public void testGetProductInShopByCategory_whenCategoryIsValidButNoProducts_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 1;
-        Category productCategory = Category.GROCERY;
-
-        // Act - try to get products by category when category is invalid
-        try {
-            _ShopFacadeUnderTests.getProductInShopByCategory(shopId, productCategory);
-            fail("Getting products by category with an invalid category should raise an error");
-        } catch (Exception e) {
-            // Assert - Verify that the expected exception is thrown
-            assertEquals(0, e.getMessage().indexOf("Category:"));
-        }
-    }
-
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
-    @Test
-    public void testGetProductInShopByCategory_whenCategoryIsValid_thenSuccess() throws Exception {
-        // Arrange - Create a new ShopFacade object
-        _shopsList.add(_shop1);
-        _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         Integer shopId = 1;
         Category productCategory = Category.CLOTHING;
@@ -321,23 +297,19 @@ public class ShopFacadeTests {
                 productCategory);
 
         // Assert - Verify that the products are retrieved from the specific shop
-        assertEquals(1, productsByShop.size());
-        assertTrue(productsByShop.containsKey(_shop1.getShopId()));
-        assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+        assertEquals(0, productsByShop.size());
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
+
     @Test
-    public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws Exception {
+    public void testGetProductsInShopByKeywords_whenShopIdIsValid_thenSearchInSpecificShop() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 1;
+        Integer shopId = 2;
         List<String> keywords = new ArrayList<>();
-        keywords.add("name1");
+        keywords.add("name2");
 
         // Act - try to get products by keywords when shopId is valid
         Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId,
@@ -345,22 +317,20 @@ public class ShopFacadeTests {
 
         // Assert - Verify that the products are retrieved from the specific shop
         assertEquals(1, productsByShop.size());
-        assertTrue(productsByShop.containsKey(_shop1.getShopId()));
-        assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+        assertTrue(productsByShop.containsKey(_shop2.getShopId()));
+        assertEquals(1, productsByShop.get(_shop2.getShopId()).size());
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
+
     @Test
-    public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws Exception {
+    public void testGetProductsInShopByKeywords_whenShopIdIsInvalid_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 3;
+        Integer shopId = 5;
         List<String> keywords = new ArrayList<>();
-        keywords.add("name1");
+        keywords.add("name2");
 
         // Act - try to get products by keywords when shopId is invalid
         try {
@@ -372,16 +342,13 @@ public class ShopFacadeTests {
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws Exception {
+    public void testGetProductsInShopByKeywords_whenKeywordsIsNull_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 1;
+        Integer shopId = 2;
         List<String> keywords = null;
 
         // Act - try to get products by keywords when keywords is null
@@ -390,15 +357,12 @@ public class ShopFacadeTests {
             fail("Getting products by keywords with a null keywords list should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
-            assertEquals(0, e.getMessage().indexOf("Keywords:"));
+            assertEquals("Product keywords is null or empty.", e.getMessage());
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws Exception {
+    public void testGetProductsInShopByKeywords_whenKeywordsIsEmpty_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
@@ -412,35 +376,35 @@ public class ShopFacadeTests {
             fail("Getting products by keywords with an empty keywords list should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
-            assertEquals(0, e.getMessage().indexOf("Keywords:"));
+            assertEquals("Product keywords is null or empty.", e.getMessage());
         }
     }
 
-    // TODO: GILI: check why this test failing, and fix it.
-    // Bug number #308
-    @Disabled
     @Test
-    public void testGetProductsInShopByKeywords_whenKeywordsAreValid_thenSuccess() throws Exception {
+    public void testGetProductsInShopByKeywords_whenShopIdIsNullAndKeywordsAreValid_thenSearchInAllShopsSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
+        _shopsList.add(_shop3);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        Integer shopId = 1;
+        Integer shopId = null;
         List<String> keywords = new ArrayList<>();
-        keywords.add("name1");
+        keywords.add("clothing");
 
         // Act - try to get products by keywords when keywords are valid
         Map<Integer, List<Product>> productsByShop = _ShopFacadeUnderTests.getProductsInShopByKeywords(shopId,
                 keywords);
 
         // Assert - Verify that the products are retrieved from the specific shop
-        assertEquals(1, productsByShop.size());
-        assertTrue(productsByShop.containsKey(_shop1.getShopId()));
-        assertEquals(1, productsByShop.get(_shop1.getShopId()).size());
+        assertEquals(2, productsByShop.size());
+        assertTrue(productsByShop.containsKey(_shop2.getShopId()));
+        assertTrue(productsByShop.containsKey(_shop3.getShopId()));
+        assertEquals(1, productsByShop.get(_shop2.getShopId()).size());
+        assertEquals(1, productsByShop.get(_shop3.getShopId()).size());
     }
 
     @Test
-    public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws Exception {
+    public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -470,7 +434,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserIsOwner_thenSuccess() throws Exception {
+    public void testGetPurchaseHistory_whenUserIsOwner_thenSuccess() throws StockMarketException {
         // Arrange - initialize a ShopFacade with a shop that contains a product, and a
         // ShopOrder placed by a user. Configure the token and user services to
         // authenticate and authorize the user as an admin.
@@ -501,7 +465,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws Exception {
+    public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -530,7 +494,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenProductPriceChanges_thenOrderTotalRemainsUnchanged() throws Exception {
+    public void testGetPurchaseHistory_whenProductPriceChanges_thenOrderTotalRemainsUnchanged() throws StockMarketException {
         // Arrange
         // Create a new ShopFacade object with a shop that has a product. A user places
         // an order for this product.
@@ -558,7 +522,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws Exception {
+    public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws StockMarketException {
         // Arrange
         _shopsList.add(_shop1);
         ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
@@ -581,7 +545,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws Exception {
+    public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop3);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -591,14 +555,14 @@ public class ShopFacadeTests {
         assertEquals(0, _product2.getProductQuantity());
 
         // Act - try to update a product to an existing shop
-        _ShopFacadeUnderTests.updateProductQuantity(founder, shopId, _product2.getProductId(), 10);
+        _ShopFacadeUnderTests.updateProductQuantity(founder, shopId, _product3.getProductId(), 10);
 
         // Assert - Verify that the product quantity is updated
-        assertEquals(10, _product2.getProductQuantity());
+        assertEquals(10, _product3.getProductQuantity());
     }
 
     @Test
-    public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws Exception {
+    public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
@@ -618,7 +582,7 @@ public class ShopFacadeTests {
     }
 
     @Test
-    public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws Exception {
+    public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);

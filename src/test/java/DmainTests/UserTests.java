@@ -83,7 +83,7 @@ public class UserTests {
     }
 
     @Test
-    public void testAddOrder_whenNewOrderFails_thenOrderNotAdded() throws Exception {
+    public void testAddOrder_whenNewOrderFails_thenOrderNotAdded() throws StockMarketException {
         // Arrange - Create a new User object
         User user = new User("john_doe", "password123", "email@example.com", new Date());
         

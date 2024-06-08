@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
+import Exceptions.StockMarketException;
 import enums.Category;
 
 public class Product implements Cloneable {
@@ -29,6 +30,8 @@ public class Product implements Cloneable {
         this._price = price;
         this._quantity = 0;
         this._keywords = new HashSet<>();
+        this._keywords.add(productName);
+        this._keywords.add(category.toString());
         this._productRating = -1.0;
         this._productRatersCounter = 0;
         this._productPolicy = new ProductPolicy();
@@ -67,8 +70,10 @@ public class Product implements Cloneable {
         _price = price;
     }
 
-    public void addProductRating(Integer rating) {
-        //TODO: limit the rating to 1-5 
+    public void addProductRating(Integer rating) throws StockMarketException {
+        if(rating > 5 || rating < 1)
+            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
+
         Double newRating = Double.valueOf(rating);
         if (_productRating == -1.0) {
             _productRating = newRating;
@@ -78,7 +83,7 @@ public class Product implements Cloneable {
         _productRatersCounter++;
     }
 
-    public void purchaseProduct() throws ProductOutOfStockExepction {
+    public void purchaseProduct() throws StockMarketException {
         if (_quantity == 0) {
             logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");
@@ -117,7 +122,7 @@ public class Product implements Cloneable {
     }
 
     public boolean isKeywordExist(String keyword) {
-        return _keywords.contains(keyword);
+        return _keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
     }
 
     public boolean isKeywordListExist(List<String> keywords) {
