@@ -1,5 +1,8 @@
-package UI.views;
+package UI.View;
+import UI.Presenter.HeaderPresenter;
+import UI.Presenter.LandingPagePresenter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -8,7 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.PageTitle;
@@ -17,16 +22,17 @@ import com.vaadin.flow.router.RouteAlias;
 
 import io.jsonwebtoken.io.IOException;
 
-@PageTitle("Home Page")
+@PageTitle("Landing Page")
 @Route(value = "")
 @RouteAlias(value = "")
-public class WelcomeView extends VerticalLayout {
+public class LandingPageView extends VerticalLayout implements LandingPageI {
 
-    private final String serverPort = "8080";
+    
+    private LandingPagePresenter presenter;
 
-    public WelcomeView() {
+    public LandingPageView() {
         // Create the header component
-        HeaderComponent header = new HeaderComponent(serverPort);
+        Header header = new Header("8080");
 
         // Create the title
         H1 title = new H1("Welcome to Stock Market!!");
@@ -40,31 +46,23 @@ public class WelcomeView extends VerticalLayout {
         // Add components to the vertical layout
         add(header, titleLayout);
 
+        // Initialize presenter
+        presenter = new LandingPagePresenter(this);
+        
         // Send the enterSystem request
-        sendEnterSystemRequest();
+        presenter.sendEnterSystemRequest();
     }
 
-    private void sendEnterSystemRequest() {
-        RestTemplate restTemplate = new RestTemplate();
-        String serverUrl = "http://localhost:" + serverPort + "/api/system/enterSystem";
 
-        ResponseEntity<String> response = restTemplate.getForEntity(serverUrl, String.class);
+    @Override
+    public void showSuccessMessage(String message) {
+        Notification.show(message);
+    }
 
-        String responseBody = response.getBody();
-        // Parse the response to extract the token
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode responseJson = objectMapper.readTree(responseBody);
-            String token = responseJson.get("returnValue").asText();
-
-            // Store the token in local storage using JavaScript
-            UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
-
-            // Optionally, you can handle the response here
-            System.out.println("Extracted Token: " + token);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to parse response");
-        }
+    @Override
+    public void showErrorMessage(String message) {
+        Notification.show(message);
     }
 }
+
+

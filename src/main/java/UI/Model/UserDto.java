@@ -1,4 +1,4 @@
-package UI.dto;
+package UI.Model;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
