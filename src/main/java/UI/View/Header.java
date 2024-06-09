@@ -1,18 +1,5 @@
-package UI.views;
+package UI.View;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -24,19 +11,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 
-import UI.NotificationClient;
-import UI.dto.UserDto;
+import UI.Presenter.HeaderPresenter;
 
-
-public class HeaderComponent extends HorizontalLayout {
+public class Header extends HorizontalLayout implements ViewPageI{
 
     private Button loginButton;
-    private final String _serverPort;
-    private NotificationClient notificationClient;
+    private final HeaderPresenter presenter;
 
-    public HeaderComponent(String serverPort) {
-        // set the server port
-        _serverPort = serverPort;
+    public Header(String serverPort) {
+
+        // Initialize the presenter
+        presenter = new HeaderPresenter(this, serverPort);
+
         // Create the buttons
         Button registerButton = new Button("Register");
         loginButton = new Button("Login");
@@ -82,36 +68,7 @@ public class HeaderComponent extends HorizontalLayout {
         Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
 
         // Add click listener to the login button
-        loginButton.addClickListener(event -> {
-            if (loginButton.getText().equals("Login")) {
-                loginDialog.open();
-            } else {
-                // Open the logout confirmation dialog
-                logoutConfirmationDialog.open();
-            }
-        });
-        
-        // Create WebSocket client
-        URI endpointURI;
-        try {
-            endpointURI = new URI("ws://localhost:" + _serverPort + "/notifications");
-            notificationClient = new NotificationClient(endpointURI);
-        } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            System.out.println("Failed to create WebSocket client");
-            e.printStackTrace();
-        }
-       
-
-        // Add a message handler to handle incoming notifications
-        notificationClient.addMessageHandler(new NotificationClient.MessageHandler() {
-            public void handleMessage(String message) {
-                // This method will be called whenever a message (notification) is received from
-                // the server.
-                // You can update your UI here to display the notification.
-                Notification.show("Received notification: " + message);
-            }
-        });
+        loginButton.addClickListener(event -> loginDialog.open());
 
         // Add click listener to the register button
         registerButton.addClickListener(event -> registrationDialog.open());
@@ -138,12 +95,7 @@ public class HeaderComponent extends HorizontalLayout {
             String email = emailField.getValue();
             String password = passwordField.getValue();
 
-            // Here you can add your logic to handle the registration
-            System.out.println("Username: " + username);
-            System.out.println("Email: " + email);
-            System.out.println("Password: " + password);
-
-            handleRegistration(username, email, password);
+            presenter.registerUser(username, email, password);
 
             // Close the dialog after submission
             dialog.close();
@@ -186,12 +138,7 @@ public class HeaderComponent extends HorizontalLayout {
             String username = usernameField.getValue();
             String password = passwordField.getValue();
 
-            // Here you can add your logic to handle the login
-            System.out.println("Username: " + username);
-            System.out.println("Password: " + password);
-
-            // Simulate a successful login
-            handleLogin(username, password);
+            presenter.loginUser(username, password);
 
             // Close the dialog after submission
             dialog.close();
@@ -220,7 +167,7 @@ public class HeaderComponent extends HorizontalLayout {
         // Create buttons
         Button confirmButton = new Button("Yes", event -> {
             // Handle logout confirmation
-            handleLogout();
+            presenter.logoutUser();
 
             // Close the dialog after confirmation
             dialog.close();
@@ -244,78 +191,13 @@ public class HeaderComponent extends HorizontalLayout {
         return dialog;
     }
 
-    private void handleLogin(String username, String password) {
-        RestTemplate restTemplate = new RestTemplate();
-        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-                .then(String.class, token -> {
-                    if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
-
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
-
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("username", username);
-                        params.put("password", password);
-                        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/login",
-                                HttpMethod.GET,
-                                requestEntity,
-                                String.class);
-
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Notification.show("Login successful");
-                            System.out.println(response.getBody());
-                        } else {
-                            Notification.show("Login failed");
-                        }
-                    } else {
-                        System.out.println("Token not found in local storage.");
-                        Notification.show("Login failed");
-                    }
-                });
-
+    @Override
+    public void showSuccessMessage(String message) {
+        Notification.show(message);
     }
 
-    private void handleRegistration(String username, String email, String password) {
-        RestTemplate restTemplate = new RestTemplate();
-        UserDto userDto = new UserDto(username, email, password);
-
-        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-                .then(String.class, token -> {
-                    if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
-
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
-
-                        HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
-
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/register",
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
-
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Notification.show("Registration successful");
-                            System.out.println(response.getBody());
-                        } else {
-                            Notification.show("Registration failed");
-                        }
-                    } else {
-                        System.out.println("Token not found in local storage.");
-                        Notification.show("Registration failed");
-                    }
-                });
+    @Override
+    public void showErrorMessage(String message) {
+        Notification.show(message);
     }
-
-    private void handleLogout() {
-        // Change the login button text back to "Login"
-        loginButton.setText("Logout");
-        System.out.println("User logged out");
-    }
-
 }
