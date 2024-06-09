@@ -75,7 +75,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testAddProductToShoppingBasket_whenProductIsInBasket_shouldTheProductAddedMoreToBasket() throws ProductDoesNotExistsException {
+    public void testAddProductToShoppingBasket_whenProductIsInBasket_shouldTheProductAddedMoreToBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -123,7 +123,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testRemoveProductFromShoppingBasket_whenProductIsInBasket_shouldRemoveProductFromBasket() throws ProductDoesNotExistsException {
+    public void testRemoveProductFromShoppingBasket_whenProductIsInBasket_shouldRemoveProductFromBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -145,7 +145,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testRemoveProductFromShoppingBasket_whenProductIsNotInBasket_shouldNotRemoveProductFromBasket() throws ProductDoesNotExistsException {
+    public void testRemoveProductFromShoppingBasket_whenProductIsNotInBasket_shouldNotRemoveProductFromBasket() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -185,7 +185,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testCalculateShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws ProductDoesNotExistsException {
+    public void testCalculateShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -228,7 +228,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testClone_whenBasketIsEmpty_shouldReturnEmptyBasket() {
+    public void testClone_whenBasketIsEmpty_shouldReturnEmptyBasket() throws StockMarketException {
         // Arrange
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
@@ -245,7 +245,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testClone_whenBasketIsNotEmpty_shouldReturnClonedBasket() throws ProductDoesNotExistsException {
+    public void testClone_whenBasketIsNotEmpty_shouldReturnClonedBasket() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -288,7 +288,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws ProductDoesNotExistsException {
+    public void testGetShoppingBasketPrice_whenBasketIsNotEmpty_shouldReturnTotalPrice() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -331,7 +331,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductsList_whenBasketIsEmpty_shouldReturnEmptyList() {
+    public void testGetProductsList_whenBasketIsEmpty_shouldReturnEmptyList() throws StockMarketException {
         // Arrange
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
@@ -349,7 +349,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductsList_whenBasketIsNotEmpty_shouldReturnAllProducts() throws ProductDoesNotExistsException {
+    public void testGetProductsList_whenBasketIsNotEmpty_shouldReturnAllProducts() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
@@ -386,7 +386,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductIdList_whenBasketIsNotEmpty_shouldReturnAllProductIds() throws ProductDoesNotExistsException {
+    public void testGetProductIdList_whenBasketIsNotEmpty_shouldReturnAllProductIds() throws StockMarketException {
         // Arrange
         Product product1 = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         Product product2 = new Product(2, "Product 2", Category.ELECTRONICS, 200.0);
