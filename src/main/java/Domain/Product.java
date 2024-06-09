@@ -30,6 +30,8 @@ public class Product implements Cloneable {
         this._price = price;
         this._quantity = 0;
         this._keywords = new HashSet<>();
+        this._keywords.add(productName);
+        this._keywords.add(category.toString());
         this._productRating = -1.0;
         this._productRatersCounter = 0;
         this._productPolicy = new ProductPolicy();
@@ -71,7 +73,6 @@ public class Product implements Cloneable {
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
             throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
-
         Double newRating = Double.valueOf(rating);
         if (_productRating == -1.0) {
             _productRating = newRating;
@@ -98,14 +99,14 @@ public class Product implements Cloneable {
                 + " had been purchased cancel -- +1 to stock.");
     }
 
-        @Override
-        public Product clone() {
-            try {
-                return (Product) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new AssertionError(); // Can't happen as we implement Cloneable
-            }
+    @Override
+    public Product clone() {
+        try {
+            return (Product) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen as we implement Cloneable
         }
+    }
 
     @Override
     public String toString() {
@@ -120,7 +121,7 @@ public class Product implements Cloneable {
     }
 
     public boolean isKeywordExist(String keyword) {
-        return _keywords.contains(keyword);
+        return _keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
     }
 
     public boolean isKeywordListExist(List<String> keywords) {

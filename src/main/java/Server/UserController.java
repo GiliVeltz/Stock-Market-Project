@@ -30,6 +30,7 @@ public class UserController {
             @RequestHeader(value = "Authorization") String token) {
         // example request:
         // http://localhost:8080/api/user/register?username=test&password=test&email=test
+        System.out.println("Client: token is: " + token);
         Response resp = _userService.register(token, userDto);
         return resp;
     }
