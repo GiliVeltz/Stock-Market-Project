@@ -25,7 +25,7 @@ import io.jsonwebtoken.io.IOException;
 @PageTitle("Landing Page")
 @Route(value = "")
 @RouteAlias(value = "")
-public class LandingPageView extends VerticalLayout implements LandingPageI {
+public class LandingPageView extends VerticalLayout implements ViewPageI {
 
     
     private LandingPagePresenter presenter;

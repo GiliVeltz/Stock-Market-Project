@@ -5,6 +5,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -12,7 +13,7 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import UI.Presenter.HeaderPresenter;
 
-public class Header extends HorizontalLayout {
+public class Header extends HorizontalLayout implements ViewPageI{
 
     private Button loginButton;
     private final HeaderPresenter presenter;
@@ -67,10 +68,10 @@ public class Header extends HorizontalLayout {
         Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
 
         // Add click listener to the login button
-        loginButton.addClickListener(event -> presenter.onLoginButtonClick());
+        loginButton.addClickListener(event -> loginDialog.open());
 
         // Add click listener to the register button
-        registerButton.addClickListener(event -> presenter.onRegisterButtonClick());
+        registerButton.addClickListener(event -> registrationDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -188,5 +189,15 @@ public class Header extends HorizontalLayout {
         dialog.add(dialogLayout);
 
         return dialog;
+    }
+
+    @Override
+    public void showSuccessMessage(String message) {
+        Notification.show(message);
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+        Notification.show(message);
     }
 }

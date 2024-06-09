@@ -1,15 +1,13 @@
 package UI.Presenter;
 
-import java.net.http.HttpHeaders;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.notification.Notification;
 
 import UI.Model.UserDto;
 import UI.View.Header;
@@ -22,26 +20,6 @@ public class HeaderPresenter {
     public HeaderPresenter(Header view, String serverPort) {
         this.view = view;
         this._serverPort = serverPort;
-    }
-
-    public void onLoginButtonClick() {
-        view.getLoginButton().setText("Logout");
-        view.getLoginButton().addClickListener(event -> logout());
-    }
-
-    public void onRegisterButtonClick() {
-        view.getRegisterButton().addClickListener(event -> register());
-    }
-
-    private void logout() {
-        view.getLoginButton().setText("Login");
-        UI.getCurrent().getPage().executeJs("localStorage.removeItem('authToken');");
-        Notification.show("Logged out");
-    }
-
-    private void register() {
-        Dialog registrationDialog = view.createRegistrationDialog();
-        registrationDialog.open();
     }
 
     public void loginUser(String username, String password) {
@@ -108,6 +86,10 @@ public class HeaderPresenter {
                         view.showErrorMessage("Registration failed");
                     }
                 });
+    }
+
+    public void logoutUser(){
+        
     }
 }
 
