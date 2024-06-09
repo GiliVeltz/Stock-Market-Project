@@ -15,22 +15,27 @@ import Server.notifications.WebSocketHandler;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
+    // private final WebSocketHandler webSocketHandler;
+    // private final SimpMessagingTemplate messagingTemplate;
+
+    // public WebSocketConfig(WebSocketHandler webSocketHandler, SimpMessagingTemplate messagingTemplate) {
+    //     this.webSocketHandler = webSocketHandler;
+    //     this.messagingTemplate = messagingTemplate;
+    // }
+
+    // @Override
+    // public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    //     registry.addHandler(webSocketHandler, "/ws/server").setAllowedOrigins("*");
+    // }
+
     private final WebSocketHandler webSocketHandler;
 
-    private final SimpMessagingTemplate messagingTemplate;
-
-    public WebSocketConfig(WebSocketHandler webSocketHandler, SimpMessagingTemplate messagingTemplate) {
+    public WebSocketConfig(WebSocketHandler webSocketHandler) {
         this.webSocketHandler = webSocketHandler;
-        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/ws/server").setAllowedOrigins("*");
-    }
-
-    @Bean
-    public SimpMessagingTemplate simpMessagingTemplate() {
-        return messagingTemplate;
+        registry.addHandler(webSocketHandler, "/websocket").setAllowedOrigins("*");
     }
 }
