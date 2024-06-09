@@ -22,22 +22,21 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can add products to the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerAddProductToShop() {
-        assertTrue(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "ProductAmount") ); // success
-        // assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ProductName", "inValidAmount") ); // fail - invalid amount
-        assertFalse(_bridge.testShopOwnerAddProductToShop("whoAmI", "56321", "ExistProductName", "ProductAmount") ); // fail - the user is not the shop onwer
-        assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "56321", "ExistProductName", "ProductAmount") ); // fail - already exist product name
+        assertTrue(_bridge.testShopOwnerAddProductToShop("shopOwner", "0", "ProductName", "1") ); // success
+        // assertFalse(_bridge.testShopOwnerAddProductToShop("Nirvana", "0", "ProductName", "-1") ); // fail - invalid amount
+        assertFalse(_bridge.testShopOwnerAddProductToShop("whoAmI", "0", "ExistProductName", "1") ); // fail - the user is not the shop onwer
+        assertFalse(_bridge.testShopOwnerAddProductToShop("shopOwner", "0", "ExistProductName", "1") ); // fail - already exist product name
     }
     
     // Test that shop owner can remove products from the shop.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveProductFromShop() {
-        assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "shopId1", "ProductName") ); // success
-        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "shopId1", "ProductName") ); // fail - invalid productname
-        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "shopId2", "ExistProductName") ); // fail - the user is not the shop onwer
+        assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "0", "ProductName") ); // success
+        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "0", "ProductName") ); // fail - invalid productname
+        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("NotShopOwnerUserName", "0", "ExistProductName") ); // fail - the user is not the shop onwer
     }
     
     // Test that shop owner can edit products details in the shop.

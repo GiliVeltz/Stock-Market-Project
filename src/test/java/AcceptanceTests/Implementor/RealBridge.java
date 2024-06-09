@@ -500,13 +500,113 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest.addShopManager(token, shopId, username, permissions);
 
         // Act
-        Response res = _shopServiceUnderTest.addProductToShop(token, shopId, username, new ProductDto("productName", Category.CLOTHING, 100));
+        Response res = _shopServiceUnderTest.addProductToShop(token, shopId, new ProductDto("productName", Category.CLOTHING, 100));
 
         // Assert
         logger.info("testPermissionForShopManager Error message: " + res.getErrorMessage());
         return res.getErrorMessage() == null;
     }
 
+    // SHOP OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @Test
+    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName, String productAmount){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopOwner = "shopOwner";
+        String tokenShopFounder = "shopFounder";
+
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+        
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount));
+        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount));
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAddProductToShop Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        Response res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
+        Response res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productExistDto);
+        Response res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
+
+
+        // Assert
+        if (res1.getErrorMessage() != null){
+            logger.info("testShopOwnerAddProductToShop Error message: " + res1.getErrorMessage());
+            return false;
+        }
+        if (res2.getErrorMessage() != null){
+            logger.info("testShopOwnerAddProductToShop Error message: " + res2.getErrorMessage());
+            return false;
+        }
+        if (res3.getErrorMessage() != null){
+            logger.info("testShopOwnerAddProductToShop Error message: " + res3.getErrorMessage());
+            return false;
+        }
+        return res3.getErrorMessage() == null;
+    }
+    
+    @Test
+    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName){return false;}
+    
+    @Test
+    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName, String productNameNew, String productAmount, String productAmountNew){return false;}
+    
+    @Test
+    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy){return false;}
+    
+    @Test
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername){return false;}
+    
+    @Test
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){return false;}
+    
+    @Test
+    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}
+    
+    @Test
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}
+    
+    @Test
+    public boolean testShopOwnerCloseShop(String username, String shopId){return false;}
+    
+    @Test
+    public boolean testShopOwnerGetShopInfo(String username, String shopId){return false;}
+    
+    @Test
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){return false;}
+    
+    @Test
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){return false;}
+    
     //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -863,62 +963,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
-            String productAmount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddProductToShop'");
-
-        // MockitoAnnotations.openMocks(this);
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // _userServiceMock = Mockito.spy(new UserService(_userFacadeMock,
-        // _tokenServiceMock, _shoppingCartFacadeMock));
-        // _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock,
-        // _tokenServiceMock, _userServiceMock));
-        // try {
-        // when(_tokenServiceMock.isUserAndLoggedIn("Nirvana")).thenReturn(true);
-        // when(_tokenServiceMock.isUserAndLoggedIn("whoAmI")).thenReturn(true);
-        // when(_shopFacadeMock.isShopIdExist(Integer.valueOf("56321"))).thenReturn(true);
-        // when(_shopFacadeMock.getShopByShopId(Integer.valueOf("56321"))).thenReturn(_shopMock);
-        // when(_shopMock.checkPermission("Nirvana",
-        // Permission.ADD_PRODUCT)).thenReturn(true);
-        // when(_shopMock.checkPermission("whoAmI",
-        // Permission.ADD_PRODUCT)).thenReturn(false);
-
-        // when(_shopMock.checkPermission("whoAmI",
-        // Permission.ADD_PRODUCT)).thenAnswer(invocation -> {
-        // throw new IllegalArgumentException();
-        // });
-
-        // Response response = _shopServiceMock.addProductToShop(token,
-        // Integer.valueOf(shopId), username,
-        // _productMock);
-
-        // // Verify interactions
-        // verify(_shopServiceMock, times(1)).addProductToShop(token,
-        // Integer.valueOf(shopId), username, _productMock);
-        // verify(_shopFacadeMock, times(1)).addProductToShop(Integer.valueOf(shopId),
-        // _productMock, username);
-
-        // return response.getErrorMessage() == null;
-        // } catch (Exception e) {
-        // return false;
-        // }
-    }
-
-    @Override
-    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveProductFromShop'");
-    }
-
-    @Override
-    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
-            String productNameNew, String productAmount, String productAmountNew) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerEditProductInShop'");
-    }
-
-    @Override
     public boolean testAddProductToShoppingCartUser(String username, String productId, String shopId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartUser'");
@@ -928,91 +972,5 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartGuest'");
-    }
-
-    @Override
-    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerChangeShopPolicies'");
-    }
-
-    @Override
-    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopOwner'");
-    }
-
-    @Override
-    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager'");
-    }
-
-    @Override
-    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
-            String permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddShopManagerPermission'");
-    }
-
-    @Override
-    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
-            String permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveShopManagerPermission'");
-    }
-
-    @Override
-    public boolean testShopOwnerCloseShop(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerCloseShop'");
-
-        // MockitoAnnotations.openMocks(this);
-
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // _userServiceMock = Mockito.spy(new UserService(_userFacadeMock,
-        // _tokenServiceMock, _shoppingCartFacadeMock));
-        // _shopServiceMock = Mockito.spy(new ShopService(_shopFacadeMock,
-        // _tokenServiceMock, _userServiceMock));
-        // try {
-        // when(_shopFacadeMock.isShopIdExist(Integer.valueOf("12345"))).thenReturn(true);
-        // when(_tokenServiceMock.isUserAndLoggedIn("Bob")).thenReturn(true);
-        // when(_shopMock.checkPermission("Bob", Permission.FOUNDER)).thenReturn(true);
-
-        // when(_shopFacadeMock.isShopIdExist(Integer.valueOf("67890"))).thenReturn(true);
-        // when(_tokenServiceMock.isUserAndLoggedIn("Tom")).thenReturn(true);
-        // when(_shopMock.checkPermission("Tom", Permission.FOUNDER)).thenReturn(false);
-
-        // when(_shopFacadeMock.isShopIdExist(Integer.valueOf("33333"))).thenReturn(false);
-
-        // Response response = _shopServiceMock.closeShop(token,
-        // Integer.valueOf(shopId), username);
-        // // Verify interactions
-        // verify(_shopServiceMock, times(1)).closeShop(token, Integer.valueOf(shopId),
-        // username);
-
-        // return response.getErrorMessage() == null;
-        // } catch (Exception e) {
-        // logger.log(Level.SEVERE, String.format("Exception: %s", e.getMessage()));
-        // return false;
-        // }
-    }
-
-    @Override
-    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopInfo'");
-    }
-
-    @Override
-    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopManagersPermissions'");
-    }
-
-    @Override
-    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop'");
     }
 }
