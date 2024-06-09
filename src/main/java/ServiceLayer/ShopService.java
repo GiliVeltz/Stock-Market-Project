@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Dtos.ProductDto;
-import Dtos.BasicDiscountDto;
-import Dtos.ConditionalDiscountDto;
-import Dtos.ShopDto;
 import Domain.Product;
 import Domain.ShopOrder;
+import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
+import Dtos.ProductDto;
+import Dtos.ShopDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -148,7 +148,7 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(userName)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
-                    logger.info(String.format("New product %s :: %d added by: %s to Shop ID: %d",
+                    logger.info(String.format("New product %s :: added by: %s to Shop ID: %d",
                             productDto._productName, userName, shopId));
                 } else {
                     throw new Exception(String.format("User %s does not have permissions", userName));
@@ -158,7 +158,7 @@ public class ShopService {
             }
 
         } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to add product %s :: %d to shopID %d by user %s. Error: ",
+            response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: ",
                     productDto._productName, shopId, userName, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -995,8 +995,7 @@ public class ShopService {
      * @return A response containing the product general information.
      */
     public Response displayProductGeneralInfo(String token, Integer shopId, Integer productId) {
-        // TODO: Decide on correct way to implement - Objects(discounts) or
-        // Strings(Policy)
+        // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -1028,5 +1027,80 @@ public class ShopService {
         }
         return response;
     }
+
+    
+    /**
+     * Adds a rating to a product in a shop.
+     * @param token
+     * @param shopId
+     * @param productId
+     * @param rating
+     * @return
+     */
+    public Response addProductRating(String token, Integer shopId, Integer productId, Integer rating) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::addProductRating entring"));
+            if (!_tokenService.validateToken(token)) 
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token)) 
+                throw new StockMarketException("User is not logged in.");
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username))
+                throw new StockMarketException(String.format("User does not exist.",username));
+
+            _shopFacade.addProductRating(shopId, productId, rating);
+            response.setReturnValue(String.format("Success to add rating to productID: %d in ShopID: %d .", productId,shopId));
+
+        }
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+      
+            response.setErrorMessage(String.format(
+                "ShopService::addProductRating failed to rate productId: %d in ShopId: %d with error %s", 
+                productId, shopId, e.getMessage()));
+
+        }
+        return response;
+    }
+
+    /**
+     * Adds a rating to a shop.
+     * @param token
+     * @param shopId
+     * @param rating
+     * @return
+     */
+    public Response addShopRating(String token, Integer shopId, Integer rating) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::addShopRating entring"));
+            if (!_tokenService.validateToken(token)) 
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token)) 
+                throw new StockMarketException("User is not logged in.");
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username))
+                throw new StockMarketException(String.format("User does not exist.",username));
+
+            _shopFacade.addShopRating(shopId, rating);
+            response.setReturnValue(String.format("Success to add rating to ShopID: %d .",shopId));
+
+        }
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+      
+            response.setErrorMessage(String.format(
+                "ShopService::addShopRating failed to rate ShopId: %d with error %s", 
+                shopId, e.getMessage()));
+
+        }
+        return response;
+    }
+
 
 }

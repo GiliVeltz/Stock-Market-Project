@@ -1,10 +1,9 @@
 package ServiceLayer;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
-
-import java.util.logging.Level;
 
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
@@ -121,6 +120,7 @@ public class SystemService {
             String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
+            System.out.println("Entered user!!");
             _userFacade.addNewGuest(id);
             _shoppingCartFacade.addCartForGuest(token);
             response.setReturnValue(token);
@@ -145,7 +145,7 @@ public class SystemService {
             if (_tokenService.validateToken(token)) {
                 String id = _tokenService.extractGuestId(token);
                 if (id != null) {
-                    logger.info("Guest with id: " + id + "left the system");
+                    logger.info("Guest with id: " + id + " left the system");
                     _userFacade.removeGuest(id);
                     _shoppingCartFacade.removeCartForGuest(token);
                     response.setReturnValue("Guest left system Successfully");
