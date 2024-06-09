@@ -609,7 +609,6 @@ public class ShoppingBasketTests {
     executor.shutdown(); // shut down executor service
         
         // Assert
-        System.out.println();
         assertTrue((results[0] && !results[1]) || (!results[0] && results[1]));
         assertEquals(product.getProductQuantity(), 1);
         assertEquals(product2.getProductQuantity(), 0);
@@ -673,7 +672,6 @@ public class ShoppingBasketTests {
     executor.shutdown(); // shut down executor service
         
         // Assert
-        System.out.println();
         assertTrue(results[0]&& results[1]);
         assertEquals(product.getProductQuantity(), 0);
         assertEquals(product2.getProductQuantity(), 0);

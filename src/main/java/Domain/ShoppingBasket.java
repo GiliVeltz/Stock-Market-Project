@@ -98,7 +98,6 @@ public class ShoppingBasket implements Cloneable {
      * bought. This function only updates the item's stock.
      */
     public boolean purchaseBasket() throws ShopPolicyException, ProductDoesNotExistsException {
-        System.out.println("Entered method purchaseBasket");
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
@@ -119,7 +118,6 @@ public class ShoppingBasket implements Cloneable {
                 _shop.getProductById(productId).purchaseProduct();
                 boughtProductIdList.add(productId);
             } catch (ProductOutOfStockExepction e) {
-                System.out.println("Product out of stock in basket from shopId: " + _shop.getShopId() + ". Exception: " + e.getMessage());
                 logger.log(Level.SEVERE,
                         "ShoppingBasket - purchaseBasket - Product out of stock in basket from shopId: "
                                 + _shop.getShopId() + ". Exception: " + e.getMessage(),
@@ -130,7 +128,6 @@ public class ShoppingBasket implements Cloneable {
                 for (Integer boughtProductId : boughtProductIdList) {
                     _shop.getProductById(boughtProductId).cancelPurchase();
                 }
-                System.out.println("Finished method purchaseBasket - Returning false.");
                 return false;
             }
         }
