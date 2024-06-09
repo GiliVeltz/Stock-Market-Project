@@ -1,6 +1,7 @@
 package UI.views;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,25 +24,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 
+import UI.NotificationClient;
 import UI.dto.UserDto;
-import com.vaadin.flow.component.page.Page;
-
-import javax.swing.JButton;
-import java.lang.UnsupportedOperationException;
-import javax.websocket.Session;
-import javax.websocket.EndpointConfig;
-import javax.websocket.Endpoint;
-import javax.websocket.WebSocketContainer;
-import javax.websocket.ContainerProvider;
 
 
 public class HeaderComponent extends HorizontalLayout {
 
     private Button loginButton;
     private final String _serverPort;
+    private NotificationClient notificationClient;
 
     public HeaderComponent(String serverPort) {
-        //set the server port
+        // set the server port
         _serverPort = serverPort;
         // Create the buttons
         Button registerButton = new Button("Register");
@@ -94,6 +88,28 @@ public class HeaderComponent extends HorizontalLayout {
             } else {
                 // Open the logout confirmation dialog
                 logoutConfirmationDialog.open();
+            }
+        });
+        
+        // Create WebSocket client
+        URI endpointURI;
+        try {
+            endpointURI = new URI("ws://localhost:" + _serverPort + "/notifications");
+            notificationClient = new NotificationClient(endpointURI);
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            System.out.println("Failed to create WebSocket client");
+            e.printStackTrace();
+        }
+       
+
+        // Add a message handler to handle incoming notifications
+        notificationClient.addMessageHandler(new NotificationClient.MessageHandler() {
+            public void handleMessage(String message) {
+                // This method will be called whenever a message (notification) is received from
+                // the server.
+                // You can update your UI here to display the notification.
+                Notification.show("Received notification: " + message);
             }
         });
 
@@ -174,7 +190,6 @@ public class HeaderComponent extends HorizontalLayout {
             System.out.println("Username: " + username);
             System.out.println("Password: " + password);
 
-
             // Simulate a successful login
             handleLogin(username, password);
 
@@ -232,70 +247,69 @@ public class HeaderComponent extends HorizontalLayout {
     private void handleLogin(String username, String password) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-        .then(String.class, token -> {
-            if (token != null && !token.isEmpty()) {
-                System.out.println("Token: " + token);
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
 
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("username", username);
-                params.put("password", password);
-                HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(params, headers);
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("username", username);
+                        params.put("password", password);
+                        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-                ResponseEntity<String> response = restTemplate.exchange(
-                        "http://localhost:"+_serverPort+"/api/user/login",
-                        HttpMethod.GET,
-                        requestEntity,
-                        String.class);
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + _serverPort + "/api/user/login",
+                                HttpMethod.GET,
+                                requestEntity,
+                                String.class);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    Notification.show("Login successful");
-                    System.out.println(response.getBody());
-                } else {
-                    Notification.show("Login failed");
-                }
-            } else {
-                System.out.println("Token not found in local storage.");
-                Notification.show("Login failed");
-            }
-        });
-
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Notification.show("Login successful");
+                            System.out.println(response.getBody());
+                        } else {
+                            Notification.show("Login failed");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        Notification.show("Login failed");
+                    }
+                });
 
     }
 
-    private void handleRegistration(String username, String email, String password){
+    private void handleRegistration(String username, String email, String password) {
         RestTemplate restTemplate = new RestTemplate();
         UserDto userDto = new UserDto(username, email, password);
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-        .then(String.class, token -> {
-            if (token != null && !token.isEmpty()) {
-                System.out.println("Token: " + token);
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
 
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
+                        HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
 
-                ResponseEntity<String> response = restTemplate.exchange(
-                        "http://localhost:"+_serverPort+"/api/user/register",
-                        HttpMethod.POST,
-                        requestEntity,
-                        String.class);
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + _serverPort + "/api/user/register",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    Notification.show("Registration successful");
-                    System.out.println(response.getBody());
-                } else {
-                    Notification.show("Registration failed");
-                }
-            } else {
-                System.out.println("Token not found in local storage.");
-                Notification.show("Registration failed");
-            }
-        });
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Notification.show("Registration successful");
+                            System.out.println(response.getBody());
+                        } else {
+                            Notification.show("Registration failed");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        Notification.show("Registration failed");
+                    }
+                });
     }
 
     private void handleLogout() {
@@ -304,5 +318,4 @@ public class HeaderComponent extends HorizontalLayout {
         System.out.println("User logged out");
     }
 
-    
 }
