@@ -73,7 +73,6 @@ public class Product implements Cloneable {
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
             throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
-
         Double newRating = Double.valueOf(rating);
         if (_productRating == -1.0) {
             _productRating = newRating;
@@ -100,14 +99,14 @@ public class Product implements Cloneable {
                 + " had been purchased cancel -- +1 to stock.");
     }
 
-        @Override
-        public Product clone() {
-            try {
-                return (Product) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new AssertionError(); // Can't happen as we implement Cloneable
-            }
+    @Override
+    public Product clone() {
+        try {
+            return (Product) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen as we implement Cloneable
         }
+    }
 
     @Override
     public String toString() {
