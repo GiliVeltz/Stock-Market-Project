@@ -1,5 +1,7 @@
 package UI.views;
 
+import java.net.URI;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -8,6 +10,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.page.Page;
+
+import javax.swing.JButton;
+import java.lang.UnsupportedOperationException;
+import javax.websocket.Session;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Endpoint;
+import javax.websocket.WebSocketContainer;
+import javax.websocket.ContainerProvider;
+
 
 public class HeaderComponent extends HorizontalLayout {
 
@@ -44,7 +56,7 @@ public class HeaderComponent extends HorizontalLayout {
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(leftButtonLayout, spacer, rightButtonLayout);
-        
+
         // Adjust button spacing if needed
         setWidthFull(); // Make the layout take full width
         setAlignItems(Alignment.CENTER); // Center the buttons vertically
@@ -157,7 +169,6 @@ public class HeaderComponent extends HorizontalLayout {
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
-
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
@@ -198,11 +209,40 @@ public class HeaderComponent extends HorizontalLayout {
         return dialog;
     }
 
+    // TODO: WebSocket - send a CONNECT message to the server and establish a
+    // websocket connection ()
     private void handleLogin() {
         // Change the login button text to "Logout"
         loginButton.setText("Logout");
         System.out.println("User logged in");
+        
+    
+        // After successful login, establish a WebSocket connection
+        try {
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            String uri = "ws://http://localhost:8080 /ws"; //TODO: change the server address
+            //Session represents a conversation between two web socket endpoints
+            Session session = container.connectToServer(new Endpoint() { 
+                @Override
+                public void onOpen(Session session, EndpointConfig config) {
+                    // Send the token to the server
+                    session.getAsyncRemote().sendText("yourToken");
+                }
+
+                @Override
+                public void onMessage(Session session, String message) {
+                    // Handle messages from the server
+                    System.out.println("Received message: " + message);
+                }
+            }, URI.create(uri));
+
+            // Store the session so you can close it later
+            // this.session = session;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void handleLogout() {
         // Change the login button text back to "Login"

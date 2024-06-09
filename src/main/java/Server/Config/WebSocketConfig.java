@@ -1,4 +1,4 @@
-package UI.Config;
+package Server.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -7,7 +7,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 
-//A configuration class for setting up WebSocket communication in a Java application. 
+//A configuration class for setting up WebSocket communication.
 
 @Configuration 
 @EnableWebSocketMessageBroker
@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // and set the application destination prefix to "/app"
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic","/user","/shop");
         config.setApplicationDestinationPrefixes("/app");
     }
 
