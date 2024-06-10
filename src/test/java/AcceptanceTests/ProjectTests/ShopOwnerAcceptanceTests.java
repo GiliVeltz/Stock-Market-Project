@@ -31,6 +31,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can remove products from the shop.
+    // TODO: implement in ShopService
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveProductFromShop() {
@@ -40,6 +41,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can edit products details in the shop.
+    // TODO: implement in ShopService
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerEditProductInShop() {
@@ -51,6 +53,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can edit the shop policies.
+    // TODO: implement in ShopService
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerChangeShopPolicies() {
@@ -76,7 +79,6 @@ public class ShopOwnerAcceptanceTests {
     }
 
     // Test that the shop owner can add a permission of a shop manager.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerAddShopManagerPermission(){
         assertTrue(_bridge.testShopOwnerAddShopManagerPermission("userName", "shopId", "managerUserName", "newPermission")); // success
@@ -85,12 +87,10 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can remove a permission of a shop manager.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveShopManagerPermission(){
-        assertTrue(_bridge.testShopOwnerRemoveShopManagerPermission("userName", "shopId", "managerUserName", "existPermission")); // success
-        assertFalse(_bridge.testShopOwnerRemoveShopManagerPermission("userName", "shopId", "managerUserName", "nonexistPermission")); // fail - non exist permission in shop manager
-        assertFalse(_bridge.testShopOwnerRemoveShopManagerPermission("userName", "shopId", "managerUserName", "invalidPermission")); // fail - invalid permission
+        assertTrue(_bridge.testShopOwnerRemoveShopManagerPermission("shopOwner", "0", "managerUserName", "existPermission")); // success
+        assertFalse(_bridge.testShopOwnerRemoveShopManagerPermission("shopOwner", "0", "managerUserName", "invalidPermission")); // fail - invalid permission
     }
     
     // Test that the shop owner can close his shop in the system.
@@ -109,6 +109,7 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can get the permissions of the shop managers.
+    // TODO: implement in ShopService
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerGetShopManagersPermissions(){

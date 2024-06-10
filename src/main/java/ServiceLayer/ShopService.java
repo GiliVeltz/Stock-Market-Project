@@ -84,7 +84,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
@@ -115,7 +115,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.reOpenShop(shopId, userName);
                     logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
                 } else {
@@ -146,7 +146,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: added by: %s to Shop ID: %d",
                             productDto._productName, userName, shopId));
@@ -783,8 +783,7 @@ public class ShopService {
      * @param permissions     The new set of permissions for the manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername,
-            Set<String> permissions) {
+    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -807,7 +806,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to modify manager %s permissions in shopID %d. Error: ", managerUsername,
+                    String.format("Failed to modify manager %s permissions in shopID %d. Error: %s", managerUsername,
                             shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }

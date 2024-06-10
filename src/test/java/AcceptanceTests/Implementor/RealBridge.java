@@ -649,11 +649,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     
     @Test
     public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){
-        // public void testShopOwnerAppointAnotherShopManager() {
-        //     assertTrue(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManager") ); // success
-        //     assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManagerInvalidUserName") ); // fail - invalid new manager name
-        //     assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId2", "existManager") ); // fail - the new user is already a shop manager
-        // }
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -713,15 +708,71 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}
     
     @Test
-    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        Set<String> permissionsToRemove = new HashSet<>();
+        if(permission.equals("existPermission")){
+            permissionsToRemove.add("ADD_PRODUCT");
+        }
+        if (permission.equals("invalidPermission")){
+            permissionsToRemove.add("NON_EXIST_PERMISSION");
+        }
+        if (permission.equals("nonexistPermission")){
+            permissionsToRemove.add("EDIT_PRODUCT");
+        }
+        
+        // Act
+        Response res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId), "managerUserName", permissions);
+        Response res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId), "managerUserName", permissionsToRemove);
+        
+        // Assert
+        if (res1.getErrorMessage() != null){
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getErrorMessage());
+            return false;            
+        }
+        if (res2.getErrorMessage() != null){
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getErrorMessage());
+            return false;            
+        }
+        return res2.getErrorMessage() == null;
+    }
     
     @Test
     public boolean testShopOwnerCloseShop(String username, String shopId){
-        // public void testShopOwnerCloseShop(){
-        //     assertTrue(_bridge.testShopOwnerCloseShop("Founder", "0")); // success
-        //     assertFalse(_bridge.testShopOwnerCloseShop("userName", "0")); // fail - exist shop but he is not the owner
-        //     assertFalse(_bridge.testShopOwnerCloseShop("userName", "-1")); // fail - non exist shop id
-        // }
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -804,7 +855,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
     
     @Test
-    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){return false;}
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){ return false; }
     
     @Test
     public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){
