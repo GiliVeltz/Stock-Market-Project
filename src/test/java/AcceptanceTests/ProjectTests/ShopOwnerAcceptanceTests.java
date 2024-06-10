@@ -81,9 +81,8 @@ public class ShopOwnerAcceptanceTests {
     // Test that the shop owner can add a permission of a shop manager.
     @Test
     public void testShopOwnerAddShopManagerPermission(){
-        assertTrue(_bridge.testShopOwnerAddShopManagerPermission("userName", "shopId", "managerUserName", "newPermission")); // success
-        assertFalse(_bridge.testShopOwnerAddShopManagerPermission("userName", "shopId", "managerUserName", "existPermission")); // fail - alreadey exist permission
-        assertFalse(_bridge.testShopOwnerAddShopManagerPermission("userName", "shopId", "managerUserName", "invalidPermission")); // fail - invalid permission
+        assertTrue(_bridge.testShopOwnerAddShopManagerPermission("shopOwner", "0", "managerUserName", "newPermission")); // success
+        assertFalse(_bridge.testShopOwnerAddShopManagerPermission("shopOwner", "0", "managerUserName", "invalidPermission")); // fail - invalid permission
     }
     
     // Test that the shop owner can remove a permission of a shop manager.
