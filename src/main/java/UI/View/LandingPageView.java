@@ -32,7 +32,7 @@ public class LandingPageView extends VerticalLayout implements ViewPageI {
 
     public LandingPageView() {
         // Create the header component
-        Header header = new Header("8080");
+        Header header = new Header("8081");
 
         // Create the title
         H1 title = new H1("Welcome to Stock Market!!");
