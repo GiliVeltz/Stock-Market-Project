@@ -535,6 +535,14 @@ public class ShopService {
         }
     }
 
+    /**
+     * Removes a discount from a shop.
+     * 
+     * @param token      The session token of the user removing the discount.
+     * @param shopId     The ID of the shop from which the discount will be removed.
+     * @param discountId The ID of the discount to be removed.
+     * @return A response indicating the success or failure of the operation.
+     */
     public Response removeDiscount(String token, int shopId, int discountId) {
         Response resp = new Response();
         try {
@@ -971,23 +979,31 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-
-                String info = _shopFacade.getShopGeneralInfo(shopId);
-                if (info != null && info.length() > 0) {
-                    response.setReturnValue(String.format(
-                            "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
-                    logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    if (_userFacade.doesUserExist(username)) {
+                        String info = _shopFacade.getShopGeneralInfo(shopId);
+                        if (info != null && info.length() > 0) {
+                            response.setReturnValue(String.format(
+                                    "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
+                            logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                        } else {
+                            response.setReturnValue(
+                                    String.format("Shop general information for shop ID %d was not found", shopId));
+                            logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
+                        }
+                    } else {
+                        throw new StockMarketException(String.format("User name %s does not exist.", username));
+                    }
                 } else {
-                    response.setReturnValue(
-                            String.format("Shop general information for shop ID %d was not found", shopId));
-                    logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
+                    throw new StockMarketException(String.format("User is not logged in."));
                 }
             } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format(String.format("Failed to display shop general information for shop ID %d . Error:",
+                    String.format(String.format("Failed to display shop general information for shop ID %d . Error: %s",
                             shopId, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -1109,6 +1125,4 @@ public class ShopService {
         }
         return response;
     }
-
-
 }

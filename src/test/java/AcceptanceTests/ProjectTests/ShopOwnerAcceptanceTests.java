@@ -103,12 +103,10 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can get the information about the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerGetShopInfo(){
-        assertTrue(_bridge.testShopOwnerGetShopInfo("userName", "shopId1")); // success
-        assertFalse(_bridge.testShopOwnerGetShopInfo("userName", "shopId2")); // fail - exist shop but he is not the owner
-        assertFalse(_bridge.testShopOwnerGetShopInfo("userName", "shopId3")); // fail - non exist shop id
+        assertTrue(_bridge.testShopOwnerGetShopInfo("shopOwner", "0")); // success
+        assertFalse(_bridge.testShopOwnerGetShopInfo("shopOwner", "-1")); // fail - non exist shop id
     }
     
     // Test that the shop owner can get the permissions of the shop managers.

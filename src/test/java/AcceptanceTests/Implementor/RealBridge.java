@@ -719,7 +719,45 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testShopOwnerCloseShop(String username, String shopId){return false;}
     
     @Test
-    public boolean testShopOwnerGetShopInfo(String username, String shopId){return false;}
+    public boolean testShopOwnerGetShopInfo(String username, String shopId){
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopOwner = "shopOwner";
+
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopInfo Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        Response res1 = _shopServiceUnderTest.displayShopGeneralInfo(tokenShopOwner, Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testShopOwnerGetShopInfo Error message: " + res1.getErrorMessage());
+        return res1.getErrorMessage() == null;
+    }
     
     @Test
     public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){return false;}
