@@ -114,13 +114,16 @@ public class ShopFacade {
 
 
     public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws StockMarketException {
+        // If the shop ID does not exist, raise an error
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
-        else{
-            int productId = _shopRepository.getUniqueProductID();
-            Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
-            getShopByShopId(shopId).addProductToShop(userName, newProduct);
-        }
+        // If the product name exists in the shop, raise an error
+        if (getShopByShopId(shopId).isProductNameExist(productDto._productName))
+            throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
+                    productDto._productName, shopId));
+        int productId = _shopRepository.getUniqueProductID();
+        Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
+        getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
 
     /**
