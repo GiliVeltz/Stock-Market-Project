@@ -529,14 +529,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         
         _passwordEncoder = new PasswordEncoderUtil();
         
-        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com",
-                new Date());
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
         ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount));
         ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount));
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
+                add(shopFounder);
                 add(shopOwner);
             }
         }, new ArrayList<>(), _passwordEncoder);
