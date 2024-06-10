@@ -57,6 +57,10 @@ public class ShoppingCartFacade {
         _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }
 
+    /*
+     * Add a product to a user cart by username.
+     * This method called when a user add a product to his cart.
+     */
     public void addProductToUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
@@ -67,6 +71,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Add a product to a guest cart by token.
+     * This method called when a guest user add a product to his cart.
+     */
     public void addProductToGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
@@ -77,6 +85,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Remove a product from a user cart by username.
+     * This method called when a user remove a product from his cart.
+     */
     public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
@@ -87,6 +99,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Remove a product from a guest user cart by token.
+     * This method called when a guest user remove a product from his cart. 
+     */
     public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
@@ -115,8 +131,15 @@ public class ShoppingCartFacade {
         _guestsCarts.get(guestID).purchaseCart(details);
     }
 
+    /*
+     * Purchase the cart of a user.
+     */
     public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         _cartsRepo.getCartByUsername(username).purchaseCart(details);
+    }
+
+    public Map<String, ShoppingCart> get_guestsCarts() {
+        return _guestsCarts;
     }
 }
