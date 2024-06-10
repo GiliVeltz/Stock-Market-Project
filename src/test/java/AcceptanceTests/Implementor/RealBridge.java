@@ -605,7 +605,45 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){return false;}
     
     @Test
-    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){return false;}
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerViewHistoryPurcaseInShop Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // Act
+        Response res = _shopServiceUnderTest.getShopPurchaseHistory(token, Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testShopOwnerViewHistoryPurcaseInShop Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
     
     //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
 

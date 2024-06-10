@@ -123,11 +123,10 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can see the history purchases of the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerViewHistoryPurcaseInShop() {
-        assertTrue(_bridge.testShopOwnerViewHistoryPurcaseInShop("manager", "shopId1") ); // success
-        assertFalse(_bridge.testShopOwnerViewHistoryPurcaseInShop("userName", "shopId2")); // fail - exist shop but he is not the owner
-        assertFalse(_bridge.testShopOwnerViewHistoryPurcaseInShop("userName", "shopId3")); // fail - non exist shop id
+        assertTrue(_bridge.testShopOwnerViewHistoryPurcaseInShop("shopOwner", "0") ); // success
+        assertFalse(_bridge.testShopOwnerViewHistoryPurcaseInShop("userName", "0")); // fail - exist shop but he is not the owner
+        assertFalse(_bridge.testShopOwnerViewHistoryPurcaseInShop("userName", "-1")); // fail - non exist shop id
     }
 }
