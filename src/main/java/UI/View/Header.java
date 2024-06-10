@@ -67,8 +67,12 @@ public class Header extends HorizontalLayout implements ViewPageI{
         Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
 
         // Add click listener to the login button
-        loginButton.addClickListener(event -> loginDialog.open());
-
+        loginButton.addClickListener(event -> {
+            if (loginButton.getText() != "Logout")
+                loginDialog.open();
+            else
+                logoutConfirmationDialog.open();
+            });
         // Add click listener to the register button
         registerButton.addClickListener(event -> registrationDialog.open());
     }
@@ -198,5 +202,13 @@ public class Header extends HorizontalLayout implements ViewPageI{
     @Override
     public void showErrorMessage(String message) {
         Notification.show(message);
+    }
+
+    public void switchToLogout() {
+        loginButton.setText("Logout");
+    }
+
+    public void switchToLogin() {
+        loginButton.setText("Login");
     }
 }

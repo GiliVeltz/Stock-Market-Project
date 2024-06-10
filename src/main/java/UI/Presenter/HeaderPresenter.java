@@ -5,8 +5,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
 import UI.Model.UserDto;
@@ -24,7 +28,6 @@ public class HeaderPresenter {
 
     public void loginUser(String username, String password) {
         RestTemplate restTemplate = new RestTemplate();
-        UserDto userDto = new UserDto(username, "", password);
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -34,19 +37,36 @@ public class HeaderPresenter {
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
 
-                        HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
+
+                        String url = "http://localhost:" + _serverPort + "/api/user/login?username=" + username + "&password=" + password;
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/login",
-                                HttpMethod.POST,
+                                url,
+                                HttpMethod.GET,
                                 requestEntity,
                                 String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("Login successful");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Login failed");
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String responseBody = response.getBody();
+                        try{
+                            JsonNode responseJson = objectMapper.readTree(responseBody);
+                            if (response.getStatusCode().is2xxSuccessful() && responseJson.get("errorMessage").isNull()) {
+                                // Get the new token
+                                token = responseJson.get("returnValue").asText();
+
+                                // Update the token in local storage using JavaScript
+                                UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
+                                view.showSuccessMessage("Login successful");
+                                view.switchToLogout();
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Login failed");
+                            }
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                            return;
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -74,12 +94,21 @@ public class HeaderPresenter {
                                 HttpMethod.POST,
                                 requestEntity,
                                 String.class);
-
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("Registration successful");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Registration failed");
+                        
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String responseBody = response.getBody();
+                        try{
+                            JsonNode responseJson = objectMapper.readTree(responseBody);     
+                            if (response.getStatusCode().is2xxSuccessful() && responseJson.get("errorMessage").isNull()) {
+                                view.showSuccessMessage("Registration successful, Please sign in");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Registration failed");
+                            }
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                            return;
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
