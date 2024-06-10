@@ -575,10 +575,16 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
     
     @Test
-    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName){return false;}
+    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveProductFromShop'");
+    }
     
     @Test
-    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName, String productNameNew, String productAmount, String productAmountNew){return false;}
+    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName, String productNameNew, String productAmount, String productAmountNew){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerEditProductInShop'");
+    }
     
     @Test
     public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy){return false;}

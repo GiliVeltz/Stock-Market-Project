@@ -34,8 +34,8 @@ public class ShopOwnerAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveProductFromShop() {
-        assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "0", "ProductName") ); // success
-        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("shopOwnerUserName", "0", "ProductName") ); // fail - invalid productname
+        assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwner", "0", "ProductName") ); // success
+        assertFalse(_bridge.testShopOwnerRemoveProductFromShop("shopOwner", "0", "") ); // fail - invalid productname
         assertFalse(_bridge.testShopOwnerRemoveProductFromShop("NotShopOwnerUserName", "0", "ExistProductName") ); // fail - the user is not the shop onwer
     }
     
@@ -54,9 +54,9 @@ public class ShopOwnerAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerChangeShopPolicies() {
-        assertTrue(_bridge.testShopOwnerChangeShopPolicies("shopOwnerUserName", "shopId1", "new shop policy") ); // success
-        assertFalse(_bridge.testShopOwnerChangeShopPolicies("shopOwnerUserName", "shopId1", "new shop policy") ); // fail - invalid new shop policy
-        assertFalse(_bridge.testShopOwnerChangeShopPolicies("shopOwnerUserName", "shopId2", "new shop policy") ); // fail - the user is not the shop onwer
+        assertTrue(_bridge.testShopOwnerChangeShopPolicies("shopOwner", "0", "new shop policy") ); // success
+        assertFalse(_bridge.testShopOwnerChangeShopPolicies("shopOwner", "0", "fail") ); // fail - invalid new shop policy
+        assertFalse(_bridge.testShopOwnerChangeShopPolicies("shopOwnerUserName", "0", "new shop policy") ); // fail - the user is not the shop onwer
     }
     
     // Test that shop owner can add another shop owner to his shop.
