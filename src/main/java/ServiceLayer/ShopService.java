@@ -96,7 +96,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to close shopID %d. Error: ", shopId, e.getMessage()));
+                    String.format("Failed to close shopID %d. Error: %s", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 

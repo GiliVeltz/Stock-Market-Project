@@ -716,7 +716,51 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}
     
     @Test
-    public boolean testShopOwnerCloseShop(String username, String shopId){return false;}
+    public boolean testShopOwnerCloseShop(String username, String shopId){
+        // public void testShopOwnerCloseShop(){
+        //     assertTrue(_bridge.testShopOwnerCloseShop("Founder", "0")); // success
+        //     assertFalse(_bridge.testShopOwnerCloseShop("userName", "0")); // fail - exist shop but he is not the owner
+        //     assertFalse(_bridge.testShopOwnerCloseShop("userName", "-1")); // fail - non exist shop id
+        // }
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(username)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(userName);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerCloseShop Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        Response res = _shopServiceUnderTest.closeShop(token, Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testShopOwnerCloseShop Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
+    }
     
     @Test
     public boolean testShopOwnerGetShopInfo(String username, String shopId){

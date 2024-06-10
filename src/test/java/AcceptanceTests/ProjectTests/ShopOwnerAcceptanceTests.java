@@ -94,12 +94,11 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that the shop owner can close his shop in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerCloseShop(){
-        assertTrue(_bridge.testShopOwnerCloseShop("Bob", "12345")); // success
-        assertFalse(_bridge.testShopOwnerCloseShop("userName", "67890")); // fail - exist shop but he is not the owner
-        assertFalse(_bridge.testShopOwnerCloseShop("userName", "33333")); // fail - non exist shop id
+        assertTrue(_bridge.testShopOwnerCloseShop("Founder", "0")); // success
+        assertFalse(_bridge.testShopOwnerCloseShop("userName", "0")); // fail - exist shop but he is not the owner
+        assertFalse(_bridge.testShopOwnerCloseShop("userName", "-1")); // fail - non exist shop id
     }
     
     // Test that the shop owner can get the information about the shop.
