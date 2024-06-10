@@ -648,7 +648,66 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
     
     @Test
-    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){return false;}
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){
+        // public void testShopOwnerAppointAnotherShopManager() {
+        //     assertTrue(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManager") ); // success
+        //     assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManagerInvalidUserName") ); // fail - invalid new manager name
+        //     assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId2", "existManager") ); // fail - the new user is already a shop manager
+        // }
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopFounder = "shopOwnerUserName";
+
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+        User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"), "email@email.com", new Date());
+        User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existManager);
+                add(newManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("shopOwnerUserName", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAppointAnotherShopManager Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        // Act
+        Response res1 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId), "existManager", permissions);
+        Response res2 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId), newManagerUsername, permissions);
+
+        // Assert
+        if (res1.getErrorMessage() != null){
+            logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res1.getErrorMessage());
+            return false;
+        }
+        if (res2.getErrorMessage() != null){
+            logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res2.getErrorMessage());
+            return false;
+        }
+        return res2.getErrorMessage() == null;
+    }
     
     @Test
     public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername, String permission){return false;}

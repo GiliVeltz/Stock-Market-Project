@@ -68,12 +68,11 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can add another shop manager to his shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerAppointAnotherShopManager() {
-        assertTrue(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManager") ); // success
-        assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId1", "newManagerInvalidUserName") ); // fail - invalid new manager name
-        assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "shopId2", "existManager") ); // fail - the new user is already a shop manager
+        assertTrue(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "0", "newManager") ); // success
+        assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "0", "newManagerInvalidUserName") ); // fail - invalid new manager name
+        assertFalse(_bridge.testShopOwnerAppointAnotherShopManager("shopOwnerUserName", "0", "existManager") ); // fail - the new user is already a shop manager
     }
 
     // Test that the shop owner can add a permission of a shop manager.

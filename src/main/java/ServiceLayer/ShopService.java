@@ -650,17 +650,20 @@ public class ShopService {
      * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopManager(String token, Integer shopId, String newManagerUsername,
-            Set<String> permissions) {
+    public Response addShopManager(String token, Integer shopId, String newManagerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
-                        _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
-                        response.setReturnValue(true);
-                        logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
+                        if (_userFacade.doesUserExist(newManagerUsername)) {
+                            _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
+                            response.setReturnValue(true);
+                            logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
+                        } else {
+                            throw new StockMarketException(String.format("newManagerUsername: %s does not exist.", newManagerUsername));
+                        }
                     } else {
                         throw new StockMarketException("User does not exist.");
                     }
@@ -673,7 +676,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add manager %s to shopID %d. Error: ", newManagerUsername, shopId,
+                    String.format("Failed to add manager %s to shopID %d. Error: %s", newManagerUsername, shopId,
                             e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
