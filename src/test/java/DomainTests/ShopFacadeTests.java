@@ -39,8 +39,6 @@ public class ShopFacadeTests {
     private List<Shop> _shopsList = new ArrayList<>();
 
     // mock fields.
-    @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
 
     @Mock
     private ShoppingBasket _shoppingBasketMock;
@@ -62,7 +60,6 @@ public class ShopFacadeTests {
 
     @BeforeEach
     public void setUp() throws StockMarketException {
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
