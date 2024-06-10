@@ -765,7 +765,7 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
+    private Boolean isProductExist(Integer productId) throws StockMarketException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
                     "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",
@@ -773,7 +773,15 @@ public class Shop {
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }
         return true;
+    }
 
+    public Boolean isProductNameExist(String productName) {
+        for (Product product : _productMap.values()) {
+            if (product.getProductName().equals(productName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws StockMarketException {
