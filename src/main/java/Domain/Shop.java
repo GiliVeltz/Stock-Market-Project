@@ -737,8 +737,6 @@ public class Shop {
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }
         return true;
-<<<<<<< permission-funcionality-tests-in-shop-unit-test
-=======
     }
 
     public Boolean isProductNameExist(String productName) {
@@ -748,7 +746,6 @@ public class Shop {
             }
         }
         return false;
->>>>>>> main
     }
 
     public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws StockMarketException {
