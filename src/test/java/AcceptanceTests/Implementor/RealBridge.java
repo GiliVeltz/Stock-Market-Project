@@ -1,5 +1,7 @@
 package AcceptanceTests.Implementor;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.security.Permission;
@@ -588,9 +590,61 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     
     @Test
     public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy){return false;}
-    
+
     @Test
-    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername){return false;}
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername){
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopFounder = "shopOwnerUserName";
+
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+        User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"), "email@email.com", new Date());
+        User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existOwner);
+                add(newOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        _shopFacade = new ShopFacade();
+        
+        try {
+            _shopFacade.openNewShop("shopOwnerUserName", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAppointAnotherShopOwner Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        Response res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "existOwner");
+        Response res2 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), newOwnerUsername);
+
+        // Assert
+        if (res1.getErrorMessage() != null){
+            logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res1.getErrorMessage());
+            return false;
+        }
+        if (res2.getErrorMessage() != null){
+            logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res2.getErrorMessage());
+            return false;
+        }
+        return res2.getErrorMessage() == null;
+    }
     
     @Test
     public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){return false;}

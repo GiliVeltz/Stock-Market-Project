@@ -610,11 +610,16 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
+                        if (_userFacade.doesUserExist(newOwnerUsername)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
                         logger.info(String.format("New owner %s added to Shop ID: %d", username, shopId));
+                        }
+                        else {
+                            throw new StockMarketException(String.format("newOwnerUsername %s does not exist.", newOwnerUsername));
+                        }
                     } else {
-                        throw new StockMarketException("User does not exist.");
+                        throw new StockMarketException(String.format("User %s does not exist.", username));
                     }
                 } else {
                     throw new StockMarketException("User is not logged in.");
@@ -625,7 +630,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add owner %s to shopID %d. Error: ", newOwnerUsername, shopId,
+                    String.format("Failed to add owner %s to shopID %d. Error: %s", newOwnerUsername, shopId,
                             e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
