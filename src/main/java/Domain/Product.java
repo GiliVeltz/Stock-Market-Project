@@ -82,7 +82,7 @@ public class Product implements Cloneable {
         _productRatersCounter++;
     }
 
-    public void purchaseProduct() throws StockMarketException {
+    public synchronized void purchaseProduct() throws StockMarketException {
         if (_quantity == 0) {
             logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");
@@ -93,7 +93,7 @@ public class Product implements Cloneable {
                 + " had been purchased -- -1 to stock.");
     }
 
-    public void cancelPurchase() {
+    public synchronized void cancelPurchase() {
         _quantity++;
         logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId
                 + " had been purchased cancel -- +1 to stock.");
