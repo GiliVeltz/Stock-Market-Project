@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +32,7 @@ import Domain.ShoppingBasket;
 import Domain.User;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
@@ -53,6 +58,7 @@ public class ShopFacadeTests {
     private Shop _shop3;
     private ShopDto _shop4;
     private ProductDto _product1;
+    private ProductDto _product2dto;
     private Product _product2;
     private Product _product3;
 
@@ -68,6 +74,7 @@ public class ShopFacadeTests {
         _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
         _shop4 = new ShopDto("bank4", "addresss4");
         _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
         try{
@@ -182,6 +189,102 @@ public class ShopFacadeTests {
             assertEquals(0, _shopsList.size());
         }
     }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to add a product to a non-existing shop
+        assertThrows(StockMarketException.class, () -> {
+            _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
+    }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(1, _product2dto, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(1, _product1, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        
+        executor.shutdown(); // shut down executor service
+        Map<Integer, Product> products = _shop1.getAllProducts();
+        for(Product product1 : products.values())
+        {
+            for(Product product2 : products.values())
+            {
+                assertNotEquals(product1.getProductId(), product2.getProductId());
+            }
+        }
+
+    }
+
+    @Test
+    public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopDto _shopDto1 = new ShopDto("bank1", "addresss1");
+        ShopDto _shopDto2 = new ShopDto("bank2", "addresss2");
+        
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("Hozier",_shopDto1);
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("KALEO",_shopDto2);
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        
+        executor.shutdown(); // shut down executor service
+        List<Shop> shops = _ShopFacadeUnderTests.getAllShops();
+        
+        for(Shop shop1 : shops)
+        {
+            for(Shop shop2 : shops)
+            {
+                assertNotEquals(shop1.getShopId(),shop2.getShopId());
+            }
+        }
+
+    }
+
 
     @Test
     public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() {
