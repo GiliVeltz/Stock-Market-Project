@@ -37,7 +37,7 @@ public class Product implements Cloneable {
         this._productPolicy = new ProductPolicy();
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
         return _productId;
     }
 

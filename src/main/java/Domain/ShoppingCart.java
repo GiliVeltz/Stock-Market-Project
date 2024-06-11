@@ -1,9 +1,11 @@
 package Domain;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
@@ -209,5 +211,16 @@ public class ShoppingCart {
     // for tests
     public void addShoppingBasket(ShoppingBasket basket) {
         _shoppingBaskets.add(basket);
+    }
+
+    // return all the products in the cart
+    public Map<Integer, Product> getProducts() throws StockMarketException {
+        Map<Integer, Product> products = new HashMap<Integer,Product>();
+        for (ShoppingBasket basket : _shoppingBaskets) {
+            for (Product product : basket.getProductsList()) {
+                products.put(product.getProductId(), product);
+            }
+        }
+        return products;
     }
 }
