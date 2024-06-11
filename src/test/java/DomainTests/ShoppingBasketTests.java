@@ -8,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.*;
 
 import java.util.Date;
@@ -24,9 +22,7 @@ import Domain.Product;
 import Domain.Shop;
 import Domain.ShoppingBasket;
 import Domain.User;
-import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
-import Exceptions.ProductAlreadyExistsException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
@@ -104,7 +100,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testAddProductToShoppingBasket_whenProductIsNotInShop_shouldThrowProdcutPolicyException() throws ProductDoesNotExistsException {
+    public void testAddProductToShoppingBasket_whenProductIsNotInShop_shouldThrowProdcutPolicyException() throws StockMarketException {
         // Arrange
         Product product = new Product(1, "Product 1", Category.ELECTRONICS, 100.0);
         when(shopMock.getProductById(1)).thenReturn(product);
@@ -160,7 +156,12 @@ public class ShoppingBasketTests {
         }
 
         // Act
-        shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+        try {
+            shoppingBasketUnderTest.removeProductFromShoppingBasket(2);
+            fail("Expected ProductDoesNotExistsException exception not thrown");
+        } catch (ProductDoesNotExistsException e) {
+            e.printStackTrace();
+        }
         
         // Assert
         assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
@@ -228,7 +229,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testClone_whenBasketIsEmpty_shouldReturnEmptyBasket() throws StockMarketException {
+    public void testClone_whenBasketIsEmpty_shouldReturnEmptyBasket() {
         // Arrange
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
@@ -238,9 +239,9 @@ public class ShoppingBasketTests {
         // Assert
         try {
             assertTrue(actual.getProductsList().size() == 0);
-        } catch (ProductDoesNotExistsException e) {
+        } catch (StockMarketException e) {
             e.printStackTrace();
-            fail("Unexpected ProductDoesNotExistsException exception thrown");
+            fail("Unexpected StockMarketException exception thrown");
         }
     }
 
@@ -331,7 +332,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testGetProductsList_whenBasketIsEmpty_shouldReturnEmptyList() throws StockMarketException {
+    public void testGetProductsList_whenBasketIsEmpty_shouldReturnEmptyList() {
         // Arrange
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
@@ -339,9 +340,9 @@ public class ShoppingBasketTests {
         int actual = -1;
         try {
             actual = shoppingBasketUnderTest.getProductsList().size();
-        } catch (ProductDoesNotExistsException e) {
+        } catch (StockMarketException e) {
             e.printStackTrace();
-            fail("Unexpected ProductDoesNotExistsException exception thrown");
+            fail("Unexpected StockMarketException exception thrown");
         }
         
         // Assert
@@ -435,8 +436,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndEverythingInStock_thenReturnedTrue() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndEverythingInStock_thenReturnedTrue() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -460,12 +460,11 @@ public class ShoppingBasketTests {
         // Assert
         assertTrue(result);
         assertEquals(product.getProductQuantity(), 0);
-        assertEquals(product2.getProductQuantity(), Integer.valueOf(9));
+        assertEquals(product2.getProductQuantity(), 9);
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondCompletlyNotInStock_thenReturnedFalseAndRestockFirstProduct() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondCompletlyNotInStock_thenReturnedFalseAndRestockFirstProduct() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -493,8 +492,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondSomeInStock_thenReturnedFalseAndRestockProducts() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndFirstProductInStockSecondSomeInStock_thenReturnedFalseAndRestockProducts() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -524,8 +522,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenThrowsShopPolicyException() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException {
+    public void testPurchaseBasket_whenBasketDoNotMeetsShopPolicyAndEverythingInStock_thenThrowsShopPolicyException() throws StockMarketException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -552,8 +549,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForOneBuyer_thenOneReturnTrueAndOneFalse() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException, java.util.concurrent.ExecutionException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForOneBuyer_thenOneReturnTrueAndOneFalse() throws StockMarketException, java.util.concurrent.ExecutionException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -578,35 +574,35 @@ public class ShoppingBasketTests {
 
         // Act
         // Task for first thread
-    Callable<Boolean> task1 = () -> {
+        Callable<Boolean> task1 = () -> {
+            try {
+                return shoppingBasket.purchaseBasket();
+            } catch (StockMarketException e) {
+                return false;
+            }
+        };
+
+        // Task for second thread
+        Callable<Boolean> task2 = () -> {
+            try {
+                return shoppingBasket2.purchaseBasket();
+            } catch (StockMarketException e) {
+                return false;
+            }
+        };
+
+        // Execute tasks
+        Future<Boolean> future1 = executor.submit(task1);
+        Future<Boolean> future2 = executor.submit(task2);
+
         try {
-            return shoppingBasket.purchaseBasket();
-        } catch (ProductDoesNotExistsException | ShopPolicyException e) {
-            return false;
+            results[0] = future1.get();
+            results[1] = future2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
-    };
 
-    // Task for second thread
-    Callable<Boolean> task2 = () -> {
-        try {
-            return shoppingBasket2.purchaseBasket();
-        } catch (ProductDoesNotExistsException | ShopPolicyException e) {
-            return false;
-        }
-    };
-
-    // Execute tasks
-    Future<Boolean> future1 = executor.submit(task1);
-    Future<Boolean> future2 = executor.submit(task2);
-
-    try {
-        results[0] = future1.get();
-        results[1] = future2.get();
-    } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-    }
-
-    executor.shutdown(); // shut down executor service
+        executor.shutdown(); // shut down executor service
         
         // Assert
         assertTrue((results[0] && !results[1]) || (!results[0] && results[1]));
@@ -615,8 +611,7 @@ public class ShoppingBasketTests {
     }
 
     @Test
-    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForEveryOne_thenEveryOneReturnTrue() throws ProdcutPolicyException,
-     ShopPolicyException, ProductAlreadyExistsException, PermissionException, StockMarketException, java.util.concurrent.ExecutionException {
+    public void testPurchaseBasket_whenBasketMeetsShopPolicyAndThereIsEnogthStockForEveryOne_thenEveryOneReturnTrue() throws StockMarketException, java.util.concurrent.ExecutionException {
         // Arrange
         Date date = new Date();
         date.setTime(0);
@@ -641,39 +636,164 @@ public class ShoppingBasketTests {
 
         // Act
         // Task for first thread
-    Callable<Boolean> task1 = () -> {
+        Callable<Boolean> task1 = () -> {
+            try {
+                return shoppingBasket.purchaseBasket();
+            } catch (StockMarketException e) {
+                return false;
+            }
+        };
+
+        // Task for second thread
+        Callable<Boolean> task2 = () -> {
+            try {
+                return shoppingBasket2.purchaseBasket();
+            } catch (StockMarketException e) {
+                return false;
+            }
+        };
+
+        // Execute tasks
+        Future<Boolean> future1 = executor.submit(task1);
+        Future<Boolean> future2 = executor.submit(task2);
+
         try {
-            return shoppingBasket.purchaseBasket();
-        } catch (ProductDoesNotExistsException | ShopPolicyException e) {
-            return false;
+            results[0] = future1.get();
+            results[1] = future2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
-    };
 
-    // Task for second thread
-    Callable<Boolean> task2 = () -> {
-        try {
-            return shoppingBasket2.purchaseBasket();
-        } catch (ProductDoesNotExistsException | ShopPolicyException e) {
-            return false;
-        }
-    };
-
-    // Execute tasks
-    Future<Boolean> future1 = executor.submit(task1);
-    Future<Boolean> future2 = executor.submit(task2);
-
-    try {
-        results[0] = future1.get();
-        results[1] = future2.get();
-    } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-    }
-
-    executor.shutdown(); // shut down executor service
+        executor.shutdown(); // shut down executor service
         
         // Assert
         assertTrue(results[0]&& results[1]);
         assertEquals(product.getProductQuantity(), 0);
         assertEquals(product2.getProductQuantity(), 0);
     }
+
+    @Test
+    public void testCancelPurchase_whenWholeBasketNeedToBeCanceled_thenRestockProducts() throws StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product2);
+
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+
+        // Act
+        shoppingBasket.cancelPurchase();
+        
+        // Assert
+        assertEquals(product.getProductQuantity(), 4);
+        assertEquals(product2.getProductQuantity(), 4);
+    }
+
+    @Test
+    public void testCancelPurchase_whenTwoBasketWithSharedProductsNeedToBeCanceled_thenRestockProducts() throws StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        User buyer2 = new User("username2", "password2", "email2", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        ShoppingBasket shoppingBasket2 = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product2);
+
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId());
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId());
+
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+
+        // Act
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                shoppingBasket.cancelPurchase();
+            } catch (StockMarketException e) {
+                e.printStackTrace();
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                shoppingBasket2.cancelPurchase();
+            } catch (StockMarketException e) {
+                e.printStackTrace();
+            }
+        };
+
+        // Execute tasks
+        executor.execute(task1);
+        executor.execute(task2);
+
+        // Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted
+        executor.shutdown();
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        // Assert
+        assertEquals(product.getProductQuantity(), 5);
+        assertEquals(product2.getProductQuantity(), 5);
+    }
+
+    @Test
+    public void testCalculateShoppingBasketPrice_whenBasketPriceNeedToBeCalculate_thenReturnBasketPriceAfterDiscounts() throws StockMarketException {
+        // Arrange
+        Date date = new Date();
+        date.setTime(0);
+        User buyer = new User("username1", "password1", "email1", date);
+        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product);
+        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+        product2.updateProductQuantity(3);
+        shop.addProductToShop("ownerUsername", product2);
+
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+
+        // Act
+        double price = shoppingBasket.calculateShoppingBasketPrice();
+        
+        // Assert
+        assertEquals(price, 300);
+    }
+
 }

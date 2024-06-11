@@ -1031,7 +1031,7 @@ public class ShopTests {
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        Set<Permission> permissions = new HashSet<>();
+        Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.DELETE_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
 
@@ -1047,7 +1047,7 @@ public class ShopTests {
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        Set<Permission> permissions = new HashSet<>();
+        Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
 
@@ -1199,7 +1199,7 @@ public class ShopTests {
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.DELETE_PRODUCT);
         Shop shop = new Shop(1, usernameFounder, "bank1", "adderss1");
-        shop.AppointManager(usernameFounder, username, new HashSet<>() {{
+        shop.AppointManager(usernameFounder, username, new HashSet<Permission>() {{
             add(Permission.ADD_PRODUCT);
         }});
 
