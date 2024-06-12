@@ -15,8 +15,6 @@ import com.vaadin.flow.router.RouteAlias;
 public class LandingPageView extends VerticalLayout implements ViewPageI {
 
     
-    private LandingPagePresenter presenter;
-
     public LandingPageView() {
         // Create the header component
         Header header = new Header("8080");
@@ -32,12 +30,6 @@ public class LandingPageView extends VerticalLayout implements ViewPageI {
 
         // Add components to the vertical layout
         add(header, titleLayout);
-
-        // Initialize presenter
-        presenter = new LandingPagePresenter(this);
-        
-        // Send the enterSystem request
-        presenter.sendEnterSystemRequest();
     }
 
 
