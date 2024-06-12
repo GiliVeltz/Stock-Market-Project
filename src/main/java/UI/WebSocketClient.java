@@ -29,11 +29,13 @@ public class WebSocketClient {
             e.printStackTrace();
         }
         System.out.println("Connected to server end");
+        
     }
     
     @OnClose
     public void onClose() {
         System.out.println("Disconnected from server");
+        this.session = null;
     }
 
     @OnMessage
@@ -46,14 +48,29 @@ public class WebSocketClient {
             session.getAsyncRemote().sendText(message);
         }
     }
+    public void sendMessage(String targetClientId, String message) {
+        if (session != null && session.isOpen()) {
+            session.getAsyncRemote().sendText(targetClientId + ":" + message);
+        }
+    }
 
-      public void connect() {
+    public void connect(String token) {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            URI uri = new URI("ws://localhost:8080/websocket"); // Ensure the server is running on this endpoint
+            URI uri = new URI("ws://localhost:8080/websocket?token=" + token); // Ensure the server is running on this endpoint
             container.connectToServer(this, uri);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    //   public void connect() {
+    //     try {
+    //         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+    //         URI uri = new URI("ws://localhost:8080/websocket");
+    //         container.connectToServer(this, uri);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }
