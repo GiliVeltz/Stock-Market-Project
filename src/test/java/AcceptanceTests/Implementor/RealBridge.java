@@ -1,10 +1,6 @@
 package AcceptanceTests.Implementor;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +28,6 @@ import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
-import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import ServiceLayer.*;
 import enums.Category;

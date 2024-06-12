@@ -10,6 +10,10 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import Domain.*;
 import Domain.Order;
@@ -404,4 +408,57 @@ public class UserFacadeTests {
         assertEquals(email, ansUser.getEmail());
     }
     
+    @Test
+    public void testsRegisterUser_whenUserRegisterInParallel_thenError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        UserDto userDto1 = new UserDto("Dudu_Tassa", "password123", "dudu@example.com", new Date());
+        UserDto userDto2 = new UserDto("Dudu_Tassa", "password5555", "dudu@example.com", new Date());
+        
+        CountDownLatch latch = new CountDownLatch(2);
+        AtomicBoolean exceptionCaught = new AtomicBoolean(false);
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _userFacadeUnderTest.register(userDto1);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(true);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _userFacadeUnderTest.register(userDto2);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(true);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            latch.await(); // wait for both tasks to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail("Test interrupted");
+        } finally {
+            executor.shutdown(); // shut down executor service
+        }
+        
+        if (!exceptionCaught.get()) {
+            fail("Error should raise when user register with the same userName");
+        }
+
+    }
+
 }
