@@ -99,6 +99,8 @@ public class Shop {
         _isClosed = false;
     }
 
+    public Map<Integer, Product> getAllProducts() {return _productMap;}
+
     /**
      * Check if a username has a role in shop.
      * 
