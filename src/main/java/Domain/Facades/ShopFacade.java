@@ -520,4 +520,30 @@ public class ShopFacade {
         shop.addShopRating(rating);
     }
 
+    // returns the shop bank details if exists, else returns null
+    public String getShopBankDetails(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getBankDetails();
+        }
+        return null;
+    }
+
+    // returns the shop address if exists, else returns null
+    public String getShopAddress(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopAddress();
+        }
+        return null;
+    }
+
+    public List<Product> getAllProductsInShopByID(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getAllProducts();
+        }
+        return null;
+    }
+
 }

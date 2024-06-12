@@ -31,6 +31,7 @@ import enums.Permission;
 
 public class Shop {
     private int _shopId;
+    //private String _shopName;
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
@@ -933,5 +934,12 @@ public class Shop {
     public Map<Integer, Discount> getDiscounts() { return _discounts; }
 
     //TODO: maybe add policy facade to implement the policy logic.
+
+    /**
+     * Get all the products in the shop.
+     */
+    public List<Product> getAllProducts() {
+        return new ArrayList<>(_productMap.values());
+    }
 
 }

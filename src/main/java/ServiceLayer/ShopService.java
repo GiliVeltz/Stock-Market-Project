@@ -1119,4 +1119,51 @@ public class ShopService {
         }
         return response;
     }
+
+    /**
+     * searches products by their name.
+     * 
+     * @param token       The session token of the user performing the search.
+     * @param shopId      The ID of the shop to search 
+     * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
+     */
+    public Response searchAndDisplayShopByID(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_shopFacade.isShopIdExist(shopId)) {
+                    Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                    ShopDto shopDto = new ShopDto(_shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                    if (products != null && !products.isEmpty()) {
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product: products) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
+                        }
+                        shopProductMapForResponse.put(shopDto, productDtoList);
+                        response.setReturnValue(shopProductMapForResponse);
+                        logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
+                    } else {
+                        response.setReturnValue(
+                                String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
+                        logger.info(String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
+                    }
+                }
+                else {
+                    response.setReturnValue(
+                                String.format("Shop with ID %s doesn't exist", shopId.toString()));
+                    logger.info(String.format("Shop with ID %s doesn't exist", shopId.toString()));
+                }
+            }
+            else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(String.format(String.format("Failed to search shop with ID %s . Error:",
+                    shopId.toString(), e.getMessage())));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
 }
