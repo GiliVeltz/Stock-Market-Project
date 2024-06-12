@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Product;
@@ -35,7 +34,6 @@ import Domain.ShoppingBasket;
 import Domain.User;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
-import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
@@ -296,14 +294,8 @@ public class ShopFacadeTests {
         }
 
         List<Shop> shops = _ShopFacadeUnderTests.getAllShops();
-        for(Shop shop1 : shops)
-        {
-            for(Shop shop2 : shops)
-            {
-                assertNotEquals(shop1.getShopId(),shop2.getShopId());
-            }
-        }
-
+        assertEquals(2, shops.size());
+        assertNotEquals(shops.get(0).getShopId(),shops.get(1).getShopId());
     }
 
     @Disabled
