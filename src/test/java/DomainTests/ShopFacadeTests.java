@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Product;
@@ -40,9 +39,6 @@ public class ShopFacadeTests {
 
     // mock fields.
     @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
-
-    @Mock
     private ShoppingBasket _shoppingBasketMock;
     @Mock
     private TokenService _tokenServiceMock;
@@ -62,7 +58,6 @@ public class ShopFacadeTests {
 
     @BeforeEach
     public void setUp() throws StockMarketException {
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);

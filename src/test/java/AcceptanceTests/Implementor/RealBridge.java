@@ -1,10 +1,7 @@
 package AcceptanceTests.Implementor;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,14 +22,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
-import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import ServiceLayer.*;
 import enums.Category;
@@ -52,12 +47,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private ShopFacade _shopFacade = ShopFacade.getShopFacade();
     private ShoppingCartFacade _shoppingCartFacade;
     private UserFacade _userFacade;
-    private PasswordEncoderUtil _passwordEncoder;
     private ExternalServiceHandler _externalServiceHandler;
 
     // mocks
-    @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
     @Mock
     private TokenService _tokenServiceMock;
 
@@ -87,9 +79,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(new User("Bob", "bobspassword", "email@example.com", new Date()));
             }
-        }, new ArrayList<>(), _passwordEncoderMock);
+        }, new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -114,9 +105,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(new User("systemAdmin", "systemAdminPassword", "email@example.com", new Date()));
             }
-        }, new ArrayList<>(), _passwordEncoderMock);
+        }, new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -165,16 +155,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
 
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
 
         _shopFacade = new ShopFacade();
         _shoppingCartFacade = new ShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>(){
             {
-                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+                add(new User("manager", "managerPassword", "email@gmail.com", new Date()));
             }
         }
-        , new ArrayList<>(), _passwordEncoder);
+        , new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest("manager");
         
@@ -224,16 +213,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
 
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
 
         _shopFacade = new ShopFacade();
         _shoppingCartFacade = new ShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>(){
             {
-                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+                add(new User("manager", "managerPassword", "email@gmail.com", new Date()));
             }
         }
-        , new ArrayList<>(), _passwordEncoder);
+        , new ArrayList<>());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
@@ -289,9 +277,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         MockitoAnnotations.openMocks(this);
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoderMock);
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -320,15 +307,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // Arrange
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("Bobi", _passwordEncoder.encodePassword("encodePassword"), "email@example.com",
+                add(new User("Bobi", "encodePassword", "email@example.com",
                         new Date()));
             }
-        }, new ArrayList<>(), _passwordEncoderMock);
+        }, new ArrayList<>());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -356,14 +342,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // Arrange
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
+                add(new User("Bob", "bobspassword", "email@example.com", new Date()));
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest(username);
 
@@ -389,13 +374,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName){
         // Arrange
         MockitoAnnotations.openMocks(this);
-        _passwordEncoder = new PasswordEncoderUtil();
         
-        User manager = new User(managerName, _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+        User manager = new User(managerName, "managersPassword", "email@email.com",
                 new Date());
         manager.setIsSystemAdmin(true);
-        User guest = new User("guest", _passwordEncoder.encodePassword("guest"), "email@email.com", new Date());
-        User user = new User("userName", _passwordEncoder.encodePassword("userName"), "email@email.com", new Date());
+        User guest = new User("guest", "guest", "email@email.com", new Date());
+        User user = new User("userName", "userName", "email@email.com", new Date());
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -403,7 +387,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(guest);
                 add(user);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
 
@@ -423,9 +407,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId){
         // Arrange
         MockitoAnnotations.openMocks(this);
-        _passwordEncoder = new PasswordEncoderUtil();
         
-        User manager = new User("manager", _passwordEncoder.encodePassword("managersPassword"), "email@email.com",
+        User manager = new User("manager", "managersPassword", "email@email.com",
                 new Date());
         manager.setIsSystemAdmin(true);
 
@@ -435,7 +418,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(manager);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
         
@@ -482,9 +465,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(new User("shopManager", "shopManagerPassword", "email@email.com", new Date()));
                 add(new User("founder", "founderPassword", "email@email.com", new Date()));
             }
-        }, new ArrayList<>(), _passwordEncoderMock);
+        }, new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
-        _passwordEncoder = new PasswordEncoderUtil();
         
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -527,10 +509,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
         when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
         
-        _passwordEncoder = new PasswordEncoderUtil();
-        
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("Founder", "shopFounderPassword", "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
         ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount));
         ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount));
@@ -540,7 +520,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(shopFounder);
                 add(shopOwner);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -559,7 +539,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         Response res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
         Response res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productExistDto);
         Response res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
-
 
         // Assert
         if (res1.getErrorMessage() != null){
@@ -603,11 +582,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"), "email@email.com", new Date());
-        User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("shopOwnerUserName", "shopFounderPassword", "email@email.com", new Date());
+        User existOwner = new User("existOwner", "existOwnerPassword", "email@email.com", new Date());
+        User newOwner = new User("newOwner", "newOwnerPassword", "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -616,7 +593,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(existOwner);
                 add(newOwner);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
         
@@ -658,11 +635,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"), "email@email.com", new Date());
-        User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("shopOwnerUserName", "shopFounderPassword", "email@email.com", new Date());
+        User existManager = new User("existManager", "existManagerPassword", "email@email.com", new Date());
+        User newManager = new User("newManager", "newManagerPassword", "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -671,7 +646,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(existManager);
                 add(newManager);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -713,10 +688,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com", new Date());
+        User shopManager = new User("managerUserName", "shopManagerPassword", "email@EMAIL.COM", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -724,7 +697,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(shopOwner);
                 add(shopManager);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -777,10 +750,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com", new Date());
+        User shopManager = new User("managerUserName", "shopManagerPassword", "email@EMAIL.COM", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -788,7 +759,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(shopOwner);
                 add(shopManager);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -841,10 +812,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com", new Date());
+        User shopOwner = new User("Founder", "shopOwnerPassword", "email@email.com", new Date());
+        User userName = new User("userName", "userNamePassword", "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -852,7 +821,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(shopOwner);
                 add(userName);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -884,16 +853,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
                 add(shopOwner);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
@@ -922,9 +889,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){
         // Arrange
         MockitoAnnotations.openMocks(this);
-        _passwordEncoder = new PasswordEncoderUtil();
         
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com",
                 new Date());
         ShopDto shopDto = new ShopDto("bankDetails", "address");
 
@@ -932,7 +898,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(shopOwner);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
 
