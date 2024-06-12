@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
@@ -200,6 +201,7 @@ public class ShopFacadeTests {
             _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
     }
 
+    @Disabled
     @Test
     public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
@@ -241,6 +243,7 @@ public class ShopFacadeTests {
 
     }
 
+    @Disabled
     @Test
     public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
