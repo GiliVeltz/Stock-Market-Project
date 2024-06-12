@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.*;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
@@ -58,7 +58,7 @@ public class ShopFacadeTests {
     private Shop _shop2;
     private Shop _shop3;
     private ShopDto _shop4;
-    private ProductDto _product1;
+    private ProductDto _product1dto;
     private ProductDto _product2dto;
     private Product _product2;
     private Product _product3;
@@ -74,7 +74,7 @@ public class ShopFacadeTests {
         _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
         _shop4 = new ShopDto("bank4", "addresss4");
-        _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
         _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
@@ -168,12 +168,12 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to add a product to an existing shop
-        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1, _shop1.getFounderName());
+        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
 
         // Assert - Verify that the product is added to the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(_product1._productName, _shop1.getShopProducts().get(0).getProductName());
+        assertEquals(_product1dto._productName, _shop1.getShopProducts().get(0).getProductName());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a non-existing shop
         try {
-            _ShopFacadeUnderTests.addProductToShop(3, _product1, "username1");
+            _ShopFacadeUnderTests.addProductToShop(3, _product1dto, "username1");
             fail("Adding a product to a non-existing shop should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
@@ -201,17 +201,17 @@ public class ShopFacadeTests {
             _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
     }
 
-    @Disabled
     @Test
     public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         
         // Task for first thread
         Runnable task1 = () -> {
             try {
-                _ShopFacadeUnderTests.addProductToShop(1, _product2dto, "founderName1");
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
             } catch (StockMarketException e) {
                 fail(e.getMessage());
             }
@@ -220,7 +220,7 @@ public class ShopFacadeTests {
         // Task for second thread
         Runnable task2 = () -> {
             try {
-                _ShopFacadeUnderTests.addProductToShop(1, _product1, "founderName1");
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product2dto, _shop1.getFounderName());
             } catch (StockMarketException e) {
                 fail(e.getMessage());
             }
@@ -230,17 +230,27 @@ public class ShopFacadeTests {
         executor.submit(task1);
         executor.submit(task2);
 
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
         
         executor.shutdown(); // shut down executor service
         Map<Integer, Product> products = _shop1.getAllProducts();
-        for(Product product1 : products.values())
-        {
-            for(Product product2 : products.values())
-            {
-                assertNotEquals(product1.getProductId(), product2.getProductId());
-            }
-        }
-
+        assertEquals(2, products.size());
+        assertNotEquals(products.get(0).getProductId(), products.get(1).getProductId());
     }
 
     @Test
@@ -298,7 +308,6 @@ public class ShopFacadeTests {
         assertNotEquals(shops.get(0).getShopId(),shops.get(1).getShopId());
     }
 
-    @Disabled
     @Test
     public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() {
         // Arrange
@@ -307,7 +316,7 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a shop this no permission
         try {
-            _ShopFacadeUnderTests.addProductToShop(1, _product1, "Jane");
+            _ShopFacadeUnderTests.addProductToShop(1, _product1dto, "Jane");
             fail("Adding a product to a shop without permission should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
