@@ -136,6 +136,7 @@ public class ShoppingBasket implements Cloneable {
                 return false;
             }
         }
+        System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
 
