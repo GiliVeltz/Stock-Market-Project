@@ -1,20 +1,29 @@
 package DomainTests;
 
-import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import Domain.*;
-import Domain.Order;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
+import Domain.Order;
+import Domain.Shop;
+import Domain.ShoppingBasket;
+import Domain.User;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
@@ -190,7 +199,7 @@ public class UserFacadeTests {
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         String username = "testUser";
 
-        Shop testShop = new Shop(1, username, "bankDetails", "shopAddress");
+        Shop testShop = new Shop(1, "shopName", username, "bankDetails", "shopAddress");
         ShoppingBasket shoppingBasket = new ShoppingBasket(testShop);
         List<ShoppingBasket> basketsList = new ArrayList<>();
         basketsList.add(shoppingBasket);

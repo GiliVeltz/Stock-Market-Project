@@ -66,7 +66,7 @@ public class ShopFacade {
 
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
         int shopId = _shopRepository.getUniqueShopID();    
-        _shopRepository.addShop(new Shop(shopId, userName, shopDto.bankDetails, shopDto.shopAddress));
+        _shopRepository.addShop(new Shop(shopId, userName, shopDto.shopName, shopDto.bankDetails, shopDto.shopAddress));
         return shopId;
     }
 
@@ -520,7 +520,24 @@ public class ShopFacade {
         shop.addShopRating(rating);
     }
 
-    // returns the shop bank details if exists, else returns null
+    /**
+     * Returns the shop name if exists, else returns null.
+     * @param shopId
+     * @return
+     */
+    public String getShopName(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopName();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the shop bank details if exists, else returns null.
+     * @param shopId
+     * @return
+     */
     public String getShopBankDetails(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
@@ -529,7 +546,11 @@ public class ShopFacade {
         return null;
     }
 
-    // returns the shop address if exists, else returns null
+    /**
+     * Returns the shop address if exists, else returns null.
+     * @param shopId
+     * @return
+     */
     public String getShopAddress(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
@@ -538,6 +559,11 @@ public class ShopFacade {
         return null;
     }
 
+    /**
+     * Returns all the products in a shop by its ID.
+     * @param shopId
+     * @return
+     */
     public List<Product> getAllProductsInShopByID(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {

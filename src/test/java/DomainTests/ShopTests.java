@@ -41,7 +41,7 @@ public class ShopTests {
     public void testCheckIfHasRole_WhenUsernameIsNull_ReturnsFalse() throws StockMarketException {
         // Arrange
         String username = null;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         boolean result = shop.checkIfHasRole(username);
@@ -54,7 +54,7 @@ public class ShopTests {
     public void testCheckIfHasRole_WhenUsernameDoesNotExist_ReturnsFalse() throws StockMarketException {
         // Arrange
         String username = "nonExistingUser";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         boolean result = shop.checkIfHasRole(username);
@@ -67,7 +67,7 @@ public class ShopTests {
     public void testCheckIfHasRole_WhenUsernameExists_ReturnsTrue() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         boolean result = shop.checkIfHasRole(username);
@@ -81,7 +81,7 @@ public class ShopTests {
         // Arrange
         boolean result = true;
         String username = null;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         try{
             // Act
             shop.checkPermission(username, Permission.ADD_PRODUCT); 
@@ -101,7 +101,7 @@ public class ShopTests {
         // Arrange
         boolean result = true;
         String username = "nonExistingUser";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         try
         {
             // Act
@@ -121,7 +121,7 @@ public class ShopTests {
         // Arrange
         boolean result = true;
         String username = "user1";
-        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "founder", "bank1", "adderss1");
         try{
             // Act
             shop.checkPermission(username, Permission.ADD_PRODUCT);
@@ -144,7 +144,7 @@ public class ShopTests {
         // Arrange
         boolean result = true;
         String username = "user1";
-        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "founder", "bank1", "adderss1");
         try{
             // Act
             shop.checkPermission(username, Permission.ADD_PRODUCT);
@@ -163,7 +163,7 @@ public class ShopTests {
     public void testCheckPermission_WhenUsernameExistsAndHasPermission_ReturnsTrue() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         boolean result = shop.checkPermission(username, Permission.ADD_PRODUCT);
@@ -179,7 +179,7 @@ public class ShopTests {
         String username = null;
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         try{
             // Act
             shop.checkAtLeastOnePermission(username, permissions);
@@ -201,7 +201,7 @@ public class ShopTests {
         String username = "nonExistingUser";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         try{
             // Act
@@ -224,7 +224,7 @@ public class ShopTests {
         String username = "user1";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.DELETE_PRODUCT);
-        Shop shop = new Shop(1, "founder", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "founder", "bank1", "adderss1");
            
         try{
             // Act
@@ -246,7 +246,7 @@ public class ShopTests {
         String username = "user1";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         boolean result = shop.checkAtLeastOnePermission(username, permissions);
@@ -262,7 +262,7 @@ public class ShopTests {
         String newManagerUserName = "newManager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         shop.AppointManager(username, newManagerUserName, permissions);
@@ -283,7 +283,7 @@ public class ShopTests {
         String newManagerUserName = "newManager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act & Assert
         assertThrows(PermissionException.class, () -> {
@@ -298,7 +298,7 @@ public class ShopTests {
         String newManagerUserName = "existingManager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         // Add the existing manager to the shop
         shop.AppointManager(username, newManagerUserName, permissions);
         
@@ -314,7 +314,7 @@ public class ShopTests {
         String username = "user1";
         String newManagerUserName = "newManager";
         Set<Permission> permissions = new HashSet<>();
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act & Assert
         assertThrows(PermissionException.class, () -> {
@@ -329,7 +329,7 @@ public class ShopTests {
         String newManagerUserName = "newManager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.OWNER);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act & Assert
         assertThrows(PermissionException.class, () -> {
@@ -342,7 +342,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "newOwner";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act
         shop.AppointOwner(username, newOwnerUserName);
@@ -362,7 +362,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "newOwner";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         
         // Act & Assert
         assertThrows(PermissionException.class, () -> {
@@ -375,7 +375,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "existingOwner";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         // Add the existing owner to the shop
         shop.AppointOwner(username, newOwnerUserName);
         
@@ -393,7 +393,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String newOwnerUserName = "newOwner";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         // Add the new owner as a manager
         shop.AppointManager(username, newOwnerUserName, new HashSet<>());
         
@@ -409,7 +409,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -424,7 +424,7 @@ public class ShopTests {
         String userRole = null;
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -438,7 +438,7 @@ public class ShopTests {
         String username = "user1";
         String userRole = "manager";
         Set<Permission> permissions = null;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -453,7 +453,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -468,7 +468,7 @@ public class ShopTests {
         String userRole = "invalidRole";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -483,7 +483,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -501,7 +501,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         // Appoint the user as a manager
         shop.AppointManager(username, username, new HashSet<>());
     
@@ -522,7 +522,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
     
         // Act
@@ -539,7 +539,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
     
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -556,7 +556,7 @@ public class ShopTests {
         String userRole = "nonExistingRole";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
     
         // Act & Assert
@@ -574,7 +574,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
     
         // Act & Assert
@@ -592,7 +592,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
     
         // Act & Assert
@@ -609,7 +609,7 @@ public class ShopTests {
         String username = "user1";
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
     
         // Act
@@ -629,7 +629,7 @@ public class ShopTests {
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.DELETE_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
         shop.AppointOwner(username, "owner");
     
@@ -648,7 +648,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -663,7 +663,7 @@ public class ShopTests {
         String userRole = null;
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -677,7 +677,7 @@ public class ShopTests {
         String username = "user1";
         String userRole = "manager";
         Set<Permission> permissions = null;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -692,7 +692,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -707,7 +707,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -724,7 +724,7 @@ public class ShopTests {
         String userRole = "nonExistingRole";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
 
         // Act & Assert
@@ -742,7 +742,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
 
         // Act & Assert
@@ -760,7 +760,7 @@ public class ShopTests {
         String userRole = "manager";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
 
         // Act & Assert
@@ -774,7 +774,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = null;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -787,7 +787,7 @@ public class ShopTests {
         // Arrange
         String username = "nonExistingUser";
         String userRole = "manager";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -800,7 +800,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = "manager";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -815,7 +815,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = "nonExistingRole";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
 
         // Act & Assert
@@ -831,7 +831,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = "manager";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
 
         // Act & Assert
@@ -847,7 +847,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = "manager";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
         shop.AppointOwner(username, "owner");
 
@@ -865,7 +865,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         String userRole = "manager";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, userRole, new HashSet<>());
 
         // Act
@@ -879,7 +879,7 @@ public class ShopTests {
     public void testResign_whenUserIsOwner_ShouldThrowPermissionException() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointOwner(username, "owner");
 
         // Act & Assert
@@ -892,7 +892,7 @@ public class ShopTests {
     public void testResign_whenUserDoesNotExist_ShouldThrowShopException() throws StockMarketException {
         // Arrange
         String username = "nonExistingUser";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(ShopException.class, () -> {
@@ -906,7 +906,7 @@ public class ShopTests {
     public void testResign_whenUserIsManager_ShouldResign() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
 
         // Act
@@ -922,7 +922,7 @@ public class ShopTests {
     public void testResign_whenUserIsManagerAndHasPermissions_ShouldRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
         shop.modifyPermissions(username, "manager", new HashSet<>());
 
@@ -939,7 +939,7 @@ public class ShopTests {
     public void testResign_whenUserIsManagerAndHasRole_ShouldFireRole() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
 
         // Act
@@ -955,7 +955,7 @@ public class ShopTests {
     public void testResign_whenUserIsManagerAndHasRoleAndPermissions_ShouldFireRoleAndRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
         shop.modifyPermissions(username, "manager", new HashSet<>());
 
@@ -973,7 +973,7 @@ public class ShopTests {
     public void testResign_whenUserIsManagerAndHasRoleAndPermissionsAndIsOwner_ShouldFireRoleAndRemovePermissions() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         shop.AppointManager(username, "manager", new HashSet<>());
         shop.modifyPermissions(username, "manager", new HashSet<>());
         shop.AppointOwner(username, "owner");
@@ -990,7 +990,7 @@ public class ShopTests {
     public void testAddShopRating_whenRatingIsNegative_ShouldThrowIllegalArgumentException() throws StockMarketException {
         // Arrange
         int rating = -1;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
@@ -1002,7 +1002,7 @@ public class ShopTests {
     public void testAddShopRating_whenRatingIsPositive_ShouldAddRating() throws StockMarketException {
         // Arrange
         int rating = 5;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act
         shop.addShopRating(rating);
@@ -1015,7 +1015,7 @@ public class ShopTests {
     public void testAddShopRating_whenRatingIsAboveFive_ShouldThrowIllegalArgumentException() throws StockMarketException {
         // Arrange
         int rating = 6;
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
@@ -1030,7 +1030,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.DELETE_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1046,7 +1046,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1063,7 +1063,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1080,7 +1080,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.DELETE_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1095,7 +1095,7 @@ public class ShopTests {
     public void testUpdateProductQuantity_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1113,7 +1113,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1129,7 +1129,7 @@ public class ShopTests {
     @Test
     public void testGetDiscountsOfProduct_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertThrows(Exception.class, () -> {
@@ -1142,7 +1142,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1160,7 +1160,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
@@ -1184,7 +1184,7 @@ public class ShopTests {
         String username = "user1";
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
         assertTrue(shop.checkAllPermission(username, permissions));
@@ -1198,7 +1198,7 @@ public class ShopTests {
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.DELETE_PRODUCT);
-        Shop shop = new Shop(1, usernameFounder, "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "usernameFounder", "bank1", "adderss1");
         shop.AppointManager(usernameFounder, username, new HashSet<Permission>() {{
             add(Permission.ADD_PRODUCT);
         }});
@@ -1212,7 +1212,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
@@ -1229,7 +1229,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
@@ -1245,7 +1245,7 @@ public class ShopTests {
     public void testRemoveDiscount_whenDiscountDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
         shop.AppointManager(username, "manager", permissions);
@@ -1261,7 +1261,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
         shop.AppointManager(username, "manager", permissions);
@@ -1279,7 +1279,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
         shop.AppointManager(username, "manager", permissions);
@@ -1295,7 +1295,7 @@ public class ShopTests {
     @Test
     public void testGetProductsByName_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act
         List<Product> products = shop.getProductsByName("product1");
@@ -1309,7 +1309,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
-        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);

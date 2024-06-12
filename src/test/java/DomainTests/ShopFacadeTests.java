@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Product;
@@ -63,10 +62,10 @@ public class ShopFacadeTests {
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
-        _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
-        _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
-        _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
-        _shop4 = new ShopDto("bank4", "addresss4");
+        _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
+        _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
+        _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
+        _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
         _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);

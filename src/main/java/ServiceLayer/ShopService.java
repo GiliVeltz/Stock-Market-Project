@@ -1133,7 +1133,7 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 if (_shopFacade.isShopIdExist(shopId)) {
                     Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
-                    ShopDto shopDto = new ShopDto(_shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
                     List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
                     if (products != null && !products.isEmpty()) {
                         List<ProductDto> productDtoList = new ArrayList<>();
