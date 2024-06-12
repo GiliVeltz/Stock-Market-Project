@@ -243,7 +243,7 @@ public class ShopFacadeTests {
 
     }
 
-    @Disabled
+
     @Test
     public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
