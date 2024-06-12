@@ -1,6 +1,8 @@
 package ServiceLayer;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -173,29 +175,25 @@ public class ShopService {
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName he name of the product.
-     * @return A response indicating the success of the operation and some products'
-     *         deatails or failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
     public Response searchProductInShopByName(String token, Integer shopId, String productName) {
-        // TODO: return product dtos here instead of just a string (so it will be easy
-        // to render in UI)
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
                 if (products != null && !products.isEmpty()) {
-                    StringBuilder result = new StringBuilder();
-                    result.append("Products named ").append(productName).append(" were found!:");
+                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        Integer shopID = entry.getKey();
-                        List<Product> productList = entry.getValue();
-                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
-                        for (Product product : productList) {
-                            result.append(product.toString()).append("\n");
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product : entry.getValue()) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
                         }
+                        productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(result.toString());
+                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
                 } else {
                     response.setReturnValue(
@@ -219,8 +217,7 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation and some products'
-     *         deatails or failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
     public Response searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
@@ -229,18 +226,16 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
                 if (products != null && !products.isEmpty()) {
-                    StringBuilder result = new StringBuilder();
-                    result.append("Products in the category of ").append(productCategory.toString())
-                            .append(" were found!:");
+                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        Integer shopID = entry.getKey();
-                        List<Product> productList = entry.getValue();
-                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
-                        for (Product product : productList) {
-                            result.append(product.toString()).append("\n");
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product : entry.getValue()) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
                         }
+                        productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(result.toString());
+                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the category of %s were found in %s",
                             productCategory.toString(), shopIDString));
                 } else {
@@ -267,8 +262,7 @@ public class ShopService {
      * @param shopId   The ID of the shop to search in OR null to search in all
      *                 shops.
      * @param keywords The list of keywords.
-     * @return A response indicating the success of the operation and some products'
-     *         deatails or failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
     public Response searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
         Response response = new Response();
@@ -283,18 +277,16 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
                 if (products != null && !products.isEmpty()) {
-                    StringBuilder result = new StringBuilder();
-                    result.append("Products taged by one of the keywords: ").append(keywordsString)
-                            .append(" were found!:");
+                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        Integer shopID = entry.getKey();
-                        List<Product> productList = entry.getValue();
-                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
-                        for (Product product : productList) {
-                            result.append(product.toString()).append("\n");
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product : entry.getValue()) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
                         }
+                        productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(result.toString());
+                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
                             shopIDString));
                 } else {
@@ -323,8 +315,7 @@ public class ShopService {
      *                 shops.
      * @param minPrice The minimum price of the product.
      * @param maxPrice The maximum price of the product.
-     * @return A response indicating the success of the operation and some products'
-     *         deatails or failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
     public Response searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice) {
         Response response = new Response();
@@ -334,18 +325,16 @@ public class ShopService {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
                 if (products != null && !products.isEmpty()) {
-                    StringBuilder result = new StringBuilder();
-                    result.append("Products in the price range of ")
-                            .append(minPrice.toString() + " - " + maxPrice.toString()).append(" were found!:");
+                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        Integer shopID = entry.getKey();
-                        List<Product> productList = entry.getValue();
-                        result.append("\n").append("Shop ID: ").append(shopID).append("\n");
-                        for (Product product : productList) {
-                            result.append(product.toString()).append("\n");
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product : entry.getValue()) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
                         }
+                        productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(result.toString());
+                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));
                 } else {
@@ -366,6 +355,12 @@ public class ShopService {
         return response;
     }
 
+    /**
+     * Checks if the given user is the owner of the given shop.
+     * @param shopId
+     * @param userId
+     * @return
+     */
     public Response isShopOwner(Integer shopId, String userId) {
         Response response = new Response();
         try {
