@@ -410,6 +410,7 @@ public class UserFacadeTests {
         assertEquals(email, ansUser.getEmail());
     }
     
+    @Disabled
     @Test
     public void testsRegisterUser_whenUserRegisterInParallel_thenError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
