@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.atmosphere.websocket.WebSocket;
+
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
@@ -24,6 +26,7 @@ import Exceptions.RoleException;
 import Exceptions.ShopException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
+import Server.notifications.WebSocketServer;
 import enums.Category;
 import enums.Permission;
 
@@ -90,7 +93,7 @@ public class Shop {
     public boolean isShopClosed() {
         return _isClosed;
     }
-    
+
     public void setProductPrice(int productId, double price) {
         _productMap.get(productId).setPrice(price);
     }
@@ -123,6 +126,10 @@ public class Shop {
         return _userToRole.get(username);
     }
 
+    public Map<String, Role> getUserToRoleMap() {
+        return _userToRole;
+    }
+
     /**
      * Check if a user has a specific permission to do an action.
      * 
@@ -148,13 +155,14 @@ public class Shop {
     public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
         // check if the product exists
         if (!_productMap.containsKey(productId)) {
-            logger.log(Level.SEVERE, "Shop - getDiscountsOfProduct: Error while trying to get discounts of product with id: "
-                    + productId + " from shop with id " + _shopId);
+            logger.log(Level.SEVERE,
+                    "Shop - getDiscountsOfProduct: Error while trying to get discounts of product with id: "
+                            + productId + " from shop with id " + _shopId);
             throw new ProductDoesNotExistsException("Product with ID " + productId + " does not exist.");
         }
-        
+
         Map<Integer, Discount> productDiscounts = new HashMap<>();
-         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+        for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
             if (new Date().after(entry.getValue().getExpirationDate())) {
                 removeDiscount(_nextDiscountId);
             } else if (entry.getValue().getParticipatingProduct() == productId) {
@@ -601,7 +609,7 @@ public class Shop {
         if (!_discounts.containsKey(discountId)) {
             throw new StockMarketException("Discount does not exist, cannot remove discount.");
         }
-        
+
         _discounts.remove(discountId);
     }
 
@@ -691,22 +699,6 @@ public class Shop {
         return isOwnerOrFounder(role);
     }
 
-    // before removing the shop send notificstion to all relevasnt users
-    public void notifyRemoveShop() {
-        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
-            String userName = entry.getKey();
-            // TODO: StoreClosedAlert();
-        }
-    }
-
-    // before reopening the shop send notificstion to all relevasnt users
-    public void notifyReOpenShop() {
-        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
-            String userName = entry.getKey();
-            // TODO: StoreReOpenAlert();
-        }
-    }
-
     public String getBankDetails() {
         return _bankDetails;
     }
@@ -716,15 +708,14 @@ public class Shop {
     }
 
     public void addProductRating(Integer productId, Integer rating) throws StockMarketException {
-        if(!isProductExist(productId))
+        if (!isProductExist(productId))
             throw new StockMarketException(String.format("Product ID: %d doesn't exist.", productId));
 
         Product product = _productMap.get(productId);
         product.addProductRating(rating);
     }
 
-    public Double getProductRating(Integer productId)
-    {
+    public Double getProductRating(Integer productId) {
         Product product = _productMap.get(productId);
         return product.getProductRating();
     }
@@ -748,7 +739,8 @@ public class Shop {
         return false;
     }
 
-    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws StockMarketException {
+    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn)
+            throws StockMarketException {
         try {
             if (!checkPermission(username, Permission.ADD_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
@@ -758,10 +750,11 @@ public class Shop {
                         String.format("User: %s does not have permission to Update product: %d", username, productId));
             }
 
-            if(isShopClosed()){
-                logger.log(Level.SEVERE, String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
+            if (isShopClosed()) {
+                logger.log(Level.SEVERE,
+                        String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
                 throw new ShopException(
-                    String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", _shopId, productId));
             }
 
             isProductExist(productId);
@@ -868,7 +861,8 @@ public class Shop {
      * @param productId The id of the product to remove the rule from.
      * @throws StockMarketException
      */
-    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId) throws StockMarketException {
+    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId)
+            throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromProductPolicy: User " + username
                 + " trying to remove rule from product policy of shop with id: " + _shopId);
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
@@ -885,8 +879,7 @@ public class Shop {
     public String getProductPolicyInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductPolicyInfo();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -894,7 +887,8 @@ public class Shop {
     public String getShopDiscountsInfo() {
         StringBuilder discountsBuilder = new StringBuilder();
         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
-            discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+            discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ")
+                    .append(entry.getValue().toString()).append("\n");
         }
         return discountsBuilder.toString();
     }
@@ -904,34 +898,67 @@ public class Shop {
         if (isProductExist(productId)) {
             StringBuilder discountsBuilder = new StringBuilder();
             for (Map.Entry<Integer, Discount> entry : getDiscountsOfProduct(productId).entrySet()) {
-                discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ").append(entry.getValue().toString()).append("\n");
+                discountsBuilder.append("Discount ID: ").append(entry.getKey()).append(" | Discount: ")
+                        .append(entry.getValue().toString()).append("\n");
             }
             return discountsBuilder.toString();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public String getShopGeneralInfo() {
-        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress + " | Shop Rating: " + _shopRating;
+        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress
+                + " | Shop Rating: " + _shopRating;
     }
 
     public String getProductGeneralInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductGeneralInfo();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
-    // return the anoumt of product 
-    public Integer getAmoutOfProductInShop() { return _productMap.size();}
+    // return the anoumt of product
+    public Integer getAmoutOfProductInShop() {
+        return _productMap.size();
+    }
 
     // get all discount in the shop
-    public Map<Integer, Discount> getDiscounts() { return _discounts; }
+    public Map<Integer, Discount> getDiscounts() {
+        return _discounts;
+    }
 
-    //TODO: maybe add policy facade to implement the policy logic.
+    public void notifyBuyProduct(String username) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            WebSocketServer.getInstance().sendMessage(owner,
+                    "hello : "+ owner + ", User : " + username + " bought a product from your shop with id: " + _shopId);
+        }
+    }
+
+    // before removing the shop send notificstion to all relevasnt users
+    public void notifyRemoveShop(String username) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            // TODO: StoreClosedAlert();
+            WebSocketServer.getInstance().sendMessage(owner,
+                    "hello : " + owner + ", Shop with id: " + _shopId + " closed by " + username);
+        }
+    }
+
+    // before reopening the shop send notificstion to all relevasnt users
+    public void notifyReOpenShop(String username) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            // TODO: StoreReOpenAlert();
+            WebSocketServer.getInstance().sendMessage(owner,
+                    "hello : " + owner + ", Shop with id: " + _shopId + " opened again by user " + username);
+
+        }
+    }
+
+    // TODO: maybe add policy facade to implement the policy logic.
 
 }

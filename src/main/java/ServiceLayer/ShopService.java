@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
@@ -25,6 +26,8 @@ public class ShopService {
     private ShopFacade _shopFacade;
     private TokenService _tokenService;
     private UserFacade _userFacade;
+    // private AlertService _alertService;
+
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
@@ -33,6 +36,13 @@ public class ShopService {
         _tokenService = tokenService;
         _userFacade = userFacade;
     }
+    // @Autowired
+    // public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade, AlertService alertService) {
+    //     _shopFacade = shopFacade;
+    //     _tokenService = tokenService;
+    //     _userFacade = userFacade;
+    //     _alertService = alertService;
+    // }
 
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
@@ -117,6 +127,8 @@ public class ShopService {
                 String userName = _tokenService.extractUsername(token);
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.reOpenShop(shopId, userName);
+
+                    
                     logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
                 } else {
                     throw new Exception("User is not register.");

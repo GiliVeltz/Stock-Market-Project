@@ -9,33 +9,33 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 
-import Server.notifications.WebSocketHandler;
+import Server.notifications.WebSocketServer;
 
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    // private final WebSocketHandler webSocketHandler;
+    // private final WebSocketHandler webSocketServer;
     // private final SimpMessagingTemplate messagingTemplate;
 
-    // public WebSocketConfig(WebSocketHandler webSocketHandler, SimpMessagingTemplate messagingTemplate) {
-    //     this.webSocketHandler = webSocketHandler;
+    // public WebSocketConfig(WebSocketHandler webSocketServer, SimpMessagingTemplate messagingTemplate) {
+    //     this.webSocketServer = webSocketServer;
     //     this.messagingTemplate = messagingTemplate;
     // }
 
     // @Override
     // public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    //     registry.addHandler(webSocketHandler, "/ws/server").setAllowedOrigins("*");
+    //     registry.addHandler(webSocketServer, "/ws/server").setAllowedOrigins("*");
     // }
 
-    private final WebSocketHandler webSocketHandler;
+    private final WebSocketServer webSocketServer;
 
-    public WebSocketConfig(WebSocketHandler webSocketHandler) {
-        this.webSocketHandler = webSocketHandler;
+    public WebSocketConfig(WebSocketServer webSocketServer) {
+        this.webSocketServer = webSocketServer;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/websocket").setAllowedOrigins("*");
+        registry.addHandler(webSocketServer, "/websocket").setAllowedOrigins("*");
     }
 }

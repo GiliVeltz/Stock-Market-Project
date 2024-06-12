@@ -4,24 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
+
 import UI.View.LandingPageView;
-import UI.WebSocketClient;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+
 public class LandingPagePresenter {
 
     private final LandingPageView view;
     private final String serverPort = "8080";
-    private final WebSocketClient webSocketClient;
 
-    @Autowired
-    public LandingPagePresenter(LandingPageView view, WebSocketClient webSocketClient) {
+    public LandingPagePresenter(LandingPageView view) {
         this.view = view;
-        this.webSocketClient = webSocketClient;
     }
 
     public void sendEnterSystemRequest() {
@@ -39,9 +35,6 @@ public class LandingPagePresenter {
 
             // Store the token in local storage using JavaScript
             UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
-
-            // Connect using WebSocketClient
-            webSocketClient.connect(token);
 
             // Optionally, you can handle the response here
             System.out.println("Extracted Token: " + token);

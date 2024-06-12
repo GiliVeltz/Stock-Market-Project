@@ -116,6 +116,19 @@ public class WebSocketHandlerBU extends TextWebSocketHandler {
         return true; // Replace with actual validation
     }
 
+    //send message to a specific client username
+    public void sendMessageToClient(String clientToken, String message) {
+        WebSocketSession session = sessions.get(clientToken);
+        if (session != null && session.isOpen()) {
+            try {
+                session.sendMessage(new TextMessage(message));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     // private static final ConcurrentHashMap<String, WebSocketSession> clients =
     // new ConcurrentHashMap<>();

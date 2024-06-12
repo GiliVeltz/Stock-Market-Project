@@ -21,9 +21,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class WebSocketHandler extends TextWebSocketHandler {
+public class WebSocketServer extends TextWebSocketHandler {
     @Autowired
     private TokenServiceCopy tokenService;
+     // Singleton instance
+     private static WebSocketServer instance;
     // assumption messages as aformat of:"targetUsername:message"
 
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
@@ -31,6 +33,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                                                                              // guest -> <token,session>
     private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
                                                                                                // messageQueue>
+
+                  // Private constructor to prevent instantiation
+    private WebSocketServer() {
+        // Initialization code
+    }
+
+    // Method to get singleton instance
+    public static synchronized WebSocketServer getInstance() {
+        if (instance == null) {
+            instance = new WebSocketServer();
+        }
+        return instance;
+    }                                                                               
 
     /*
      * This method is called after the connection is established. It validates the
@@ -84,6 +99,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+   
+    
     /**
      * This method is called after the connection is closed. It removes the session
      * from the sessions map.
@@ -120,7 +137,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     // Method to broadcast message to all clients 
-    private void broadcastMessage(String message) {
+    public void broadcastMessage(String message) {
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
             WebSocketSession session = entry.getValue();
             if (session.isOpen()) {
@@ -134,6 +151,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    //method to send message to a specific client if a registered user and not logged in that add to its queue
+    public void sendMessage(String username, String message) {
+        WebSocketSession session = sessions.get(username);
+        if (session != null && session.isOpen()) {
+            try {
+                session.sendMessage(new TextMessage(message));
+                System.out.println("Sent message to: " + username);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Queue message for later delivery
+            messageQueues.computeIfAbsent(username, k -> new ConcurrentLinkedQueue<>()).add(message);
+            System.out.println("Client not found or not open, message queued for : " + username);
+        }
+    }
+    
     private boolean validateToken(String token) {
     //    return tokenService.validateToken(token);
     return true;

@@ -1,5 +1,10 @@
-package Domain.Alerts;
+// package Domain.Alerts;
 
-public class StoreReOpenedAlert {
+// import java.util.List;
+
+// public class StoreReOpenedAlert implements Alert {
+
+//     public StoreReOpenedAlert(String fromUser, List<User> users,
+
     
-}
+// }
