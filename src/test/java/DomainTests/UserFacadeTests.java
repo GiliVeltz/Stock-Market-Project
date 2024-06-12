@@ -458,7 +458,6 @@ public class UserFacadeTests {
         }
         
         if (!exceptionCaught.get()) {
-            List<User> users = _userFacadeUnderTest.get_registeredUsers();
             fail("Error should raise when user register with the same userName");
         }
 

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -243,7 +245,6 @@ public class ShopFacadeTests {
 
     }
 
-    @Disabled
     @Test
     public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
@@ -251,13 +252,18 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
         ShopDto _shopDto1 = new ShopDto("bank1", "addresss1");
         ShopDto _shopDto2 = new ShopDto("bank2", "addresss2");
-        
+        CountDownLatch latch = new CountDownLatch(2);
+        AtomicBoolean exceptionCaught = new AtomicBoolean(true);
+
+
         // Task for first thread
         Runnable task1 = () -> {
             try {
                 _ShopFacadeUnderTests.openNewShop("Hozier",_shopDto1);
             } catch (StockMarketException e) {
-                fail(e.getMessage());
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
             }
         };
 
@@ -266,7 +272,9 @@ public class ShopFacadeTests {
             try {
                 _ShopFacadeUnderTests.openNewShop("KALEO",_shopDto2);
             } catch (StockMarketException e) {
-                fail(e.getMessage());
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
             }
         };
 
@@ -274,10 +282,20 @@ public class ShopFacadeTests {
         executor.submit(task1);
         executor.submit(task2);
 
+        try {
+            latch.await(); // wait for both tasks to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail("Test interrupted");
+        } finally {
+            executor.shutdown(); // shut down executor service
+        }
         
-        executor.shutdown(); // shut down executor service
+        if (!exceptionCaught.get()) {
+            fail("Error should raise");
+        }
+
         List<Shop> shops = _ShopFacadeUnderTests.getAllShops();
-        
         for(Shop shop1 : shops)
         {
             for(Shop shop2 : shops)
@@ -288,7 +306,7 @@ public class ShopFacadeTests {
 
     }
 
-
+    @Disabled
     @Test
     public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() {
         // Arrange
