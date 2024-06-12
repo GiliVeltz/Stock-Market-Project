@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -14,6 +19,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import Domain.Product;
 import Domain.Shop;
+import Domain.Discounts.Discount;
+import Domain.Discounts.PrecentageDiscount;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
 import Exceptions.ShopException;
@@ -1024,7 +1031,7 @@ public class ShopTests {
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        Set<Permission> permissions = new HashSet<>();
+        Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.DELETE_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
 
@@ -1040,7 +1047,7 @@ public class ShopTests {
         String username = "user1";
         Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "user1", "bank1", "adderss1");
-        Set<Permission> permissions = new HashSet<>();
+        Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         shop.AppointManager(username, "manager", permissions);
 
@@ -1117,5 +1124,201 @@ public class ShopTests {
 
         // Assert
         assertEquals(50, shop.getShopProducts().get(0).getProductQuantity());
+    }
+
+    @Test
+    public void testGetDiscountsOfProduct_whenProductDoesNotExist_thenFails() throws StockMarketException {
+        // Arrange
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> {
+            shop.getDiscountsOfProduct(1);
+        });
+    }
+
+    @Test
+    public void testGetDiscountsOfProduct_whenProductExists_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addProductToShop(username, product);
+
+        // Act
+        Map<Integer, Discount> discounts = shop.getDiscountsOfProduct(product.getProductId());
+
+        // Assert
+        assertEquals(0, discounts.size());
+    }
+
+    @Test
+    public void testGetDiscountsOfProduct_whenDiscountsExist_thenSucceeds() throws StockMarketException {    
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addProductToShop(username, product);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2025, Calendar.OCTOBER, 10);
+        Date date = calendar.getTime();
+        PrecentageDiscount discount = new PrecentageDiscount(date, 0.2, 1);
+        shop.addDiscount(discount);
+
+        // Act
+        Map<Integer, Discount> discounts = shop.getDiscountsOfProduct(product.getProductId());
+
+        // Assert
+        assertEquals(1, discounts.size());   
+    }    
+
+    @Test
+    public void testCheckAllPermission_whenUserHasPermission_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_PRODUCT);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+
+        // Act & Assert
+        assertTrue(shop.checkAllPermission(username, permissions));
+    }
+
+    @Test
+    public void testCheckAllPermission_whenUserHasSomePermissions_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        String usernameFounder = "usernameFounder";
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_PRODUCT);
+        permissions.add(Permission.DELETE_PRODUCT);
+        Shop shop = new Shop(1, usernameFounder, "bank1", "adderss1");
+        shop.AppointManager(usernameFounder, username, new HashSet<Permission>() {{
+            add(Permission.ADD_PRODUCT);
+        }});
+
+        // Act & Assert
+        assertFalse(shop.checkAllPermission(username, permissions));
+    }
+
+    @Test
+    public void testAddDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        shop.AppointManager(username, "manager", permissions);
+
+        // Act
+        shop.addDiscount(discount);
+
+        // Assert
+        assertEquals(1, shop.getDiscounts().size());
+    }
+
+    @Test
+    public void testAddDiscount_whenDiscountAlreadyExists_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addDiscount(discount);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> {
+            shop.addDiscount(discount);
+        });
+    }
+
+    @Test
+    public void testRemoveDiscount_whenDiscountDoesNotExist_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        shop.AppointManager(username, "manager", permissions);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> {
+            shop.removeDiscount(0);
+        });
+    }
+
+    @Test
+    public void testRemoveDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addDiscount(discount);
+
+        // Act
+        shop.removeDiscount(0);
+
+        // Assert
+        assertEquals(0, shop.getDiscounts().size());
+    }
+
+    @Test
+    public void testRemoveDiscount_whenUserHasPermissionAndDiscountExists_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addDiscount(discount);
+
+        // Act
+        shop.removeDiscount(0);
+
+        // Assert
+        assertEquals(0, shop.getDiscounts().size());
+    }
+
+    @Test
+    public void testGetProductsByName_whenProductDoesNotExist_thenFails() throws StockMarketException {
+        // Arrange
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+
+        // Act
+        List<Product> products = shop.getProductsByName("product1");
+
+        // Assert
+        assertEquals(0, products.size());
+    }
+
+    @Test
+    public void testGetProductsByName_whenProductExists_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.ADD_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addProductToShop(username, product);
+    
+        // Act
+        List<Product> products = shop.getProductsByName("product1");
+    
+        // Assert
+        assertEquals(1, products.size());
     }
 }

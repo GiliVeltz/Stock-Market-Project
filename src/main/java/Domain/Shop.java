@@ -146,6 +146,13 @@ public class Shop {
     }
 
     public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
+        // check if the product exists
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, "Shop - getDiscountsOfProduct: Error while trying to get discounts of product with id: "
+                    + productId + " from shop with id " + _shopId);
+            throw new ProductDoesNotExistsException("Product with ID " + productId + " does not exist.");
+        }
+        
         Map<Integer, Discount> productDiscounts = new HashMap<>();
          for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
             if (new Date().after(entry.getValue().getExpirationDate())) {
@@ -205,7 +212,6 @@ public class Shop {
 
     public double getProductPriceById(Integer product) {
         return _productMap.get(product).getPrice();
-
     }
 
     public boolean isOwnerOrFounder(Role role) {
@@ -357,66 +363,6 @@ public class Shop {
                         + permissions
                         + " to user " + userRole + " in the shop with id " + _shopId);
     }
-
-    // /**
-    // * Delete permissions from manager in the shop.
-    // *
-    // * @param username the username that wants to delete the permissions.
-    // * @param userRole the username to delete the permissions from.
-    // * @param permissions the set of permissions to add.
-    // * @implNote if some of the permissions already exist, they are ignored.
-    // * @throws ShopException
-    // * @throws PermissionException
-    // * @throws RoleException
-    // */
-    // public void deletePermissions(String username, String userRole,
-    // Set<Permission> permissions)
-    // throws ShopException, PermissionException, RoleException {
-    // logger.log(Level.INFO, "Shop - deletePermissions: " + username + " trying to
-    // delete permissions " + permissions
-    // + " from user " + userRole + " in the shop with id " + _shopId);
-    // if (!checkIfHasRole(username)) {
-    // logger.log(Level.SEVERE,
-    // "Shop - deletePermissions: user " + username + " doesn't have a role in shop
-    // with id " + _shopId);
-    // throw new ShopException("User " + username + " doesn't have a role in this
-    // shop with id " + _shopId);
-    // }
-    // if (!checkIfHasRole(userRole)) {
-    // logger.log(Level.SEVERE,
-    // "Shop - deletePermissions: user " + userRole + " doesn't have a role in shop
-    // with id " + _shopId);
-    // throw new ShopException("User " + userRole + " doesn't have a role in this
-    // shop with id " + _shopId);
-    // }
-    // if (!checkAtLeastOnePermission(username,
-    // EnumSet.of(Permission.FOUNDER, Permission.OWNER,
-    // Permission.REMOVE_PERMISSION))) {
-    // logger.log(Level.SEVERE, "Shop - deletePermissions: user " + username
-    // + " doesn't have permission to delete permissions to other roles in shop with
-    // id " + _shopId);
-    // throw new PermissionException("User " + username
-    // + " doesn't have permission to change permissions in the shop with id " +
-    // _shopId);
-    // }
-    // Role manager = _userToRole.get(userRole);
-    // if (manager.getAppointedBy() != username) {
-    // logger.log(Level.SEVERE, "Shop - deletePermissions: User " + username + "
-    // didn't appoint manager "
-    // + userRole + ". Can't change his permissions.");
-    // throw new PermissionException(
-    // "User " + username + " didn't appoint manager " + userRole + ". Can't change
-    // his permissions.");
-    // }
-    // // All constraints checked
-    // manager.deletePermissions(username, permissions);
-    // if (manager.getPermissions().isEmpty()) {
-    // // TODO: Maybe he is fired? Can ask if he is sure he wants to delete him.
-    // }
-    // logger.log(Level.INFO, "Shop - deletePermissions: " + username + "
-    // successfuly deleted permissions "
-    // + permissions + " to user " + userRole + " in the shop with id " + _shopId);
-    // }
 
     /**
      * Function to fire a manager/owner. All people he assigned fired too.
@@ -628,16 +574,34 @@ public class Shop {
      * @return the ID of the added discount
      */
     public int addDiscount(Discount discount) throws StockMarketException {
+        // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot add discount.");
+        // check if discount is expired
+        if (new Date().after(discount.getExpirationDate())) {
+            throw new StockMarketException("Discount is expired, cannot add discount.");
+        }
+        // check if discount already exists
+        for (Discount d : _discounts.values()) {
+            if (d.equals(discount)) {
+                throw new StockMarketException("Discount already exists, cannot add discount.");
+            }
+        }
+
         int discountId = _nextDiscountId++;
         _discounts.put(discountId, discount);
         return discountId;
     }
 
     public void removeDiscount(int discountId) throws StockMarketException {
+        // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot remove discount.");
+        // check if discount exists
+        if (!_discounts.containsKey(discountId)) {
+            throw new StockMarketException("Discount does not exist, cannot remove discount.");
+        }
+        
         _discounts.remove(discountId);
     }
 
@@ -765,7 +729,7 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws ProductDoesNotExistsException {
+    private Boolean isProductExist(Integer productId) throws StockMarketException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
                     "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",
@@ -773,7 +737,15 @@ public class Shop {
             throw new ProductDoesNotExistsException(String.format("Product: %d does not exist", productId));
         }
         return true;
+    }
 
+    public Boolean isProductNameExist(String productName) {
+        for (Product product : _productMap.values()) {
+            if (product.getProductName().equals(productName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void updateProductQuantity(String username, Integer productId, Integer productAmoutn) throws StockMarketException {
@@ -957,7 +929,9 @@ public class Shop {
     // return the anoumt of product 
     public Integer getAmoutOfProductInShop() { return _productMap.size();}
 
-    //TODO: maybe add policy facade to implement the policy logic.
+    // get all discount in the shop
+    public Map<Integer, Discount> getDiscounts() { return _discounts; }
 
+    //TODO: maybe add policy facade to implement the policy logic.
 
 }

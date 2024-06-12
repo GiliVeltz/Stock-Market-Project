@@ -177,7 +177,7 @@ public interface BridgeInterface {
     @Test
     boolean TestUserEditUsername(String newName, String newPassword, String email);
 
-    // STORE OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // SHOP OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @Test
     boolean testShopOwnerAddProductToShop(String username, String shopId, String productName, String productAmount);
