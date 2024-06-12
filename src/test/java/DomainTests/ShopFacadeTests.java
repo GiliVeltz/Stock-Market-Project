@@ -39,8 +39,6 @@ public class ShopFacadeTests {
     private List<Shop> _shopsList = new ArrayList<>();
 
     // mock fields.
-    @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
 
     @Mock
     private ShoppingBasket _shoppingBasketMock;
@@ -62,7 +60,6 @@ public class ShopFacadeTests {
 
     @BeforeEach
     public void setUp() throws StockMarketException {
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
@@ -601,4 +598,62 @@ public class ShopFacadeTests {
             assertEquals(0, _product2.getProductQuantity());
         }
     }
+
+
+    @Test
+    public void testAddShopRating_whenShopNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 5;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is invalid
+        try {
+            _ShopFacadeUnderTests.addShopRating(shopId, rating);
+            fail("Rating a shop that doesnt exist should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(0, e.getMessage().indexOf("Shop ID:"));
+        }
+    }
+    
+
+    @Test
+    public void testAddShopRating_whenAllValid_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 2;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is valid
+       _ShopFacadeUnderTests.addShopRating(shopId, rating);
+
+        // Assert - Verify that the products are retrieved from the specific shop
+        assertEquals(4, _shop2.getShopRating());
+    }
+
+    
+    @Test
+    public void testAddProductRating_whenAllValid_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 2;
+        Integer productId = 3;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is valid
+       _ShopFacadeUnderTests.addProductRating(shopId, productId, rating);
+
+        // Assert - Verify that the products are retrieved from the specific shop
+        assertEquals(4, _shop2.getProductRating(productId));
+
+
+    }
+
 }

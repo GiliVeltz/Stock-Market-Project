@@ -84,7 +84,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.closeShop(shopId, userName);
                     logger.info(String.format("Shop closed by: %s with Shop ID: %d", userName, shopId));
                 } else {
@@ -96,7 +96,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to close shopID %d. Error: ", shopId, e.getMessage()));
+                    String.format("Failed to close shopID %d. Error: %s", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -115,7 +115,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.reOpenShop(shopId, userName);
                     logger.info(String.format("Shop reopen by: %s with Shop ID: %d", userName, shopId));
                 } else {
@@ -138,15 +138,15 @@ public class ShopService {
      * Adds a product to the specified shop.
      * 
      * @param shopId     The ID of the shop to which the product will be added.
-     * @param userName   The name of the user adding the product.
      * @param productDto The product to be added to the shop.
      * @return A response indicating the success or failure of the operation.
      */
-    public Response addProductToShop(String token, Integer shopId, String userName, ProductDto productDto) {
+    public Response addProductToShop(String token, Integer shopId, ProductDto productDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(userName)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: added by: %s to Shop ID: %d",
                             productDto._productName, userName, shopId));
@@ -158,8 +158,8 @@ public class ShopService {
             }
 
         } catch (Exception e) {
-            response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: ",
-                    productDto._productName, shopId, userName, e.getMessage()));
+            response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
+                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -535,6 +535,14 @@ public class ShopService {
         }
     }
 
+    /**
+     * Removes a discount from a shop.
+     * 
+     * @param token      The session token of the user removing the discount.
+     * @param shopId     The ID of the shop from which the discount will be removed.
+     * @param discountId The ID of the discount to be removed.
+     * @return A response indicating the success or failure of the operation.
+     */
     public Response removeDiscount(String token, int shopId, int discountId) {
         Response resp = new Response();
         try {
@@ -610,11 +618,16 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
+                        if (_userFacade.doesUserExist(newOwnerUsername)) {
                         _shopFacade.addShopOwner(username, shopId, newOwnerUsername);
                         response.setReturnValue(true);
                         logger.info(String.format("New owner %s added to Shop ID: %d", username, shopId));
+                        }
+                        else {
+                            throw new StockMarketException(String.format("newOwnerUsername %s does not exist.", newOwnerUsername));
+                        }
                     } else {
-                        throw new StockMarketException("User does not exist.");
+                        throw new StockMarketException(String.format("User %s does not exist.", username));
                     }
                 } else {
                     throw new StockMarketException("User is not logged in.");
@@ -625,7 +638,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add owner %s to shopID %d. Error: ", newOwnerUsername, shopId,
+                    String.format("Failed to add owner %s to shopID %d. Error: %s", newOwnerUsername, shopId,
                             e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -645,17 +658,20 @@ public class ShopService {
      * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response addShopManager(String token, Integer shopId, String newManagerUsername,
-            Set<String> permissions) {
+    public Response addShopManager(String token, Integer shopId, String newManagerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
-                        _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
-                        response.setReturnValue(true);
-                        logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
+                        if (_userFacade.doesUserExist(newManagerUsername)) {
+                            _shopFacade.addShopManager(username, shopId, newManagerUsername, permissions);
+                            response.setReturnValue(true);
+                            logger.info(String.format("New manager %s added to Shop ID: %d", username, shopId));
+                        } else {
+                            throw new StockMarketException(String.format("newManagerUsername: %s does not exist.", newManagerUsername));
+                        }
                     } else {
                         throw new StockMarketException("User does not exist.");
                     }
@@ -668,7 +684,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to add manager %s to shopID %d. Error: ", newManagerUsername, shopId,
+                    String.format("Failed to add manager %s to shopID %d. Error: %s", newManagerUsername, shopId,
                             e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -767,8 +783,7 @@ public class ShopService {
      * @param permissions     The new set of permissions for the manager.
      * @return A Response object indicating the success or failure of the operation.
      */
-    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername,
-            Set<String> permissions) {
+    public Response modifyManagerPermissions(String token, Integer shopId, String managerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -791,7 +806,7 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format("Failed to modify manager %s permissions in shopID %d. Error: ", managerUsername,
+                    String.format("Failed to modify manager %s permissions in shopID %d. Error: %s", managerUsername,
                             shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -963,23 +978,31 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-
-                String info = _shopFacade.getShopGeneralInfo(shopId);
-                if (info != null && info.length() > 0) {
-                    response.setReturnValue(String.format(
-                            "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
-                    logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    if (_userFacade.doesUserExist(username)) {
+                        String info = _shopFacade.getShopGeneralInfo(shopId);
+                        if (info != null && info.length() > 0) {
+                            response.setReturnValue(String.format(
+                                    "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
+                            logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                        } else {
+                            response.setReturnValue(
+                                    String.format("Shop general information for shop ID %d was not found", shopId));
+                            logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
+                        }
+                    } else {
+                        throw new StockMarketException(String.format("User name %s does not exist.", username));
+                    }
                 } else {
-                    response.setReturnValue(
-                            String.format("Shop general information for shop ID %d was not found", shopId));
-                    logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
+                    throw new StockMarketException(String.format("User is not logged in."));
                 }
             } else {
                 throw new Exception("Invalid session token.");
             }
         } catch (Exception e) {
             response.setErrorMessage(
-                    String.format(String.format("Failed to display shop general information for shop ID %d . Error:",
+                    String.format(String.format("Failed to display shop general information for shop ID %d . Error: %s",
                             shopId, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -1101,6 +1124,4 @@ public class ShopService {
         }
         return response;
     }
-
-
 }
