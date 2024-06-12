@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import Domain.Order;
 import Domain.User;
 import Domain.Authenticators.EmailValidator;
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
@@ -19,20 +18,18 @@ public class UserFacade {
     private static UserFacade _UserFacade;
     private UserRepositoryInterface _userRepository;
     private List<String> _guestIds;
-    private PasswordEncoderUtil _passwordEncoder;
     private EmailValidator _EmailValidator;
 
-    public UserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+    public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
-        _passwordEncoder = passwordEncoder;
         _EmailValidator = new EmailValidator();
     }
 
     // Public method to provide access to the _UserFacade
     public static synchronized UserFacade getUserFacade() {
         if (_UserFacade == null) {
-            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>(), new PasswordEncoderUtil());
+            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
     }
@@ -52,7 +49,7 @@ public class UserFacade {
     public boolean AreCredentialsCorrect(String username, String password) throws StockMarketException {
         User user = getUserByUsername(username);
         if (user != null) {
-            return this._passwordEncoder.matches(password, user.getEncodedPassword());
+            return user.getPassword() == password;
         }
         return false;
     }
