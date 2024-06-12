@@ -23,11 +23,11 @@ public class WebSocketClient {
     public void onOpen(Session session) {
         System.out.println("Connected to server start");
         this.session = session;
-        try {
-            session.getBasicRemote().sendText("Hello Server");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     session.getBasicRemote().sendText("testUser:Hello Server");
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
         System.out.println("Connected to server end");
         
     }

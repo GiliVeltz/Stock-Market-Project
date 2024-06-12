@@ -1,33 +1,53 @@
 package Server.notifications;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import ServiceLayer.TokenService;
+import ServiceLayer.TokenServiceCopy;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
+    @Autowired
+    private TokenServiceCopy tokenService;
+    // assumption messages as aformat of:"targetUsername:message"
 
-    private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
+                                                                                             // <username,session>,
+                                                                                             // guest -> <token,session>
+    private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
+                                                                                               // messageQueue>
 
+    /*
+     * This method is called after the connection is established. It validates the
+     * token and adds the session to the sessions map.
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // Extract token from query parameters
         URI uri = session.getUri();
         String query = uri.getQuery();
         String token = null;
 
-        if (query != null && query.contains("token=")) {
-            token = query.split("token=")[1];
+        if (query != null) {
+            for (String param : query.split("&")) {
+                if (param.startsWith("token=")) {
+                    token = param.split("token=")[1];
+                }
+            }
         }
 
         if (token == null || !validateToken(token)) {
@@ -36,73 +56,77 @@ public class WebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        // Add session to the map with a unique client identifier
-        String clientToken = session.getId(); // In a real application, use a proper client ID based on the token or user
-        sessions.put(clientToken, session);
-        System.out.println("Connected: " + clientToken);
+        String username = tokenService.extractUsername(token);
+        String clientKey = (username != null) ? username : "guest-" + token;
+
+        if (username != null && tokenService.isUserAndLoggedIn(token)) {
+            // User is logged in
+            sessions.put(clientKey, session);
+            System.out.println("Connected: " + clientKey);
+
+            // Send any queued messages sent while user was loggedOut
+            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            while (!queue.isEmpty()) {
+                String message = queue.poll();
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(message));
+                }
+            }
+            messageQueues.remove(username);
+        } else {
+            // User is a guest
+            sessions.put(clientKey, session);
+            System.out.println("Connected: " + clientKey);
+        }
+        if (sessions.size() > 1) {
+            broadcastMessage("Hello all clients!");
+            
+        }
     }
 
+    /**
+     * This method is called after the connection is closed. It removes the session
+     * from the sessions map.
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        // Remove session from the map
-        String clientToken = session.getId();
-        sessions.remove(clientToken);
-        System.out.println("Disconnected: " + clientToken);
+        sessions.values().remove(session);
+        System.out.println("Disconnected: " + session.getId());
     }
 
-    // @Override
-    // protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-    //     System.out.println("Received message from client " + session.getId() + ": " + message.getPayload());
-    //     // Echo the message back to the client
-    //     session.sendMessage(new TextMessage("Server received: " + message.getPayload()));
-    // }
-
+    /*
+     * This method is called when a message is received from the client. The message
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Assuming the message format is "targetClientId:message"
+        // Assuming the message format is "targetUsername:message"
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
-            String targetClientId = parts[0];
+            String targetUsername = parts[0];
             String msg = parts[1];
 
             // Send message to the target client
-            WebSocketSession targetSession = sessions.get(targetClientId);
+            WebSocketSession targetSession = sessions.get(targetUsername);
             if (targetSession != null && targetSession.isOpen()) {
                 targetSession.sendMessage(new TextMessage(msg));
             } else {
-                System.out.println("Client not found or not open: " + targetClientId);
+                // Queue message for later delivery
+                messageQueues.computeIfAbsent(targetUsername, k -> new ConcurrentLinkedQueue<>()).add(msg);
+                System.out.println("Client not found or not open, message queued for : " + targetUsername);
             }
         } else {
             System.out.println("Invalid message format");
         }
     }
 
-
-
-    // @Override
-    // public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status)
-    //         throws Exception {
-    //     sessions.remove(session);
-    //     System.out.println("WebSocket connection closed: " + session.getId());
-    // }
-
-    // public static void broadcastMessage(String message) {
-    //     for (WebSocketSession session : sessions) {
-    //         try {
-    //             session.sendMessage(new TextMessage(message));
-    //         } catch (IOException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    // }
-
-      // Method to broadcast message to all clients (optional)
-      private void broadcastMessage(String message) {
+    // Method to broadcast message to all clients 
+    private void broadcastMessage(String message) {
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
             WebSocketSession session = entry.getValue();
             if (session.isOpen()) {
                 try {
                     session.sendMessage(new TextMessage(message));
+                    System.out.println("Broadcasted message to: " + entry.getKey());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -111,65 +135,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private boolean validateToken(String token) {
-        // Implement your token validation logic here
-        // For example, verify the token with a JWT library or check against a database
-        return true; // Replace with actual validation
+    //    return tokenService.validateToken(token);
+    return true;
     }
-
-
-    // private static final ConcurrentHashMap<String, WebSocketSession> clients =
-    // new ConcurrentHashMap<>();
-    // private static final ConcurrentHashMap<String, List<String>> messageStore =
-    // new ConcurrentHashMap<>();
-
-    // @Override
-    // public void afterConnectionEstablished(WebSocketSession session) throws
-    // Exception {
-    // String clientToken = session.getId();
-    // clients.put(clientToken, session);
-    // System.out.println("Connected: " + clientToken);
-
-    // // Send stored messages if any
-    // if (messageStore.containsKey(clientToken)) {
-    // List<String> messages = messageStore.get(clientToken);
-    // for (String message : messages) {
-    // try {
-    // session.sendMessage(new TextMessage(message));
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // messageStore.remove(clientToken);
-    // }
-    // }
-
-    // @Override
-    // protected void handleTextMessage(WebSocketSession session, TextMessage
-    // message) throws Exception {
-    // System.out.println("Received: " + message.getPayload());
-    // session.sendMessage(new TextMessage("Server received: " +
-    // message.getPayload()));
-    // }
-
-    // @Override
-    // public void afterConnectionClosed(WebSocketSession session, CloseStatus
-    // status) throws Exception {
-    // String clientToken = session.getId();
-    // clients.remove(clientToken);
-    // System.out.println("Session closed: " + clientToken);
-    // }
-
-    // public void sendMessageToClient(String clientToken, String message) {
-    // WebSocketSession session = clients.get(clientToken);
-    // if (session != null && session.isOpen()) {
-    // try {
-    // session.sendMessage(new TextMessage(message));
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // } else {
-    // // Store the message if the client is not connected
-    // messageStore.computeIfAbsent(clientToken, k -> new ArrayList<>()).add(message);
-    // }
-    // }
 }
