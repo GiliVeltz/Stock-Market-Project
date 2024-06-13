@@ -6,17 +6,8 @@ import java.util.Map;
 
 import Exceptions.StockMarketException;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-
-
 // calss that represents an order for the user
-@Entity
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer _orderId;
     private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> 
     private double _totalOrderAmount;
