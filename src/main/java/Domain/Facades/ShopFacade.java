@@ -520,4 +520,20 @@ public class ShopFacade {
         shop.addShopRating(rating);
     }
 
+    /**
+     * Get all the shops that the user has a role in
+     * @param username the user's username
+     * @return the list of shops that the user has a role in
+     * @throws StockMarketException
+     */
+    public List<Integer> getUserShops(String username) throws StockMarketException{
+        List<Integer> shops = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if(shop.checkIfHasRole(username)){
+                shops.add(shop.getShopId());
+            }
+        }
+        return shops;
+    }
+
 }

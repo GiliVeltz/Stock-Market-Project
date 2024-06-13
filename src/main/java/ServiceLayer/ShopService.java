@@ -1119,4 +1119,37 @@ public class ShopService {
         }
         return response;
     }
+
+    /**
+     * Receive the shops which the user has roles in.
+     * @param token the users session token
+     * @return the shops which the user has roles in.
+     */
+    public Response getUserShops(String token) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::getUserShops entring"));
+            if (!_tokenService.validateToken(token)) 
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token)) 
+                throw new StockMarketException("User is not logged in.");
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username))
+                throw new StockMarketException(String.format("User does not exist.",username));
+
+            List<Integer> shopsIds = _shopFacade.getUserShops(username);
+            response.setReturnValue(shopsIds);
+
+        }
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+      
+            response.setErrorMessage(String.format(
+                "ShopService::getUserShops failed to get users shops. "+e.getMessage()));
+
+        }
+        return response;
+    }
 }

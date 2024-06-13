@@ -15,6 +15,7 @@ import UI.Presenter.HeaderPresenter;
 public class Header extends HorizontalLayout implements ViewPageI{
 
     private Button loginButton;
+    private Button _registerButton;
     private final HeaderPresenter presenter;
 
     public Header(String serverPort) {
@@ -23,24 +24,22 @@ public class Header extends HorizontalLayout implements ViewPageI{
         presenter = new HeaderPresenter(this, serverPort);
 
         // Create the buttons
-        Button registerButton = new Button("Register");
+        _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
-        Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
 
         // Add cursor styling
-        registerButton.addClassName("pointer-cursor");
+        _registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
-        profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
         HorizontalLayout leftButtonLayout = new HorizontalLayout();
-        leftButtonLayout.add(registerButton, loginButton);
+        leftButtonLayout.add(_registerButton, loginButton);
 
         // Spacer to separate left and right buttons
         Span spacer = new Span();
@@ -48,7 +47,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(leftButtonLayout, spacer, rightButtonLayout);
@@ -70,7 +69,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         loginButton.addClickListener(event -> loginDialog.open());
 
         // Add click listener to the register button
-        registerButton.addClickListener(event -> registrationDialog.open());
+        _registerButton.addClickListener(event -> registrationDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -188,6 +187,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
         dialog.add(dialogLayout);
 
         return dialog;
+    }
+
+    public void hideRegisterButton(){
+        _registerButton.setVisible(false);
     }
 
     @Override
