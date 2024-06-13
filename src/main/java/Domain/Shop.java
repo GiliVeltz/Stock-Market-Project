@@ -31,6 +31,7 @@ import enums.Permission;
 
 public class Shop {
     private int _shopId;
+    private String _shopName;
     private String _shopFounder; // Shop founder username
     private Map<Integer, Product> _productMap; // <ProductId, Product>
     private List<ShopOrder> _orderHistory;
@@ -46,12 +47,13 @@ public class Shop {
     private boolean _isClosed;
 
     // Constructor
-    public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
+    public Shop(Integer shopId, String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
             throws ShopException {
         try {
             logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id " + shopId
-                    + ". The Founder of the shop is: " + shopFounderUserName);
+                    + " named " + shopName + ". The Founder of the shop is: " + shopFounderUserName);
             _shopId = shopId;
+            _shopName = shopName;
             _shopFounder = shopFounderUserName;
             _productMap = new HashMap<>(); // Initialize the product map
             _orderHistory = new ArrayList<>();
@@ -75,12 +77,16 @@ public class Shop {
         }
     }
 
-    public Shop(int shopId, String founderUsername, ShopDto shopDto) throws StockMarketException {
-        this(shopId, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
+    public Shop(int shopId, String shopName, String founderUsername, ShopDto shopDto) throws StockMarketException {
+        this(shopId, shopName, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
     }
 
     public int getShopId() {
         return _shopId;
+    }
+
+    public String getShopName() {
+        return _shopName;
     }
 
     public void closeShop() {
@@ -935,5 +941,12 @@ public class Shop {
     public Map<Integer, Discount> getDiscounts() { return _discounts; }
 
     //TODO: maybe add policy facade to implement the policy logic.
+
+    /**
+     * Get all the products in the shop.
+     */
+    public List<Product> getAllProductsList() {
+        return new ArrayList<>(_productMap.values());
+    }
 
 }

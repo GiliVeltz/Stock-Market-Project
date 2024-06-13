@@ -424,7 +424,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 new Date());
         manager.setIsSystemAdmin(true);
 
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName" ,"bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -486,7 +486,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _systemServiceUnderTest = new SystemService(_userServiceUnderTest, _externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
 
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         _shopServiceUnderTest.openNewShop(token, shopDto);
         
         Set<String> permissions = new HashSet<>();
@@ -526,7 +526,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount));
         ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount));
 
@@ -603,7 +603,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"), "email@email.com", new Date());
         User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -658,7 +658,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"), "email@email.com", new Date());
         User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"), "email@email.com", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -712,7 +712,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -776,7 +776,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -840,7 +840,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -882,7 +882,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _passwordEncoder = new PasswordEncoderUtil();
 
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -921,7 +921,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
                 new Date());
-        ShopDto shopDto = new ShopDto("bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -1215,7 +1215,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails,
+    public boolean TestUserOpenAShop(String username, String password, String shopName, String bankDetails,
             String shopAddress) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestUserOpenAShop'");
