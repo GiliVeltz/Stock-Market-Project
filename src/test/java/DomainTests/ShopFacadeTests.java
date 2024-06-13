@@ -543,7 +543,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
 
         // Act - try to get the purchase history for the shop owner
         _shop1.addOrderToOrderHistory(shopOrder);
@@ -572,7 +572,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -601,7 +601,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -629,7 +629,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
 
         // Act
@@ -656,7 +656,7 @@ public class ShopFacadeTests {
         _shop1.addProductToShop("founderName1", testProduct);
         testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
 
-        ShopOrder testShopOrder = new ShopOrder(shopId, testShoppingBasket);
+        ShopOrder testShopOrder = new ShopOrder(1, shopId, testShoppingBasket);
 
         // Act
         _shop1.addOrderToOrderHistory(testShopOrder);

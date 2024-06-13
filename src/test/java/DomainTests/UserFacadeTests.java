@@ -198,7 +198,7 @@ public class UserFacadeTests {
         ShoppingBasket shoppingBasket = new ShoppingBasket(testShop);
         List<ShoppingBasket> basketsList = new ArrayList<>();
         basketsList.add(shoppingBasket);
-        Order order = new Order(basketsList);
+        Order order = new Order(1, basketsList);
 
         _userFacadeUnderTest.register(new UserDto(username, "password", "email@example.com", new Date()));
         _userFacadeUnderTest.addOrderToUser(username, order);
