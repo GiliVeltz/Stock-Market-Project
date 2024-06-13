@@ -139,7 +139,7 @@ public interface BridgeInterface {
     boolean TestWhenUserLogoutThenHeBecomeGuest(String username);
     
     @Test
-    boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails, String shopAddress);
+    boolean TestUserOpenAShop(String username, String password, String shopName, String bankDetails, String shopAddress);
 
     @Test
     boolean TestUserWriteReviewOnPurchasedProduct(String username, String password, String productId);

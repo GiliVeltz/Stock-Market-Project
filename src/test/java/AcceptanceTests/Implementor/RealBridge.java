@@ -1201,7 +1201,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean TestUserOpenAShop(String username, String password, String shopId, String bankDetails,
+    public boolean TestUserOpenAShop(String username, String password, String shopName, String bankDetails,
             String shopAddress) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'TestUserOpenAShop'");
