@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.*;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,11 +70,11 @@ public class ShopFacadeTests {
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
-        _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
-        _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
-        _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
-        _shop4 = new ShopDto("bank4", "addresss4");
-        _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
+        _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
+        _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
+        _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
+       _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
         _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
@@ -258,8 +258,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
-        ShopDto _shopDto1 = new ShopDto("bank1", "addresss1");
-        ShopDto _shopDto2 = new ShopDto("bank2", "addresss2");
+        ShopDto _shopDto1 = new ShopDto("shopName1" ,"bank1", "addresss1");
+        ShopDto _shopDto2 = new ShopDto("shopName2", "bank2", "addresss2");
         CountDownLatch latch = new CountDownLatch(2);
         AtomicBoolean exceptionCaught = new AtomicBoolean(true);
 

@@ -1,22 +1,25 @@
 package DomainTests;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
-import java.util.concurrent.*;
-
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.sql.exec.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import Domain.Product;
 import Domain.Shop;
@@ -27,7 +30,6 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import enums.Category;
-import org.mockito.Mockito;
 
 public class ShoppingBasketTests {
 
@@ -441,7 +443,7 @@ public class ShoppingBasketTests {
         Date date = new Date();
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
@@ -469,7 +471,7 @@ public class ShoppingBasketTests {
         Date date = new Date();
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
@@ -497,7 +499,7 @@ public class ShoppingBasketTests {
         Date date = new Date();
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
@@ -555,7 +557,7 @@ public class ShoppingBasketTests {
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
         User buyer2 = new User("username2", "password2", "email2", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         ShoppingBasket shoppingBasket2 = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
@@ -617,7 +619,7 @@ public class ShoppingBasketTests {
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
         User buyer2 = new User("username2", "password2", "email2", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         ShoppingBasket shoppingBasket2 = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
@@ -678,7 +680,7 @@ public class ShoppingBasketTests {
         Date date = new Date();
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
@@ -705,7 +707,7 @@ public class ShoppingBasketTests {
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
         User buyer2 = new User("username2", "password2", "email2", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         ShoppingBasket shoppingBasket2 = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
@@ -776,7 +778,7 @@ public class ShoppingBasketTests {
         Date date = new Date();
         date.setTime(0);
         User buyer = new User("username1", "password1", "email1", date);
-        Shop shop = new Shop(1, "ownerUsername", "bank1", "address1");
+        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
         ShoppingBasket shoppingBasket = new ShoppingBasket(shop);
         Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
         product.updateProductQuantity(3);
