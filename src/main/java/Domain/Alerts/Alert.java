@@ -7,5 +7,5 @@ public interface Alert {
     public String getFromUser();
     public boolean isEmpty();
     public int getShopId();
-    public String getUserId();
+    public String getTargetUser();
 }

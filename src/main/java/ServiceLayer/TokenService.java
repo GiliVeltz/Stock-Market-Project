@@ -84,13 +84,16 @@ public class TokenService {
     // this function validates the token
     public boolean validateToken(String token) {
         try {
-            System.out.println("Server is checking Token: "+token);
+            System.out.println("Server is checking Token:" + token);
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            //print the error message from JwtsException
+            System.out.println(e.getMessage());
+
             return false;
         }
     }

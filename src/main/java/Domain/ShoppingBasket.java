@@ -137,18 +137,15 @@ public class ShoppingBasket implements Cloneable {
                 return false;
             }
         }
-        notifyBuyProduct(_shop,username);
+        notfyPurchaseFromShop(username, _productIdList, _shop);
         System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
-    private void notifyBuyProduct(Shop shop,String username) {
-        for (Map.Entry<String, Role> entry :shop.getUserToRoleMap().entrySet()) {
-            String owner = entry.getKey();
-            WebSocketServer.getInstance().sendMessage(owner, "User "+username+" bought products from your shop "+shop.getShopId());
-
-        }
-
+    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) {
+        shop.notfyPurchaseFromShop(buyingUser,productIdList);
     }
+ 
+    
 
     // Cancel the purchase of all products in the basket
     public void cancelPurchase() throws StockMarketException {

@@ -11,8 +11,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.atmosphere.websocket.WebSocket;
-
+import Domain.Alerts.Alert;
+import Domain.Alerts.CloseShopAlert;
+import Domain.Alerts.PurchaseFromShopAlert;
+import Domain.Alerts.ReOpenShopAlert;
+import Domain.Alerts.CloseShopAlert;
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
@@ -26,7 +29,7 @@ import Exceptions.RoleException;
 import Exceptions.ShopException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
-import Server.notifications.WebSocketServer;
+import Server.notifications.NotificationHandler;
 import enums.Category;
 import enums.Permission;
 
@@ -47,6 +50,8 @@ public class Shop {
     private ShopPolicy _shopPolicy;
     private int _nextDiscountId;
     private boolean _isClosed;
+    private NotificationHandler _notificationHandler;
+    
 
     // Constructor
     public Shop(Integer shopId, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -69,6 +74,9 @@ public class Shop {
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             _nextDiscountId = 0;
             _isClosed = false;
+            _notificationHandler = NotificationHandler.getInstance();
+
+            
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
         } catch (Exception e) {
@@ -930,21 +938,20 @@ public class Shop {
         return _discounts;
     }
 
-    public void notifyBuyProduct(String username) {
+    public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
-            WebSocketServer.getInstance().sendMessage(owner,
-                    "hello : "+ owner + ", User : " + username + " bought a product from your shop with id: " + _shopId);
+            Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
+            _notificationHandler.sendMessage(owner, alert.getMessage());
         }
     }
 
     // before removing the shop send notificstion to all relevasnt users
-    public void notifyRemoveShop(String username) {
+    public void notifyCloseShop(String username) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
-            // TODO: StoreClosedAlert();
-            WebSocketServer.getInstance().sendMessage(owner,
-                    "hello : " + owner + ", Shop with id: " + _shopId + " closed by " + username);
+            Alert alert = new CloseShopAlert(owner, username, _shopId);
+            _notificationHandler.sendMessage(owner, alert);
         }
     }
 
@@ -952,13 +959,8 @@ public class Shop {
     public void notifyReOpenShop(String username) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
-            // TODO: StoreReOpenAlert();
-            WebSocketServer.getInstance().sendMessage(owner,
-                    "hello : " + owner + ", Shop with id: " + _shopId + " opened again by user " + username);
-
+            Alert alert = new ReOpenShopAlert(owner, username, _shopId);
+            _notificationHandler.sendMessage(owner, alert);
         }
     }
-
-    // TODO: maybe add policy facade to implement the policy logic.
-
 }

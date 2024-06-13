@@ -2,6 +2,7 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,10 @@ import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Domain.Shop;
+import Domain.Alerts.Alert;
+import Domain.Alerts.AppointedManagerAlert;
+import Domain.Alerts.AppointedOwnerAlert;
+import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
@@ -78,8 +83,8 @@ public class ShopFacade {
             else {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
-                    getShopByShopId(shopId).notifyRemoveShop();
                     shopToClose.closeShop();
+                    getShopByShopId(shopId).notifyCloseShop(userName);
                 } else {
                     throw new StockMarketException(String.format(
                             "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
@@ -99,7 +104,7 @@ public class ShopFacade {
             else {
                 Shop shopToReOpen = getShopByShopId(shopId);
                 if (shopToReOpen.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
-                    getShopByShopId(shopId).notifyReOpenShop();
+                    getShopByShopId(shopId).notifyReOpenShop(userName);
                     shopToReOpen.reopenShop();
                 } else {
                     throw new Exception(String.format(
@@ -371,6 +376,13 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
+        notifyAppointOwner(username, ownerUsername, shopId);
+    }
+
+    // notify the owner that he was appointed
+    private void notifyAppointOwner(String username, String targetUser, int shopId) {
+        Alert alert = new AppointedOwnerAlert(username, targetUser, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**
@@ -393,6 +405,13 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
+        notifyAppointManager(username, managerUsername, permissions,shopId);
+    }
+
+    //notify the manager that he was appointed
+    private void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
+        Alert alert = new AppointedManagerAlert(username, targetUser, permissions, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**
@@ -406,10 +425,20 @@ public class ShopFacade {
      */
     public Set<String> fireShopManager(String username, Integer shopId, String managerUsername) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
+        Set<String> result = new HashSet<String>();
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
-        }
-        return shop.fireRole(username, managerUsername);
+        }      
+        result = shop.fireRole(username, managerUsername);
+        notifyFireUser(username,managerUsername, shopId);
+
+        return result;
+        
+    }
+    //notify the manager that he was fired
+    public void notifyFireUser(String targetUser, String manager, int shopId) {
+        Alert alert = new FireManagerAlert(manager, targetUser, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**

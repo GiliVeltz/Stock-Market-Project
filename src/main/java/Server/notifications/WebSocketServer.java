@@ -6,24 +6,18 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import ServiceLayer.TokenService;
-import ServiceLayer.TokenServiceCopy;
-
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
     @Autowired
-    private TokenServiceCopy tokenService;
+    private TokenService tokenService;
      // Singleton instance
      private static WebSocketServer instance;
     // assumption messages as aformat of:"targetUsername:message"
@@ -152,24 +146,24 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     //method to send message to a specific client if a registered user and not logged in that add to its queue
-    public void sendMessage(String username, String message) {
-        WebSocketSession session = sessions.get(username);
+    public void sendMessage(String targetUser, String message) {
+        WebSocketSession session = sessions.get(targetUser);
         if (session != null && session.isOpen()) {
             try {
                 session.sendMessage(new TextMessage(message));
-                System.out.println("Sent message to: " + username);
+                System.out.println("Sent message to: " + targetUser);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             // Queue message for later delivery
-            messageQueues.computeIfAbsent(username, k -> new ConcurrentLinkedQueue<>()).add(message);
-            System.out.println("Client not found or not open, message queued for : " + username);
+            messageQueues.computeIfAbsent(targetUser, k -> new ConcurrentLinkedQueue<>()).add(message);
+            System.out.println("Client not found or not open, message queued for : " + targetUser);
         }
     }
     
     private boolean validateToken(String token) {
-    //    return tokenService.validateToken(token);
-    return true;
+       return tokenService.validateToken(token);
+    // return true;
     }
 }

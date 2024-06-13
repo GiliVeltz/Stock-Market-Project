@@ -37,7 +37,7 @@ public class CredentialRemovedAlert implements Alert {
         return shopId;
     }
 
-    public String getUserId() {
+    public String getTargetUser() {
         return fromUser;
     }
 

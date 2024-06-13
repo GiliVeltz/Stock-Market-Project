@@ -37,7 +37,7 @@ public class LandingPageView extends VerticalLayout implements ViewPageI {
         presenter = new LandingPagePresenter(this);
         
         // Send the enterSystem request
-        presenter.sendEnterSystemRequest();
+        // presenter.sendEnterSystemRequest();
     }
 
 
