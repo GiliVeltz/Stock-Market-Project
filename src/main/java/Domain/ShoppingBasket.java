@@ -253,5 +253,4 @@ public class ShoppingBasket implements Cloneable {
     public String getShopAddress() {
         return _shop.getShopAddress();
     }
-
 }

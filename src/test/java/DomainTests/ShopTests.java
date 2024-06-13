@@ -1178,4 +1178,20 @@ public class ShopTests {
         // Assert
         assertEquals(1, products.size());
     }
+
+    @Test
+    public void testAddReview_whenReviewAdded_thenCorrectReviewAdded() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        String review = "review1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.addReview(username, product.getProductId(), review);
+
+        // Assert
+        assertEquals(1, product.getReviews().size());
+    }
 }

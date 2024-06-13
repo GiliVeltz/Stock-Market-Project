@@ -26,6 +26,12 @@ public class ShoppingCartFacade {
         _cartsRepo = new MemoryShoppingCartRepository();
     }
 
+    // only for tests!
+    public ShoppingCartFacade(ShoppingCartRepositoryInterface cartsRepo) {
+        _guestsCarts = new HashMap<>();
+        _cartsRepo = cartsRepo;
+    }
+
     // Public method to provide access to the _shoppingCartFacade
     public static synchronized ShoppingCartFacade getShoppingCartFacade() {
         if (_shoppingCartFacade == null) {
@@ -141,5 +147,23 @@ public class ShoppingCartFacade {
 
     public Map<String, ShoppingCart> get_guestsCarts() {
         return _guestsCarts;
+    }
+
+    // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
+    // next, this function will add a review on the product in the shop (if he still exists).
+    @SuppressWarnings("unlikely-arg-type")
+    public void writeReview(String username, int productID, int shopID, String review) throws StockMarketException {
+        // check if the user has purchased the product in the past.
+        if (!_cartsRepo.getCartByUsername(username).getPurchases().containsKey(productID)) {
+            logger.log(Level.WARNING, "User has not purchased the product in the past.");
+            throw new StockMarketException("User has not purchased the product in the past.");
+        }
+        // check if the shop still exists.
+        if (_cartsRepo.getCartByUsername(username).getPurchases().get(productID).getShopId() != shopID) {
+            logger.log(Level.WARNING, "Shop does not exist.");
+            throw new StockMarketException("Shop does not exist.");
+        }
+        // add the review.
+        _cartsRepo.getCartByUsername(username).getPurchases().get(productID).getShop().addReview(username, productID, review);
     }
 }

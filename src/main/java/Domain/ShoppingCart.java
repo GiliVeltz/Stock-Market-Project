@@ -246,4 +246,23 @@ public class ShoppingCart {
         }
         return products;
     }
+
+    // return all the purchases in the cart
+    public Map<String, ShoppingBasket> getPurchases() {
+        Map<String, ShoppingBasket> purchases = new HashMap<String, ShoppingBasket>();
+        for (ShoppingBasket basket : _shoppingBaskets) {
+            purchases.put(basket.getShop().getShopName(), basket);
+        }
+        return purchases;
+    }
+
+    // return true if the cart has a basket with the given shopID
+    public boolean containsKey(int shopID) {
+        for (ShoppingBasket basket : _shoppingBaskets) {
+            if (basket.getShop().getShopId() == shopID) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
