@@ -1,5 +1,6 @@
 package Domain.ExternalServices.PaymentService;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import Domain.ExternalServices.ExternalService;
@@ -33,20 +34,22 @@ public class AdapterPayment extends ExternalService {
         return true;
     }
 
-    public void checkIfPaymentOk(String cardNumber, String shopBankDetails, double amountToPay)
+    public void checkIfPaymentOk(String cardNumber)
             throws PaymentFailedException {
         logger.info("Checking if the card is valid");
-        if (!_paymentService.checkIfPaymentOk(cardNumber, shopBankDetails, amountToPay))
+        if (!_paymentService.checkIfPaymentOk(cardNumber))
             throw new PaymentFailedException("Payment failed");
     }
 
-    public void pay(String cardNumber, String shopBankDetails, double amountToPay) {
+    public void pay(String cardNumber, Map<Double, String> priceToShopDetails, double overallPrice) throws PaymentFailedException{
         logger.info("Paying for the cart");
-        _paymentService.pay(cardNumber, shopBankDetails, amountToPay);
+        if (!_paymentService.pay(cardNumber, overallPrice) || !_paymentService.payShops(priceToShopDetails))
+            throw new PaymentFailedException("Payment failed");
     }
 
-    public void refound(String cardNumber) {
+    public void refound(String cardNumber, double amountToRefound) throws PaymentFailedException{
         logger.info("Refounding the cart");
-        _paymentService.refound(cardNumber);
+        if (!_paymentService.refound(cardNumber, amountToRefound))
+            throw new PaymentFailedException("Refound failed");
     }
 }
