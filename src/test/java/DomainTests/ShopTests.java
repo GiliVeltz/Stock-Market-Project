@@ -1211,6 +1211,7 @@ public class ShopTests {
     public void testAddDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
         String username = "user1";
+        @SuppressWarnings("deprecation")
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
@@ -1228,6 +1229,7 @@ public class ShopTests {
     public void testAddDiscount_whenDiscountAlreadyExists_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
+        @SuppressWarnings("deprecation")
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
@@ -1260,6 +1262,7 @@ public class ShopTests {
     public void testRemoveDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
         String username = "user1";
+        @SuppressWarnings("deprecation")
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
@@ -1278,6 +1281,7 @@ public class ShopTests {
     public void testRemoveDiscount_whenUserHasPermissionAndDiscountExists_thenSucceeds() throws StockMarketException {
         // Arrange
         String username = "user1";
+        @SuppressWarnings("deprecation")
         PrecentageDiscount discount = new PrecentageDiscount(new Date(2025, 10, 10), 0.2, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();

@@ -105,6 +105,8 @@ public class Shop {
         _isClosed = false;
     }
 
+    public Map<Integer, Product> getAllProducts() {return _productMap;}
+
     /**
      * Check if a username has a role in shop.
      * 
@@ -943,7 +945,7 @@ public class Shop {
     /**
      * Get all the products in the shop.
      */
-    public List<Product> getAllProducts() {
+    public List<Product> getAllProductsList() {
         return new ArrayList<>(_productMap.values());
     }
 

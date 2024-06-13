@@ -52,7 +52,7 @@ public class ShoppingCartFacade {
         if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
             _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
         }
-        
+
         // add the user to the cart
         _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }
@@ -101,7 +101,7 @@ public class ShoppingCartFacade {
 
     /*
      * Remove a product from a guest user cart by token.
-     * This method called when a guest user remove a product from his cart. 
+     * This method called when a guest user remove a product from his cart.
      */
     public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
@@ -128,7 +128,7 @@ public class ShoppingCartFacade {
             allBaskets.add(i + 1);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details);
+        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());
     }
 
     /*
@@ -136,7 +136,7 @@ public class ShoppingCartFacade {
      */
     public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details);
+        _cartsRepo.getCartByUsername(username).purchaseCart(details, _cartsRepo.getUniqueOrderID());
     }
 
     public Map<String, ShoppingCart> get_guestsCarts() {

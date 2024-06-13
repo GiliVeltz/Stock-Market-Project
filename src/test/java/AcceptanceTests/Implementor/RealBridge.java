@@ -1,10 +1,6 @@
 package AcceptanceTests.Implementor;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +28,6 @@ import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
-import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import ServiceLayer.*;
 import enums.Category;
@@ -964,42 +959,49 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoAsGuest(String productId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductNameAsGuest(String productId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryAsGuest(String category) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoUsingKeyWordsAsGuest(String kewWord) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoUsingKeyWordsAsGuest(String kewWord1, String kewWord2) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsAsGuest'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productId, String shopId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException(
                 "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsGuest'");
     }
@@ -1007,6 +1009,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     @Override
     public boolean testGetProductInfoUsingProductCategoryInShopAsGuest(String category, String shopId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException(
                 "Unimplemented method 'testGetProductInfoUsingProductCategoryInShopAsGuest'");
     }
@@ -1014,6 +1017,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     @Override
     public boolean testGetProductInfoUsingKeyWordsInShopAsGuest(String kewWord, String shopId) {
         // TODO Auto-generated method stub
+        // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsInShopAsGuest'");
     }
 
@@ -1045,47 +1049,55 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     @Override
     public boolean testGetShopInfoAsUser(String shopId) {
         // TODO Auto-generated method stub
+        // TODO Gili getShopGeneralInfo - #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoAsUser(String productId) {
         // TODO Auto-generated method stub
+        // TODO Gili getProductGeneralInfo - #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductNameAsUser(String productId) {
         // TODO Auto-generated method stub
+        // TODO Gili getProductGeneralInfo #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryAsUser(String category) {
         // TODO Auto-generated method stub
+        // TODO Gili #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord1, String keyWord2) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsAsUser'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShop(String productId, String shopId) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameInShop'");
     }
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsUser(String productId, String shopId) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException(
                 "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsUser'");
@@ -1093,6 +1105,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException(
                 "Unimplemented method 'testGetProductInfoUsingProductCategoryInShopAsUser'");
@@ -1100,6 +1113,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testGetProductInfoUsingKeyWordsInShopAsUser(String keyWord1, String shopId) {
+        // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsInShopAsUser'");
     }

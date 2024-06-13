@@ -12,4 +12,8 @@ public class PurchaseCartDetailsDto {
         this.cardNumber = cardNumber;
         this.address = address;
     }
+
+    public List<Integer> getBasketsToBuy() {
+        return basketsToBuy;
+    }
 }

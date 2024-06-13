@@ -567,7 +567,7 @@ public class ShopFacade {
     public List<Product> getAllProductsInShopByID(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
-            return shop.getAllProducts();
+            return shop.getAllProductsList();
         }
         return null;
     }
