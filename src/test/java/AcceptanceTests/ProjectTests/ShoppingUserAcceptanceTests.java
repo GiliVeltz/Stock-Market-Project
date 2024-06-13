@@ -1,11 +1,11 @@
 package AcceptanceTests.ProjectTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
@@ -153,9 +153,9 @@ public class ShoppingUserAcceptanceTests{
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
-        assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
-        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "9999", "MasterCard", "USA") ); // fail - user is a guest
-        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain") ); // fail - the shop name is already exist
+        assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "shopName1", "Vias", "Israel") ); // success - user open a shop
+        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "shopName2", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "shopName3", "Cal", "Spain") ); // fail - the shop name is already exist
     }
     
     // Test that a user can open write a review about the product he purchased.

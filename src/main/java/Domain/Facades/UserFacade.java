@@ -60,7 +60,7 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    public void register(UserDto userDto) throws StockMarketException {
+    public synchronized  void register(UserDto userDto) throws StockMarketException {
         // TODO: remove the encoding - should be done in the front end
         // String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         if (userDto.username == null || userDto.username.isEmpty()) {

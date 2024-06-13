@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +25,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Domain.Product;
@@ -52,7 +58,8 @@ public class ShopFacadeTests {
     private Shop _shop2;
     private Shop _shop3;
     private ShopDto _shop4;
-    private ProductDto _product1;
+    private ProductDto _product1dto;
+    private ProductDto _product2dto;
     private Product _product2;
     private Product _product3;
 
@@ -63,11 +70,12 @@ public class ShopFacadeTests {
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
-        _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
-        _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
-        _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
-        _shop4 = new ShopDto("bank4", "addresss4");
-        _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
+        _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
+        _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
+        _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
+       _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
         try{
@@ -160,12 +168,12 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to add a product to an existing shop
-        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1, _shop1.getFounderName());
+        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
 
         // Assert - Verify that the product is added to the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(_product1._productName, _shop1.getShopProducts().get(0).getProductName());
+        assertEquals(_product1dto._productName, _shop1.getShopProducts().get(0).getProductName());
     }
 
     @Test
@@ -175,12 +183,129 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a non-existing shop
         try {
-            _ShopFacadeUnderTests.addProductToShop(3, _product1, "username1");
+            _ShopFacadeUnderTests.addProductToShop(3, _product1dto, "username1");
             fail("Adding a product to a non-existing shop should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
             assertEquals(0, _shopsList.size());
         }
+    }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to add a product to a non-existing shop
+        assertThrows(StockMarketException.class, () -> {
+            _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
+    }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product2dto, _shop1.getFounderName());
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        executor.shutdown(); // shut down executor service
+        Map<Integer, Product> products = _shop1.getAllProducts();
+        assertEquals(2, products.size());
+        assertNotEquals(products.get(0).getProductId(), products.get(1).getProductId());
+    }
+
+    @Test
+    public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopDto _shopDto1 = new ShopDto("shopName1" ,"bank1", "addresss1");
+        ShopDto _shopDto2 = new ShopDto("shopName2", "bank2", "addresss2");
+        CountDownLatch latch = new CountDownLatch(2);
+        AtomicBoolean exceptionCaught = new AtomicBoolean(true);
+
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("Hozier",_shopDto1);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("KALEO",_shopDto2);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            latch.await(); // wait for both tasks to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail("Test interrupted");
+        } finally {
+            executor.shutdown(); // shut down executor service
+        }
+        
+        if (!exceptionCaught.get()) {
+            fail("Error should raise");
+        }
+
+        List<Shop> shops = _ShopFacadeUnderTests.getAllShops();
+        assertEquals(2, shops.size());
+        assertNotEquals(shops.get(0).getShopId(),shops.get(1).getShopId());
     }
 
     @Test
@@ -191,7 +316,7 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a shop this no permission
         try {
-            _ShopFacadeUnderTests.addProductToShop(1, _product1, "Jane");
+            _ShopFacadeUnderTests.addProductToShop(1, _product1dto, "Jane");
             fail("Adding a product to a shop without permission should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
@@ -418,7 +543,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
 
         // Act - try to get the purchase history for the shop owner
         _shop1.addOrderToOrderHistory(shopOrder);
@@ -447,7 +572,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -476,7 +601,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -504,7 +629,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
 
         // Act
@@ -531,7 +656,7 @@ public class ShopFacadeTests {
         _shop1.addProductToShop("founderName1", testProduct);
         testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
 
-        ShopOrder testShopOrder = new ShopOrder(shopId, testShoppingBasket);
+        ShopOrder testShopOrder = new ShopOrder(1, shopId, testShoppingBasket);
 
         // Act
         _shop1.addOrderToOrderHistory(testShopOrder);

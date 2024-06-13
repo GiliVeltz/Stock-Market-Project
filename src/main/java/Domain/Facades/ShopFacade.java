@@ -71,7 +71,7 @@ public class ShopFacade {
 
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
         int shopId = _shopRepository.getUniqueShopID();    
-        _shopRepository.addShop(new Shop(shopId, userName, shopDto.bankDetails, shopDto.shopAddress));
+        _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         return shopId;
     }
 
@@ -547,6 +547,73 @@ public class ShopFacade {
 
         Shop shop = getShopByShopId(shopId);
         shop.addShopRating(rating);
+    }
+
+    /**
+     * Returns the shop name if exists, else returns null.
+     * @param shopId
+     * @return
+     */
+    public String getShopName(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopName();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the shop bank details if exists, else returns null.
+     * @param shopId
+     * @return
+     */
+    public String getShopBankDetails(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getBankDetails();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the shop address if exists, else returns null.
+     * @param shopId
+     * @return
+     */
+    public String getShopAddress(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopAddress();
+        }
+        return null;
+    }
+
+    /**
+     * Returns all the products in a shop by its ID.
+     * @param shopId
+     * @return
+     */
+    public List<Product> getAllProductsInShopByID(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getAllProductsList();
+        }
+        return null;
+    }
+
+    /**
+     * Returns all shopIds of shops with the input name.
+     * @param shopName The name of the shop to search for. 
+     * @return A list of the matching shopIds
+     */
+    public List<Integer> getShopIdsByName(String shopName) {
+        List<Integer> shopIds = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName)) {
+                shopIds.add(shop.getShopId());
+            }
+        }
+        return shopIds;
     }
 
 }

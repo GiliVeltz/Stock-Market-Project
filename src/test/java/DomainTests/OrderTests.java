@@ -49,7 +49,7 @@ public class OrderTests {
         List<ShoppingBasket> shoppingBasket = new ArrayList<>();
         Order orderUnderTest = null;
         try {
-            orderUnderTest = new Order(shoppingBasket);
+            orderUnderTest = new Order(1, shoppingBasket);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Expected StockMarketException to be thrown");
@@ -92,7 +92,7 @@ public class OrderTests {
         shoppingBasket.add(basket);
         Order orderUnderTest = null;
         try {
-            orderUnderTest = new Order(shoppingBasket);
+            orderUnderTest = new Order(1, shoppingBasket);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Expected StockMarketException to be thrown");
@@ -138,7 +138,7 @@ public class OrderTests {
         shoppingBasket.add(basket);
         Order orderUnderTest = null;
         try {
-            orderUnderTest = new Order(shoppingBasket);
+            orderUnderTest = new Order(1, shoppingBasket);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Expected StockMarketException to be thrown");

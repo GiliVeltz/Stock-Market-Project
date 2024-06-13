@@ -1,20 +1,33 @@
 package DomainTests;
 
-import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import Domain.*;
-import Domain.Order;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Facades.UserFacade;
+import Domain.Order;
+import Domain.Shop;
+import Domain.ShoppingBasket;
+import Domain.User;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
@@ -190,11 +203,11 @@ public class UserFacadeTests {
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
         String username = "testUser";
 
-        Shop testShop = new Shop(1, username, "bankDetails", "shopAddress");
+        Shop testShop = new Shop(1, "shopName", username, "bankDetails", "shopAddress");
         ShoppingBasket shoppingBasket = new ShoppingBasket(testShop);
         List<ShoppingBasket> basketsList = new ArrayList<>();
         basketsList.add(shoppingBasket);
-        Order order = new Order(basketsList);
+        Order order = new Order(1, basketsList);
 
         _userFacadeUnderTest.register(new UserDto(username, "password", "email@example.com", new Date()));
         _userFacadeUnderTest.addOrderToUser(username, order);
@@ -404,4 +417,57 @@ public class UserFacadeTests {
         assertEquals(email, ansUser.getEmail());
     }
     
+    @Test
+    public void testsRegisterUser_whenUserRegisterInParallel_thenError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        UserDto userDto1 = new UserDto("Dudu_Tassa", "password123", "dudu@example.com", new Date());
+        UserDto userDto2 = new UserDto("Dudu_Tassa", "password5555", "dudu@example.com", new Date());
+        
+        CountDownLatch latch = new CountDownLatch(2);
+        AtomicBoolean exceptionCaught = new AtomicBoolean(false);
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _userFacadeUnderTest.register(userDto1);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(true);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _userFacadeUnderTest.register(userDto2);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(true);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            latch.await(); // wait for both tasks to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail("Test interrupted");
+        } finally {
+            executor.shutdown(); // shut down executor service
+        }
+        
+        if (!exceptionCaught.get()) {
+            fail("Error should raise when user register with the same userName");
+        }
+
+    }
+
 }

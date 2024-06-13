@@ -26,7 +26,7 @@ public class RoleTests {
     public void setUp() {
         user = new User("user", "password", "email@email.com", new Date());
         try {
-            shop = new Shop(1, "founder name", "shop bank", "shop address");
+            shop = new Shop(1, "shop name",  "founder name",  "shop bank",  "shop address");
         } catch (ShopException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
