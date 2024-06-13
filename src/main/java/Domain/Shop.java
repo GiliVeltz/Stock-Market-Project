@@ -237,7 +237,7 @@ public class Shop {
      * @throws RoleException
      */
     public void AppointManager(String username, String newManagerUserName, Set<Permission> permissions)
-            throws ShopException, PermissionException, RoleException, StockMarketException {
+            throws StockMarketException {
         logger.log(Level.INFO, "Shop - AppointManager: " + username + " trying to appoint " + newManagerUserName
                 + " as a new manager with permissions: " + permissions);
         if (!checkAtLeastOnePermission(username,
