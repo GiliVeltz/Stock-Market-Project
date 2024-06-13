@@ -6,12 +6,13 @@ public class ProxySupply {
         // TODO: TAL: add constructor detalils
     }
 
-    public boolean checkIfDeliverOk(String address, String shopAddress) {
+    public boolean checkIfDeliverOk(String address) {
         return true;
     }
 
-    public void deliver(String address, String shopAddress) {
-        return;
+    public boolean deliver(String address, String shopAddress) {
+        // TODO Auto-generated method stub
+        return true;
     }
     
 }
