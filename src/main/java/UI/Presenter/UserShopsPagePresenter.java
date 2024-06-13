@@ -13,6 +13,8 @@ import UI.View.UserMainPageView;
 import UI.View.UserShopsPageView;
 import UI.View.ViewPageI;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
@@ -50,27 +52,29 @@ public class UserShopsPagePresenter {
                                 requestEntity,
                                 String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("User shops loaded successfuly");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("User shops loading failed");
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String responseBody = response.getBody();
+
+                        try{
+                            JsonNode responseJson = objectMapper.readTree(responseBody);
+                            if (response.getStatusCode().is2xxSuccessful() && responseJson.get("errorMessage").isNull()) {
+                                view.showSuccessMessage("User shops loaded successfuly");
+                            } else {
+                                // Create buttons for each shop
+                                List<Integer> shops = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+                                view.createShopButtons(shops);
+                                view.showErrorMessage("User shops loading failed");
+                            }
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                            return;
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("User shops loading failed");
                     }
                 });
-        //
-            List<String> shopNames = jsonValue.asList().stream()
-                                              .map(JsonValue::asString)
-                                              .collect(Collectors.toList());
-
-            // Create buttons for each shop
-            for (String shopName : shopNames) {
-                Button shopButton = new Button(shopName, e -> navigateToManageShop(shopName));
-                add(shopButton);
-            }
-        });
     }
+    
 }

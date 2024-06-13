@@ -1,7 +1,10 @@
 package UI.View;
 
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -38,13 +41,15 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
         // Create buttons
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
+        Button openShopButton = new Button("Open a new Shop", e -> openShop());
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
         shopsButton.addClassName("same-size-button");
+        openShopButton.addClassName("same-size-button");
 
         // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton);
+        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, openShopButton);
         buttonLayout.setAlignItems(Alignment.END);
 
         // Create a horizontal layout for the title to center it
@@ -68,6 +73,47 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
     private void navigateToProfile() {
         getUI().ifPresent(ui -> ui.navigate("profile"));
     }
+
+    public void createShopButtons(List<Integer> shops) {
+
+        if(shops.isEmpty()){
+            add(new Paragraph("No shops found"));
+            return;
+        }
+
+        // Create a vertical layout for the grid
+        VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout.setAlignItems(Alignment.START);
+
+        // Set a maximum of 3 buttons per row
+        int maxButtonsPerRow = 3;
+        HorizontalLayout rowLayout = new HorizontalLayout();
+
+        for (int i = 0; i < shops.size(); i++) {
+            Integer shopId = shops.get(i);
+            Button shopButton = new Button("" + shopId, e -> navigateToManageShop(shopId));
+            shopButton.addClassName("same-size-button");
+            rowLayout.add(shopButton);
+
+            if ((i + 1) % maxButtonsPerRow == 0 || i == shops.size() - 1) {
+                gridLayout.add(rowLayout);
+                rowLayout = new HorizontalLayout();
+            }
+        }
+
+        // Add the grid layout to the main layout
+        add(gridLayout);
+    }
+
+    private Object navigateToManageShop(Integer shopId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'navigateToManageShop'");
+    }
+
+    private void openShop(){
+
+    }
+
 
     @Override
     public void showSuccessMessage(String message) {
