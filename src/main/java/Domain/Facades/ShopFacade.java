@@ -572,4 +572,19 @@ public class ShopFacade {
         return null;
     }
 
+    /**
+     * Returns all shopIds of shops with the input name.
+     * @param shopName The name of the shop to search for. 
+     * @return A list of the matching shopIds
+     */
+    public List<Integer> getShopIdsByName(String shopName) {
+        List<Integer> shopIds = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName)) {
+                shopIds.add(shop.getShopId());
+            }
+        }
+        return shopIds;
+    }
+
 }
