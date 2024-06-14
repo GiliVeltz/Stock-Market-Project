@@ -65,29 +65,29 @@ public class WebSocketServer extends TextWebSocketHandler {
             return;
         }
 
-        // String username = tokenService.extractUsername(token);
-        // String clientKey = (username != null) ? username : "guest-" + token;
-        String clientKey = "guest-" + token;
+        String username = tokenService.extractUsername(token);
+        String clientKey = (username != null) ? username : "guest-" + token;
+        // String clientKey = "guest-" + token;
 
-        // if (username != null && tokenService.isUserAndLoggedIn(token)) {
-        //     // User is logged in
-        //     sessions.put(clientKey, session);
-        //     System.out.println("Connected: " + clientKey);
+        if (username != null && tokenService.isUserAndLoggedIn(token)) {
+            // User is logged in
+            sessions.put(clientKey, session);
+            System.out.println("Connected: " + clientKey);
 
-        //     // Send any queued messages sent while user was loggedOut
-        //     Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
-        //     while (!queue.isEmpty()) {
-        //         String message = queue.poll();
-        //         if (session.isOpen()) {
-        //             session.sendMessage(new TextMessage(message));
-        //         }
-        //     }
-        //     messageQueues.remove(username);
-        // } else {
+            // Send any queued messages sent while user was loggedOut
+            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            while (!queue.isEmpty()) {
+                String message = queue.poll();
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(message));
+                }
+            }
+            messageQueues.remove(username);
+        } else {
             // User is a guest
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
-        // }
+        }
         if (sessions.size() > 1) {
             broadcastMessage("Hello all clients!");
             
@@ -166,5 +166,13 @@ public class WebSocketServer extends TextWebSocketHandler {
     private boolean validateToken(String token) {
        return tokenService.validateToken(token);
     // return true;
+    }
+
+    //replace guest user to logged in user with new token
+    public void replaceGuestTokenToUserToken(String oldToken, String newToken,String username) {
+        if (username != null) {
+            WebSocketSession session = sessions.remove("guest-" + oldToken);
+            sessions.put(username, session);
+        }
     }
 }
