@@ -866,7 +866,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(StockMarketException.class, () -> {
             shop.addShopRating(rating);
         });
     }
@@ -891,7 +891,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(StockMarketException.class, () -> {
             shop.addShopRating(rating);
         });
     }

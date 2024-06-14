@@ -118,7 +118,7 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingKeyWordsInShopAsUser(String keyWord1, String shopId);
 
     @Test
-    boolean testAddProductToShoppingCartAsUser(String productId);
+    boolean testAddProductToShoppingCartAsUser(String productId, String shopId);
     
     @Test
     boolean testCheckAndViewItemsInShoppingCartAsUser();

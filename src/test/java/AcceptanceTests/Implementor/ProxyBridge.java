@@ -166,7 +166,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testAddProductToShoppingCartAsUser(String productId) {
+    public boolean testAddProductToShoppingCartAsUser(String productId, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartAsUser' in ProxyBridge class");
     }
 

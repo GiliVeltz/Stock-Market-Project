@@ -142,4 +142,19 @@ public class ShoppingCartFacade {
     public Map<String, ShoppingCart> get_guestsCarts() {
         return _guestsCarts;
     }
+
+
+    /*
+     * get user cart.
+     * If user already has a cart - we will return the same cart as before.
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we
+     * will use it's guest cart
+     */
+    public ShoppingCart getUserCart(String username) throws StockMarketException {
+        if (_cartsRepo.getCartByUsername(username) == null) {
+            throw new StockMarketException("user does not have a cart");
+        }
+
+        return _cartsRepo.getCartByUsername(username);
+    }
 }

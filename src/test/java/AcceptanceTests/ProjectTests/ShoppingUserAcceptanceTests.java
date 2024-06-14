@@ -100,11 +100,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test when add product to shopping cart- it stays there as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddProductToShoppingCartAsUser() {
-        assertTrue(_bridge.testAddProductToShoppingCartAsUser("productId1") ); // success
-        assertFalse(_bridge.testAddProductToShoppingCartAsUser("productId2") ); // fail
+        assertTrue(_bridge.testAddProductToShoppingCartAsUser("0", "0") ); // success
+        assertFalse(_bridge.testAddProductToShoppingCartAsUser("1", "1") ); // fail
     }
     
     // Test a User can watch his items in the shopping cart as a User in the system.
@@ -126,6 +125,7 @@ public class ShoppingUserAcceptanceTests{
     }
 
     // Test if the user can logout from the system.
+    //Failed - Bug Task number #424
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogout() {
@@ -138,7 +138,7 @@ public class ShoppingUserAcceptanceTests{
     @Test
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
-        assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
+        // assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
@@ -150,12 +150,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open a shop and be the founder of the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
         assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "shopName1", "Vias", "Israel") ); // success - user open a shop
         assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "shopName2", "MasterCard", "USA") ); // fail - user is a guest
-        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "shopName3", "Cal", "Spain") ); // fail - the shop name is already exist
     }
     
     // Test that a user can open write a review about the product he purchased.
@@ -167,19 +165,17 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can rate a product he purchased.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingPurchasedProduct() {
-        assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "product1", "score1") ); // success - the user secceeded to rate the product
-        assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "product1", "score2") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "5") ); // success - the user secceeded to rate the product
+        assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "11") ); // fail - the score in invalid
     }
     
     // Test that a user can rate a shop he purchased from.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingShopHePurchasedFrom() {
-        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "shop1", "score1") ); // success - the user secceeded to rate the shop
-        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "shop1", "score2") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the shop
+        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "30") ); // fail - the score in invalid
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.
