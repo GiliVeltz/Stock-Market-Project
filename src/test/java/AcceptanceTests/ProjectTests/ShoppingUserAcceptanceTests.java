@@ -126,7 +126,6 @@ public class ShoppingUserAcceptanceTests{
     }
 
     // Test if the user can logout from the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogout() {
         assertTrue(_bridge.testLogoutToTheSystem("Bob") ); // success

@@ -1,4 +1,6 @@
 package AcceptanceTests.Implementor;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private ShoppingCartFacade _shoppingCartFacade;
     private UserFacade _userFacade;
     private PasswordEncoderUtil _passwordEncoder;
+    private TokenService _tokenService;
     private ExternalServiceHandler _externalServiceHandler;
 
     // mocks
@@ -85,6 +88,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }, new ArrayList<>(), _passwordEncoderMock);
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
+        _tokenService = new TokenService();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -1178,26 +1182,34 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testLogoutToTheSystem(String username) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.generateGuestToken()).thenReturn(_tokenService.generateGuestToken());
+        when(_passwordEncoderMock.decodePassword("password")).thenReturn("password");
+        when(_passwordEncoderMock.encodePassword("password")).thenReturn("password");
+        
+        // create a user in the system
+        User user = new User("Bob", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoderMock);
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testLogoutToTheSystem'");
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
 
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        // when(_userFacadeMock.doesUserExist("Bob")).thenReturn(true);
-        // when(_userFacadeMock.doesUserExist("notUsername")).thenReturn(false);
+        // login the user
+        _userServiceUnderTest.logIn(token, username, "password");
 
-        // try {
-        // _userServiceMock.logOut(token);
+        // Act
+        Response res = _userServiceUnderTest.logOut(token);
 
-        // // Verify interactions
-        // verify(_userFacadeMock, times(1)).doesUserExist(username);
-        // verify(_tokenServiceMock, times(1)).extractUsername(token);
-
-        // return true;
-        // } catch (Exception e) {
-        // return false;
-        // }
+        // Assert
+        logger.info("testLogoutToTheSystem Error message: " + res.getErrorMessage());
+        return res.getErrorMessage() == null;
     }
 
     @Override
