@@ -152,6 +152,19 @@ public class ShoppingCartFacade {
         return _guestsCarts;
     }
 
+    /*
+     * get user cart.
+     * If user already has a cart - we will return the same cart as before.
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we
+     * will use it's guest cart
+     */
+    public ShoppingCart getUserCart(String username) throws StockMarketException {
+        if (_cartsRepo.getCartByUsername(username) == null) {
+            throw new StockMarketException("user does not have a cart");
+        }
+        return _cartsRepo.getCartByUsername(username);
+    }
+  
     // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
     // next, this function will add a review on the product in the shop (if he still exists).
     @SuppressWarnings({ "null" })

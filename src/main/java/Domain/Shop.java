@@ -510,10 +510,10 @@ public class Shop {
         return _shopRating;
     }
 
-    public void addShopRating(Integer rating) {
+    public void addShopRating(Integer rating) throws StockMarketException {
         // limit the rating to 1-5
         if (rating < 1 || rating > 5) {
-            throw new IllegalArgumentException("Rating must be between 1-5.");
+            throw new StockMarketException("Rating must be between 1-5.");
         }
         Double newRating = Double.valueOf(rating);
         if (_shopRating == -1.0) {
