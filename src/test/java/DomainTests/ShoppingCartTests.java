@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -324,5 +326,56 @@ public class ShoppingCartTests {
 
         // Assert
         assertTrue(shoppingCartUnderTest.getCartSize() == 0);
+    }
+
+    @Test
+    public void testGetPurchases() {
+        // Arrange
+        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+        ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
+        when(shoppingBasketMock.getShop()).thenReturn(shopMock);
+        when(shopMock.getShopName()).thenReturn("shopMock");
+        
+        shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
+
+        // Act
+        Map<String, ShoppingBasket> purchases = shoppingCartUnderTest.getPurchases();
+
+        // Assert
+        assertTrue(purchases.size() == 1);
+    }
+
+    @Test
+    public void testContainsKey_whenShoppingBasketWithShopIDExists_shouldReturnTrue() {
+        // Arrange
+        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+        ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
+        when(shoppingBasketMock.getShop()).thenReturn(shopMock);
+        when(shopMock.getShopId()).thenReturn(1);
+        
+        shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
+
+        // Act
+        boolean result = shoppingCartUnderTest.containsKey(1);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    public void testContainsKey_whenShoppingBasketWithShopIDDoesNotExists_shouldReturnFalse() {
+        // Arrange
+        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+        ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
+        when(shoppingBasketMock.getShop()).thenReturn(shopMock);
+        when(shopMock.getShopId()).thenReturn(1);
+        
+        shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
+
+        // Act
+        boolean result = shoppingCartUnderTest.containsKey(2);
+
+        // Assert
+        assertTrue(!result);
     }
 }

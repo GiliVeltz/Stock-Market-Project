@@ -232,11 +232,11 @@ public class ShopFacadeTests {
 
         try {
             // Wait a while for existing tasks to terminate
-            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
                 executor.shutdownNow(); // Cancel currently executing tasks
 
                 // Wait a while for tasks to respond to being cancelled
-                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
                     System.err.println("Pool did not terminate");
             }
         } catch (InterruptedException ie) {
@@ -251,6 +251,118 @@ public class ShopFacadeTests {
         Map<Integer, Product> products = _shop1.getAllProducts();
         assertEquals(2, products.size());
         assertNotEquals(products.get(0).getProductId(), products.get(1).getProductId());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopExist_thenRemoveProductSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from an existing shop
+        _ShopFacadeUnderTests.removeProductFromShop(_shop2.getShopId(), _product2dto, _shop2.getFounderName());
+
+        // Assert - Verify that the product is removed from the shop
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from a non-existing shop
+        try {
+            _ShopFacadeUnderTests.removeProductFromShop(3, _product1dto, "username1");
+            fail("Removing a product from a non-existing shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(0, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from a non-existing shop
+        try {
+            _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            fail("Removing a product from a non-existing shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(1, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductsRemovingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        _shop1.addProductToShop("founderName1", _product2);
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        executor.shutdown(); // shut down executor service
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductExist_thenRemoveProductSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        _shop1.addProductToShop("founderName1", _product2);
+
+        // Act - try to remove a product from an existing shop
+        _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+
+        // Assert - Verify that the product is removed from the shop
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
     }
 
     @Test

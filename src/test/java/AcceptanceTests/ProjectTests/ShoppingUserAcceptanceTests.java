@@ -125,8 +125,6 @@ public class ShoppingUserAcceptanceTests{
     }
 
     // Test if the user can logout from the system.
-    //Failed - Bug Task number #424
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogout() {
         assertTrue(_bridge.testLogoutToTheSystem("Bob") ); // success
@@ -157,11 +155,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open write a review about the product he purchased.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserWriteReviewOnPurchasedProduct() {
-        assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product1") ); // success - the user secceeded to write a review
-        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product2") ); // fail - the user did not porchased this product
+        assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "0") ); // success - the user secceeded to write a review
+        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "2") ); // fail - the user did not porchased this product
     }
     
     // Test that a user can rate a product he purchased.
