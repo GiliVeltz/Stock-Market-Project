@@ -613,5 +613,4 @@ public class ShopFacade {
         }
         return shopIds;
     }
-
 }

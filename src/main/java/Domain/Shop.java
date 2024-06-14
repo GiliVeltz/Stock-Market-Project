@@ -1002,4 +1002,10 @@ public class Shop {
     public List<Product> getAllProductsList() {
         return new ArrayList<>(_productMap.values());
     }
+
+    // this function adds a new review to the product in the shop
+    public void addReview(String username, int productID, String review) {
+        Product product = _productMap.get(productID);
+        product.addReview(username, review);
+    }
 }

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -28,6 +29,7 @@ import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
+import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
@@ -58,6 +60,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private PasswordEncoderUtil _passwordEncoderMock;
     @Mock
     private TokenService _tokenServiceMock;
+    @Mock
+    ShopFacade _shopFacadeMock;
+    @Mock
+    ShoppingBasket _shoppingBasketMock;
+    @Mock
+    ShoppingCartFacade _shoppingCartFacadeMock;
 
     // other private fields
     private static String token = "token";
@@ -1330,8 +1338,61 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean TestUserWriteReviewOnPurchasedProduct(String username, String password, String productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserWriteReviewOnPurchasedProduct'");
+        
+        // assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product1") ); // success - the user secceeded to write a review
+        // assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product2") ); // fail - the user did not porchased this product
+
+        // Arrange
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // initiate a user object
+        User user = new User(username, password, "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(username);
+        _shoppingCartFacade.addCartForUser(username, user);
+        
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        Response res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        Response res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
+
+        // this user adds a product to the shopping cart using UserService
+        Response res3 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+
+        // this user buys the product using UserService
+        List<Integer> shoppingBackets = new ArrayList<>();
+        shoppingBackets.add(0);
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(shoppingBackets, "123456789", "address");
+        Response res4 = _userServiceUnderTest.purchaseCart(token, purchaseCartDetailsDto);
+
+        // Act
+        Response res5 = _userServiceUnderTest.writeReview(token, Integer.parseInt(productId), 0, "review");
+
+        // Assert
+        if(res1.getErrorMessage() != null)
+            logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res1.getErrorMessage());
+        if(res2.getErrorMessage() != null)
+            logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res2.getErrorMessage());
+        if(res3.getErrorMessage() != null)
+            logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res3.getErrorMessage());
+        if(res4.getErrorMessage() != null)
+            logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res4.getErrorMessage());
+        logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res5.getErrorMessage());
+        return res5.getErrorMessage() == null;
     }
 
     @Override
