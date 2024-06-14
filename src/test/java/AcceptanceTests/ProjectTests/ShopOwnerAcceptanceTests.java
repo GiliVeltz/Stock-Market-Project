@@ -31,8 +31,6 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can remove products from the shop.
-    // TODO: implement in ShopService
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerRemoveProductFromShop() {
         assertTrue(_bridge.testShopOwnerRemoveProductFromShop("shopOwner", "0", "ProductName") ); // success

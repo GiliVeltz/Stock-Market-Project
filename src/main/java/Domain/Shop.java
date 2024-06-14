@@ -529,16 +529,18 @@ public class Shop {
      * 
      * @param username the username of the function activator
      * @param product  the new product we want to add
-     * @throws ProductAlreadyExistsException
-     * @throws ShopException
-     * @throws PermissionException
+     * @throws StockMarketException
      */
-    public void addProductToShop(String username, Product product)
-            throws ProductAlreadyExistsException, ShopException, PermissionException, StockMarketException {
+    public void addProductToShop(String username, Product product) throws StockMarketException {
+        // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addProductToShop: " + username + " trying get add product "
                 + product.getProductName() + " in the shop with id " + _shopId);
+
+        // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot add product.");
+
+        // check if user has permission to add product
         if (!checkPermission(username, Permission.ADD_PRODUCT)) {
             logger.log(Level.SEVERE, "Shop - addProductToShop: user " + username
                     + " doesn't have permission to add products in shop with id " + _shopId);
@@ -546,16 +548,68 @@ public class Shop {
                     "User " + username + " doesn't have permission to add product in shop with id " + _shopId);
         }
 
+        // check if product already exists
         if (_productMap.containsKey(product.getProductId())) {
             logger.log(Level.SEVERE, "Shop - addProductToShop: Error while trying to add product with id: "
                     + product.getProductId() + " to shop with id " + _shopId);
             throw new ProductAlreadyExistsException("Product with ID " +
                     product.getProductId() + " already exists.");
         }
-        _productMap.put(product.getProductId(), product); // Add product to the map
+        
+        // All constraints checked - add product to the shop
+        _productMap.put(product.getProductId(), product);
+
+        // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addProductToShop: " + username + " successfully added product "
                 + product.getProductName() + " in the shop with id " + _shopId);
     }
+
+    /**
+     * Remove product from the shop.
+     * 
+     * @param username the username of the function activator
+     * @param _productName  the product name we want to remove
+     * @throws StockMarketException
+     */
+    public synchronized void removeProductFromShop(String userName, String _productName) throws StockMarketException {
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - removeProductFromShop: " + userName + " trying get remove product "
+                + _productName + " in the shop with id " + _shopId);
+
+        // check if shop is closed
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot remove product.");
+
+        // check if user has permission to remove product, or the user is the founder or the owner (dont need specific permission to remove products)
+        if (!checkPermission(userName, Permission.DELETE_PRODUCT) && !checkPermission(userName, Permission.FOUNDER) && !checkPermission(userName, Permission.OWNER)){
+            logger.log(Level.SEVERE, "Shop - removeProductFromShop: user " + userName
+                    + " doesn't have permission to remove products in shop with id " + _shopId);
+            throw new PermissionException(
+                    "User " + userName + " doesn't have permission to remove product in shop with id " + _shopId);
+        }
+
+        // check if product exists
+        Product product = null;
+        for (Product p : _productMap.values()) {
+            if (p.getProductName().equals(_productName)) {
+                product = p;
+                break;
+            }
+        }
+        if (product == null) {
+            logger.log(Level.SEVERE, "Shop - removeProductFromShop: Error while trying to remove product with name: "
+                    + _productName + " from shop with id " + _shopId);
+            throw new ProductDoesNotExistsException("Product with name " + _productName + " does not exist.");
+        }
+
+        // All constraints checked - remove product from the shop
+        _productMap.remove(product.getProductId());
+
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - removeProductFromShop: " + userName + " successfully removed product "
+                + _productName + " in the shop with id " + _shopId);
+    }
+
 
     public Product getProductById(Integer productId) throws ProductDoesNotExistsException {
         // check if product exists

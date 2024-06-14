@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import Domain.Discounts.Discount;
 import Domain.Discounts.PrecentageDiscount;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -928,6 +930,83 @@ public class ShopTests {
         assertThrows(ProductAlreadyExistsException.class, () -> {
             shop.addProductToShop(username, product);
         });
+    }
+
+    @Test
+    public void testRemoveProductFromShop_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> {
+            shop.removeProductFromShop(username, product.getProductName());
+        });
+    }
+
+    @Test
+    public void testRemoveProductFromShop_whenProductDoesNotExist_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.DELETE_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> {
+            shop.removeProductFromShop(username, "product1");
+        });
+    }
+
+    @Test
+    public void testRemoveProductFromShop_whenUserHasPermission_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.DELETE_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.removeProductFromShop(username, product.getProductName());
+
+        // Assert
+        assertEquals(0, shop.getShopProducts().size());
+    }
+
+    @Test
+    public void testRemoveProductFromShop_whenUserIsTheFounder_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.removeProductFromShop(username, product.getProductName());
+
+        // Assert
+        assertEquals(0, shop.getShopProducts().size());
+    }
+
+    @Test
+    public void testRemoveProductFromShop_whenUserIsTheOwner_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        shop.AppointOwner(username, "owner");
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.removeProductFromShop(username, product.getProductName());
+
+        // Assert
+        assertEquals(0, shop.getShopProducts().size());
     }
 
     @Test
