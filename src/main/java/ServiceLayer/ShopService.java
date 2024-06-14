@@ -164,6 +164,38 @@ public class ShopService {
                     productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        return response;
+    }
+
+    
+    /**
+     * Removes a product from the specified shop.
+     * 
+     * @param shopId     The ID of the shop to which the product will be removed.
+     * @param productDto The product to be removed from the shop.
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response removeProductFromShop(String token, Integer shopId, ProductDto productDto) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    _shopFacade.removeProductFromShop(shopId, productDto, userName);
+                    logger.info(String.format("The product %s :: removed by: %s from Shop ID: %d",
+                            productDto._productName, userName, shopId));
+                } else {
+                    throw new Exception(String.format("User %s does not have permissions", userName));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
+                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
 
         return response;
     }

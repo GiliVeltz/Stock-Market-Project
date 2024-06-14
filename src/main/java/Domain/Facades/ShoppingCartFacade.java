@@ -2,11 +2,14 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Order;
+import Domain.ShoppingBasket;
 import Domain.ShoppingCart;
 import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
@@ -24,6 +27,12 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
+    }
+
+    // only for tests!
+    public ShoppingCartFacade(ShoppingCartRepositoryInterface cartsRepo) {
+        _guestsCarts = new HashMap<>();
+        _cartsRepo = cartsRepo;
     }
 
     // Public method to provide access to the _shoppingCartFacade
@@ -141,5 +150,45 @@ public class ShoppingCartFacade {
 
     public Map<String, ShoppingCart> get_guestsCarts() {
         return _guestsCarts;
+    }
+
+    /*
+     * get user cart.
+     * If user already has a cart - we will return the same cart as before.
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we
+     * will use it's guest cart
+     */
+    public ShoppingCart getUserCart(String username) throws StockMarketException {
+        if (_cartsRepo.getCartByUsername(username) == null) {
+            throw new StockMarketException("user does not have a cart");
+        }
+        return _cartsRepo.getCartByUsername(username);
+    }
+  
+    // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
+    // next, this function will add a review on the product in the shop (if he still exists).
+    @SuppressWarnings({ "null" })
+    public void writeReview(String username, List<Order> purchaseHistory, int productID, int shopID, String review) throws StockMarketException {
+        // check if the user has purchased the product in the past using purchaseHistory.
+        boolean foundProduct = false;
+        ShoppingBasket shoppingBasket = null;
+        for (Order order : purchaseHistory) {
+            Map<Integer, ShoppingBasket> productsByShoppingBasket = order.getProductsByShoppingBasket();
+            if (productsByShoppingBasket.containsKey(productID)){
+                shoppingBasket = productsByShoppingBasket.get(productID);
+                foundProduct = true;
+            }
+        }
+        if (!foundProduct) {
+            logger.log(Level.WARNING, "User has not purchased the product in the past.");
+            throw new StockMarketException("User has not purchased the product in the past.");
+        }
+        // check if the shop still exists.
+        if (shoppingBasket.getShopId() != shopID) {
+            logger.log(Level.WARNING, "Shop does not exist.");
+            throw new StockMarketException("Shop does not exist.");
+        }
+        // add the review.
+        shoppingBasket.getShop().addReview(username, productID, review);
     }
 }
