@@ -2,11 +2,14 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Order;
+import Domain.ShoppingBasket;
 import Domain.ShoppingCart;
 import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
@@ -151,19 +154,28 @@ public class ShoppingCartFacade {
 
     // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
     // next, this function will add a review on the product in the shop (if he still exists).
-    @SuppressWarnings("unlikely-arg-type")
-    public void writeReview(String username, int productID, int shopID, String review) throws StockMarketException {
-        // check if the user has purchased the product in the past.
-        if (!_cartsRepo.getCartByUsername(username).getPurchases().containsKey(productID)) {
+    @SuppressWarnings({ "null" })
+    public void writeReview(String username, List<Order> purchaseHistory, int productID, int shopID, String review) throws StockMarketException {
+        // check if the user has purchased the product in the past using purchaseHistory.
+        boolean foundProduct = false;
+        ShoppingBasket shoppingBasket = null;
+        for (Order order : purchaseHistory) {
+            Map<Integer, ShoppingBasket> productsByShoppingBasket = order.getProductsByShoppingBasket();
+            if (productsByShoppingBasket.containsKey(productID)){
+                shoppingBasket = productsByShoppingBasket.get(productID);
+                foundProduct = true;
+            }
+        }
+        if (!foundProduct) {
             logger.log(Level.WARNING, "User has not purchased the product in the past.");
             throw new StockMarketException("User has not purchased the product in the past.");
         }
         // check if the shop still exists.
-        if (_cartsRepo.getCartByUsername(username).getPurchases().get(productID).getShopId() != shopID) {
+        if (shoppingBasket.getShopId() != shopID) {
             logger.log(Level.WARNING, "Shop does not exist.");
             throw new StockMarketException("Shop does not exist.");
         }
         // add the review.
-        _cartsRepo.getCartByUsername(username).getPurchases().get(productID).getShop().addReview(username, productID, review);
+        shoppingBasket.getShop().addReview(username, productID, review);
     }
 }

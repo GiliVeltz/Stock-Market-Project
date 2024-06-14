@@ -282,7 +282,9 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
-                    _shoppingCartFacade.writeReview(_tokenService.extractUsername(token), productID, shopID, review);
+                    String username = _tokenService.extractUsername(token);
+                    List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
+                    _shoppingCartFacade.writeReview(username, purchaseHistory, productID, shopID, review);
                 } else {
                     throw new Exception("Token is incorrect");
                 }

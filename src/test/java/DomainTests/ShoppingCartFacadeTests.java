@@ -16,8 +16,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,6 +54,9 @@ public class ShoppingCartFacadeTests {
 
     @Mock
     private Shop _shopMock;
+
+    @Mock
+    private Order _orderMock;
 
     private ShoppingCartFacade shoppingCartFacadeUnderTest;
 
@@ -173,17 +176,23 @@ public class ShoppingCartFacadeTests {
         when(_basketMock.getShop()).thenReturn(_shopMock);
         doNothing().when(_shopMock).addReview(username, productID, review);
 
+        List<Order> purchaseHistory = List.of(_orderMock);
+        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+        shoppingBasketMap.put(productID, _basketMock);
+        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+
         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
 
         // Act & Assert
         try {
-            shoppingCartFacadeUnderTest.writeReview(username, productID, shopID, review);
+            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("testWriteReview_whenUserHasPurchasedProduct_thenWriteReview Exception thrown when not expected: " + e.getMessage());
         }
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testWriteReview_whenShopDoesNotExist_thenWriteReviewFail() {
         // Arrange
@@ -198,14 +207,20 @@ public class ShoppingCartFacadeTests {
         when(_basketMock.getShopId()).thenReturn(2);
         when(_basketMock.getShop()).thenReturn(_shopMock);
 
+        List<Order> purchaseHistory = List.of(_orderMock);
+        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+        shoppingBasketMap.put(productID, _basketMock);
+        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+
         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {
-            shoppingCartFacadeUnderTest.writeReview(username, productID, shopID, review);
+            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
         });
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testWriteReview_whenUserHasNotPurchasedProduct_thenWriteReviewFail() {
         // Arrange
@@ -217,11 +232,17 @@ public class ShoppingCartFacadeTests {
         when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
         when(_hashMapMock.containsKey(productID)).thenReturn(false);
 
+        List<Order> purchaseHistory = List.of(_orderMock);
+        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+        shoppingBasketMap.put(productID, _basketMock);
+        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+
+
         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {
-            shoppingCartFacadeUnderTest.writeReview(username, productID, shopID, review);
+            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
         });
     }
 }
