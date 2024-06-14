@@ -54,7 +54,7 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void doSomethingAfterStartup() {
+    public void AfterStartup() {
 
         String token = fetchAndStoreToken("8080");
         System.out.println("Token:" + token);

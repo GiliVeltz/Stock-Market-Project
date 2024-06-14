@@ -65,28 +65,29 @@ public class WebSocketServer extends TextWebSocketHandler {
             return;
         }
 
-        String username = tokenService.extractUsername(token);
-        String clientKey = (username != null) ? username : "guest-" + token;
+        // String username = tokenService.extractUsername(token);
+        // String clientKey = (username != null) ? username : "guest-" + token;
+        String clientKey = "guest-" + token;
 
-        if (username != null && tokenService.isUserAndLoggedIn(token)) {
-            // User is logged in
-            sessions.put(clientKey, session);
-            System.out.println("Connected: " + clientKey);
+        // if (username != null && tokenService.isUserAndLoggedIn(token)) {
+        //     // User is logged in
+        //     sessions.put(clientKey, session);
+        //     System.out.println("Connected: " + clientKey);
 
-            // Send any queued messages sent while user was loggedOut
-            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
-            while (!queue.isEmpty()) {
-                String message = queue.poll();
-                if (session.isOpen()) {
-                    session.sendMessage(new TextMessage(message));
-                }
-            }
-            messageQueues.remove(username);
-        } else {
+        //     // Send any queued messages sent while user was loggedOut
+        //     Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+        //     while (!queue.isEmpty()) {
+        //         String message = queue.poll();
+        //         if (session.isOpen()) {
+        //             session.sendMessage(new TextMessage(message));
+        //         }
+        //     }
+        //     messageQueues.remove(username);
+        // } else {
             // User is a guest
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
-        }
+        // }
         if (sessions.size() > 1) {
             broadcastMessage("Hello all clients!");
             
