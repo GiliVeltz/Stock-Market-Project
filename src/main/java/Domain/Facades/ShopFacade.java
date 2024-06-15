@@ -700,6 +700,10 @@ public class ShopFacade {
     public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        if (shop.isShopClosed())
+            throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeShopPolicy(username, shopRules);
     }
 }
