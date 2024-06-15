@@ -123,4 +123,32 @@ public class ProductTests {
         assertFalse(result);
     }
 
+    @Test
+    public void testAddReview_whenReviewAdded_thenSuccess()  {
+        // Arrange - Create a new Product object.
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(10);
+        
+        // Act
+        product.addReview("user1", "good product");
+        product.addReview("user2", "bad product");
+        
+        // Assert
+        assertEquals(2, product.getReviews().size());
+    }
+
+    @Test
+    public void testAddReview_whenReviewAdded_thenCorrectReviewAdded()  {
+        // Arrange - Create a new Product object.
+        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+        product.updateProductQuantity(10);
+        
+        // Act
+        product.addReview("user1", "good product");
+        product.addReview("user2", "bad product");
+        
+        // Assert
+        assertEquals("good product", product.getReviews().get("user1"));
+        assertEquals("bad product", product.getReviews().get("user2"));
+    }
 }

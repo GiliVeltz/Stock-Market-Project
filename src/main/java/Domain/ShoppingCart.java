@@ -58,19 +58,43 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details) throws StockMarketException {
+    public void purchaseCart(PurchaseCartDetailsDto details, int ordersId)
+            throws PaymentFailedException, ShippingFailedException, StockMarketException {
         purchaseCartEditStock(details.basketsToBuy);
+        Map<Double, String> priceToShopDetails = new HashMap<>();
+        double overallPrice = 0;
+
+        for (Integer basketNum : details.getBasketsToBuy()) {
+            ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+            double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
+            overallPrice += amountToPay;
+            priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
+        }
+
         try {
-            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
-                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.checkIfPaymentOk(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.checkIfDeliverOk(details.address, shoppingBasket.getShopAddress());
+            _paymentMethod.checkIfPaymentOk(details.cardNumber);
+            _supplyMethod.checkIfDeliverOk(details.address);
+
+            _paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
+
+            List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
+            for (Integer basketNum : details.getBasketsToBuy()) {
+                ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+                shoppingBasketsForOrder.add(shoppingBasket);
+                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
+                                                                                         // deliver too.
             }
-            for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
-                double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
-                _paymentMethod.pay(details.cardNumber, shoppingBasket.getShopBankDetails(), amountToPay);
-                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
+
+            if (_user != null) {
+                Order order = new Order(ordersId, shoppingBasketsForOrder);
+                _user.addOrder(order);
             }
+
+            for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
+                ShopOrder shopOrder = new ShopOrder(ordersId, shoppingBasket.getShop().getShopId(), shoppingBasket);
+                shoppingBasket.getShop().addOrderToOrderHistory(shopOrder);
+            }
+
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
@@ -78,10 +102,9 @@ public class ShoppingCart {
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
-            _paymentMethod.refound(details.cardNumber);
+            _paymentMethod.refound(details.cardNumber, overallPrice);
             throw new ShippingFailedException("Shipping failed");
         }
-
     }
 
     /*
@@ -222,5 +245,24 @@ public class ShoppingCart {
             }
         }
         return products;
+    }
+
+    // return all the purchases in the cart
+    public Map<String, ShoppingBasket> getPurchases() {
+        Map<String, ShoppingBasket> purchases = new HashMap<String, ShoppingBasket>();
+        for (ShoppingBasket basket : _shoppingBaskets) {
+            purchases.put(basket.getShop().getShopName(), basket);
+        }
+        return purchases;
+    }
+
+    // return true if the cart has a basket with the given shopID
+    public boolean containsKey(int shopID) {
+        for (ShoppingBasket basket : _shoppingBaskets) {
+            if (basket.getShop().getShopId() == shopID) {
+                return true;
+            }
+        }
+        return false;
     }
 }
