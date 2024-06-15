@@ -2,6 +2,8 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Exceptions.UnauthorizedException;
 
 @Service
 public class UserService {
@@ -37,7 +40,7 @@ public class UserService {
 
     // this function is responsible for logging in a user to the system by checking
     // the credentials and generating a token for the user
-    public Response logIn(String token, String userName, String password) {
+    public ResponseEntity<Response> logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -46,63 +49,67 @@ public class UserService {
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     User user = _userFacade.getUserByUsername(userName);
+                    System.out.println("user"+user.getUserName()+"password"+user.getPassword());
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
                     response.setReturnValue(_tokenService.generateUserToken(userName));
-                    logger.info("User " + userName + " Logged In Succesfully");
+                    logger.info("User " + userName + " Logged In Successfully");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("LogIn Failed: " + e.getMessage());
             logger.log(Level.SEVERE, "LogIn Failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
-    // this function is responsible for logging out a user from the system by
-    // returning a new token for a guest in the system
-    public Response logOut(String token) {
+    public ResponseEntity<Response> logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
                     String newToken = _tokenService.generateGuestToken();
-                    logger.info("User successfuly logged out: " + userName);
+                    logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage("A user with the username given in the token does not exist.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            response.setErrorMessage("Token is invalid");
+            response.setErrorMessage("Token is invalid: " + e.getMessage());
             logger.log(Level.SEVERE, "LogOut failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for registering a new user to the system
-    public Response register(String token, UserDto userDto) {
+    public ResponseEntity<Response> register(String token, UserDto userDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 _userFacade.register(userDto);
                 logger.info("User registered: " + userDto.username);
-                response.setReturnValue("Registeration Succeed");
+                response.setReturnValue("Registration Succeeded");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            response.setErrorMessage("Registeration failed: " + e.getMessage());
-            logger.log(Level.SEVERE, "Registeration failed: " + e.getMessage(), e);
+            response.setErrorMessage("Registration failed: " + e.getMessage());
+            logger.log(Level.SEVERE, "Registration failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
+
 
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart

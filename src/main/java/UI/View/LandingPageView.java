@@ -14,11 +14,9 @@ import com.vaadin.flow.server.VaadinSession;
 @PageTitle("Landing Page")
 @Route(value = "")
 @RouteAlias(value = "")
-public class LandingPageView extends VerticalLayout implements ViewPageI {
+public class LandingPageView extends BaseView implements ViewPageI {
 
     
-    private LandingPagePresenter presenter;
-
     public LandingPageView() {
         System.setProperty("server.port", "8080");
 
@@ -37,12 +35,6 @@ public class LandingPageView extends VerticalLayout implements ViewPageI {
         Button gotToUser = new Button("Go to User Page", e -> navigateToUserMainPage());
         // Add components to the vertical layout
         add(header, titleLayout, gotToUser);
-
-        // Initialize presenter
-        presenter = new LandingPagePresenter(this);
-        
-        // Send the enterSystem request
-        presenter.sendEnterSystemRequest();
     }
 
 

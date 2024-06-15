@@ -1,5 +1,10 @@
 package UI.View;
 
+import java.time.LocalDate;
+import java.util.Date;
+
+import com.vaadin.flow.component.datepicker.DatePicker; 
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -13,13 +18,14 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
 
-public class Header extends HorizontalLayout implements ViewPageI{
+public class Header extends HorizontalLayout implements ViewPageI {
 
     private Button loginButton;
     private Button _registerButton;
     private Button openShopButton;
     private final HeaderPresenter presenter;
     private HorizontalLayout _leftButtonLayout;
+    private Dialog logoutConfirmationDialog;
 
     public Header(String serverPort) {
 
@@ -27,7 +33,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         presenter = new HeaderPresenter(this, serverPort);
 
         // Create the buttons
-        Button registerButton = new Button("Register");
+        _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
@@ -41,7 +47,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         openShopButton.addClickListener(event -> createOpenNewShopDialog().open());
 
         // Add cursor styling
-        registerButton.addClassName("pointer-cursor");
+        _registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
@@ -49,8 +55,8 @@ public class Header extends HorizontalLayout implements ViewPageI{
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
-        HorizontalLayout leftButtonLayout = new HorizontalLayout();
-        leftButtonLayout.add(registerButton, loginButton);
+        _leftButtonLayout = new HorizontalLayout();
+        _leftButtonLayout.add(_registerButton, loginButton);
 
         // Spacer to separate left and right buttons
         Span spacer = new Span();
@@ -61,7 +67,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
-        add(leftButtonLayout, spacer, rightButtonLayout);
+        add(_leftButtonLayout, spacer, rightButtonLayout);
 
         // Adjust button spacing if needed
         setWidthFull(); // Make the layout take full width
@@ -74,13 +80,18 @@ public class Header extends HorizontalLayout implements ViewPageI{
         Dialog loginDialog = createLoginDialog();
 
         // Create logout confirmation dialog
-        Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
+        logoutConfirmationDialog = createLogoutConfirmationDialog();
 
         // Add click listener to the login button
-        loginButton.addClickListener(event -> loginDialog.open());
+        loginButton.addClickListener(event -> {
+            if (!loginButton.getText().equals("Logout"))
+                loginDialog.open();
+            else
+                logoutConfirmationDialog.open();
+        });
 
         // Add click listener to the register button
-        registerButton.addClickListener(event -> registrationDialog.open());
+        _registerButton.addClickListener(event -> registrationDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -93,9 +104,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
         TextField usernameField = new TextField("Username");
         TextField emailField = new TextField("Email");
         PasswordField passwordField = new PasswordField("Password");
+        DatePicker birthdayPicker = new DatePicker("Birthday");
 
         // Add fields to the form layout
-        formLayout.add(usernameField, emailField, passwordField);
+        formLayout.add(usernameField, emailField, passwordField, birthdayPicker);
 
         // Create buttons
         Button submitButton = new Button("Submit", event -> {
@@ -103,8 +115,11 @@ public class Header extends HorizontalLayout implements ViewPageI{
             String username = usernameField.getValue();
             String email = emailField.getValue();
             String password = passwordField.getValue();
+            Date birthday = convertToDate(birthdayPicker.getValue()); // Convert LocalDate to Date
 
-            presenter.registerUser(username, email, password);
+            // Validate fields (add your validation logic here)
+
+            presenter.registerUser(username, email, password, birthday);
 
             // Close the dialog after submission
             dialog.close();
@@ -112,7 +127,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
 
         submitButton.addClassName("pointer-cursor");
 
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
 
         cancelButton.addClassName("pointer-cursor");
 
@@ -125,7 +143,22 @@ public class Header extends HorizontalLayout implements ViewPageI{
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
 
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                usernameField.clear();
+                emailField.clear();
+                passwordField.clear();
+                birthdayPicker.clear();
+            }
+        });
+
         return dialog;
+    }
+
+    // Method to convert LocalDate to Date
+    private Date convertToDate(LocalDate localDate) {
+        return java.sql.Date.valueOf(localDate);
     }
 
     private Dialog createLoginDialog() {
@@ -153,7 +186,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
             dialog.close();
         });
 
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
 
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
@@ -163,6 +199,14 @@ public class Header extends HorizontalLayout implements ViewPageI{
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                usernameField.clear();
+                passwordField.clear();
+            }
+        });
 
         return dialog;
     }
@@ -205,7 +249,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         _registerButton.setVisible(false);
     }
 
-    public void createBackToMainButton(){
+    public void createBackToMainButton() {
         Button backToMainButton = new Button("Back to Main Page", event -> {
             VaadinSession.getCurrent().setAttribute("username", "User");
             getUI().ifPresent(ui -> ui.navigate("user"));
@@ -216,10 +260,8 @@ public class Header extends HorizontalLayout implements ViewPageI{
         _leftButtonLayout.add(backToMainButton);
     }
 
-    public void createLogoutButton(){
-        Button logoutButton = new Button("Logout", event -> {
-            //Logout logic
-        });
+    public void createLogoutButton() {
+        Button logoutButton = new Button("Logout", event -> logoutConfirmationDialog.open());
 
         logoutButton.addClassName("pointer-cursor");
         _leftButtonLayout.remove(loginButton);
@@ -284,5 +326,13 @@ public class Header extends HorizontalLayout implements ViewPageI{
     @Override
     public void showErrorMessage(String message) {
         Notification.show(message);
+    }
+
+    public void switchToLogout() {
+        loginButton.setText("Logout");
+    }
+
+    public void switchToLogin() {
+        loginButton.setText("Login");
     }
 }

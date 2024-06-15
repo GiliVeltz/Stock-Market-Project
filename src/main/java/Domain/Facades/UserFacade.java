@@ -19,20 +19,20 @@ public class UserFacade {
     private static UserFacade _UserFacade;
     private UserRepositoryInterface _userRepository;
     private List<String> _guestIds;
-    private PasswordEncoderUtil _passwordEncoder;
     private EmailValidator _EmailValidator;
+    private PasswordEncoderUtil _passwordEncoder;
 
-    public UserFacade(List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder) {
+    public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
-        _passwordEncoder = passwordEncoder;
         _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
     }
 
     // Public method to provide access to the _UserFacade
     public static synchronized UserFacade getUserFacade() {
         if (_UserFacade == null) {
-            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>(), new PasswordEncoderUtil());
+            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
     }
@@ -49,18 +49,16 @@ public class UserFacade {
         return _userRepository.getUserByUsername(username);
     }
 
-    public boolean AreCredentialsCorrect(String username, String password) throws StockMarketException {
+    public boolean AreCredentialsCorrect(String username, String raw_password) throws StockMarketException {
         User user = getUserByUsername(username);
         if (user != null) {
-            return this._passwordEncoder.matches(password, user.getEncodedPassword());
+            return _passwordEncoder.matches(raw_password, user.getPassword());
         }
         return false;
     }
 
     // this function is used to register a new user to the system.
-    public synchronized  void register(UserDto userDto) throws StockMarketException {
-        // TODO: remove the encoding - should be done in the front end
-        //String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+    public void register(UserDto userDto) throws StockMarketException {
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
         }
@@ -73,7 +71,8 @@ public class UserFacade {
         if (!_EmailValidator.isValidEmail(userDto.email)) {
             throw new StockMarketException("Email is not valid.");
         }
-
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
             _userRepository.addUser(new User(userDto));
         } else {

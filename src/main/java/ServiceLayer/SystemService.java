@@ -122,7 +122,7 @@ public class SystemService {
             logger.info("New guest entered into the system, ID:" + id);
             System.out.println("Entered user!!");
             _userFacade.addNewGuest(id);
-            _shoppingCartFacade.addCartForGuest(token);
+            _shoppingCartFacade.addCartForGuest(id);
             response.setReturnValue(token);
         } catch (Exception e) {
             response.setErrorMessage("Guest uuid failed: " + e.getMessage());
