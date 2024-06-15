@@ -864,6 +864,16 @@ public class Shop {
     public void ValidateProdcutPolicy(User u, Product p) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: " + _shopId);
+        
+        // if the user recived is null, means its a guest user in the system, so we need to check if the product policy allows guest users (have any policy)
+        if (u == null) {
+            if (p.getProductPolicy().getRules().size() > 0){
+                logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: the product " + p.getProductName() + " in shop with id: " + _shopId + " doesn't allow guest users");
+                throw new ProdcutPolicyException("Guest user violates the shop policy of shop with id: " + _shopId);
+            }
+            return;
+        }
+
         if (!p.getProductPolicy().evaluate(u)) {
             logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User " + u.getUserName()
                     + " violates the product policy of product " + p.getProductName() + " in shop with id: " + _shopId);
