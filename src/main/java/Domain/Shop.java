@@ -1019,6 +1019,10 @@ public class Shop {
         return _shopPolicy.toString();
     }
 
+    public ShopPolicy getShopPolicy() {
+        return _shopPolicy;
+    }
+
     public String getProductPolicyInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductPolicyInfo();
