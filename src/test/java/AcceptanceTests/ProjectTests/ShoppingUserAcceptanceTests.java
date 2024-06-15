@@ -107,11 +107,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test a User can watch his items in the shopping cart as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testCheckAndViewItemsInShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsUser() ); // success
-        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsUser() ); // fail
+        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsUser("success") ); // success
+        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsUser("fail") ); // fail
     }
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.

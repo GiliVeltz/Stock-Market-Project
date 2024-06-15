@@ -264,6 +264,28 @@ public class UserService {
         return response;
     }
 
+    // this function is responsible for getting the shopping cart of a user: returns a list of products in the cart.
+    public Response getShoppingCart(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isGuest(token)) {
+                    response.setReturnValue(_shoppingCartFacade.getGuestCart(_tokenService.extractGuestId(token)));
+                } else if (_tokenService.isUserAndLoggedIn(token)) {
+                    response.setReturnValue(_shoppingCartFacade.getUserCart(_tokenService.extractUsername(token)));
+                } else {
+                    throw new Exception("Token is incorrect");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get shopping cart: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get shopping cart: " + e.getMessage(), e);
+        }
+        return response;
+    }
+    
     // this function is responsible for changing the email of a user.
     public Response changeEmail(String username, String email){
         Response response = new Response();

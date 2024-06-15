@@ -121,7 +121,7 @@ public interface BridgeInterface {
     boolean testAddProductToShoppingCartAsUser(String productId, String shopId);
     
     @Test
-    boolean testCheckAndViewItemsInShoppingCartAsUser();
+    boolean testCheckAndViewItemsInShoppingCartAsUser(String status);
     
     @Test
     boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address);

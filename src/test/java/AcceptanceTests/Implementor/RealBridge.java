@@ -1258,10 +1258,58 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testCheckAndViewItemsInShoppingCartAsUser() {
-        // TODO Auto-generated method stub
-        // TODO 423 Task
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckAndViewItemsInShoppingCartAsUser'");
+    public boolean testCheckAndViewItemsInShoppingCartAsUser(String status) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        String username = "username";
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(token)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User(username, _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initialize _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+        
+        // create a shopping cart for the user
+        _shoppingCartFacade.addCartForGuest(username);
+        _shoppingCartFacade.addCartForUser(username, user);
+
+        // user opens shop and adds product to it
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        _shopFacade = new ShopFacade();
+        try {
+            _shopFacade.openNewShop(username, shopDto);
+            _shopFacade.addProductToShop(0, productDto, username);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAndViewItemsInShoppingCartAsUser Error message: " + e.getMessage());
+            return false;
+        }
+
+        // user adds product to shopping cart
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+
+        // Act
+        Response res = _userServiceUnderTest.getShoppingCart(token);
+
+        // Assert
+        logger.info("testCheckAndViewItemsInShoppingCartAsUser Error message: " + res.getErrorMessage());
+        if(status.equals("fail"))
+            return res.getErrorMessage() != null;
+        return res.getErrorMessage() == null;
     }
 
     @Override
