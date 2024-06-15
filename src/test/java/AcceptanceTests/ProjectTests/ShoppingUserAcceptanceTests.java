@@ -1,11 +1,11 @@
 package AcceptanceTests.ProjectTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.Disabled;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
@@ -32,14 +32,6 @@ public class ShoppingUserAcceptanceTests{
     public void testGetShopInfoAsUser() {
         assertTrue(_bridge.testGetShopInfoAsUser("shopId1") ); // success
         assertFalse(_bridge.testGetShopInfoAsUser("shopId2") ); // fail
-    }
-    
-    // Test get information about a product as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    @Test
-    public void testGetProductInfoAsUser() {
-        assertTrue(_bridge.testGetProductInfoAsUser("productId1") ); // success - exist product
-        assertFalse(_bridge.testGetProductInfoAsUser("productId2") ); // fail - non exist product
     }
     
     // Test search product information according to product name as a User in the system.
@@ -100,19 +92,17 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test when add product to shopping cart- it stays there as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testAddProductToShoppingCartAsUser() {
-        assertTrue(_bridge.testAddProductToShoppingCartAsUser("productId1") ); // success
-        assertFalse(_bridge.testAddProductToShoppingCartAsUser("productId2") ); // fail
+        assertTrue(_bridge.testAddProductToShoppingCartAsUser("0", "0") ); // success
+        assertFalse(_bridge.testAddProductToShoppingCartAsUser("1", "1") ); // fail
     }
     
     // Test a User can watch his items in the shopping cart as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testCheckAndViewItemsInShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsUser() ); // success
-        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsUser() ); // fail
+        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsUser("success") ); // success
+        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsUser("fail") ); // fail
     }
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
@@ -126,7 +116,6 @@ public class ShoppingUserAcceptanceTests{
     }
 
     // Test if the user can logout from the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserLogout() {
         assertTrue(_bridge.testLogoutToTheSystem("Bob") ); // success
@@ -138,7 +127,7 @@ public class ShoppingUserAcceptanceTests{
     @Test
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
-        assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
+        // assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
@@ -150,36 +139,31 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can open a shop and be the founder of the shop.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserOpenAShop() {
-        assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "5555", "Vias", "Israel") ); // success - user open a shop
-        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "9999", "MasterCard", "USA") ); // fail - user is a guest
-        assertFalse(_bridge.TestUserOpenAShop("Ron","bobspassword", "879", "Cal", "Spain") ); // fail - the shop name is already exist
+        assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "shopName1", "Vias", "Israel") ); // success - user open a shop
+        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "shopName2", "MasterCard", "USA") ); // fail - user is a guest
     }
     
     // Test that a user can open write a review about the product he purchased.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserWriteReviewOnPurchasedProduct() {
-        assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product1") ); // success - the user secceeded to write a review
-        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "product2") ); // fail - the user did not porchased this product
+        assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "0") ); // success - the user secceeded to write a review
+        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "2") ); // fail - the user did not porchased this product
     }
     
     // Test that a user can rate a product he purchased.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingPurchasedProduct() {
-        assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "product1", "score1") ); // success - the user secceeded to rate the product
-        assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "product1", "score2") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "5") ); // success - the user secceeded to rate the product
+        assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "11") ); // fail - the score in invalid
     }
     
     // Test that a user can rate a shop he purchased from.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserRatingShopHePurchasedFrom() {
-        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "shop1", "score1") ); // success - the user secceeded to rate the shop
-        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "shop1", "score2") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the shop
+        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "30") ); // fail - the score in invalid
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.

@@ -1,9 +1,12 @@
 package Domain;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.util.Map;
 
 import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
@@ -20,6 +23,7 @@ public class Product implements Cloneable {
     private Integer _productRatersCounter;
     private Category _category;
     private ProductPolicy _productPolicy;
+    private Map<String, String> _reviews; // usernames and reviews
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Constructor
@@ -35,41 +39,10 @@ public class Product implements Cloneable {
         this._productRating = -1.0;
         this._productRatersCounter = 0;
         this._productPolicy = new ProductPolicy();
+        this._reviews = new HashMap<>();
     }
 
-    public int getProductId() {
-        return _productId;
-    }
-
-    public String getProductName() {
-        return _productName;
-    }
-
-    public Category getCategory() {
-        return _category;
-    }
-
-    public double getPrice() {
-        return _price;
-    }
-
-    public void addKeyword(String keyword) {
-        _keywords.add(keyword);
-    }
-
-    public Double getProductRating() {
-        return _productRating;
-    }
-
-    public ProductPolicy getProductPolicy(){
-        return _productPolicy;
-    }
-
-    //set product price
-    public void setPrice(double price) {
-        _price = price;
-    }
-
+    // this function responsible for adding a rating to the product
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
             throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
@@ -82,7 +55,8 @@ public class Product implements Cloneable {
         _productRatersCounter++;
     }
 
-    public void purchaseProduct() throws StockMarketException {
+    // this function responsible for purchasing a product: decrease the quantity of the product by 1 and add the product to the user's cart
+    public synchronized void purchaseProduct() throws StockMarketException {
         if (_quantity == 0) {
             logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");
@@ -93,10 +67,15 @@ public class Product implements Cloneable {
                 + " had been purchased -- -1 to stock.");
     }
 
-    public void cancelPurchase() {
+    public synchronized void cancelPurchase() {
         _quantity++;
         logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId
                 + " had been purchased cancel -- +1 to stock.");
+    }
+
+    // this function add a review to the product
+    public void addReview(String username, String review) {
+        _reviews.put(username, review);
     }
 
     @Override
@@ -143,6 +122,8 @@ public class Product implements Cloneable {
         _quantity = newQuantitiy;
     }
 
+    // Getters and Setters
+    
     public Integer getProductQuantity() {
         return _quantity;
     }
@@ -153,5 +134,52 @@ public class Product implements Cloneable {
 
     public String getProductGeneralInfo() {
         return "Product ID: " + _productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
+    }
+
+    public Integer getProductId() {
+        return _productId;
+    }
+
+    public String getProductName() {
+        return _productName;
+    }
+
+    public Category getCategory() {
+        return _category;
+    }
+
+    public double getPrice() {
+        return _price;
+    }
+
+    public void addKeyword(String keyword) {
+        _keywords.add(keyword);
+    }
+
+    public Double getProductRating() {
+        return _productRating;
+    }
+
+    public ProductPolicy getProductPolicy(){
+        return _productPolicy;
+    }
+
+    // set product name
+    public void setProductName(String productName) {
+        _productName = productName;
+    }
+
+    // set product category
+    public void setCategory(Category category) {
+        _category = category;
+    }
+
+    // set product price
+    public void setPrice(double price) {
+        _price = price;
+    }
+
+    public Map<String, String> getReviews() {
+        return _reviews;
     }
 }

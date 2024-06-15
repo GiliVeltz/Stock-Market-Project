@@ -2,11 +2,14 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Order;
+import Domain.ShoppingBasket;
 import Domain.ShoppingCart;
 import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
@@ -24,6 +27,12 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
+    }
+
+    // only for tests!
+    public ShoppingCartFacade(ShoppingCartRepositoryInterface cartsRepo) {
+        _guestsCarts = new HashMap<>();
+        _cartsRepo = cartsRepo;
     }
 
     // Public method to provide access to the _shoppingCartFacade
@@ -52,10 +61,15 @@ public class ShoppingCartFacade {
         if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
             _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
         }
+
         // add the user to the cart
         _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }
 
+    /*
+     * Add a product to a user cart by username.
+     * This method called when a user add a product to his cart.
+     */
     public void addProductToUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
@@ -66,6 +80,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Add a product to a guest cart by token.
+     * This method called when a guest user add a product to his cart.
+     */
     public void addProductToGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
@@ -76,6 +94,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Remove a product from a user cart by username.
+     * This method called when a user remove a product from his cart.
+     */
     public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
@@ -86,6 +108,10 @@ public class ShoppingCartFacade {
         }
     }
 
+    /*
+     * Remove a product from a guest user cart by token.
+     * This method called when a guest user remove a product from his cart.
+     */
     public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
@@ -111,11 +137,68 @@ public class ShoppingCartFacade {
             allBaskets.add(i + 1);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details);
+        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());
     }
 
+    /*
+     * Purchase the cart of a user.
+     */
     public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details);
+        _cartsRepo.getCartByUsername(username).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+    }
+
+    public Map<String, ShoppingCart> get_guestsCarts() {
+        return _guestsCarts;
+    }
+
+    /*
+     * get user cart.
+     * If user already has a cart - we will return the same cart as before.
+     * If user don't have a cart (Just registerd/ already purchase the cart) - we
+     * will use it's guest cart
+     */
+    public ShoppingCart getUserCart(String username) throws StockMarketException {
+        if (_cartsRepo.getCartByUsername(username) == null) {
+            throw new StockMarketException("user does not have a cart");
+        }
+        return _cartsRepo.getCartByUsername(username);
+    }
+
+    /*
+     * get guest cart.
+     */
+    public ShoppingCart getGuestCart(String guest) throws StockMarketException {
+        if (_guestsCarts.get(guest) == null) {
+            throw new StockMarketException("guest does not have a cart");
+        }
+        return _guestsCarts.get(guest);
+    }
+  
+    // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
+    // next, this function will add a review on the product in the shop (if he still exists).
+    @SuppressWarnings({ "null" })
+    public void writeReview(String username, List<Order> purchaseHistory, int productID, int shopID, String review) throws StockMarketException {
+        // check if the user has purchased the product in the past using purchaseHistory.
+        boolean foundProduct = false;
+        ShoppingBasket shoppingBasket = null;
+        for (Order order : purchaseHistory) {
+            Map<Integer, ShoppingBasket> productsByShoppingBasket = order.getProductsByShoppingBasket();
+            if (productsByShoppingBasket.containsKey(productID)){
+                shoppingBasket = productsByShoppingBasket.get(productID);
+                foundProduct = true;
+            }
+        }
+        if (!foundProduct) {
+            logger.log(Level.WARNING, "User has not purchased the product in the past.");
+            throw new StockMarketException("User has not purchased the product in the past.");
+        }
+        // check if the shop still exists.
+        if (shoppingBasket.getShopId() != shopID) {
+            logger.log(Level.WARNING, "Shop does not exist.");
+            throw new StockMarketException("Shop does not exist.");
+        }
+        // add the review.
+        shoppingBasket.getShop().addReview(username, productID, review);
     }
 }

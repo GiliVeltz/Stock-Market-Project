@@ -166,12 +166,12 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testAddProductToShoppingCartAsUser(String productId) {
+    public boolean testAddProductToShoppingCartAsUser(String productId, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartAsUser' in ProxyBridge class");
     }
 
     @Override
-    public boolean testCheckAndViewItemsInShoppingCartAsUser() {
+    public boolean testCheckAndViewItemsInShoppingCartAsUser(String status) {
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAndViewItemsInShoppingCartAsUser' in ProxyBridge class");
     }
 

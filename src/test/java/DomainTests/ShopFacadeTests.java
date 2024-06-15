@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +45,7 @@ public class ShopFacadeTests {
     private List<Shop> _shopsList = new ArrayList<>();
 
     // mock fields.
+
     @Mock
     private ShoppingBasket _shoppingBasketMock;
     @Mock
@@ -50,7 +58,8 @@ public class ShopFacadeTests {
     private Shop _shop2;
     private Shop _shop3;
     private ShopDto _shop4;
-    private ProductDto _product1;
+    private ProductDto _product1dto;
+    private ProductDto _product2dto;
     private Product _product2;
     private Product _product3;
 
@@ -61,11 +70,12 @@ public class ShopFacadeTests {
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
-        _shop1 = new Shop(1, "founderName1", "bank1", "addresss1");
-        _shop2 = new Shop(2, "founderName2", "bank2", "addresss2");
-        _shop3 = new Shop(3, "founderName3", "bank3", "addresss3");
-        _shop4 = new ShopDto("bank4", "addresss4");
-        _product1 = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
+        _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
+        _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
+        _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
+       _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
+        _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
         try{
@@ -158,12 +168,12 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to add a product to an existing shop
-        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1, _shop1.getFounderName());
+        _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
 
         // Assert - Verify that the product is added to the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(_product1._productName, _shop1.getShopProducts().get(0).getProductName());
+        assertEquals(_product1dto._productName, _shop1.getShopProducts().get(0).getProductName());
     }
 
     @Test
@@ -173,12 +183,354 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a non-existing shop
         try {
-            _ShopFacadeUnderTests.addProductToShop(3, _product1, "username1");
+            _ShopFacadeUnderTests.addProductToShop(3, _product1dto, "username1");
             fail("Adding a product to a non-existing shop should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
             assertEquals(0, _shopsList.size());
         }
+    }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to add a product to a non-existing shop
+        assertThrows(StockMarketException.class, () -> {
+            _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
+    }
+
+    @Test
+    public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product2dto, _shop1.getFounderName());
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        executor.shutdown(); // shut down executor service
+        Map<Integer, Product> products = _shop1.getAllProducts();
+        assertEquals(2, products.size());
+        assertNotEquals(products.get(0).getProductId(), products.get(1).getProductId());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopExist_thenRemoveProductSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from an existing shop
+        _ShopFacadeUnderTests.removeProductFromShop(_shop2.getShopId(), _product2dto, _shop2.getFounderName());
+
+        // Assert - Verify that the product is removed from the shop
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from a non-existing shop
+        try {
+            _ShopFacadeUnderTests.removeProductFromShop(3, _product1dto, "username1");
+            fail("Removing a product from a non-existing shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(0, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to remove a product from a non-existing shop
+        try {
+            _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            fail("Removing a product from a non-existing shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(1, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductsRemovingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        _shop1.addProductToShop("founderName1", _product2);
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        executor.shutdown(); // shut down executor service
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
+    }
+
+    @Test
+    public void testsRemoveProductFromShop_whenShopProductExist_thenRemoveProductSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        _shop1.addProductToShop("founderName1", _product2);
+
+        // Act - try to remove a product from an existing shop
+        _ShopFacadeUnderTests.removeProductFromShop(_shop1.getShopId(), _product2dto, "founderName1");
+
+        // Assert - Verify that the product is removed from the shop
+        assertEquals(1, _shopsList.size());
+        assertEquals(0, _shopsList.get(0).getShopProducts().size());
+    }
+    
+    // write test to new function editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew, String userName) I wrote in ShopFacade.java
+
+    @Test
+    public void testsEditProductInShop_whenShopProductExist_thenEditProductSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        _shop1.addProductToShop("founderName1", _product2);
+
+        // Act - try to edit a product from an existing shop
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
+
+        // Assert - Verify that the product is edited in the shop
+        assertEquals(1, _shopsList.size());
+        assertEquals(1, _shopsList.get(0).getShopProducts().size());
+        assertEquals(productDtoNew._productName, _shopsList.get(0).getShopProducts().get(3).getProductName());
+    }
+
+    @Test
+    public void testsEditProductInShop_whenShopProductNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to edit a product from an existing shop
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        try {
+            _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
+            fail("Editing a product that does not exist in the shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(1, _shopsList.size());
+            assertEquals(0, _shopsList.get(0).getShopProducts().size());
+        }
+    }
+
+    @Test
+    public void testsEditProductInShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to edit a product from a non-existing shop
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        try {
+            _ShopFacadeUnderTests.editProductInShop(3, productDtoOld, productDtoNew, "founderName1");
+            fail("Editing a product in a non-existing shop should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(0, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsEditProductInShop_whenShopProductEditingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        _shopsList.add(_shop1);
+        _shop1.addProductToShop("founderName1", _product2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
+                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+                _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
+                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+                _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
+            } catch (StockMarketException e) {
+                fail(e.getMessage());
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+        
+        executor.shutdown(); // shut down executor service
+        assertEquals(1, _shopsList.size());
+        assertEquals(1, _shopsList.get(0).getShopProducts().size());
+        assertEquals("newName", _shopsList.get(0).getShopProducts().get(3).getProductName());
+    }
+
+    @Test
+    public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopDto _shopDto1 = new ShopDto("shopName1" ,"bank1", "addresss1");
+        ShopDto _shopDto2 = new ShopDto("shopName2", "bank2", "addresss2");
+        CountDownLatch latch = new CountDownLatch(2);
+        AtomicBoolean exceptionCaught = new AtomicBoolean(true);
+
+
+        // Task for first thread
+        Runnable task1 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("Hozier",_shopDto1);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            try {
+                _ShopFacadeUnderTests.openNewShop("KALEO",_shopDto2);
+            } catch (StockMarketException e) {
+                exceptionCaught.set(false);
+            }finally {
+                latch.countDown();
+            }
+        };
+
+        // Execute tasks
+        executor.submit(task1);
+        executor.submit(task2);
+
+        try {
+            latch.await(); // wait for both tasks to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail("Test interrupted");
+        } finally {
+            executor.shutdown(); // shut down executor service
+        }
+        
+        if (!exceptionCaught.get()) {
+            fail("Error should raise");
+        }
+
+        List<Shop> shops = _ShopFacadeUnderTests.getAllShops();
+        assertEquals(2, shops.size());
+        assertNotEquals(shops.get(0).getShopId(),shops.get(1).getShopId());
     }
 
     @Test
@@ -189,7 +541,7 @@ public class ShopFacadeTests {
 
         // Act - try to add a product to a shop this no permission
         try {
-            _ShopFacadeUnderTests.addProductToShop(1, _product1, "Jane");
+            _ShopFacadeUnderTests.addProductToShop(1, _product1dto, "Jane");
             fail("Adding a product to a shop without permission should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
@@ -416,7 +768,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
 
         // Act - try to get the purchase history for the shop owner
         _shop1.addOrderToOrderHistory(shopOrder);
@@ -445,7 +797,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -474,7 +826,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
@@ -502,7 +854,7 @@ public class ShopFacadeTests {
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
         shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
-        ShopOrder shopOrder = new ShopOrder(shopId, shoppingBasket);
+        ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
 
         // Act
@@ -529,7 +881,7 @@ public class ShopFacadeTests {
         _shop1.addProductToShop("founderName1", testProduct);
         testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
 
-        ShopOrder testShopOrder = new ShopOrder(shopId, testShoppingBasket);
+        ShopOrder testShopOrder = new ShopOrder(1, shopId, testShoppingBasket);
 
         // Act
         _shop1.addOrderToOrderHistory(testShopOrder);
@@ -596,4 +948,62 @@ public class ShopFacadeTests {
             assertEquals(0, _product2.getProductQuantity());
         }
     }
+
+
+    @Test
+    public void testAddShopRating_whenShopNotExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 5;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is invalid
+        try {
+            _ShopFacadeUnderTests.addShopRating(shopId, rating);
+            fail("Rating a shop that doesnt exist should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(0, e.getMessage().indexOf("Shop ID:"));
+        }
+    }
+    
+
+    @Test
+    public void testAddShopRating_whenAllValid_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 2;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is valid
+       _ShopFacadeUnderTests.addShopRating(shopId, rating);
+
+        // Assert - Verify that the products are retrieved from the specific shop
+        assertEquals(4, _shop2.getShopRating());
+    }
+
+    
+    @Test
+    public void testAddProductRating_whenAllValid_thenSuccess() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        _shopsList.add(_shop2);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        Integer shopId = 2;
+        Integer productId = 3;
+        Integer rating = 4;
+
+        // Act - try to get products by keywords when shopId is valid
+       _ShopFacadeUnderTests.addProductRating(shopId, productId, rating);
+
+        // Assert - Verify that the products are retrieved from the specific shop
+        assertEquals(4, _shop2.getProductRating(productId));
+
+
+    }
+
 }
