@@ -48,9 +48,6 @@ public interface BridgeInterface {
 
     @Test
     boolean testGetShopInfoAsGuest(String shopId);
-    
-    @Test
-    boolean testGetProductInfoAsGuest(String productId);
 
     @Test
     boolean testGetProductInfoUsingProductNameAsGuest(String productId);
@@ -77,7 +74,7 @@ public interface BridgeInterface {
     boolean testAddProductToShoppingCartAsGuest(String productId);
     
     @Test
-    boolean testCheckAndViewItemsInShoppingCartAsGuest();
+    boolean testCheckAndViewItemsInShoppingCartAsGuest(String status);
 
     @Test
     boolean testCheckAllOrNothingBuyingShoppingCartGuest();
@@ -89,9 +86,6 @@ public interface BridgeInterface {
 
     @Test
     boolean testGetShopInfoAsUser(String shopId);
-    
-    @Test
-    boolean testGetProductInfoAsUser(String productId);
     
     @Test
     boolean testGetProductInfoUsingProductNameAsUser(String productId);
