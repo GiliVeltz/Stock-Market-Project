@@ -1,5 +1,7 @@
 package UI.Model;
 
+import java.util.Date;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -17,15 +19,19 @@ public class UserDto {
     @Size(min = 6, message = "Password should be at least 6 characters")
     private String password;
 
+    @NotBlank(message = "birthDate is required")
+    private Date birthDate;
+
     // Constructors, getters, and setters
 
     public UserDto() {
     }
 
-    public UserDto(String username, String email, String password) {
+    public UserDto(String username, String email, String password, Date birthDate) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.birthDate = birthDate;
     }
 
     // Getters and setters

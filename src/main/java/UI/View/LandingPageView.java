@@ -12,7 +12,7 @@ import com.vaadin.flow.router.RouteAlias;
 @PageTitle("Landing Page")
 @Route(value = "")
 @RouteAlias(value = "")
-public class LandingPageView extends VerticalLayout implements ViewPageI {
+public class LandingPageView extends BaseView implements ViewPageI {
 
     
     public LandingPageView() {

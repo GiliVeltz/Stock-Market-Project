@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import Domain.Order;
 import Domain.User;
 import Domain.Authenticators.EmailValidator;
+import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
@@ -19,11 +20,13 @@ public class UserFacade {
     private UserRepositoryInterface _userRepository;
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
+    private PasswordEncoderUtil _passwordEncoder;
 
     public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
         _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
     }
 
     // Public method to provide access to the _UserFacade
@@ -46,18 +49,16 @@ public class UserFacade {
         return _userRepository.getUserByUsername(username);
     }
 
-    public boolean AreCredentialsCorrect(String username, String password) throws StockMarketException {
+    public boolean AreCredentialsCorrect(String username, String raw_password) throws StockMarketException {
         User user = getUserByUsername(username);
         if (user != null) {
-            return user.getPassword() == password;
+            return _passwordEncoder.matches(raw_password, user.getPassword());
         }
         return false;
     }
 
     // this function is used to register a new user to the system.
     public void register(UserDto userDto) throws StockMarketException {
-        // TODO: remove the encoding - should be done in the front end
-        //String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
         }
@@ -70,7 +71,8 @@ public class UserFacade {
         if (!_EmailValidator.isValidEmail(userDto.email)) {
             throw new StockMarketException("Email is not valid.");
         }
-
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
             _userRepository.addUser(new User(userDto));
         } else {

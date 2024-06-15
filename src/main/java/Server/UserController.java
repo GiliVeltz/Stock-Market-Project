@@ -1,6 +1,7 @@
 package Server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,33 +26,23 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public Response register(
+    public ResponseEntity<Response> register(
             @RequestBody UserDto userDto,
             @RequestHeader(value = "Authorization") String token) {
-        // example request:
-        // http://localhost:8080/api/user/register?username=test&password=test&email=test
-        System.out.println("Client: token is: " + token);
-        Response resp = _userService.register(token, userDto);
-        return resp;
+        return _userService.register(token, userDto);
     }
 
     @GetMapping("/login")
-    public Response login(
+    public ResponseEntity<Response> login(
             @RequestParam String username,
             @RequestParam String password,
             @RequestHeader(value = "Authorization") String token) {
-        // example request:
-        // http://localhost:8080/api/user/login?username=test&password=test
-        Response resp = _userService.logIn(token, username, password);
-        return resp;
+        return _userService.logIn(token, username, password);
     }
 
     @GetMapping("/logout")
-    public Response logout(@RequestHeader(value = "Authorization") String token) {
-        // example request:
-        // "http://localhost:8080/api/user/logout" -H "Authorization: user_token_here"
-        Response resp = _userService.logOut(token);
-        return resp;
+    public ResponseEntity<Response> logout(@RequestHeader(value = "Authorization") String token) {
+        return _userService.logOut(token);
     }
 
     @PostMapping("/purchaseCart")

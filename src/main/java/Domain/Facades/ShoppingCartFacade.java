@@ -52,7 +52,6 @@ public class ShoppingCartFacade {
         if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
             _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
         }
-        
         // add the user to the cart
         _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
     }

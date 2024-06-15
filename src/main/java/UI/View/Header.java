@@ -1,5 +1,10 @@
 package UI.View;
 
+import java.time.LocalDate;
+import java.util.Date;
+
+import com.vaadin.flow.component.datepicker.DatePicker; 
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -77,91 +82,125 @@ public class Header extends HorizontalLayout implements ViewPageI{
         registerButton.addClickListener(event -> registrationDialog.open());
     }
 
-    private Dialog createRegistrationDialog() {
-        Dialog dialog = new Dialog();
 
-        // Create form layout
-        FormLayout formLayout = new FormLayout();
+private Dialog createRegistrationDialog() {
+    Dialog dialog = new Dialog();
 
-        // Create form fields
-        TextField usernameField = new TextField("Username");
-        TextField emailField = new TextField("Email");
-        PasswordField passwordField = new PasswordField("Password");
+    // Create form layout
+    FormLayout formLayout = new FormLayout();
 
-        // Add fields to the form layout
-        formLayout.add(usernameField, emailField, passwordField);
+    // Create form fields
+    TextField usernameField = new TextField("Username");
+    TextField emailField = new TextField("Email");
+    PasswordField passwordField = new PasswordField("Password");
+    DatePicker birthdayPicker = new DatePicker("Birthday");
 
-        // Create buttons
-        Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
-            String username = usernameField.getValue();
-            String email = emailField.getValue();
-            String password = passwordField.getValue();
+    // Add fields to the form layout
+    formLayout.add(usernameField, emailField, passwordField, birthdayPicker);
 
-            presenter.registerUser(username, email, password);
+    // Create buttons
+    Button submitButton = new Button("Submit", event -> {
+        // Handle form submission
+        String username = usernameField.getValue();
+        String email = emailField.getValue();
+        String password = passwordField.getValue();
+        Date birthday = convertToDate(birthdayPicker.getValue()); // Convert LocalDate to Date
 
-            // Close the dialog after submission
-            dialog.close();
-        });
+        // Validate fields (add your validation logic here)
 
-        submitButton.addClassName("pointer-cursor");
+        presenter.registerUser(username, email, password, birthday);
 
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        // Close the dialog after submission
+        dialog.close();
+    });
 
-        cancelButton.addClassName("pointer-cursor");
+    submitButton.addClassName("pointer-cursor");
 
-        // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
-        buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+    Button cancelButton = new Button("Cancel", event -> {
+        // Close the dialog
+        dialog.close();
+    });
 
-        // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
-        dialog.add(dialogLayout);
+    cancelButton.addClassName("pointer-cursor");
 
-        return dialog;
-    }
+    // Create button layout
+    HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+    buttonLayout.setWidthFull();
+    buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
+    // Add form layout and button layout to the dialog
+    VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+    dialog.add(dialogLayout);
+
+    // Add listener to clear fields when dialog is opened
+    dialog.addOpenedChangeListener(event -> {
+        if (dialog.isOpened()) {
+            usernameField.clear();
+            emailField.clear();
+            passwordField.clear();
+            birthdayPicker.clear();
+        }
+    });
+
+    return dialog;
+}
+
+// Method to convert LocalDate to Date
+private Date convertToDate(LocalDate localDate) {
+    return java.sql.Date.valueOf(localDate);
+}
+    
     private Dialog createLoginDialog() {
         Dialog dialog = new Dialog();
-
+    
         // Create form layout
         FormLayout formLayout = new FormLayout();
-
+    
         // Create form fields
         TextField usernameField = new TextField("Username");
         PasswordField passwordField = new PasswordField("Password");
-
+    
         // Add fields to the form layout
         formLayout.add(usernameField, passwordField);
-
+    
         // Create buttons
         Button submitButton = new Button("Submit", event -> {
             // Handle form submission
             String username = usernameField.getValue();
             String password = passwordField.getValue();
-
+    
             presenter.loginUser(username, password);
-
+    
             // Close the dialog after submission
             dialog.close();
         });
-
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
-
+    
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+    
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
-
+    
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
-
+    
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                usernameField.clear();
+                passwordField.clear();
+            }
+        });
+    
         return dialog;
     }
 
-    private Dialog createLogoutConfirmationDialog() {
+        private Dialog createLogoutConfirmationDialog() {
         Dialog dialog = new Dialog();
 
         // Create confirmation message
