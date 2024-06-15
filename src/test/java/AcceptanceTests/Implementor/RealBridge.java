@@ -1174,7 +1174,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(user);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         // initiate _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade();
@@ -1239,7 +1239,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(user);
             }
-        }, new ArrayList<>(), _passwordEncoder);
+        }, new ArrayList<>());
 
         // initialize _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade();
