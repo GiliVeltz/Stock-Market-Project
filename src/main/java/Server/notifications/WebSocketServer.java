@@ -212,4 +212,9 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(username, session);
         }
     }
+
+    public void sendNotificationToUser(String userName, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendNotificationToUser'");
+    }
 }

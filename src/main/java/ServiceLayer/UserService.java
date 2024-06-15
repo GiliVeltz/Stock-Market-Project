@@ -56,9 +56,11 @@ public class UserService {
                     //update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
+             
                     WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
-                    
+                    WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
                     logger.info("User " + userName + " Logged In Succesfully");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }

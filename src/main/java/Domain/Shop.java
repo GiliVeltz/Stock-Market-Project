@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import Domain.Alerts.Alert;
 import Domain.Alerts.CloseShopAlert;
+import Domain.Alerts.CredentialsModifyAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Alerts.CloseShopAlert;
@@ -382,11 +383,13 @@ public class Shop {
         }
         // All constraints checked
         manager.modifyPermissions(username, permissions);
+        notifyModifiedPermissions(username, userRole, permissions,getShopId());
         logger.log(Level.INFO,
                 "Shop - modifyPermissions: " + username + " successfuly modified permissions. Now the permission are: "
                         + permissions
                         + " to user " + userRole + " in the shop with id " + _shopId);
     }
+
 
     /**
      * Function to fire a manager/owner. All people he assigned fired too.
@@ -1056,16 +1059,23 @@ public class Shop {
     public Map<Integer, Discount> getDiscounts() {
         return _discounts;
     }
-
+    /**
+     * Notify owner of the shop that a purchase has been made.
+     * @param buyingUser the buying user.   
+     * @param productIdList the product id list.
+     */
     public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
-            _notificationHandler.sendMessage(owner, alert.getMessage());
+            _notificationHandler.sendMessage(owner, alert);
         }
     }
 
-    // before removing the shop send notificstion to all relevasnt users
+    /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
     public void notifyCloseShop(String username) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
@@ -1074,13 +1084,31 @@ public class Shop {
         }
     }
 
-    // before reopening the shop send notificstion to all relevasnt users
+    /**
+     * Notify the users that the shop has been re-opened.
+     * @param username the  user that re-opened the shop.
+     */
     public void notifyReOpenShop(String username) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new ReOpenShopAlert(owner, username, _shopId);
             _notificationHandler.sendMessage(owner, alert);
         }
+    }
+    /**
+     * Notify the user that his permissions have been modified.
+     * @param fromUser the user that modified the permissions.
+     * @param targetUser the user that the permissions have been modified.
+     * @param permissions the new permissions.
+     * @param shopId the shop id.
+     */
+    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId) {
+        List <String> newPermissions = new ArrayList<String>();
+        for (Permission p : permissions) {
+            newPermissions.add(p.toString());
+        }
+        Alert alert = new CredentialsModifyAlert(fromUser, targetUser, newPermissions, shopId);
+        _notificationHandler.sendMessage(targetUser, alert);
     }
     /**
      * Get all the products in the shop.

@@ -2,7 +2,6 @@ package Domain.Alerts;
 
 import java.util.Set;
 
-import org.hibernate.mapping.List;
 
 public class AppointedManagerAlert implements Alert{
 

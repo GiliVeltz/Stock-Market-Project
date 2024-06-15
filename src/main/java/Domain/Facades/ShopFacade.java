@@ -544,6 +544,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+        
     }
 
     public String getShopPolicyInfo(Integer shopId) throws StockMarketException {
