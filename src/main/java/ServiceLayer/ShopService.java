@@ -21,6 +21,7 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Exceptions.StockMarketException;
 import enums.Category;
+import enums.ShoppingBasketRules;
 
 @Service
 public class ShopService {
@@ -948,6 +949,9 @@ public class ShopService {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return response;
+    }
+
+    public Response changeShopPolicy(String token, int shopId, ) {
     }
 
     /**
