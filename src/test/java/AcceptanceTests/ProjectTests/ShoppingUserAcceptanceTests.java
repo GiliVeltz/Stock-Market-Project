@@ -34,14 +34,6 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetShopInfoAsUser("shopId2") ); // fail
     }
     
-    // Test get information about a product as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    @Test
-    public void testGetProductInfoAsUser() {
-        assertTrue(_bridge.testGetProductInfoAsUser("productId1") ); // success - exist product
-        assertFalse(_bridge.testGetProductInfoAsUser("productId2") ); // fail - non exist product
-    }
-    
     // Test search product information according to product name as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
