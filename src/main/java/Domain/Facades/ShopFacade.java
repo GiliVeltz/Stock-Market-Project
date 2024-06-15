@@ -20,6 +20,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
@@ -694,5 +695,11 @@ public class ShopFacade {
             }
         }
         return shops;
+    }
+
+    public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        shop.changeShopPolicy(username, shopRules);
     }
 }
