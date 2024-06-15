@@ -21,6 +21,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -1397,6 +1398,36 @@ public class ShopService {
         catch(StockMarketException e){
             logger.log(Level.INFO, e.getMessage(), e);
             response.setErrorMessage(String.format( "ShopService::getUserShops failed to get users shops. "+e.getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Receive the shops which the user has roles in.
+     * @param token the users session token
+     * @return the shops which the user has roles in.
+     */
+    public ResponseEntity<Response> changeShopPolicy(String token, int shopId, List<ShoppingBasketRuleDto> shopRules) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    _shopFacade.changeShopPolicy(username, shopId, shopRules);
+                    response.setReturnValue(true);
+                    logger.info(String.format("Shop policy for shop ID %d was changed", shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to change shop policy for shop ID %d. Error: %s", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
