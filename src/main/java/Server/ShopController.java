@@ -170,4 +170,9 @@ public class ShopController {
             @RequestParam Integer shopId, @RequestParam Integer productId) {
         return _shopService.displayProductGeneralInfo(token, shopId, productId);
     }
+
+    @GetMapping("/getUserShops")
+    public Response getUserShops(@RequestHeader("Authorization") String token) {
+        return _shopService.getUserShops(token);
+    }
 }
