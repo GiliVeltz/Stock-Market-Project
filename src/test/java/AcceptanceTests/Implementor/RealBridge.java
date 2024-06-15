@@ -1232,6 +1232,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>(), _passwordEncoder);
 
+        _shopFacade = new ShopFacade();
+
         try {
             _shopFacade.openNewShop("Founder", shopDto);
             _shopFacade.addProductToShop(Integer.parseInt(shopId), productDto, "Founder");
@@ -1240,8 +1242,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.warning("testAddProductToShoppingCartAsUser Error message: " + e.getMessage());
             return false;
         }
-
-        _shopFacade = new ShopFacade();
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -1683,15 +1683,113 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         throw new UnsupportedOperationException("Unimplemented method 'TestUserEditUsername'");
     }
 
+    // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     @Override
     public boolean testAddProductToShoppingCartUser(String username, String productId, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartUser'");
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(token)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User(username, "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(username);
+        _shoppingCartFacade.addCartForUser(username, user);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        Response res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        Response res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
+
+        // Act - this user adds a product to the shopping cart using UserService
+        Response res3 = _userServiceUnderTest.addProductToShoppingCart(token, Integer.parseInt(productId), Integer.parseInt(shopId));
+
+        // Assert
+        if(res1.getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res1.getErrorMessage());
+        if(res2.getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res2.getErrorMessage());
+
+        logger.info("testAddProductToShoppingCartUser Error message: " + res3.getErrorMessage());
+        return res3.getErrorMessage() == null;
     }
 
     @Override
-    public boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartGuest'");
+    public boolean testAddProductToShoppingCartGuest(String guestname, String productId, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestname);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(guestname);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        Response res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        Response res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // Act - this user adds a product to the shopping cart using UserService
+        Response res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), Integer.parseInt(shopId));
+
+        // Assert
+        if(res1.getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res1.getErrorMessage());
+        if(res2.getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res2.getErrorMessage());
+
+        logger.info("testAddProductToShoppingCartUser Error message: " + res3.getErrorMessage());
+        return res3.getErrorMessage() == null;
     }
 }
