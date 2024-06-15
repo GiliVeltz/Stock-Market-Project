@@ -36,7 +36,7 @@ public class UserShopsPagePresenter {
         this.view = view;
     }
 
-    private void fetchShops(String username) {
+    public void fetchShops(String username) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -64,15 +64,18 @@ public class UserShopsPagePresenter {
                                 List<Integer> shops = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
                                 view.createShopButtons(shops);
                                 view.showErrorMessage("User shops loading failed");
+                                view.getUI().ifPresent(ui -> ui.navigate("user"));
                             }
                         }catch (Exception e) {
                             view.showErrorMessage("Failed to parse response");
                             e.printStackTrace();
+                            view.getUI().ifPresent(ui -> ui.navigate("user"));
                             return;
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("User shops loading failed");
+                        view.getUI().ifPresent(ui -> ui.navigate("user"));
                     }
                 });
     }

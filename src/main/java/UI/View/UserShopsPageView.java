@@ -5,6 +5,7 @@ import java.util.List;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -29,50 +30,20 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
-        // Create welcome message
-        H1 welcomeMessage = new H1("Welcome, " + _username + "!");
-
-        // Create the header component
-        Header header = new Header("8080");
-        header.hideRegisterButton();
-
-        
-
-        // Create buttons
-        Button profileButton = new Button("My Profile", e -> navigateToProfile());
-        Button shopsButton = new Button("View My Shops", e -> navigateToShops());
-        Button openShopButton = new Button("Open a new Shop", e -> openShop());
-
-        // Apply CSS class to buttons
-        profileButton.addClassName("same-size-button");
-        shopsButton.addClassName("same-size-button");
-        openShopButton.addClassName("same-size-button");
-
-        // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, openShopButton);
-        buttonLayout.setAlignItems(Alignment.END);
-
-        // Create a horizontal layout for the title to center it
-        HorizontalLayout titleLayout = new HorizontalLayout();
-        titleLayout.setWidthFull(); // Make the layout take full width
-        titleLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
-        titleLayout.add(welcomeMessage);
-
-        // Add components to the vertical layout
-        add(header, titleLayout, buttonLayout);
-
         // Initialize presenter
         presenter = new UserShopsPagePresenter(this);
+        presenter.fetchShops(_username);
+
+        // Create the header component
+        Header header = new BrowsePagesHeader("8080");
+        add(header);
+
+        H1 title = new H1("My Shops");
+        add(title);
+
+        
     }
     
-
-    private void navigateToShops() {
-        getUI().ifPresent(ui -> ui.navigate("myshops"));
-    }
-
-    private void navigateToProfile() {
-        getUI().ifPresent(ui -> ui.navigate("profile"));
-    }
 
     public void createShopButtons(List<Integer> shops) {
 
@@ -110,21 +81,15 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
         throw new UnsupportedOperationException("Unimplemented method 'navigateToManageShop'");
     }
 
-    private void openShop(){
-
-    }
-
 
     @Override
     public void showSuccessMessage(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'showSuccessMessage'");
+        Notification.show(message);
     }
 
     @Override
     public void showErrorMessage(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'showErrorMessage'");
+        Notification.show(message);
     }
 
 }

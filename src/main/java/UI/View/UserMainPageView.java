@@ -2,6 +2,7 @@ package UI.View;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -29,14 +30,12 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         H1 welcomeMessage = new H1("Welcome, " + _username + "!");
 
         // Create the header component
-        Header header = new Header("8080");
-        header.hideRegisterButton();
-
-        
+        Header header = new LoggedInHeader("8080");
 
         // Create buttons
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
+        
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
@@ -70,14 +69,12 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
 
     @Override
     public void showSuccessMessage(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'showSuccessMessage'");
+        Notification.show(message);
     }
 
     @Override
     public void showErrorMessage(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'showErrorMessage'");
+        Notification.show(message);
     }
 
 }
