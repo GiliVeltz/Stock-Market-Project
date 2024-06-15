@@ -164,7 +164,17 @@ public class Product implements Cloneable {
         return _productPolicy;
     }
 
-    //set product price
+    // set product name
+    public void setProductName(String productName) {
+        _productName = productName;
+    }
+
+    // set product category
+    public void setCategory(Category category) {
+        _category = category;
+    }
+
+    // set product price
     public void setPrice(double price) {
         _price = price;
     }
