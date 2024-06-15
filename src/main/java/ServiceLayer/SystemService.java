@@ -3,6 +3,8 @@ package ServiceLayer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import Domain.ExternalServices.ExternalServiceHandler;
@@ -14,7 +16,6 @@ import Dtos.ExternalServiceDto;
 
 @Service
 public class SystemService {
-    private UserService _userService;
     private ExternalServiceHandler _externalServiceHandler;
     private boolean _isOpen = false;
     private TokenService _tokenService;
@@ -22,9 +23,8 @@ public class SystemService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    public SystemService(UserService userService, ExternalServiceHandler externalServiceHandler,
+    public SystemService(ExternalServiceHandler externalServiceHandler,
             TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
-        _userService = userService;
         _externalServiceHandler = externalServiceHandler;
         _tokenService = tokenService;
         _userFacade = userFacade;
@@ -34,7 +34,6 @@ public class SystemService {
     }
 
     public SystemService() {
-        _userService = new UserService();
         _externalServiceHandler = new ExternalServiceHandler();
         _tokenService = TokenService.getTokenService();
         _userFacade = UserFacade.getUserFacade();
@@ -48,7 +47,7 @@ public class SystemService {
      * @param password the user password
      * @return a response indicating the success or failure of opening the system
      */
-    public Response openSystem(String token) {
+    public ResponseEntity<Response> openSystem(String token) {
         Response response = new Response();
         try {
             String username = _tokenService.extractUsername(token);
@@ -57,28 +56,27 @@ public class SystemService {
                 if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
                 // Check if the user is an admin
-                Response isAdminResponse = _userService.isSystemAdmin(username);
-                if (isAdminResponse.getErrorMessage() != null) {
+                if(_userFacade.isAdmin(username)){
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
 
                 // Check if the system is already open
                 if (isSystemOpen()) {
                     response.setErrorMessage("System is already open");
                     logger.log(Level.SEVERE, "System is already open");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
 
                 // Connect to external services
                 if (!_externalServiceHandler.connectToServices()) {
                     response.setErrorMessage("Failed to connect to external services");
                     logger.log(Level.SEVERE, "Failed to connect to external services");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
 
                 // Open the system
@@ -87,14 +85,15 @@ public class SystemService {
                 _externalServiceHandler.addSupplyService("SupplyService", "Tal", "123456789");
                 logger.info("System opened by admin: " + username);
                 response.setReturnValue("System Opened Successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to open system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to open system: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // Set system to open

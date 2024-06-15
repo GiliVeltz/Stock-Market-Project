@@ -46,61 +46,61 @@ public class UserController {
     }
 
     @PostMapping("/purchaseCart")
-    public Response purchaseCart(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<Response> purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {
         // example request:
         // "http://localhost:8080/api/user/purchaseCart" -H "
         // Authorization: user_token_here"
-        Response resp = _userService.purchaseCart(token, details);
+        ResponseEntity<Response> resp = _userService.purchaseCart(token, details);
         return resp;
     }
 
     @GetMapping("/isSystemAdmin")
-    public Response isSystemAdmin(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<Response> isSystemAdmin(@RequestHeader(value = "Authorization") String token) {
         // example request:
         // "http://localhost:8080/api/user/isSystemAdmin" -H "Authorization":
         // user_token_here"
-        Response resp = _userService.isSystemAdmin(token);
+        ResponseEntity<Response> resp = _userService.isSystemAdmin(token);
         return resp;
     }
 
     @GetMapping("/getUserPurchaseHistory")
-    public Response getUserPurchaseHistory(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<Response> getUserPurchaseHistory(@RequestHeader(value = "Authorization") String token,
             @RequestParam String username) {
         // example request:
         // "http://localhost:8080/api/user/getUserPurchaseHistory" -H "Authorization":
         // user_token_here"
-        Response resp = _userService.getUserPurchaseHistory(token, username);
+        ResponseEntity<Response> resp = _userService.getUserPurchaseHistory(token, username);
         return resp;
     }
 
     @GetMapping("/getPersonalPurchaseHistory")
-    public Response getPersonalPurchaseHistory(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<Response> getPersonalPurchaseHistory(@RequestHeader(value = "Authorization") String token) {
         // example request:
         // "http://localhost:8080/api/user/getPersonalPurchaseHistory" -H
         // "Authorization":
         // user_token_here"
-        Response resp = _userService.getPersonalPurchaseHistory(token);
+        ResponseEntity<Response> resp = _userService.getPersonalPurchaseHistory(token);
         return resp;
     }
 
     @GetMapping("/addProductToShoppingCart")
-    public Response addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:
         // "http://localhost:8080/api/user/addProductToShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
-        Response resp = _userService.addProductToShoppingCart(token, productID, shopID);
+        ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID);
         return resp;
     }
 
     @GetMapping("/removeProductFromShoppingCart")
-    public Response removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
+    public ResponseEntity<Response> removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:
         // "http://localhost:8080/api/user/removeProductFromShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
-        Response resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
+        ResponseEntity<Response> resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
         return resp;
     }
 }
