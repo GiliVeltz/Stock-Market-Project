@@ -776,7 +776,7 @@ public class ShopFacadeTests {
         // _ShopFacadeUnderTests.getPurchaseHistory(shopId);
 
         // Assert - Verify that the purchase history is not retrieved
-        assertNotNull(shopService.getShopPurchaseHistory(token, shopId).getErrorMessage());
+        assertNotNull(shopService.getShopPurchaseHistory(token, shopId).getBody().getErrorMessage());
 
     }
 
@@ -805,7 +805,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         // Act - try to get the purchase history for the system admin
-        Object result = shopService.getShopPurchaseHistory(token, shopId).getReturnValue();
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getBody().getReturnValue();
 
         // Assert - Verify that the purchase history is not retrieved
         assertNotNull(result);
@@ -834,7 +834,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(true);
 
         // Act - try to get the purchase history for the shop owner
-        Object result = shopService.getShopPurchaseHistory(token, shopId).getErrorMessage();
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getBody().getErrorMessage();
 
         // Assert - Verify that the purchase history is not retrieved
         assertNotNull(result);
