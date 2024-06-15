@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,18 +37,23 @@ public class UserFacadeTests {
     private UserFacade _userFacadeUnderTest;
     private List<User> _registeredUsers;
     private List<String> _guestIds;
+    private PasswordEncoderUtil _passwordEncoderUtil = new PasswordEncoderUtil();
+
+    private String userName = "john_doe";
+    private String password = "password123";
 
     // mock fields.
     @Mock
     private User _userMock;
 
     // users fields.
-    private User _user1 = new User("john_doe", "password123", "john.doe@example.com", new Date());
+    private User _user1 = new User(userName, _passwordEncoderUtil.encodePassword(password), "john.doe@example.com", new Date());
 
     @BeforeEach
     public void setUp() {
         _registeredUsers = new ArrayList<>();
         _guestIds = new ArrayList<>();
+        _passwordEncoderUtil = new PasswordEncoderUtil();
         _userMock = mock(User.class);
     }
 
@@ -66,7 +70,7 @@ public class UserFacadeTests {
         _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act - try to register a new user
-        UserDto userDto = new UserDto("john_doe", "password123", "john.doe@example.com", new Date());
+        UserDto userDto = new UserDto(userName, password, "john.doe@example.com", new Date());
         try {
             _userFacadeUnderTest.register(userDto);
         } catch (Exception e) {
@@ -74,7 +78,7 @@ public class UserFacadeTests {
         }
 
         // Assert - Verify that the user was registered successfully
-        assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
+        assertEquals(true, _userFacadeUnderTest.doesUserExist(userName));
     }
 
     @Test
@@ -413,7 +417,7 @@ public class UserFacadeTests {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         UserDto userDto1 = new UserDto("Dudu_Tassa", "password123", "dudu@example.com", new Date());
         UserDto userDto2 = new UserDto("Dudu_Tassa", "password5555", "dudu@example.com", new Date());
         

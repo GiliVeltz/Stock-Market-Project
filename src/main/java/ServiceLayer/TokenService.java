@@ -24,7 +24,7 @@ public class TokenService {
     private final long expirationTime = 1000 * 60 * 60 * 24;
     private SecretKey key;
 
-    private TokenService() {
+    public TokenService() {
         // Initialize the key securely
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
