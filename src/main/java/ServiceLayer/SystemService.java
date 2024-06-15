@@ -113,7 +113,7 @@ public class SystemService {
      * @return Response object containing the generated guest token if successful,
      *         or an error message if there is a failure.
      */
-    public Response requestToEnterSystem() {
+    public ResponseEntity<Response> requestToEnterSystem() {
         Response response = new Response();
         try {
             String token = _tokenService.generateGuestToken();
@@ -123,11 +123,12 @@ public class SystemService {
             _userFacade.addNewGuest(id);
             _shoppingCartFacade.addCartForGuest(id);
             response.setReturnValue(token);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setErrorMessage("Guest uuid failed: " + e.getMessage());
             logger.log(Level.SEVERE, "Guest uuid failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     /**
@@ -138,7 +139,7 @@ public class SystemService {
      * @param token The session token for the guest.
      * @return Response object indicating the success or failure of the operation.
      */
-    public Response leaveSystem(String token) {
+    public ResponseEntity<Response> leaveSystem(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -149,110 +150,124 @@ public class SystemService {
                     _shoppingCartFacade.removeCartForGuest(token);
                     response.setReturnValue("Guest left system Successfully");
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to leave the system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to leave the system: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
      // add external service to the system
-     public Response addExternalService(String token, ExternalServiceDto externalServiceDto) {
+     public ResponseEntity<Response> addExternalService(String token, ExternalServiceDto externalServiceDto) {
         Response response = new Response();
         try {
             // check validation of token
             if (!_tokenService.validateToken(token)) {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             String username = _tokenService.extractUsername(token);
             // check if user is logged in
             if (!_tokenService.isUserAndLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if user is admin
             if (!_userFacade.isAdmin(username)) {
                 response.setErrorMessage("User is not admin of the system");
                 logger.log(Level.SEVERE, "User is not admin of the system");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
             if (!isSystemOpen()) {
                 response.setErrorMessage("System is not open");
                 logger.log(Level.SEVERE, "System is not open");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check validation of the arguments
             if(externalServiceDto.getServiceName() == null || externalServiceDto.getServiceName().length() == 0 || externalServiceDto.getInformationPersonName() == null
              || externalServiceDto.getInformationPersonName().length() == 0 || externalServiceDto.getInformationPersonPhone() == null || externalServiceDto.getInformationPersonPhone().length() == 0) {
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             if (_externalServiceHandler.addExternalService(externalServiceDto)) {
                 logger.info("External service: " + externalServiceDto.getServiceName() + " added by admin: " + username);
                 response.setReturnValue("External service added successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setErrorMessage("Failed to add external service");
                 logger.log(Level.SEVERE, "Failed to add external service");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to add external service: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to add external service: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // change external service name
-    public Response changeExternalServiceName(String token, ExternalServiceDto externalServiceDto, String newServiceName) {
+    public ResponseEntity<Response> changeExternalServiceName(String token, ExternalServiceDto externalServiceDto, String newServiceName) {
         Response response = new Response();
         try {
             // check validation of token
             if (!_tokenService.validateToken(token)) {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             String username = _tokenService.extractUsername(token);
             // check if user is logged in
             if (!_tokenService.isUserAndLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if user is admin
             if (!_userFacade.isAdmin(username)) {
                 response.setErrorMessage("User is not admin of the system");
                 logger.log(Level.SEVERE, "User is not admin of the system");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
             if (!isSystemOpen()) {
                 response.setErrorMessage("System is not open");
                 logger.log(Level.SEVERE, "System is not open");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check validation of the arguments
             if(newServiceName == null || newServiceName.length() == 0){
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if service id and name exists
             if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
                 response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
                 logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             if (_externalServiceHandler.changeExternalServiceName(externalServiceDto.getId(), newServiceName)) {
                 logger.info("External service: " + externalServiceDto.getServiceName() + " name changed to: " + newServiceName + " by admin: " + username);
                 response.setReturnValue("External service name changed successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setErrorMessage("Failed to change external service name");
                 logger.log(Level.SEVERE, "Failed to change external service name");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to change external service name: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change external service name: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // change external service information person name
-    public Response changeExternalServiceInformationPersonName(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonName){
+    public ResponseEntity<Response> changeExternalServiceInformationPersonName(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonName){
         Response response = new Response();
         try {
             // check validation of token
@@ -264,86 +279,100 @@ public class SystemService {
             if (!_tokenService.isUserAndLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             // check if user is admin
             if (!_userFacade.isAdmin(username)) {
                 response.setErrorMessage("User is not admin of the system");
                 logger.log(Level.SEVERE, "User is not admin of the system");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
             if (!isSystemOpen()) {
                 response.setErrorMessage("System is not open");
                 logger.log(Level.SEVERE, "System is not open");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check validation of the arguments
             if(newServiceInformationPersonName == null || newServiceInformationPersonName.length() == 0){
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if service id and name exists
             if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
                 response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
                 logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             if (_externalServiceHandler.changeExternalServiceInformationPersonName(externalServiceDto.getId(), newServiceInformationPersonName)) {
                 logger.info("External service: " + externalServiceDto.getServiceName() + " information person name changed to: " + newServiceInformationPersonName + " by admin: " + username);
                 response.setReturnValue("External service information person name changed successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setErrorMessage("Failed to change external service information person name");
                 logger.log(Level.SEVERE, "Failed to change external service information person name");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to change external service information person name: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change external service information person name: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // change external service information person phone
-    public Response changeExternalServiceInformationPersonPhone(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonPhone){
+    public ResponseEntity<Response> changeExternalServiceInformationPersonPhone(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonPhone){
         Response response = new Response();
         try {
             // check validation of token
             if (!_tokenService.validateToken(token)) {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             String username = _tokenService.extractUsername(token);
             // check if user is logged in
             if (!_tokenService.isUserAndLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if user is admin
             if (!_userFacade.isAdmin(username)) {
                 response.setErrorMessage("User is not admin of the system");
                 logger.log(Level.SEVERE, "User is not admin of the system");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
             if (!isSystemOpen()) {
                 response.setErrorMessage("System is not open");
                 logger.log(Level.SEVERE, "System is not open");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check validation of the arguments
             if(newServiceInformationPersonPhone == null || newServiceInformationPersonPhone.length() == 0){
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if service id and name exists
             if (!(_externalServiceHandler.isServiceExistsByName(externalServiceDto.getServiceName()) && _externalServiceHandler.isServiceExistsById(externalServiceDto.getId()))) {
                 response.setErrorMessage("Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
                 logger.log(Level.SEVERE, "Service id not found. Service name: " + externalServiceDto.getServiceName() + ".");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             if (_externalServiceHandler.changeExternalServiceInformationPersonPhone(externalServiceDto.getId(), newServiceInformationPersonPhone)) {
                 logger.info("External service: " + externalServiceDto.getServiceName() + " information person phone changed to: " + newServiceInformationPersonPhone + " by admin: " + username);
                 response.setReturnValue("External service information person phone changed successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setErrorMessage("Failed to change external service information person phone");
                 logger.log(Level.SEVERE, "Failed to change external service information person phone");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to change external service information person phone: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change external service information person phone: " + e.getMessage(), e);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 }

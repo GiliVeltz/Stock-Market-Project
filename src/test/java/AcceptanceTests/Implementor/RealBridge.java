@@ -221,11 +221,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName, informationPersonPhone);
 
         // Act
-        Response res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
+        ResponseEntity<Response> res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
 
         // Assert
-        logger.info("testAddExternalService Error message: " + res.getErrorMessage());
-        return res.getErrorMessage() == null;
+        logger.info("testAddExternalService Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
     }
 
     @Test
@@ -280,19 +280,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name", "111");
 
         // Act
-        Response res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto, newSerivceName);
-        Response res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token, externalServiceDto2, newInformationPersonName);
-        Response res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token, externalServiceDto2, newInformationPersonPhone);
+        ResponseEntity<Response> res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto, newSerivceName);
+        ResponseEntity<Response> res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token, externalServiceDto2, newInformationPersonName);
+        ResponseEntity<Response> res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token, externalServiceDto2, newInformationPersonPhone);
 
         // Assert
-        if(res3.getErrorMessage() != null)
-            logger.info("changeExternalServiceName Error message: " + res3.getErrorMessage());
-        if(res4.getErrorMessage() != null)
-            logger.info("changeExternalServiceInformationPersonName Error message: " + res4.getErrorMessage());
-        if(res5.getErrorMessage() != null)
-        logger.info("changeExternalServiceInformationPersonPhone Error message: " + res5.getErrorMessage());
+        if(res3.getBody().getErrorMessage() != null)
+            logger.info("changeExternalServiceName Error message: " + res3.getBody().getErrorMessage());
+        if(res4.getBody().getErrorMessage() != null)
+            logger.info("changeExternalServiceInformationPersonName Error message: " + res4.getBody().getErrorMessage());
+        if(res5.getBody().getErrorMessage() != null)
+        logger.info("changeExternalServiceInformationPersonPhone Error message: " + res5.getBody().getErrorMessage());
         
-        return res3.getErrorMessage() == null && res4.getErrorMessage() == null && res5.getErrorMessage() == null;
+        return res3.getBody().getErrorMessage() == null && res4.getBody().getErrorMessage() == null && res5.getBody().getErrorMessage() == null;
     }
 
     // GUEST TESTS
@@ -322,11 +322,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.generateGuestToken()).thenReturn(token);
 
         // Act
-        Response res = _systemServiceUnderTest.requestToEnterSystem();
+        ResponseEntity<Response> res = _systemServiceUnderTest.requestToEnterSystem();
 
         // Assert
-        logger.info("TestGuestEnterTheSystem Error message: " + res.getErrorMessage());
-        return res.getErrorMessage() == null;
+        logger.info("TestGuestEnterTheSystem Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
     }
 
     @Test

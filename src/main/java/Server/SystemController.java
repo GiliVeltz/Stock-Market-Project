@@ -26,14 +26,14 @@ public class SystemController {
     }
 
     @GetMapping("/enterSystem")
-    public Response enterSystem() {
-        Response resp = _systemService.requestToEnterSystem();
+    public ResponseEntity<Response> enterSystem() {
+        ResponseEntity<Response> resp = _systemService.requestToEnterSystem();
         return resp;
     }
 
     @GetMapping("/leaveSystem")
-    public Response leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
-        Response resp = _systemService.leaveSystem(token);
+    public ResponseEntity<Response> leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
+        ResponseEntity<Response> resp = _systemService.leaveSystem(token);
         return resp;
     }
 
