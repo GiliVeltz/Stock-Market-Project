@@ -37,6 +37,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to product name as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameAsGuest() {
@@ -45,6 +46,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to product category as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryAsGuest() {
@@ -53,6 +55,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to key words as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingKeyWordsAsGuest() {
@@ -62,8 +65,10 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
+    // TODO: GILI
     
     // Test search product information in a specific shop, according to product name as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
@@ -74,6 +79,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information in a specific shop, according to product category as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
@@ -84,6 +90,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information in a specific shop, according to key words as a guest in the system.
+    // TODO: GILI
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingKeyWordsInShopAsGuest() {
@@ -108,6 +115,7 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test the buying senerio of a shopping cart (all or nothing).
+    // TODO: TAL
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testBuyingShoppingCartAsGuest() {
