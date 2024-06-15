@@ -2,6 +2,10 @@ package Server.notifications;
 
 import Domain.Alerts.Alert;
 
+/**
+ * Handles notifications by sending messages through a WebSocket server.
+ */
+
 public class NotificationHandler {
     private static NotificationHandler instance;
     private static WebSocketServer wServer;
@@ -17,13 +21,14 @@ public class NotificationHandler {
         }
         return instance;
     }
-
-    //send message via web socket server 
-    public void sendMessage(String targetUsername, String message) {
-        wServer.sendMessage(targetUsername, message);
-    }
     
-    //send message via web socket server 
+     /**
+     * Sends an alert message to a specified user via the WebSocket server.
+     * Converts the Alert object to a string message before sending.
+     *
+     * @param targetUsername The username of the recipient.
+     * @param alert The Alert object containing the message to be sent.
+     */
     public void sendMessage(String targetUsername, Alert alert) {
         String message = alert.getMessage();
         wServer.sendMessage(targetUsername, message);

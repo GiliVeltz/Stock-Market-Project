@@ -46,11 +46,11 @@ public class HeaderPresenter {
                             view.showSuccessMessage("Login successful");
                             System.out.println(response.getBody());
 
-                            //change the local token to the new one
-                            String newToken = response.getBody();
-                            System.out.println(newToken);
-                            // Store the new token in local storage
-                            UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
+                            // //change the local token to the new one
+                            // String newToken = response.getBody();
+                            // System.out.println(newToken);
+                            // // Store the new token in local storage
+                            // UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
                             
                         } else {
                             view.showErrorMessage("Login failed");

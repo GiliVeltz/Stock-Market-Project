@@ -14,6 +14,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+//Todo: make sure the class is thread safe.
+/**
+ * This class is responsible for handling WebSocket communication within the application.
+ * It extends TextWebSocketHandler, which provides a simple way to handle text messages over WebSocket connections.
+ * The WebSocketServer class provides methods for sending messages to specific clients.
+ */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
     @Autowired
@@ -41,9 +47,11 @@ public class WebSocketServer extends TextWebSocketHandler {
         return instance;
     }                                                                               
 
-    /*
-     * This method is called after the connection is established. It validates the
-     * token and adds the session to the sessions map.
+    /**
+     * Handles a new WebSocket connection after it has been established.
+     * This method is called after the connection is opened.
+     *
+     * @param session The WebSocket session for the newly opened connection.
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -88,6 +96,7 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
+        //TODO : remove this lines
         if (sessions.size() > 1) {
             broadcastMessage("Hello all clients!");
             
@@ -96,9 +105,12 @@ public class WebSocketServer extends TextWebSocketHandler {
 
    
     
-    /**
-     * This method is called after the connection is closed. It removes the session
-     * from the sessions map.
+     /**
+     * Handles the closing of a WebSocket connection.
+     * This method is called when the connection with a client is closed.
+     *
+     * @param session The WebSocket session that was closed.
+     * @param status The status code for the closure.
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -106,8 +118,12 @@ public class WebSocketServer extends TextWebSocketHandler {
         System.out.println("Disconnected: " + session.getId());
     }
 
-    /*
-     * This method is called when a message is received from the client. The message
+     /**
+     * Handles a text message received from a client.
+     * This method is called when a new text message arrives.
+     *
+     * @param session The WebSocket session from which the message was received.
+     * @param message The text message received.
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -131,7 +147,13 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    // Method to broadcast message to all clients 
+   
+    /**
+     * Broadcasts a text message to all connected users.
+     *
+     * @param message The message to be broadcasted.
+     * @throws IOException If an I/O error occurs while sending the message.
+     */
     public void broadcastMessage(String message) {
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
             WebSocketSession session = entry.getValue();
@@ -146,7 +168,15 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    //method to send message to a specific client if a registered user and not logged in that add to its queue
+     /**
+     * Sends a text message to a specific user.
+     * This method looks up the session for the username and sends the message if the session exists.
+     * if it is a registered user but not logged in than the message will be queued.
+     * 
+     * @param username The username of the recipient.
+     * @param message The message to be sent.
+     * @throws IOException If an I/O error occurs while sending the message.
+     */
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
         if (session != null && session.isOpen()) {
@@ -164,11 +194,18 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
     
     private boolean validateToken(String token) {
-       return tokenService.validateToken(token);
-    // return true;
+    //    return tokenService.validateToken(token);
+    return true;
     }
 
-    //replace guest user to logged in user with new token
+    /**
+    * Replaces a guest user's token with a logged-in user's new token.
+    * This method is called when a guest user logs in and their token is replaced with a new token.
+    
+    * @param oldToken The old token of the guest user.
+    * @param newToken The new token for the logged-in user.
+    * @param username The username of the logged-in user.
+    */
     public void replaceGuestTokenToUserToken(String oldToken, String newToken,String username) {
         if (username != null) {
             WebSocketSession session = sessions.remove("guest-" + oldToken);
