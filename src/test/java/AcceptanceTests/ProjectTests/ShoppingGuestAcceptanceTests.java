@@ -101,11 +101,10 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test a guest can watch his items in the shopping cart.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testCheckAndViewItemsInShoppingCartAsGuest() {
-        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsGuest() ); // success
-        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsGuest() ); // fail
+        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsGuest("seccess") ); // success
+        assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsGuest("fail") ); // fail
     }
     
     // Test the buying senerio of a shopping cart (all or nothing).

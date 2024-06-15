@@ -1227,9 +1227,62 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testCheckAndViewItemsInShoppingCartAsGuest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckAndViewItemsInShoppingCartAsGuest'");
+    public boolean testCheckAndViewItemsInShoppingCartAsGuest(String status) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        String username = "username";
+        String tokenCheck = "tokenCheck";
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(token)).thenReturn(false);
+
+        when(_tokenServiceMock.validateToken(tokenCheck)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(tokenCheck)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(tokenCheck)).thenReturn(tokenCheck);
+
+        // create a user in the system
+        User user = new User(username, _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initialize _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+        
+        // create a shopping cart for the user
+        _shoppingCartFacade.addCartForGuest(tokenCheck);
+
+        // user opens shop and adds product to it
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        _shopFacade = new ShopFacade();
+        try {
+            _shopFacade.openNewShop(username, shopDto);
+            _shopFacade.addProductToShop(0, productDto, username);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAndViewItemsInShoppingCartAsGuest Error message: " + e.getMessage());
+            return false;
+        }
+
+        // user adds product to shopping cart
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+
+        // Act
+        Response res = _userServiceUnderTest.getShoppingCart(tokenCheck);
+
+        // Assert
+        logger.info("testCheckAndViewItemsInShoppingCartAsGuest Error message: " + res.getErrorMessage());
+        if(status.equals("fail"))
+            return res.getErrorMessage() != null;
+        return res.getErrorMessage() == null;
     }
 
     @Override
@@ -1748,7 +1801,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
        
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
        _userFacade = new UserFacade(new ArrayList<User>() {
            {
                add(shopFounder);
