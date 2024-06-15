@@ -164,7 +164,7 @@ public class Shop {
         Map<Integer, Discount> productDiscounts = new HashMap<>();
          for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
             if (new Date().after(entry.getValue().getExpirationDate())) {
-                removeDiscount(_nextDiscountId);
+                removeDiscount(entry.getKey());
             } else if (entry.getValue().getParticipatingProduct() == productId) {
                 productDiscounts.put(entry.getKey(), entry.getValue());
             }
