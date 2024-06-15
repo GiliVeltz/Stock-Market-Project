@@ -59,7 +59,7 @@ public class SystemService {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
                 // Check if the user is an admin
-                if(_userFacade.isAdmin(username)){
+                if(!_userFacade.isAdmin(username)){
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);

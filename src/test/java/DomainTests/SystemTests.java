@@ -10,20 +10,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Exceptions.StockMarketException;
-import ServiceLayer.Response;
 import ServiceLayer.SystemService;
-import ServiceLayer.UserService;
 import ServiceLayer.TokenService;
 
 public class SystemTests {
-    @Mock
-    private UserService _userServiceMock;
+    
     @Mock
     private ExternalServiceHandler _externalServiceHandlerMock;
     @Mock
@@ -37,12 +33,11 @@ public class SystemTests {
 
     @BeforeEach
     public void setUp() {
-        _userServiceMock = mock(UserService.class);
         _externalServiceHandlerMock = mock(ExternalServiceHandler.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
         _shoppingCartFacadeMock = mock(ShoppingCartFacade.class);
-        _systemService = new SystemService(_userServiceMock, _externalServiceHandlerMock, _tokenServiceMock,
+        _systemService = new SystemService(_externalServiceHandlerMock, _tokenServiceMock,
                 _userFacadeMock, _shoppingCartFacadeMock);
     }
 
@@ -58,7 +53,6 @@ public class SystemTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userServiceMock.isSystemAdmin("Admin")).thenReturn(new ResponseEntity<Response>(HttpStatus.OK));
         when(_externalServiceHandlerMock.connectToServices()).thenReturn(true);
 
         // Act
@@ -75,7 +69,6 @@ public class SystemTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(false);
-        when(_userServiceMock.isSystemAdmin("Admin")).thenReturn(new ResponseEntity<Response>(HttpStatus.OK));
         when(_externalServiceHandlerMock.connectToServices()).thenReturn(true);
 
         // Act
@@ -92,11 +85,9 @@ public class SystemTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
         when(_tokenServiceMock.validateToken(token)).thenReturn(false);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userServiceMock.isSystemAdmin("Admin")).thenReturn(new ResponseEntity<Response>(HttpStatus.OK));
         when(_externalServiceHandlerMock.connectToServices()).thenReturn(true);
 
-        // Act
-        boolean actual = (_systemService.openSystem(token).getBody().getErrorMessage() == null);
+        boolean actual = (_systemService.openSystem(token).getStatusCode() == HttpStatus.OK);
 
         // Assert
         assertFalse(actual);
@@ -109,7 +100,6 @@ public class SystemTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userServiceMock.isSystemAdmin("Admin")).thenReturn(new ResponseEntity<Response>(HttpStatus.OK));
         when(_externalServiceHandlerMock.connectToServices()).thenReturn(false);
 
         // Act
@@ -126,8 +116,8 @@ public class SystemTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn("Admin");
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userServiceMock.isSystemAdmin("Admin")).thenReturn(new ResponseEntity<Response>(HttpStatus.OK));
         when(_externalServiceHandlerMock.connectToServices()).thenReturn(true);
+        when(_userFacadeMock.isAdmin("Admin")).thenReturn(true);
 
         // Act
         boolean actual = (_systemService.openSystem(token).getBody().getErrorMessage() == null);

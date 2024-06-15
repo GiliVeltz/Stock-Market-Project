@@ -116,14 +116,22 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testOpenMarketSystem(String username) {
         // Arrange
         MockitoAnnotations.openMocks(this);
+        _passwordEncoder = new PasswordEncoderUtil();
+        _externalServiceHandler = new ExternalServiceHandler();
         _shopFacade = ShopFacade.getShopFacade();
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("systemAdmin", "systemAdminPassword", "email@example.com", new Date()));
+                add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com", new Date()));
             }
         }, new ArrayList<>());
-        _externalServiceHandler = new ExternalServiceHandler();
+        try {
+            _userFacade.getUserByUsername("systemAdmin").setIsSystemAdmin(true);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.info("testOpenMarketSystem Error message: " + e.getMessage());
+            return false;
+        }
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -184,18 +192,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         , new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest("manager");
-        
-        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-                _userFacade, _shoppingCartFacade);
-
         try {
             _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
         } catch (Exception e) {
             logger.info("testAddExternalService Error message: " + e.getMessage());
             return false;
         }
+
         ExternalServiceDto externalServiceDto = new ExternalServiceDto(-1, "existSerivce", "name", "111");
+        
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
         _externalServiceHandler.addExternalService(externalServiceDto);
 
