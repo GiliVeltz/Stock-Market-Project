@@ -1092,6 +1092,7 @@ public class Shop {
         product.addReview(username, review);
     }
 
+    // this function changes the shop policy
     public void changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules) throws StockMarketException {
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY)) {
             _shopPolicy = new ShopPolicy();

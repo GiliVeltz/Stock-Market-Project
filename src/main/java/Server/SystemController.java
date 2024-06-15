@@ -1,6 +1,7 @@
 package Server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,20 +20,20 @@ public class SystemController {
     }
 
     @GetMapping("/openSystem")
-    public Response openSystem(@RequestHeader(value = "Authorization", required = true) String token) {
-        Response response = _systemService.openSystem(token);
+    public ResponseEntity<Response> openSystem(@RequestHeader(value = "Authorization", required = true) String token) {
+        ResponseEntity<Response> response = _systemService.openSystem(token);
         return response;
     }
 
     @GetMapping("/enterSystem")
-    public Response enterSystem() {
-        Response resp = _systemService.requestToEnterSystem();
+    public ResponseEntity<Response> enterSystem() {
+        ResponseEntity<Response> resp = _systemService.requestToEnterSystem();
         return resp;
     }
 
     @GetMapping("/leaveSystem")
-    public Response leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
-        Response resp = _systemService.leaveSystem(token);
+    public ResponseEntity<Response> leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
+        ResponseEntity<Response> resp = _systemService.leaveSystem(token);
         return resp;
     }
 

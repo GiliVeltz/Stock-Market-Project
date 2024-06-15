@@ -76,6 +76,7 @@ public class HeaderPresenter {
                 });
     }
     
+    @SuppressWarnings("deprecation")
     public void registerUser(String username, String email, String password, Date birDate) {
         RestTemplate restTemplate = new RestTemplate();
         UserDto userDto = new UserDto(username, email, password, birDate);
