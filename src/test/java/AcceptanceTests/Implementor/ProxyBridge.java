@@ -171,7 +171,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testCheckAndViewItemsInShoppingCartAsUser() {
+    public boolean testCheckAndViewItemsInShoppingCartAsUser(String status) {
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAndViewItemsInShoppingCartAsUser' in ProxyBridge class");
     }
 

@@ -164,6 +164,16 @@ public class ShoppingCartFacade {
         }
         return _cartsRepo.getCartByUsername(username);
     }
+
+    /*
+     * get guest cart.
+     */
+    public ShoppingCart getGuestCart(String guest) throws StockMarketException {
+        if (_guestsCarts.get(guest) == null) {
+            throw new StockMarketException("guest does not have a cart");
+        }
+        return _guestsCarts.get(guest);
+    }
   
     // this function checks for the product in the past purchases of the user, and if it exists, it returns the shopID.
     // next, this function will add a review on the product in the shop (if he still exists).

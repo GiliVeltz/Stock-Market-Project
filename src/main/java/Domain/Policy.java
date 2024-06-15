@@ -56,6 +56,11 @@ public abstract class Policy<T> {
                 return false;
         return true;
     }
+    
+    // Getters
+    public List<Rule<T>> getRules() {
+        return _rules;
+    }
 
     @Override
     public String toString() {
@@ -66,5 +71,4 @@ public abstract class Policy<T> {
         sb.append('}');
         return sb.toString();
     }
-    
 }

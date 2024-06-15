@@ -164,7 +164,7 @@ public class Shop {
         Map<Integer, Discount> productDiscounts = new HashMap<>();
          for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
             if (new Date().after(entry.getValue().getExpirationDate())) {
-                removeDiscount(_nextDiscountId);
+                removeDiscount(entry.getKey());
             } else if (entry.getValue().getParticipatingProduct() == productId) {
                 productDiscounts.put(entry.getKey(), entry.getValue());
             }
@@ -610,7 +610,54 @@ public class Shop {
                 + _productName + " in the shop with id " + _shopId);
     }
 
+    /**
+     * Edit product from the shop.
+     * 
+     * @param username the username of the function activator
+     * @param productNameOld  the product name we want to edit
+     * @param productNameNew  thenew  product name
+     * @param productCategoryNew  the new product category
+     * @param productPriceNew  the new product price
+     * @throws StockMarketException
+     */
+    public synchronized void editProductInShop(String userName, String productNameOld, String productNameNew, Category productCategoryNew, double productPriceNew) throws StockMarketException {
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + productNameOld + " in the shop with id " + _shopId);
 
+        // check if shop is closed
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot remove product.");
+
+        // check if user has permission to edit product, or the user is the founder or the owner (dont need specific permission to remove products)
+        if (!checkPermission(userName, Permission.EDIT_PRODUCT) && !checkPermission(userName, Permission.FOUNDER) && !checkPermission(userName, Permission.OWNER)){
+            logger.log(Level.SEVERE, "Shop - editProductInShop: user " + userName + " doesn't have permission to edit products in shop with id " + _shopId);
+            throw new PermissionException("User " + userName + " doesn't have permission to edit product in shop with id " + _shopId);
+        }
+
+        // check if product exists
+        Product product = null;
+        for (Product p : _productMap.values()) {
+            if (p.getProductName().equals(productNameOld)) {
+                product = p;
+                break;
+            }
+        }
+        if (product == null) {
+            logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: " + productNameOld + " from shop with id " + _shopId);
+            throw new ProductDoesNotExistsException("Product with name " + productNameOld + " does not exist.");
+        }
+
+        // All constraints checked - edit product in the shop
+        product.setProductName(productNameNew);
+        product.setCategory(productCategoryNew);
+        product.setPrice(productPriceNew);
+
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - removeProductFromShop: " + userName + " successfully edit product "
+                + productNameNew + " in the shop with id " + _shopId);
+    }
+
+    // Get product by ID
     public Product getProductById(Integer productId) throws ProductDoesNotExistsException {
         // check if product exists
         if (!_productMap.containsKey(productId)) {
@@ -864,6 +911,16 @@ public class Shop {
     public void ValidateProdcutPolicy(User u, Product p) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: " + _shopId);
+        
+        // if the user recived is null, means its a guest user in the system, so we need to check if the product policy allows guest users (have any policy)
+        if (u == null) {
+            if (p.getProductPolicy().getRules().size() > 0){
+                logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: the product " + p.getProductName() + " in shop with id: " + _shopId + " doesn't allow guest users");
+                throw new ProdcutPolicyException("Guest user violates the shop policy of shop with id: " + _shopId);
+            }
+            return;
+        }
+
         if (!p.getProductPolicy().evaluate(u)) {
             logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User " + u.getUserName()
                     + " violates the product policy of product " + p.getProductName() + " in shop with id: " + _shopId);

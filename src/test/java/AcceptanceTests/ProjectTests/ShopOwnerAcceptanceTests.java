@@ -39,15 +39,12 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can edit products details in the shop.
-    // TODO: implement in ShopService
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerEditProductInShop() {
-        assertTrue(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "ProductName", "newProductName", "ProductAmount", "newProductAmount") ); // success
-        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "ProductName", "newProductName", "inValidAmount", "newProductAmount") ); // fail - invalid amount
-        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "ExistProductName", "newProductName", "ProductAmount", "newProductAmount") ); // fail - already exist product name
-        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId1", "NonProductName", "newProductName", "ProductAmount", "newProductAmount") ); // fail - there is no product with such name in the store
-        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "shopId2", "ExistProductName", "newProductName", "ProductAmount", "newProductAmount") ); // fail - the user is not the shop onwer
+        assertTrue(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "0", "ProductName", "newProductName", "1", "2") ); // success
+        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "0", "ProductName", "newProductName", "1", "0") ); // fail - invalid amount
+        assertFalse(_bridge.testShopOwnerEditProductInShop("shopOwnerUserName", "0", "ProductName", "ExistProductName", "1", "2") ); // fail - already exist product name
+        assertFalse(_bridge.testShopOwnerEditProductInShop("user", "0", "ProductName", "newProductName", "1", "2") ); // fail - the user is not the shop onwer
     }
     
     // Test that shop owner can edit the shop policies.
