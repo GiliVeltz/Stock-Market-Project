@@ -34,7 +34,7 @@ public class LandingPageView extends BaseView implements ViewPageI {
 
         Button gotToUser = new Button("Go to User Page", e -> navigateToUserMainPage());
         // Add components to the vertical layout
-        add(header, titleLayout);
+        add(header, titleLayout, gotToUser);
     }
 
 
