@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.Alert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
@@ -13,6 +14,7 @@ import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
+import Server.notifications.NotificationHandler;
 
 @RestController
 public class UserFacade {
@@ -45,7 +47,7 @@ public class UserFacade {
         if (username == null)
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
-            throw new UserException(String.format("Username %s does not exist.",username));
+            throw new UserException(String.format("Username %s does not exist.", username));
         return _userRepository.getUserByUsername(username);
     }
 
@@ -134,4 +136,14 @@ public class UserFacade {
         }
         user.setEmail(email);
     }
+
+    public boolean notifyUser(String targetUser, Alert alert) {
+        try {
+            NotificationHandler.getInstance().sendMessage(targetUser, alert);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

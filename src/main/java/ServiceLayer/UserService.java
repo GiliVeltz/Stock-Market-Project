@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Websocket;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Server.notifications.WebSocketServer;
 import Exceptions.UnauthorizedException;
 
 @Service
@@ -51,9 +53,12 @@ public class UserService {
                     User user = _userFacade.getUserByUsername(userName);
                     System.out.println("user"+user.getUserName()+"password"+user.getPassword());
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    response.setReturnValue(_tokenService.generateUserToken(userName));
-                    logger.info("User " + userName + " Logged In Successfully");
-                    return new ResponseEntity<>(response, HttpStatus.OK);
+                    //update the new token for the user
+                    String newToken = _tokenService.generateUserToken(userName);
+                    response.setReturnValue(newToken);
+                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                    
+                    logger.info("User " + userName + " Logged In Succesfully");
                 } else {
                     throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }

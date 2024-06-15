@@ -186,7 +186,7 @@ public class ShoppingCartTests {
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
         List<Integer> basketsToBuy = new ArrayList<Integer>();
         basketsToBuy.add(0);
-        when(shoppingBasketMock.purchaseBasket()).thenReturn(true);
+        when(shoppingBasketMock.purchaseBasket("")).thenReturn(true);
         
         shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
 
@@ -212,7 +212,7 @@ public class ShoppingCartTests {
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
         List<Integer> basketsToBuy = new ArrayList<Integer>();
         basketsToBuy.add(0);
-        when(shoppingBasketMock.purchaseBasket()).thenReturn(false);
+        when(shoppingBasketMock.purchaseBasket("test")).thenReturn(false);
         
         shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
         
@@ -239,7 +239,9 @@ public class ShoppingCartTests {
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
         List<Integer> basketsToBuy = new ArrayList<Integer>();
         basketsToBuy.add(0);
-        when(shoppingBasketMock.purchaseBasket()).thenReturn(false);
+        // when(shoppingBasketMock.getUser)
+        // when(shoppingBasketMock.getUser)
+        when(shoppingBasketMock.purchaseBasket("test")).thenReturn(false);
         
         shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
         
@@ -262,7 +264,7 @@ public class ShoppingCartTests {
         ShoppingBasket shoppingBasketMock = Mockito.mock(ShoppingBasket.class);
         List<Integer> basketsToBuy = new ArrayList<Integer>();
         basketsToBuy.add(0);
-        when(shoppingBasketMock.purchaseBasket()).thenThrow(new ShopPolicyException("ShopPolicyException"));
+        when(shoppingBasketMock.purchaseBasket("test")).thenThrow(new ShopPolicyException("ShopPolicyException"));
         
         shoppingCartUnderTest.addShoppingBasket(shoppingBasketMock);
         
