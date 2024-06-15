@@ -1,6 +1,4 @@
 package UI.Presenter;
-
-import UI.View.LandingPageView;
 import UI.View.UserMainPageView;
 
 public class UserMainPagePresenter {

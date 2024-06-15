@@ -15,7 +15,7 @@ import UI.Presenter.UserMainPagePresenter;
 
 @PageTitle("User Main Page")
 @Route(value = "user")
-public class UserMainPageView extends VerticalLayout implements ViewPageI{
+public class UserMainPageView extends BaseView{
 
     private UserMainPagePresenter presenter;
     
@@ -65,16 +65,6 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
 
     private void navigateToProfile() {
         getUI().ifPresent(ui -> ui.navigate("profile"));
-    }
-
-    @Override
-    public void showSuccessMessage(String message) {
-        Notification.show(message);
-    }
-
-    @Override
-    public void showErrorMessage(String message) {
-        Notification.show(message);
     }
 
 }

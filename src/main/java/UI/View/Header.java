@@ -18,7 +18,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
 
-public class Header extends HorizontalLayout implements ViewPageI {
+public class Header extends HorizontalLayout {
 
     private Button loginButton;
     private Button _registerButton;
@@ -313,7 +313,6 @@ public class Header extends HorizontalLayout implements ViewPageI {
         return dialog;
     }
 
-    @Override
     public void showSuccessMessage(String message) {
         Notification.show(message);
 
@@ -323,7 +322,6 @@ public class Header extends HorizontalLayout implements ViewPageI {
         }
     }
 
-    @Override
     public void showErrorMessage(String message) {
         Notification.show(message);
     }

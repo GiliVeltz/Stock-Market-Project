@@ -1,5 +1,7 @@
 package UI.Presenter;
 
+import java.util.List;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -7,24 +9,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import UI.View.UserShopsPageView;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
+import UI.View.ShopManagerView;
 
-import java.util.List;
+public class ShopManagerPresenter {
+    private final ShopManagerView view;
 
-public class UserShopsPagePresenter {
-
-    private final UserShopsPageView view;
-
-    public UserShopsPagePresenter(UserShopsPageView view) {
+    public ShopManagerPresenter(ShopManagerView view) {
         this.view = view;
     }
 
-    public void fetchShops(String username) {
+    public void fetchManagerPermissions(String username){
+        // Fetch the permissions of the manager
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -35,7 +34,7 @@ public class UserShopsPagePresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/getUserShops?shopId=" + shopId,
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagerPermissions",
                                 HttpMethod.GET,
                                 requestEntity,
                                 String.class);
@@ -45,18 +44,17 @@ public class UserShopsPagePresenter {
                         try{
                             JsonNode responseJson = objectMapper.readTree(response.getBody());
                             if (response.getStatusCode().is2xxSuccessful()) {
-                                view.showSuccessMessage("User shops loaded successfully");
+                                view.showSuccessMessage("User permissions loaded successfully");
                                 if (responseJson.get("errorMessage").isNull()) {
-                                    // Create buttons for each shop
-                                    List<Integer> shops = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
-                                    view.createShopButtons(shops);
+                                    List<String> permissions = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+                                    view.createPermissionButtons(permissions);
                                 }else {
-                                    view.showErrorMessage("User shops loading failed");
+                                    view.showErrorMessage("User permissions loading failed");
                                     view.getUI().ifPresent(ui -> ui.navigate("user"));
                                 }
                             }
                             else {
-                                view.showErrorMessage("User shops loading failed with status code: " + response.getStatusCodeValue());
+                                view.showErrorMessage("User permissions loading failed with status code: " + response.getStatusCodeValue());
                             }
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
@@ -70,5 +68,32 @@ public class UserShopsPagePresenter {
                     }
                 });
     }
-    
+
+    public void viewProducts() {
+
+    }
+
+    public void addDiscounts() {
+
+    }
+
+    public void changeProductPolicy() {
+        
+    }
+
+    public void appointManager() {
+
+    }
+
+    public void viewSubordinate() {
+
+    }
+
+    public void viewShopRoles() {
+
+    }
+
+    public void viewPurchases() {
+
+    }
 }
