@@ -9,7 +9,7 @@ import java.util.List;
 import Dtos.UserDto;
 
 public class User {
-    private String _encoded_password;
+    private String _password;
     private String _username;
     private boolean _isAdmin;
     private String _email;
@@ -18,9 +18,9 @@ public class User {
     // private static final Logger logger =
     // Logger.getLogger(UserFacade.class.getName());
 
-    public User(String username, String encoded_password, String email, Date birthDate) {
+    public User(String username, String password, String email, Date birthDate) {
         _username = username;
-        _encoded_password = encoded_password;
+        _password = password;
         _isAdmin = false;
         _email = email;
         _birthDate = birthDate;
@@ -31,12 +31,12 @@ public class User {
         this(userDto.username, userDto.password, userDto.email, userDto.birthDate);
     }
 
-    public String getEncodedPassword() {
-        return _encoded_password;
+    public String getPassword() {
+        return _password;
     }
 
-    public boolean isCurrUser(String username, String encoded_password) {
-        if (_username == username & _encoded_password == encoded_password) {
+    public boolean isCurrUser(String username, String password) {
+        if (_username == username & _password == password) {
             return true;
         }
         return false;
@@ -109,12 +109,8 @@ public class User {
         _email = email;
     }
 
-    public String getPassword() {
-        return _encoded_password;
-    }
-
     public void setPassword(String password) {
-        _encoded_password = password;
+       _password = password;
     }
 
     public Date getBirthDate() {
@@ -126,7 +122,7 @@ public class User {
     }
 
     public String toString() {
-        return "User [username=" + _username + ", encoded password= " + _encoded_password + ", email=" + _email
+        return "User [username=" + _username + ", encoded password= " + _password + ", email=" + _email
                 + ", birth date=" + _birthDate.toString() + "]";
     }
 
