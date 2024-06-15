@@ -9,13 +9,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
 
 public class Header extends HorizontalLayout implements ViewPageI{
 
     private Button loginButton;
+    private Button _registerButton;
     private final HeaderPresenter presenter;
+    private HorizontalLayout _leftButtonLayout;
 
     public Header(String serverPort) {
 
@@ -23,24 +26,22 @@ public class Header extends HorizontalLayout implements ViewPageI{
         presenter = new HeaderPresenter(this, serverPort);
 
         // Create the buttons
-        Button registerButton = new Button("Register");
+        _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
-        Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
 
         // Add cursor styling
-        registerButton.addClassName("pointer-cursor");
+        _registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
-        profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
-        HorizontalLayout leftButtonLayout = new HorizontalLayout();
-        leftButtonLayout.add(registerButton, loginButton);
+        _leftButtonLayout = new HorizontalLayout();
+        _leftButtonLayout.add(_registerButton, loginButton);
 
         // Spacer to separate left and right buttons
         Span spacer = new Span();
@@ -48,10 +49,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
-        add(leftButtonLayout, spacer, rightButtonLayout);
+        add(_leftButtonLayout, spacer, rightButtonLayout);
 
         // Adjust button spacing if needed
         setWidthFull(); // Make the layout take full width
@@ -70,7 +71,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
         loginButton.addClickListener(event -> loginDialog.open());
 
         // Add click listener to the register button
-        registerButton.addClickListener(event -> registrationDialog.open());
+        _registerButton.addClickListener(event -> registrationDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -188,6 +189,31 @@ public class Header extends HorizontalLayout implements ViewPageI{
         dialog.add(dialogLayout);
 
         return dialog;
+    }
+
+    public void hideRegisterButton(){
+        _registerButton.setVisible(false);
+    }
+
+    public void createBackToMainButton(){
+        Button backToMainButton = new Button("Back to Main Page", event -> {
+            VaadinSession.getCurrent().setAttribute("username", "User");
+            getUI().ifPresent(ui -> ui.navigate("user"));
+        });
+
+        backToMainButton.addClassName("pointer-cursor");
+        _leftButtonLayout.remove(_registerButton);
+        _leftButtonLayout.add(backToMainButton);
+    }
+
+    public void createLogoutButton(){
+        Button logoutButton = new Button("Logout", event -> {
+            //Logout logic
+        });
+
+        logoutButton.addClassName("pointer-cursor");
+        _leftButtonLayout.remove(loginButton);
+        _leftButtonLayout.add(logoutButton);
     }
 
     @Override

@@ -24,8 +24,8 @@ public class ShoppingGuestAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetShopInfoAsGuest() {
-        assertTrue(_bridge.testGetShopInfoAsGuest("shopId1") ); // success
-        assertFalse(_bridge.testGetShopInfoAsGuest("shopId2") ); // fail
+        assertTrue(_bridge.testGetShopInfoAsGuest("0") ); // success - exist shop
+        assertFalse(_bridge.testGetShopInfoAsGuest("1") ); // fail - non exist shop
     }
     
     // Test search product information according to product name as a guest in the system.
