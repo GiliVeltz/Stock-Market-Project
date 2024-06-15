@@ -1102,13 +1102,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoAsGuest(String productId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsGuest'");
-    }
-
-    @Override
     public boolean testGetProductInfoUsingProductNameAsGuest(String productId) {
         // TODO Auto-generated method stub
         // #416
@@ -1161,14 +1154,125 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testAddProductToShoppingCartAsGuest(String productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartAsGuest'");
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(guestToken);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        Response res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        Response res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // Act - this user adds a product to the shopping cart using UserService
+        Response res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), 0);
+
+        // Assert
+        if(res1.getErrorMessage() != null){
+            logger.info("testAddProductToShoppingCartAsGuest Error message: " + res1.getErrorMessage());
+            System.out.println("testAddProductToShoppingCartAsGuest Error message: " + res1.getErrorMessage());
+            return false;
+        }
+        if(res2.getErrorMessage() != null){
+            logger.info("testAddProductToShoppingCartAsGuest Error message: " + res2.getErrorMessage());
+            System.out.println("testAddProductToShoppingCartAsGuest Error message: " + res2.getErrorMessage());
+            return false;
+        }
+        logger.info("testAddProductToShoppingCartAsGuest Error message: " + res3.getErrorMessage());
+        System.out.println("testAddProductToShoppingCartAsGuest Error message: " + res3.getErrorMessage());
+        return res3.getErrorMessage() == null;
+
     }
 
     @Override
-    public boolean testCheckAndViewItemsInShoppingCartAsGuest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckAndViewItemsInShoppingCartAsGuest'");
+    public boolean testCheckAndViewItemsInShoppingCartAsGuest(String status) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        String username = "username";
+        String tokenCheck = "tokenCheck";
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(token)).thenReturn(false);
+
+        when(_tokenServiceMock.validateToken(tokenCheck)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(tokenCheck)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(tokenCheck)).thenReturn(tokenCheck);
+
+        // create a user in the system
+        User user = new User(username, _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder);
+
+        // initialize _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+        
+        // create a shopping cart for the user
+        _shoppingCartFacade.addCartForGuest(tokenCheck);
+
+        // user opens shop and adds product to it
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        _shopFacade = new ShopFacade();
+        try {
+            _shopFacade.openNewShop(username, shopDto);
+            _shopFacade.addProductToShop(0, productDto, username);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAndViewItemsInShoppingCartAsGuest Error message: " + e.getMessage());
+            return false;
+        }
+
+        // user adds product to shopping cart
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+
+        // Act
+        Response res = _userServiceUnderTest.getShoppingCart(tokenCheck);
+
+        // Assert
+        logger.info("testCheckAndViewItemsInShoppingCartAsGuest Error message: " + res.getErrorMessage());
+        if(status.equals("fail"))
+            return res.getErrorMessage() != null;
+        return res.getErrorMessage() == null;
     }
 
     @Override
@@ -1189,13 +1293,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // TODO Auto-generated method stub
         // TODO Gili getShopGeneralInfo - #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsUser'");
-    }
-
-    @Override
-    public boolean testGetProductInfoAsUser(String productId) {
-        // TODO Auto-generated method stub
-        // TODO Gili getProductGeneralInfo - #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsUser'");
     }
 
     @Override

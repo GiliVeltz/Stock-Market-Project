@@ -22,6 +22,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
 
     private Button loginButton;
     private Button _registerButton;
+    private Button openShopButton;
     private final HeaderPresenter presenter;
     private HorizontalLayout _leftButtonLayout;
 
@@ -31,22 +32,30 @@ public class Header extends HorizontalLayout implements ViewPageI{
         presenter = new HeaderPresenter(this, serverPort);
 
         // Create the buttons
-        _registerButton = new Button("Register");
+        Button registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
+        Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
 
+        // New button for opening a shop
+        openShopButton = new Button("Open Shop");
+        openShopButton.setVisible(false); // Hide initially
+        openShopButton.addClassName("pointer-cursor");
+        openShopButton.addClickListener(event -> createOpenNewShopDialog().open());
+
         // Add cursor styling
-        _registerButton.addClassName("pointer-cursor");
+        registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
+        profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
-        _leftButtonLayout = new HorizontalLayout();
-        _leftButtonLayout.add(_registerButton, loginButton);
+        HorizontalLayout leftButtonLayout = new HorizontalLayout();
+        leftButtonLayout.add(registerButton, loginButton);
 
         // Spacer to separate left and right buttons
         Span spacer = new Span();
@@ -54,10 +63,10 @@ public class Header extends HorizontalLayout implements ViewPageI{
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
-        add(_leftButtonLayout, spacer, rightButtonLayout);
+        add(leftButtonLayout, spacer, rightButtonLayout);
 
         // Adjust button spacing if needed
         setWidthFull(); // Make the layout take full width
@@ -80,7 +89,7 @@ public class Header extends HorizontalLayout implements ViewPageI{
                 logoutConfirmationDialog.open();
             });
         // Add click listener to the register button
-        _registerButton.addClickListener(event -> registrationDialog.open());
+        registerButton.addClickListener(event -> registrationDialog.open());
     }
 
 
@@ -234,6 +243,7 @@ private Date convertToDate(LocalDate localDate) {
         return dialog;
     }
 
+
     public void hideRegisterButton(){
         _registerButton.setVisible(false);
     }
@@ -259,9 +269,59 @@ private Date convertToDate(LocalDate localDate) {
         _leftButtonLayout.add(logoutButton);
     }
 
+    private Dialog createOpenNewShopDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create form fields
+        TextField shopNameField = new TextField("Shop Name");
+        TextField bankDetailsField = new TextField("Bank Details");
+        TextField shopAddressField = new TextField("Address");
+
+        // Add fields to the form layout
+        formLayout.add(shopNameField, bankDetailsField, shopAddressField);
+
+        // Create buttons
+        Button submitButton = new Button("Submit", event -> {
+            // Handle form submission
+            String shopName = shopNameField.getValue();
+            String bankDetails = bankDetailsField.getValue();
+            String shopAddress = shopAddressField.getValue();
+
+            presenter.openNewShop(shopName, bankDetails, shopAddress);
+
+            // Close the dialog after submission
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        dialog.add(dialogLayout);
+
+        return dialog;
+    }
+
     @Override
     public void showSuccessMessage(String message) {
         Notification.show(message);
+
+        // Show the open shop button on successful login
+        if ("Login successful".equals(message)) {
+            openShopButton.setVisible(true);
+        }
     }
 
     @Override

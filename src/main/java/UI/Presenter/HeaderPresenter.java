@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import java.util.Date;
 
+import UI.Model.ShopDto;
 import UI.Model.UserDto;
 import UI.View.Header;
 
@@ -121,4 +122,37 @@ public class HeaderPresenter {
     public void logoutUser(){
         // Implement logout functionality here
     }
+
+    public void openNewShop(String shopName, String bankDetails, String shopAddress){
+        RestTemplate restTemplate = new RestTemplate();
+        ShopDto shopDto = new ShopDto(shopName, bankDetails, shopAddress);
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(shopDto, headers);
+
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + _serverPort + "/api/shop/openNewShop",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            view.showSuccessMessage("Shop opened successfully");
+                            System.out.println(response.getBody());
+                        } else {
+                            view.showErrorMessage("Failed to open shop");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to open shop");
+                    }
+                });
     }
+}
