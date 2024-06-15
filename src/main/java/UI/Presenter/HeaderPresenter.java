@@ -119,6 +119,51 @@ public class HeaderPresenter {
     }
     
     public void logoutUser(){
-        // Implement logout functionality here
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+    
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+    
+                        String url = "http://localhost:" + _serverPort + "/api/user/logout";
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+    
+                        try {
+                                ResponseEntity<String> response = restTemplate.exchange(
+                                    url,
+                                    HttpMethod.GET,
+                                    requestEntity,
+                                    String.class);
+                
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String responseBody = response.getBody();
+                            JsonNode responseJson = objectMapper.readTree(responseBody);
+                            if (response.getStatusCode().is2xxSuccessful() && responseJson.get("errorMessage").isNull()) {
+                                // Get the new token
+                                token = responseJson.get("returnValue").asText();
+    
+                                // Update the token in local storage using JavaScript
+                                UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
+                                view.showSuccessMessage("Logout successful");
+                                view.switchToLogout();
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Logout failed");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Logout failed");
+                    }
+                });
+
     }
     }

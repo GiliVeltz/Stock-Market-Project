@@ -18,12 +18,13 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
 
-public class Header extends HorizontalLayout implements ViewPageI{
+public class Header extends HorizontalLayout implements ViewPageI {
 
     private Button loginButton;
     private Button _registerButton;
     private final HeaderPresenter presenter;
     private HorizontalLayout _leftButtonLayout;
+    private Dialog logoutConfirmationDialog;
 
     public Header(String serverPort) {
 
@@ -70,126 +71,126 @@ public class Header extends HorizontalLayout implements ViewPageI{
         Dialog loginDialog = createLoginDialog();
 
         // Create logout confirmation dialog
-        Dialog logoutConfirmationDialog = createLogoutConfirmationDialog();
+        logoutConfirmationDialog = createLogoutConfirmationDialog();
 
         // Add click listener to the login button
         loginButton.addClickListener(event -> {
-            if (loginButton.getText() != "Logout")
+            if (!loginButton.getText().equals("Logout"))
                 loginDialog.open();
             else
                 logoutConfirmationDialog.open();
-            });
+        });
+
         // Add click listener to the register button
         _registerButton.addClickListener(event -> registrationDialog.open());
     }
 
-
-private Dialog createRegistrationDialog() {
-    Dialog dialog = new Dialog();
-
-    // Create form layout
-    FormLayout formLayout = new FormLayout();
-
-    // Create form fields
-    TextField usernameField = new TextField("Username");
-    TextField emailField = new TextField("Email");
-    PasswordField passwordField = new PasswordField("Password");
-    DatePicker birthdayPicker = new DatePicker("Birthday");
-
-    // Add fields to the form layout
-    formLayout.add(usernameField, emailField, passwordField, birthdayPicker);
-
-    // Create buttons
-    Button submitButton = new Button("Submit", event -> {
-        // Handle form submission
-        String username = usernameField.getValue();
-        String email = emailField.getValue();
-        String password = passwordField.getValue();
-        Date birthday = convertToDate(birthdayPicker.getValue()); // Convert LocalDate to Date
-
-        // Validate fields (add your validation logic here)
-
-        presenter.registerUser(username, email, password, birthday);
-
-        // Close the dialog after submission
-        dialog.close();
-    });
-
-    submitButton.addClassName("pointer-cursor");
-
-    Button cancelButton = new Button("Cancel", event -> {
-        // Close the dialog
-        dialog.close();
-    });
-
-    cancelButton.addClassName("pointer-cursor");
-
-    // Create button layout
-    HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
-    buttonLayout.setWidthFull();
-    buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
-
-    // Add form layout and button layout to the dialog
-    VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
-    dialog.add(dialogLayout);
-
-    // Add listener to clear fields when dialog is opened
-    dialog.addOpenedChangeListener(event -> {
-        if (dialog.isOpened()) {
-            usernameField.clear();
-            emailField.clear();
-            passwordField.clear();
-            birthdayPicker.clear();
-        }
-    });
-
-    return dialog;
-}
-
-// Method to convert LocalDate to Date
-private Date convertToDate(LocalDate localDate) {
-    return java.sql.Date.valueOf(localDate);
-}
-    
-    private Dialog createLoginDialog() {
+    private Dialog createRegistrationDialog() {
         Dialog dialog = new Dialog();
-    
+
         // Create form layout
         FormLayout formLayout = new FormLayout();
-    
+
+        // Create form fields
+        TextField usernameField = new TextField("Username");
+        TextField emailField = new TextField("Email");
+        PasswordField passwordField = new PasswordField("Password");
+        DatePicker birthdayPicker = new DatePicker("Birthday");
+
+        // Add fields to the form layout
+        formLayout.add(usernameField, emailField, passwordField, birthdayPicker);
+
+        // Create buttons
+        Button submitButton = new Button("Submit", event -> {
+            // Handle form submission
+            String username = usernameField.getValue();
+            String email = emailField.getValue();
+            String password = passwordField.getValue();
+            Date birthday = convertToDate(birthdayPicker.getValue()); // Convert LocalDate to Date
+
+            // Validate fields (add your validation logic here)
+
+            presenter.registerUser(username, email, password, birthday);
+
+            // Close the dialog after submission
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                usernameField.clear();
+                emailField.clear();
+                passwordField.clear();
+                birthdayPicker.clear();
+            }
+        });
+
+        return dialog;
+    }
+
+    // Method to convert LocalDate to Date
+    private Date convertToDate(LocalDate localDate) {
+        return java.sql.Date.valueOf(localDate);
+    }
+
+    private Dialog createLoginDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
         // Create form fields
         TextField usernameField = new TextField("Username");
         PasswordField passwordField = new PasswordField("Password");
-    
+
         // Add fields to the form layout
         formLayout.add(usernameField, passwordField);
-    
+
         // Create buttons
         Button submitButton = new Button("Submit", event -> {
             // Handle form submission
             String username = usernameField.getValue();
             String password = passwordField.getValue();
-    
+
             presenter.loginUser(username, password);
-    
+
             // Close the dialog after submission
             dialog.close();
         });
-    
+
         Button cancelButton = new Button("Cancel", event -> {
             // Close the dialog
             dialog.close();
         });
-    
+
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
-    
+
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
         dialog.add(dialogLayout);
-    
+
         // Add listener to clear fields when dialog is opened
         dialog.addOpenedChangeListener(event -> {
             if (dialog.isOpened()) {
@@ -197,11 +198,11 @@ private Date convertToDate(LocalDate localDate) {
                 passwordField.clear();
             }
         });
-    
+
         return dialog;
     }
 
-        private Dialog createLogoutConfirmationDialog() {
+    private Dialog createLogoutConfirmationDialog() {
         Dialog dialog = new Dialog();
 
         // Create confirmation message
@@ -234,11 +235,11 @@ private Date convertToDate(LocalDate localDate) {
         return dialog;
     }
 
-    public void hideRegisterButton(){
+    public void hideRegisterButton() {
         _registerButton.setVisible(false);
     }
 
-    public void createBackToMainButton(){
+    public void createBackToMainButton() {
         Button backToMainButton = new Button("Back to Main Page", event -> {
             VaadinSession.getCurrent().setAttribute("username", "User");
             getUI().ifPresent(ui -> ui.navigate("user"));
@@ -249,10 +250,8 @@ private Date convertToDate(LocalDate localDate) {
         _leftButtonLayout.add(backToMainButton);
     }
 
-    public void createLogoutButton(){
-        Button logoutButton = new Button("Logout", event -> {
-            //Logout logic
-        });
+    public void createLogoutButton() {
+        Button logoutButton = new Button("Logout", event -> logoutConfirmationDialog.open());
 
         logoutButton.addClassName("pointer-cursor");
         _leftButtonLayout.remove(loginButton);
