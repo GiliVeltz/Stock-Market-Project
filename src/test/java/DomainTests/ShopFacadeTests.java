@@ -382,7 +382,7 @@ public class ShopFacadeTests {
         // Assert - Verify that the product is edited in the shop
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
-        assertEquals(productDtoNew._productName, _shopsList.get(0).getShopProducts().get(0).getProductName());
+        assertEquals(productDtoNew._productName, _shopsList.get(0).getShopProducts().get(3).getProductName());
     }
 
     @Test
