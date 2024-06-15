@@ -162,12 +162,12 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
                     productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
+                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
         }
         return response;
     }
 
-    
     /**
      * Removes a product from the specified shop.
      * 
@@ -194,9 +194,42 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
                     productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
+                productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
         }
+        return response;
+    }
 
+    /**
+     * Edits a product in the specified shop.
+     * 
+     * @param shopId     The ID of the shop to which the product will be edited.
+     * @param productDtoOld The product to be edit in the shop - the old vars of the product.
+     * @param productDtoNew The product to be edit in the shop - the new vars of the product.
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response editProductInShop(String token, Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    _shopFacade.editProductInShop(shopId, productDtoOld, productDtoNew, userName);
+                    logger.info(String.format("The product %s :: edited by: %s in Shop ID: %d",
+                    productDtoOld._productName, userName, shopId));
+                } else {
+                    throw new Exception(String.format("User %s does not have permissions", userName));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
+                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+            logger.log(Level.SEVERE, String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
+                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+        }
         return response;
     }
 

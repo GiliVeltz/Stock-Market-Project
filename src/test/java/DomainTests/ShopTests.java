@@ -1010,6 +1010,89 @@ public class ShopTests {
     }
 
     @Test
+    public void testEditProductInShop_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> {
+            shop.editProductInShop(username, product.getProductName(), newProduct.getProductName(), newProduct.getCategory(), newProduct.getPrice());
+        });
+    }
+
+    @Test
+    public void testEditProductInShop_whenProductDoesNotExist_thenFails() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.EDIT_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> {
+            shop.editProductInShop(username, newProduct.getProductName(), newProduct.getProductName(), newProduct.getCategory(), newProduct.getPrice());
+        });
+    }
+
+    @Test
+    public void testEditProductInShop_whenUserHasPermission_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(Permission.EDIT_PRODUCT);
+        shop.AppointManager(username, "manager", permissions);
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.editProductInShop(username, product.getProductName(), newProduct.getProductName(), newProduct.getCategory(), newProduct.getPrice());
+
+        // Assert
+        assertEquals(newProduct.getProductName(), shop.getShopProducts().get(1).getProductName());
+    }
+
+    @Test
+    public void testEditProductInShop_whenUserIsTheFounder_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.editProductInShop(username, product.getProductName(), newProduct.getProductName(), newProduct.getCategory(), newProduct.getPrice());
+
+        // Assert
+        assertEquals(newProduct.getProductName(), shop.getShopProducts().get(1).getProductName());
+    }
+
+    @Test
+    public void testEditProductInShop_whenUserIsTheOwner_thenSucceeds() throws StockMarketException {
+        // Arrange
+        String username = "user1";
+        Product product = new Product(1, "product1", Category.CLOTHING, 100);
+        Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
+        Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
+        shop.AppointOwner(username, "owner");
+        shop.addProductToShop(username, product);
+
+        // Act
+        shop.editProductInShop(username, product.getProductName(), newProduct.getProductName(), newProduct.getCategory(), newProduct.getPrice());
+
+        // Assert
+        assertEquals(newProduct.getProductName(), shop.getShopProducts().get(1).getProductName());
+    }
+
+    @Test
     public void testUpdateProductQuantity_whenUserDoesNotHavePermission_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
