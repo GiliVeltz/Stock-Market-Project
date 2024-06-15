@@ -1118,13 +1118,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoAsGuest(String productId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsGuest'");
-    }
-
-    @Override
     public boolean testGetProductInfoUsingProductNameAsGuest(String productId) {
         // TODO Auto-generated method stub
         // #416
@@ -1303,13 +1296,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // TODO Auto-generated method stub
         // TODO Gili getShopGeneralInfo - #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsUser'");
-    }
-
-    @Override
-    public boolean testGetProductInfoAsUser(String productId) {
-        // TODO Auto-generated method stub
-        // TODO Gili getProductGeneralInfo - #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoAsUser'");
     }
 
     @Override
