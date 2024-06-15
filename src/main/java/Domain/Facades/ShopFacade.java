@@ -184,6 +184,11 @@ public class ShopFacade {
         if (!getShopByShopId(shopId).isProductNameExist(productDtoOld._productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
             productDtoOld._productName, shopId));
+        
+        // If the new product name already exists in the shop, raise an error
+        if (getShopByShopId(shopId).isProductNameExist(productDtoNew._productName))
+            throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
+            productDtoNew._productName, shopId));
 
         getShopByShopId(shopId).editProductInShop(userName, productDtoOld._productName, productDtoNew._productName, productDtoNew._category, productDtoNew._price);
     }
