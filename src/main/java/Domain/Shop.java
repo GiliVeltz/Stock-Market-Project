@@ -950,7 +950,7 @@ public class Shop {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
-            _notificationHandler.sendMessage(owner, alert.getMessage());
+            _notificationHandler.sendMessage(owner, alert);
         }
     }
 
