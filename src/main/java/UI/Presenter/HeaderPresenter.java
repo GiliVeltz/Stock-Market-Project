@@ -199,4 +199,9 @@ public class HeaderPresenter {
     public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
         RestTemplate restTemplate = new RestTemplate();
     }
+
+    public void searchShop(String shopName, String bankshopId) {
+        RestTemplate restTemplate = new RestTemplate();
+    }
 }
+
