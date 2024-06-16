@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({ "Server", "ServiceLayer","Server.notifications" })
+@ComponentScan({ "Server", "ServiceLayer" })
 // Purpose: This class is building the web server, that will handle the requests
 // from the client.
 public class Server {

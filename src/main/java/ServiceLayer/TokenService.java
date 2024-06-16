@@ -8,7 +8,6 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -21,7 +20,8 @@ import io.jsonwebtoken.Jwts;
 
 @Service
 public class TokenService {
-    @Value("${jwk.secret}")
+
+    @Value("${jwk.secret:default-secret-key}")
     private String secret;
 
     private final long expirationTime = 1000 * 60 * 60 * 24;
