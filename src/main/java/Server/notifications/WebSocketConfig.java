@@ -1,5 +1,6 @@
 package Server.notifications;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -29,6 +30,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
      *
      * @param webSocketServer the WebSocketServer to be used for handling WebSocket messages.
      */
+    @Autowired
     public WebSocketConfig(WebSocketServer webSocketServer) {
         this.webSocketServer = webSocketServer;
     }
