@@ -36,6 +36,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test search product information according to product name as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductNameAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingProductNameAsUser("productId1") ); // success - exist product
@@ -44,6 +45,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test search product information according to product category as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser("caterogy1") ); // success - exist category
@@ -52,6 +54,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test search product information according to key words as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingKeyWordsAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingKeyWordsAsUser("word1") ); // success - exist key word
@@ -60,6 +63,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
+    // TODO: GILI - need to implement this test
     
     // Test search product information in a specific shop, according to product name as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
@@ -73,6 +77,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test search product information in a specific shop, according to product category as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy1", "shopId1") ); // success - exist category and exist shop
@@ -83,6 +88,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test search product information in a specific shop, according to key words as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingKeyWordsInShopAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingKeyWordsInShopAsUser("keyword1", "shopId1") ); // success - exist keyword and exist shop
@@ -107,6 +113,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
+    // TODO: TAL - need to implement this test
     @Test
     public void testBuyingShoppingCartAsUser() {
         assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","1 4 5 6 7","Visa","Israel") ); // success - all products are available to buy them
@@ -168,6 +175,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can send messages to the shop the purchased from about his orders.
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
+    // TODO: METAR - need to implement this test
     @Test
     public void TestUserMessagingShopHePurchasedFrom() {
         assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // success - the user secceeded to send the message
@@ -177,6 +185,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
+    // TODO: VLADI - need to implement this test
     @Test
     public void TestUserReportSystemManagerOnBreakingIntegrityRules() {
         assertTrue(_bridge.TestUserReportSystemManagerOnBreakingIntegrityRules("bob","bobspassword", "message1") ); // success - the user secceeded to send the message
