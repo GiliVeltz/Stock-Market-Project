@@ -8,8 +8,11 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -33,7 +36,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         presenter = new HeaderPresenter(this, serverPort);
 
         // Create the buttons
-        Button registerButton = new Button("Register");
+        _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
@@ -47,7 +50,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         openShopButton.addClickListener(event -> createOpenNewShopDialog().open());
 
         // Add cursor styling
-        registerButton.addClassName("pointer-cursor");
+        _registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
@@ -55,8 +58,8 @@ public class Header extends HorizontalLayout implements ViewPageI {
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
-        HorizontalLayout leftButtonLayout = new HorizontalLayout();
-        leftButtonLayout.add(registerButton, loginButton);
+        _leftButtonLayout = new HorizontalLayout();
+        _leftButtonLayout.add(_registerButton, loginButton);
 
         // Spacer to separate left and right buttons
         Span spacer = new Span();
@@ -64,10 +67,10 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
-        add(leftButtonLayout, spacer, rightButtonLayout);
+        add(_leftButtonLayout, spacer, rightButtonLayout);
 
         // Adjust button spacing if needed
         setWidthFull(); // Make the layout take full width
@@ -91,7 +94,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         });
 
         // Add click listener to the register button
-        registerButton.addClickListener(event -> registrationDialog.open());
+        _registerButton.addClickListener(event -> registrationDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -99,6 +102,10 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Registeration");
+        headline.getStyle().set("margin", "0");
 
         // Create form fields
         TextField usernameField = new TextField("Username");
@@ -140,7 +147,8 @@ public class Header extends HorizontalLayout implements ViewPageI {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
         dialog.add(dialogLayout);
 
         // Add listener to clear fields when dialog is opened
@@ -166,6 +174,10 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Log In");
+        headline.getStyle().set("margin", "0");
 
         // Create form fields
         TextField usernameField = new TextField("Username");
@@ -197,7 +209,8 @@ public class Header extends HorizontalLayout implements ViewPageI {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
         dialog.add(dialogLayout);
 
         // Add listener to clear fields when dialog is opened
@@ -271,6 +284,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
     private Dialog createOpenNewShopDialog() {
         Dialog dialog = new Dialog();
 
+        // Create a headline
+        H2 headline = new H2("Open New Shop");
+
         // Create form layout
         FormLayout formLayout = new FormLayout();
 
@@ -307,7 +323,8 @@ public class Header extends HorizontalLayout implements ViewPageI {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);
 
         return dialog;

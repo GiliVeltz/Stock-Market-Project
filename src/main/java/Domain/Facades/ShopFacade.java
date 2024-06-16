@@ -20,6 +20,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
@@ -65,7 +66,7 @@ public class ShopFacade {
     }
 
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
-        int shopId = _shopRepository.getUniqueShopID();    
+        int shopId = _shopRepository.getUniqueShopID();
         _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         return shopId;
     }
@@ -116,7 +117,9 @@ public class ShopFacade {
      * Add a product to a shop by its ID.
      * 
      * @param shopId The ID of the shop.
+     * 
      * @param productDto The product DTO.
+     * 
      * @param userName The username of the user adding the product.
      */
     public void addProductToShop(Integer shopId, ProductDto productDto, String userName) throws StockMarketException {
@@ -136,10 +139,13 @@ public class ShopFacade {
      * Remove a product from a shop by its ID.
      * 
      * @param shopId The ID of the shop.
+     * 
      * @param productDto The product DTO.
+     * 
      * @param userName The username of the user removing the product.
      */
-    public synchronized void removeProductFromShop(Integer shopId, ProductDto productDto, String userName) throws StockMarketException {
+    public synchronized void removeProductFromShop(Integer shopId, ProductDto productDto, String userName)
+            throws StockMarketException {
         // If the shop ID does not exist, raise an error
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
@@ -157,11 +163,17 @@ public class ShopFacade {
      * Edit a product in a shop by its ID.
      * 
      * @param shopId The ID of the shop.
-     * @param productDtoOld The product to be edit in the shop - the old vars of the product.
-     * @param productDtoNew The product to be edit in the shop - the new vars of the product.
+     * 
+     * @param productDtoOld The product to be edit in the shop - the old vars of the
+     * product.
+     * 
+     * @param productDtoNew The product to be edit in the shop - the new vars of the
+     * product.
+     * 
      * @param userName The username of the user editing the product.
      */
-    public synchronized void editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew, String userName) throws StockMarketException {
+    public synchronized void editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew,
+            String userName) throws StockMarketException {
         // If the shop ID does not exist, raise an error
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
@@ -183,14 +195,15 @@ public class ShopFacade {
         // If the product name does not exists in the shop, raise an error
         if (!getShopByShopId(shopId).isProductNameExist(productDtoOld._productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
-            productDtoOld._productName, shopId));
-        
+                    productDtoOld._productName, shopId));
+
         // If the new product name already exists in the shop, raise an error
         if (getShopByShopId(shopId).isProductNameExist(productDtoNew._productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
-            productDtoNew._productName, shopId));
+                    productDtoNew._productName, shopId));
 
-        getShopByShopId(shopId).editProductInShop(userName, productDtoOld._productName, productDtoNew._productName, productDtoNew._category, productDtoNew._price);
+        getShopByShopId(shopId).editProductInShop(userName, productDtoOld._productName, productDtoNew._productName,
+                productDtoNew._category, productDtoNew._price);
     }
 
     /**
@@ -236,7 +249,8 @@ public class ShopFacade {
      * @throws ShopException       if there is an error adding the discount to the
      *                             shop
      */
-    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto) throws StockMarketException {
+    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
+            throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -261,7 +275,8 @@ public class ShopFacade {
      * @throws ShopException       if the shop does not exist or an error occurs
      *                             while adding the discount
      */
-    public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto) throws StockMarketException {
+    public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto)
+            throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
@@ -293,7 +308,8 @@ public class ShopFacade {
     // this function is responsible searching a product in a shop by its name for
     // all type of users
     // by checking if all inputs are valid and then calling the function in shop
-    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductInShopByName(Integer shopId, String productName)
+            throws StockMarketException {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If productName is null, raise an error
         if (productName == null) {
@@ -325,7 +341,8 @@ public class ShopFacade {
         return _shopRepository.getAllShops();
     }
 
-    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
+            throws StockMarketException {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If category is null, raise an error
         if (productCategory == Category.DEFAULT_VAL) {
@@ -356,7 +373,8 @@ public class ShopFacade {
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductsInShopByKeywords(Integer shopId, List<String> keywords)
+            throws StockMarketException {
         // If keywords is null, raise an error
         if (keywords == null || keywords.isEmpty()) {
             throw new StockMarketException("Product keywords is null or empty.");
@@ -384,7 +402,8 @@ public class ShopFacade {
         return productsByShop;
     }
 
-    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice) throws StockMarketException {
+    public Map<Integer, List<Product>> getProductsInShopByPriceRange(Integer shopId, Double minPrice, Double maxPrice)
+            throws StockMarketException {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
         // If shopId is null, search in all shops
         if (shopId == null) {
@@ -408,7 +427,8 @@ public class ShopFacade {
         return productsByShop;
     }
 
-    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount) throws StockMarketException {
+    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount)
+            throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -471,7 +491,8 @@ public class ShopFacade {
      * @return the usernames of the managers that were removed
      * @throws StockMarketException
      */
-    public Set<String> fireShopManager(String username, Integer shopId, String managerUsername) throws StockMarketException {
+    public Set<String> fireShopManager(String username, Integer shopId, String managerUsername)
+            throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -571,16 +592,16 @@ public class ShopFacade {
         }
     }
 
-    public void addProductRating(Integer shopId, Integer productId, Integer rating) throws StockMarketException{   
-        if (!isShopIdExist(shopId)) 
+    public void addProductRating(Integer shopId, Integer productId, Integer rating) throws StockMarketException {
+        if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
         Shop shop = getShopByShopId(shopId);
-        shop.addProductRating(productId,rating);
+        shop.addProductRating(productId, rating);
     }
 
-    public void addShopRating(Integer shopId, Integer rating) throws StockMarketException{   
-        if (!isShopIdExist(shopId)) 
+    public void addShopRating(Integer shopId, Integer rating) throws StockMarketException {
+        if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
         Shop shop = getShopByShopId(shopId);
@@ -589,6 +610,7 @@ public class ShopFacade {
 
     /**
      * Returns the shop name if exists, else returns null.
+     * 
      * @param shopId
      * @return
      */
@@ -602,6 +624,7 @@ public class ShopFacade {
 
     /**
      * Returns the shop bank details if exists, else returns null.
+     * 
      * @param shopId
      * @return
      */
@@ -615,6 +638,7 @@ public class ShopFacade {
 
     /**
      * Returns the shop address if exists, else returns null.
+     * 
      * @param shopId
      * @return
      */
@@ -628,6 +652,7 @@ public class ShopFacade {
 
     /**
      * Returns all the products in a shop by its ID.
+     * 
      * @param shopId
      * @return
      */
@@ -641,7 +666,8 @@ public class ShopFacade {
 
     /**
      * Returns all shopIds of shops with the input name.
-     * @param shopName The name of the shop to search for. 
+     * 
+     * @param shopName The name of the shop to search for.
      * @return A list of the matching shopIds
      */
     public List<Integer> getShopIdsByName(String shopName) {
@@ -654,19 +680,37 @@ public class ShopFacade {
         return shopIds;
     }
 
-       /**
+    /**
      * Get all the shops that the user has a role in
+     * 
      * @param username the user's username
      * @return the list of shops that the user has a role in
      * @throws StockMarketException
      */
-    public List<Integer> getUserShops(String username) throws StockMarketException{
+    public List<Integer> getUserShops(String username) throws StockMarketException {
         List<Integer> shops = new ArrayList<>();
         for (Shop shop : getAllShops()) {
-            if(shop.checkIfHasRole(username)){
+            if (shop.checkIfHasRole(username)) {
                 shops.add(shop.getShopId());
             }
         }
         return shops;
+    }
+
+    /**
+     * Get all the shops that the user has a role in
+     * 
+     * @param username the user's username
+     * @return the list of shops that the user has a role in
+     * @throws StockMarketException
+     */
+    public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        if (shop.isShopClosed())
+            throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
+        shop.changeShopPolicy(username, shopRules);
     }
 }

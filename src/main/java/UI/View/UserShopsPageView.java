@@ -10,11 +10,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.Presenter.LandingPagePresenter;
-import UI.Presenter.UserMainPagePresenter;
 import UI.Presenter.UserShopsPagePresenter;
 
 @PageTitle("User Shops Page")
