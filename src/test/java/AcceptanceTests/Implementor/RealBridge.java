@@ -512,7 +512,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest.addShopManager(token, shopId, username, permissions);
 
         // Act
-        ResponseEntity<Response> res = _shopServiceUnderTest.addProductToShop(token, shopId, new ProductDto("productName", Category.CLOTHING, 100));
+        ResponseEntity<Response> res = _shopServiceUnderTest.addProductToShop(token, shopId, new ProductDto("productName", Category.CLOTHING, 100, 1));
 
         // Assert
         logger.info("testPermissionForShopManager Error message: " + res.getBody().getErrorMessage());
@@ -542,8 +542,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount));
-        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount));
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount), 1);
+        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount), 1);
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -614,7 +614,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
         User NotShopOwnerUserName = new User("NotShopOwnerUserName", _passwordEncoder.encodePassword("NotShopOwnerUserNamePassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, 10);
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, 10, 1);
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -681,9 +681,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         
-        ProductDto productDto = new ProductDto("ProductName", Category.CLOTHING, Integer.parseInt(productAmount));
-        ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productAmountNew));
-        ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmountNew));
+        ProductDto productDto = new ProductDto("ProductName", Category.CLOTHING, Integer.parseInt(productAmount), 1);
+        ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productAmountNew), 1);
+        ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmountNew), 1);
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -1201,7 +1201,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
 
         // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
@@ -1257,7 +1257,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // user opens shop and adds product to it
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
         _shopFacade = new ShopFacade();
         try {
             _shopFacade.openNewShop(username, shopDto);
@@ -1375,7 +1375,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
 
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
 
         User user = new User("UziNavon", _passwordEncoder.encodePassword("userPassword"), "email@email.com", new Date());
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
@@ -1443,7 +1443,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // user opens shop and adds product to it
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
         _shopFacade = new ShopFacade();
         try {
             _shopFacade.openNewShop(username, shopDto);
@@ -1689,7 +1689,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
 
         // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
 
         // this user adds a product to the shopping cart using UserService
@@ -1738,7 +1738,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
        
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5);
+        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
        _userFacade = new UserFacade(new ArrayList<User>() {
            {
                add(shopFounder);
@@ -1919,7 +1919,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
 
         // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
@@ -1976,7 +1976,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
 
         // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100);
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
