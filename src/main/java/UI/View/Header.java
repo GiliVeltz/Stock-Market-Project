@@ -1,38 +1,27 @@
 package UI.View;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-// import com.vaadin.flow.component.slider.Slider;
-
-
-
 
 import UI.Presenter.HeaderPresenter;
 
@@ -100,6 +89,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         Dialog searchProductsDialog = createSearchProductsDialog();
 
+        // Create login dialog
+        Dialog searchShopsDialog = createSearchShopsDialog();
+    
         // Create logout confirmation dialog
         logoutConfirmationDialog = createLogoutConfirmationDialog();
 
@@ -115,6 +107,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         _registerButton.addClickListener(event -> registrationDialog.open());
 
         searchProductsButton.addClickListener(event -> searchProductsDialog.open());
+        searchShopsButton.addClickListener(event -> searchShopsDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -357,6 +350,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create a headline
         H2 headline = new H2("Search Product");
+        headline.getStyle().set("margin", "0");
+
+        H5 comment = new H5("An empty search will return all products");
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
@@ -400,17 +396,12 @@ public class Header extends HorizontalLayout implements ViewPageI {
     
         
         TextField productNameField = new TextField("By Product Name");
-        
-        // Create form layout and add components
-        // formLayout.add( minPriceField, maxPriceField, categoryField, productNameField, keywordInputField, keyWordField, addKeywordButton);
 
         // Add fields to the form layout
         formLayout.add(minPriceField, maxPriceField, categoryField, productNameField, keywordInputField, keyWordField, addKeywordButton);
 
-
-
         // Create buttons
-        Button submitButton = new Button("Submit", event -> {
+        Button searchButton = new Button("Search", event -> {
             // Handle form submission
             String category = categoryField.getValue();
             Set<String> keyWords = new HashSet<>(keyWordField.getSelectedItems()); // Get selected keywords
@@ -424,24 +415,72 @@ public class Header extends HorizontalLayout implements ViewPageI {
             dialog.close();
         });
 
-        submitButton.addClassName("pointer-cursor");
+        searchButton.addClassName("pointer-cursor");
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addClassName("pointer-cursor");
 
         // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, comment, formLayout, buttonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);
 
         return dialog;
     }
 
+    public Dialog createSearchShopsDialog(){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Search Shops");
+        headline.getStyle().set("margin", "0");
+        H5 comment = new H5("An empty search will return all shops");
+
+        // Create form fields
+        TextField shopNameField = new TextField("Shop Name");
+        TextField shopIdField = new TextField("Shop ID");
+
+        // Add fields to the form layout
+        formLayout.add(shopNameField, shopIdField);
+
+        // Create buttons
+        Button searchButton = new Button("Search", event -> {
+            // Handle form submission
+            String shopName = shopNameField.getValue();
+            String shopId = shopIdField.getValue();
+
+            presenter.searchShop(shopName, shopId);
+
+            // Close the dialog after submission
+            dialog.close(); 
+        });
+
+        searchButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, comment, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialog.add(dialogLayout);
+
+        return dialog;
+    }
 
     @Override
     public void showSuccessMessage(String message) {
