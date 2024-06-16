@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.vaadin.flow.component.UI;
 import java.util.Date;
+import java.util.Set;
 
 import UI.Model.ShopDto;
 import UI.Model.UserDto;
@@ -193,5 +194,9 @@ public class HeaderPresenter {
                         view.showErrorMessage("Failed to open shop");
                     }
                 });
+    }
+    
+    public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
+        RestTemplate restTemplate = new RestTemplate();
     }
 }
