@@ -67,7 +67,6 @@ public class WebSocketServer extends TextWebSocketHandler {
                 }
             }
         }
-
         if (token == null || !validateToken(token)) {
             session.close(CloseStatus.BAD_DATA);
             System.out.println("Invalid token, connection closed");
@@ -207,10 +206,16 @@ public class WebSocketServer extends TextWebSocketHandler {
     * @param newToken The new token for the logged-in user.
     * @param username The username of the logged-in user.
     */
-    public void replaceGuestTokenToUserToken(String oldToken, String newToken,String username) {
-        if (username != null) {
-            WebSocketSession session = sessions.remove("guest-" + oldToken);
-            sessions.put(username, session);
+    public void replaceGuestTokenToUserToken(String oldToken, String newToken, String username) {
+        if (username != null && oldToken != null) {
+            String guestKey = "guest-" + oldToken;
+            if (sessions.containsKey(guestKey)) {
+                WebSocketSession session = sessions.get(guestKey);
+                sessions.remove(guestKey);
+                if (session != null) {
+                    sessions.put(username, session);
+                }
+            }
         }
     }
 

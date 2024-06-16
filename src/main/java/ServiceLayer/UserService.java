@@ -7,17 +7,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.vaadin.flow.component.notification.Notification;
+
 import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.GeneralAlert;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import Exceptions.UnauthorizedException;
+import Domain.Alerts.*;
 
 @Service
 public class UserService {
@@ -59,6 +64,9 @@ public class UserService {
              
                     WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
                     WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello new logged in user! Welcome to the system!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
                     logger.info("User " + userName + " Logged In Succesfully");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
@@ -83,6 +91,8 @@ public class UserService {
                     String newToken = _tokenService.generateGuestToken();
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage("A user with the username given in the token does not exist.");

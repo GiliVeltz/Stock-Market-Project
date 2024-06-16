@@ -21,7 +21,7 @@ public class LandingPageView extends BaseView implements ViewPageI {
         System.setProperty("server.port", "8080");
 
         // Create the header component
-        Header header = new Header("8081");
+        Header header = new Header("8080");
 
         // Create the title
         H1 title = new H1("Welcome to Stock Market!!");
