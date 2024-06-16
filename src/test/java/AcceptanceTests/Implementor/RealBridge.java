@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -1284,10 +1285,294 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartGuest() {
-        // TODO Auto-generated method stub
-        when(_tokenServiceMock.isGuest(token)).thenReturn(true);
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuest'");
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(List<Integer> basketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(guestToken);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopName1", "bankDetails1", "address1");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
+
+        ShopDto shopDto2 = new ShopDto("shopName2", "bankDetails2", "address2");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.openNewShop(userToken, shopDto2);
+
+        ShopDto shopDto3 = new ShopDto("shopName3", "bankDetails3", "address3");
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.openNewShop(userToken, shopDto3);
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res5 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto2);
+
+        ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res6 = _shopServiceUnderTest.addProductToShop(userToken, 1, productDto3);
+
+        ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res7 = _shopServiceUnderTest.addProductToShop(userToken, 2, productDto4);
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res8 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res9 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res10 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
+        ResponseEntity<Response> res11 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1);
+        ResponseEntity<Response> res12 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2);
+
+        // Act
+        ResponseEntity<Response> res13 = _userServiceUnderTest.purchaseCart(guestToken, 
+        new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if(res4.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if(res5.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        if(res6.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            return false;
+        }
+        if(res7.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            return false;
+        }
+        if(res8.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+            return false;
+        }
+        if(res9.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+            return false;
+        }
+        if(res10.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+            return false;
+        }
+        if(res11.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+            return false;
+        }
+        if(res12.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+            return false;
+        }
+        return res13.getBody().getErrorMessage() == null;
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String userBuyerToken = "BuyerToken";
+        when(_tokenServiceMock.validateToken(userBuyerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userBuyerToken)).thenReturn("buyer");
+        when(_tokenServiceMock.isUserAndLoggedIn(userBuyerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userBuyerToken)).thenReturn(false);
+
+        // create a user in the system
+        User shopOwner = new User("shopOwner", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>());
+
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(guestToken);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        UserDto userDto = new UserDto("buyer", "passBuyer", "buyer@email.com", new Date());
+        ResponseEntity<Response> res1 = _userServiceUnderTest.register(guestToken, userDto);
+
+        ResponseEntity<Response> res2 = _userServiceUnderTest.logIn(guestToken, "buyer", "passBuyer");
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopName1", "bankDetails1", "address1");
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
+
+        ShopDto shopDto2 = new ShopDto("shopName2", "bankDetails2", "address2");
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.openNewShop(userToken, shopDto2);
+
+        ShopDto shopDto3 = new ShopDto("shopName3", "bankDetails3", "address3");
+        ResponseEntity<Response> res5 = _shopServiceUnderTest.openNewShop(userToken, shopDto3);
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res6 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res7 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto2);
+
+        ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res8 = _shopServiceUnderTest.addProductToShop(userToken, 1, productDto3);
+
+        ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+        ResponseEntity<Response> res9 = _shopServiceUnderTest.addProductToShop(userToken, 2, productDto4);
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res10 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res11 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res12 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0);
+        ResponseEntity<Response> res13 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1);
+        ResponseEntity<Response> res14 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2);
+
+        // Act
+        ResponseEntity<Response> res15 = _userServiceUnderTest.purchaseCart(userBuyerToken, 
+        new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if(res4.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if(res5.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        if(res6.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            return false;
+        }
+        if(res7.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            return false;
+        }
+        if(res8.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+            return false;
+        }
+        if(res9.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+            return false;
+        }
+        if(res10.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+            return false;
+        }
+        if(res11.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+            return false;
+        }
+        if(res12.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+            return false;
+        }
+        if(res13.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res13.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res13.getBody().getErrorMessage());
+            return false;
+        }
+        if(res14.getBody().getErrorMessage() != null){
+            logger.info("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res14.getBody().getErrorMessage());
+            System.out.println("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res14.getBody().getErrorMessage());
+            return false;
+        }
+        return res15.getBody().getErrorMessage() == null;
     }
 
     @Override

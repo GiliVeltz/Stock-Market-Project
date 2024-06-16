@@ -1,5 +1,9 @@
 package AcceptanceTests.Implementor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +81,10 @@ public interface BridgeInterface {
     boolean testCheckAndViewItemsInShoppingCartAsGuest(String status);
 
     @Test
-    boolean testCheckAllOrNothingBuyingShoppingCartGuest();
+    boolean testCheckAllOrNothingBuyingShoppingCartGuest(List<Integer> basketsToBuy, String cardNumber, String address);
+
+    @Test
+    boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address);
     
     @Test
     boolean testBuyingShoppingCartPoliciesGuest();
@@ -229,5 +236,4 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
-
 }
