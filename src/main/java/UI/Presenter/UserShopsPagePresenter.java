@@ -35,7 +35,7 @@ public class UserShopsPagePresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/getUserShops?shopId=" + shopId,
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getUserShops",
                                 HttpMethod.GET,
                                 requestEntity,
                                 String.class);

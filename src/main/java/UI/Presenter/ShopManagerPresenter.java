@@ -34,7 +34,7 @@ public class ShopManagerPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagerPermissions",
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagerPermissions?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 String.class);

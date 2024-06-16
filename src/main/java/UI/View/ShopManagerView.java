@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.web.bind.annotation.PathVariable;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
@@ -22,11 +24,15 @@ public class ShopManagerView extends BaseView {
     private String _username;
     private Set<Permission> _permissions;
     private H1 _title;
+    private int _shopId;
     
-    public ShopManagerView(){
+    public ShopManagerView(@PathVariable("shopId") String shopId){
 
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
+
+        // Retrieve the shopId from the URL
+        _shopId = Integer.parseInt(shopId);
 
         // Initialize presenter
         presenter = new ShopManagerPresenter(this);
@@ -60,13 +66,13 @@ public class ShopManagerView extends BaseView {
         Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
 
         // Here we create a set of permissions from the strings.
-        Set<Permission> permissionsSet = permissions.stream()
+        Set<Permission> _permissions = permissions.stream()
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         
-        if(permissionsSet.contains(Permission.FOUNDER)){
+        if(_permissions.contains(Permission.FOUNDER)){
             _title = new H1("Shop Management: Founder");
-        }else if(permissionsSet.contains(Permission.OWNER)){
+        }else if(_permissions.contains(Permission.OWNER)){
             _title = new H1("Shop Management: Owner");
         }else{
             _title = new H1("Shop Management: Manager");
@@ -74,17 +80,21 @@ public class ShopManagerView extends BaseView {
             // Regular manager cannot appoint owner
             appointOwnerBtn.setEnabled(false);
 
-            if(permissionsSet.contains(Permission.CHANGE_PRODUCT_POLICY)){
+            if(_permissions.contains(Permission.CHANGE_PRODUCT_POLICY)){
                 changeProductPolicyBtn.setEnabled(false);
             }
-            if(permissionsSet.contains(Permission.CHANGE_SHOP_POLICY)){
+            if(_permissions.contains(Permission.CHANGE_SHOP_POLICY)){
                 changeShopPolicyBtn.setEnabled(false);
             }
-            if(permissionsSet.contains(Permission.APPOINT_MANAGER)){
+            if(_permissions.contains(Permission.APPOINT_MANAGER)){
                 appointManagerBtn.setEnabled(false);
             }
             
         }
+    }
+
+    public int getShopId() {
+        return _shopId;
     }
     
 }
