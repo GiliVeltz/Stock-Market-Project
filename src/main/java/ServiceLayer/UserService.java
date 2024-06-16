@@ -3,18 +3,26 @@ package ServiceLayer;
 import java.util.logging.Logger;
 
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Websocket;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.vaadin.flow.component.notification.Notification;
 
 import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.GeneralAlert;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
+import Exceptions.UnauthorizedException;
+import Domain.Alerts.*;
 
 @Service
 public class UserService {
@@ -39,7 +47,7 @@ public class UserService {
 
     // this function is responsible for logging in a user to the system by checking
     // the credentials and generating a token for the user
-    public Response logIn(String token, String userName, String password) {
+    public ResponseEntity<Response> logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -48,67 +56,80 @@ public class UserService {
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     User user = _userFacade.getUserByUsername(userName);
+                    System.out.println("user"+user.getUserName()+"password"+user.getPassword());
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
                     //update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
+             
                     WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello new logged in user! Welcome to the system!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
                     
                     logger.info("User " + userName + " Logged In Succesfully");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
                 }
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("LogIn Failed: " + e.getMessage());
             logger.log(Level.SEVERE, "LogIn Failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
-    // this function is responsible for logging out a user from the system by
-    // returning a new token for a guest in the system
-    public Response logOut(String token) {
+    public ResponseEntity<Response> logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
                     String newToken = _tokenService.generateGuestToken();
-                    logger.info("User successfuly logged out: " + userName);
+                    logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
+                    //close this session
+                    WebSocketServer.getInstance().closeSession(userName);
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage("A user with the username given in the token does not exist.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            response.setErrorMessage("Token is invalid");
+            response.setErrorMessage("Token is invalid: " + e.getMessage());
             logger.log(Level.SEVERE, "LogOut failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for registering a new user to the system
-    public Response register(String token, UserDto userDto) {
+    public ResponseEntity<Response> register(String token, UserDto userDto) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 _userFacade.register(userDto);
                 logger.info("User registered: " + userDto.username);
-                response.setReturnValue("Registeration Succeed");
+                response.setReturnValue("Registration Succeeded");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            response.setErrorMessage("Registeration failed: " + e.getMessage());
-            logger.log(Level.SEVERE, "Registeration failed: " + e.getMessage(), e);
+            response.setErrorMessage("Registration failed: " + e.getMessage());
+            logger.log(Level.SEVERE, "Registration failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
+
 
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
@@ -198,6 +219,7 @@ public class UserService {
         return response;
     }
 
+    // this function is responsible for getting the purchase history of a user.
     public Response getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
@@ -223,6 +245,7 @@ public class UserService {
         return response;
     }
 
+    // this function is responsible for getting the purchase history of a shop.
     public Response addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -244,6 +267,7 @@ public class UserService {
         return response;
     }
 
+    // this function is responsible for removing a product from the shopping cart.
     public Response removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -267,6 +291,28 @@ public class UserService {
         return response;
     }
 
+    // this function is responsible for getting the shopping cart of a user: returns a list of products in the cart.
+    public Response getShoppingCart(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isGuest(token)) {
+                    response.setReturnValue(_shoppingCartFacade.getGuestCart(_tokenService.extractGuestId(token)));
+                } else if (_tokenService.isUserAndLoggedIn(token)) {
+                    response.setReturnValue(_shoppingCartFacade.getUserCart(_tokenService.extractUsername(token)));
+                } else {
+                    throw new Exception("Token is incorrect");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get shopping cart: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get shopping cart: " + e.getMessage(), e);
+        }
+        return response;
+    }
+    
     // this function is responsible for changing the email of a user.
     public Response changeEmail(String username, String email){
         Response response = new Response();
@@ -275,6 +321,28 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to change email for user: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change email for user: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+    // this function is responsible for write a review for a product that bought by the user (only after the purchase, and logged in user)
+    public Response writeReview(String token, int productID, int shopID, String review){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
+                    _shoppingCartFacade.writeReview(username, purchaseHistory, productID, shopID, review);
+                } else {
+                    throw new Exception("Token is incorrect");
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to write review: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to write review: " + e.getMessage(), e);
         }
         return response;
     }

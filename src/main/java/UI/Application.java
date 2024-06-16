@@ -39,8 +39,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = { "UI" })
 public class Application implements AppShellConfigurator, WebMvcConfigurer {
 
-    @Autowired
-    private WebSocketClient webSocketClient;
+    // @Autowired
+    // private WebSocketClient webSocketClient;
 
     private static int port;
     // Static variable to store the token
@@ -53,37 +53,39 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
         SpringApplication.run(Application.class, args);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void AfterStartup() {
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void AfterStartup() {
 
-        String token = fetchAndStoreToken("8080");
-        System.out.println("Token:" + token);
-        webSocketClient.connect(token);
-    }
+    //     String token = fetchAndStoreToken("8080");
+    //     System.out.println("Token:" + token);
+    //     webSocketClient.connect(token);
+    // }
 
-    private static String fetchAndStoreToken(String port) {
-        RestTemplate restTemplate = new RestTemplate();
-        String serverUrl = "http://localhost:" + port + "/api/system/enterSystem";
+    // private static String fetchAndStoreToken(String port) {
+    //     RestTemplate restTemplate = new RestTemplate();
+    //     String serverUrl = "http://localhost:" + port + "/api/system/enterSystem";
 
-        ResponseEntity<String> response = restTemplate.getForEntity(serverUrl, String.class);
+    //     ResponseEntity<String> response = restTemplate.getForEntity(serverUrl, String.class);
 
-        String responseBody = response.getBody();
-        // Parse the response to extract the token
-        ObjectMapper objectMapper = new ObjectMapper();
-        String token = null;
-        try {
-            JsonNode responseJson = objectMapper.readTree(responseBody);
-            token = responseJson.get("returnValue").asText();
+    //     String responseBody = response.getBody();
+    //     // Parse the response to extract the token
+    //     ObjectMapper objectMapper = new ObjectMapper();
+    //     String token = null;
+    //     try {
+    //         JsonNode responseJson = objectMapper.readTree(responseBody);
+    //         token = responseJson.get("returnValue").asText();
 
-            // Store the token in local storage
-            Preferences prefs = Preferences.userNodeForPackage(Application.class);
-            prefs.put("token", token);
+    //         // Store the token in local storage
+    //         // Preferences prefs = Preferences.userNodeForPackage(Application.class);
+    //         // prefs.put("token", token);
+    //          // Store the token in local storage using JavaScript
+    //          UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return token;
-    }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    //     return token;
+    // }
 
     private static int findAvailablePort() {
         try (ServerSocket socket = new ServerSocket(0)) {

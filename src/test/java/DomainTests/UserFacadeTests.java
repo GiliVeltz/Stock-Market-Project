@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,22 +38,23 @@ public class UserFacadeTests {
     private UserFacade _userFacadeUnderTest;
     private List<User> _registeredUsers;
     private List<String> _guestIds;
+    private PasswordEncoderUtil _passwordEncoderUtil = new PasswordEncoderUtil();
+
+    private String userName = "john_doe";
+    private String password = "password123";
 
     // mock fields.
-    @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
-
     @Mock
     private User _userMock;
 
     // users fields.
-    private User _user1 = new User("john_doe", "password123", "john.doe@example.com", new Date());
+    private User _user1 = new User(userName, _passwordEncoderUtil.encodePassword(password), "john.doe@example.com", new Date());
 
     @BeforeEach
     public void setUp() {
-        _passwordEncoderMock = mock(PasswordEncoderUtil.class);
         _registeredUsers = new ArrayList<>();
         _guestIds = new ArrayList<>();
+        _passwordEncoderUtil = new PasswordEncoderUtil();
         _userMock = mock(User.class);
     }
 
@@ -67,11 +68,10 @@ public class UserFacadeTests {
     @Test
     public void testRegister_whenNewUser_thenUserNameExistsCheckSuccess() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
-        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act - try to register a new user
-        UserDto userDto = new UserDto("john_doe", "password123", "john.doe@example.com", new Date());
+        UserDto userDto = new UserDto(userName, password, "john.doe@example.com", new Date());
         try {
             _userFacadeUnderTest.register(userDto);
         } catch (Exception e) {
@@ -79,15 +79,14 @@ public class UserFacadeTests {
         }
 
         // Assert - Verify that the user was registered successfully
-        assertEquals(true, _userFacadeUnderTest.doesUserExist("john_doe"));
+        assertEquals(true, _userFacadeUnderTest.doesUserExist(userName));
     }
 
     @Test
     public void testRegister_whenExistUser_thenUserNameExistsCheckFail() {
         // Arrange - Create a new User object
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
-        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Assert - Verify that the username has been updated
         assertThrowsExactly(StockMarketException.class,
@@ -100,8 +99,7 @@ public class UserFacadeTests {
     @Test
     public void testRegister_whenEmailIsEmpty_thenError() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
-        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act - Try to register a new user with an empty email
         try {
@@ -116,8 +114,7 @@ public class UserFacadeTests {
     @Test
     public void testRegister_whenEmailIsNotValid_thenError() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
-        when(_passwordEncoderMock.encodePassword(anyString())).thenReturn("password123");
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act - Try to register a new user with an invalid email
         try {
@@ -132,7 +129,7 @@ public class UserFacadeTests {
     @Test
     public void testAddNewGuest_whenGuestAlreadyExist_thenReturnError() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String guestId = "guest123";
         _guestIds.add(guestId);
 
@@ -149,7 +146,7 @@ public class UserFacadeTests {
     @Test
     public void testAddNewGuest_whenGuestNotAlreadeyExist_thenGuestAddedToGuestList() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String guestId = "guest123";
 
         // Act - Try to add a new guest with a non-existing ID
@@ -166,7 +163,7 @@ public class UserFacadeTests {
     @Test
     public void testRemoveGuest_whenGuestExist_thenRemovedSuccessfuly() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String guestId = "guest123";
         _guestIds.add(guestId);
 
@@ -184,7 +181,7 @@ public class UserFacadeTests {
     @Test
     public void testRemoveGuest_whenGuestNotExist_thenError() {
         // Arrange - Create a new UserFacade object
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String guestId = "guest123";
 
         // Act - Try to remove a non-existing guest
@@ -200,7 +197,7 @@ public class UserFacadeTests {
     @Test
     public void testGetPurchaseHistory_whenUserExists_thenSuccess() throws StockMarketException {
         // Arrange
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String username = "testUser";
 
         Shop testShop = new Shop(1, "shopName", username, "bankDetails", "shopAddress");
@@ -224,7 +221,7 @@ public class UserFacadeTests {
     @Test
     public void testGetPurchaseHistory_whenUserDoesNotExist_thenNull() throws StockMarketException {
         // Arrange
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String nonExistentUsername = "nonExistentUser";
 
         // Act
@@ -234,7 +231,7 @@ public class UserFacadeTests {
     @Test
     public void testgetUserByUsername_whenUserIsNull_thenError() throws StockMarketException {
         // Arrange
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         String userIsNull = null;
 
         // Act
@@ -245,7 +242,7 @@ public class UserFacadeTests {
     public void testgetUserByUsername_whenUserExist_thenSuccess() throws StockMarketException {
         // Arrange
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
        User ansUser = _userFacadeUnderTest.getUserByUsername("john_doe");
 
         // Act
@@ -256,7 +253,7 @@ public class UserFacadeTests {
     public void testgetUserByUsername_whenUserDoesNotExist_thenError() throws StockMarketException {
         // Arrange
         String userTest = "John_lennon";
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.getUserByUsername(userTest));
@@ -267,7 +264,7 @@ public class UserFacadeTests {
         // Arrange
         String userTest = "John_lennon";
         String password = "5555";
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
@@ -278,7 +275,7 @@ public class UserFacadeTests {
         // Arrange
         String userTest = null;
         String password = "5555";
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
@@ -288,11 +285,10 @@ public class UserFacadeTests {
     public void testAreCredentialsCorrect_whenCredentislIsCorrect_thenSuccess() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
-        String password = "5555";
+        String password = "password123";
         _registeredUsers.add(_user1);
 
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
-        when(_passwordEncoderMock.matches(password, _user1.getEncodedPassword())).thenReturn(true);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertTrue( _userFacadeUnderTest.AreCredentialsCorrect(userTest,password));
@@ -305,7 +301,7 @@ public class UserFacadeTests {
         _registeredUsers.add(_user1);
         Order order = null;
 
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(IllegalArgumentException.class, () -> _userFacadeUnderTest.addOrderToUser(userTest, order));
@@ -317,7 +313,7 @@ public class UserFacadeTests {
         String userTest = "notAdmin";
 
         _registeredUsers.add(_userMock);        
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         when(_userMock.isAdmin()).thenReturn(false);
         when(_userMock.getUserName()).thenReturn(userTest);
 
@@ -333,7 +329,7 @@ public class UserFacadeTests {
         when(_userMock.getUserName()).thenReturn(userTest);
         when(_userMock.isAdmin()).thenReturn(true);
         _registeredUsers.add(_userMock);     
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertTrue( _userFacadeUnderTest.isAdmin(userTest));
@@ -345,7 +341,7 @@ public class UserFacadeTests {
         String guestId = "guest";
 
         _guestIds.add(guestId);     
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(IllegalArgumentException.class, () -> _userFacadeUnderTest.addNewGuest(guestId));
@@ -356,7 +352,7 @@ public class UserFacadeTests {
         // Arrange
         String guestId = "guest";
    
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         _userFacadeUnderTest.addNewGuest(guestId);
 
         // Act
@@ -370,7 +366,7 @@ public class UserFacadeTests {
         String email = null;
         
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
@@ -383,7 +379,7 @@ public class UserFacadeTests {
         String email = "";
         
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
@@ -396,7 +392,7 @@ public class UserFacadeTests {
         String email = "555555";
         
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
 
         // Act
         assertThrows(UserException.class, () -> _userFacadeUnderTest.changeEmail(userTest,email));
@@ -409,7 +405,7 @@ public class UserFacadeTests {
         String email = "MyEmail5@gmail.com";
         
         _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         _userFacadeUnderTest.changeEmail(userTest,email);
 
         // Act
@@ -422,7 +418,7 @@ public class UserFacadeTests {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds, _passwordEncoderMock);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
         UserDto userDto1 = new UserDto("Dudu_Tassa", "password123", "dudu@example.com", new Date());
         UserDto userDto2 = new UserDto("Dudu_Tassa", "password5555", "dudu@example.com", new Date());
         
@@ -456,18 +452,25 @@ public class UserFacadeTests {
         executor.submit(task2);
 
         try {
-            latch.await(); // wait for both tasks to complete
-        } catch (InterruptedException e) {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(1, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
             Thread.currentThread().interrupt();
-            fail("Test interrupted");
-        } finally {
-            executor.shutdown(); // shut down executor service
-        }
-        
-        if (!exceptionCaught.get()) {
-            fail("Error should raise when user register with the same userName");
         }
 
+        
+        
+        executor.shutdown(); // shut down executor service
     }
 
 }

@@ -36,12 +36,29 @@ public class ShoppingBasket implements Cloneable {
 
     // Adds a product to the shopping basket after validating the user doesn't violate the product policy.
     public void addProductToShoppingBasket(User user, Integer productId) throws StockMarketException {
-        logger.log(Level.FINE,
+        if (user == null) {
+            logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - Check if a guest (null user in shopping basket) can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        }
+        else{
+            logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        }
+        
+        // check if the product is in the shop and validate the user doesn't violate the product policy
         _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
+
+        // add the product to the basket
         _productIdList.add(productId);
-        logger.log(Level.FINE,
+        
+        if (user == null) {
+            logger.log(Level.FINE,
+                "ShoppingBasket - addProductToShoppingBasket - guest (null user in shopping basket) validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        }
+        else{
+            logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+        }
     }
 
     public void removeProductFromShoppingBasket(Integer productId) throws StockMarketException {
@@ -260,5 +277,4 @@ public class ShoppingBasket implements Cloneable {
     public String getShopAddress() {
         return _shop.getShopAddress();
     }
-
 }

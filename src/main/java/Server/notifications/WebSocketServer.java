@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
-    @Autowired
+    // @Autowired
     private TokenService tokenService;
      // Singleton instance
      private static WebSocketServer instance;
@@ -37,6 +37,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                   // Private constructor to prevent instantiation
     private WebSocketServer() {
         // Initialization code
+        this.tokenService = TokenService.getTokenService();
     }
 
     // Method to get singleton instance
@@ -66,7 +67,6 @@ public class WebSocketServer extends TextWebSocketHandler {
                 }
             }
         }
-
         if (token == null || !validateToken(token)) {
             session.close(CloseStatus.BAD_DATA);
             System.out.println("Invalid token, connection closed");
@@ -82,15 +82,15 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
 
-            // Send any queued messages sent while user was loggedOut
-            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
-            while (!queue.isEmpty()) {
-                String message = queue.poll();
-                if (session.isOpen()) {
-                    session.sendMessage(new TextMessage(message));
-                }
-            }
-            messageQueues.remove(username);
+            // // Send any queued messages sent while user was loggedOut
+            // Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            // while (!queue.isEmpty()) {
+            //     String message = queue.poll();
+            //     if (session.isOpen()) {
+            //         session.sendMessage(new TextMessage(message));
+            //     }
+            // }
+            // messageQueues.remove(username);
         } else {
             // User is a guest
             sessions.put(clientKey, session);
@@ -100,6 +100,22 @@ public class WebSocketServer extends TextWebSocketHandler {
         if (sessions.size() > 1) {
             broadcastMessage("Hello all clients!");
             
+        }
+    }
+    //check for any queued message and if exist send them to the client
+    public void checkForQueuedMessages(String username) {
+        WebSocketSession session = sessions.get(username);
+        if (session != null && session.isOpen()) {
+            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            while (!queue.isEmpty()) {
+                String message = queue.poll();
+                try {
+                    session.sendMessage(new TextMessage(message));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            messageQueues.remove(username);
         }
     }
 
@@ -206,10 +222,29 @@ public class WebSocketServer extends TextWebSocketHandler {
     * @param newToken The new token for the logged-in user.
     * @param username The username of the logged-in user.
     */
-    public void replaceGuestTokenToUserToken(String oldToken, String newToken,String username) {
-        if (username != null) {
-            WebSocketSession session = sessions.remove("guest-" + oldToken);
-            sessions.put(username, session);
+    public void replaceGuestTokenToUserToken(String oldToken, String newToken, String username) {
+        if (username != null && oldToken != null) {
+            String guestKey = "guest-" + oldToken;
+            if (sessions.containsKey(guestKey)) {
+                WebSocketSession session = sessions.get(guestKey);
+                sessions.remove(guestKey);
+                if (session != null) {
+                    sessions.put(username, session);
+                }
+            }
+        }
+        checkForQueuedMessages(username);
+    }
+
+    public void closeSession(String userName) {
+        WebSocketSession session = sessions.get(userName);
+        if (session != null) {
+            try {
+                session.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }

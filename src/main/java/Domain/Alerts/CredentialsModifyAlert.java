@@ -2,16 +2,17 @@ package Domain.Alerts;
 
 import java.util.List;
 
-public class CredentialRemovedAlert implements Alert {
-
+public class CredentialsModifyAlert implements Alert {  
     private String message;
     private String fromUser;
+    private String targetUser;
     private int shopId;
     private List<String> permissionsList;
 
     // constructor
-    public CredentialRemovedAlert(String fromUser, List<String> permissionsList, int shopId) {
+    public CredentialsModifyAlert(String fromUser,String targetUser, List<String> permissionsList, int shopId) {
         this.fromUser = fromUser;
+        this.targetUser = targetUser;
         this.permissionsList = permissionsList;
         this.shopId = shopId;
         setMessage();
@@ -26,7 +27,7 @@ public class CredentialRemovedAlert implements Alert {
     }
 
     public void setMessage() {
-        this.message = "User " + fromUser + " removed you the next credentials: " + permissionsList;
+        this.message = "hello: " + targetUser + "\nUser " + fromUser + " modified yours credentials from the shop: " + shopId +" The new credentials are: " + permissionsList;
     }
 
     public boolean isEmpty() {
@@ -38,7 +39,6 @@ public class CredentialRemovedAlert implements Alert {
     }
 
     public String getTargetUser() {
-        return fromUser;
+        return targetUser;
     }
-
 }

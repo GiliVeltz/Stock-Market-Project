@@ -30,9 +30,13 @@ public class ShopController {
     }
 
     @PostMapping("/openNewShop")
-    public Response openNewShop(@RequestHeader("Authorization") String token, @RequestBody ShopDto shopDto) {
-        return _shopService.openNewShop(token, shopDto);
-
+    public Response openNewShop( @RequestBody ShopDto shopDto,
+            @RequestHeader(value = "Authorization") String token) {
+        // example request:
+        // http://localhost:8080/api/user/register?shopName=test&bankDetails=test&shopAddress=test
+        System.out.println("Client: token is: " + token);
+        Response resp =_shopService.openNewShop(token, shopDto);
+        return resp;
     }
 
     @GetMapping("/closeShop")
@@ -169,5 +173,10 @@ public class ShopController {
     public Response displayProductGeneralInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId, @RequestParam Integer productId) {
         return _shopService.displayProductGeneralInfo(token, shopId, productId);
+    }
+
+    @GetMapping("/getUserShops")
+    public Response getUserShops(@RequestHeader("Authorization") String token) {
+        return _shopService.getUserShops(token);
     }
 }

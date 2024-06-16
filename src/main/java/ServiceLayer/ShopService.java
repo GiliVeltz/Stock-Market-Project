@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
@@ -46,6 +45,7 @@ public class ShopService {
     //     _alertService = alertService;
     // }
 
+  
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
         _tokenService = TokenService.getTokenService();
@@ -174,9 +174,74 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
                     productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
+                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
         }
+        return response;
+    }
 
+    /**
+     * Removes a product from the specified shop.
+     * 
+     * @param shopId     The ID of the shop to which the product will be removed.
+     * @param productDto The product to be removed from the shop.
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response removeProductFromShop(String token, Integer shopId, ProductDto productDto) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    _shopFacade.removeProductFromShop(shopId, productDto, userName);
+                    logger.info(String.format("The product %s :: removed by: %s from Shop ID: %d",
+                            productDto._productName, userName, shopId));
+                } else {
+                    throw new Exception(String.format("User %s does not have permissions", userName));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
+                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+            logger.log(Level.SEVERE, String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
+                productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+        }
+        return response;
+    }
+
+    /**
+     * Edits a product in the specified shop.
+     * 
+     * @param shopId     The ID of the shop to which the product will be edited.
+     * @param productDtoOld The product to be edit in the shop - the old vars of the product.
+     * @param productDtoNew The product to be edit in the shop - the new vars of the product.
+     * @return A response indicating the success or failure of the operation.
+     */
+    public Response editProductInShop(String token, Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String userName = _tokenService.extractUsername(token);
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    _shopFacade.editProductInShop(shopId, productDtoOld, productDtoNew, userName);
+                    logger.info(String.format("The product %s :: edited by: %s in Shop ID: %d",
+                    productDtoOld._productName, userName, shopId));
+                } else {
+                    throw new Exception(String.format("User %s does not have permissions", userName));
+                }
+            } else {
+                throw new Exception("Invalid session token.");
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
+                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+            logger.log(Level.SEVERE, String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
+                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+        }
         return response;
     }
 
@@ -1222,6 +1287,39 @@ public class ShopService {
             response.setErrorMessage(String.format(String.format("Failed to search shop with name %s . Error:",
                     shopName, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return response;
+    }
+
+    /**
+     * Receive the shops which the user has roles in.
+     * @param token the users session token
+     * @return the shops which the user has roles in.
+     */
+    public Response getUserShops(String token) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::getUserShops entring"));
+            if (!_tokenService.validateToken(token)) 
+                throw new StockMarketException("Invalid session token.");
+            if (!_tokenService.isUserAndLoggedIn(token)) 
+                throw new StockMarketException("User is not logged in.");
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username))
+                throw new StockMarketException(String.format("User does not exist.",username));
+
+            List<Integer> shopsIds = _shopFacade.getUserShops(username);
+            response.setReturnValue(shopsIds);
+
+        }
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+
+            response.setErrorMessage(String.format(
+                "ShopService::getUserShops failed to get users shops. "+e.getMessage()));
+
         }
         return response;
     }
