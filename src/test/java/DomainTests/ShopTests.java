@@ -13,11 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import Domain.Product;
 import Domain.Shop;
@@ -27,7 +24,6 @@ import Dtos.AllItemsRuleDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
-import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -1039,7 +1035,6 @@ public class ShopTests {
     public void testEditProductInShop_whenProductDoesNotExist_thenFails() throws StockMarketException {
         // Arrange
         String username = "user1";
-        Product product = new Product(1, "product1", Category.CLOTHING, 100);
         Product newProduct = new Product(1, "product2", Category.CLOTHING, 100);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();

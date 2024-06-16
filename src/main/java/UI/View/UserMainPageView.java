@@ -7,10 +7,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.Presenter.LandingPagePresenter;
 import UI.Presenter.UserMainPagePresenter;
 
 @PageTitle("User Main Page")
@@ -18,7 +16,6 @@ import UI.Presenter.UserMainPagePresenter;
 public class UserMainPageView extends VerticalLayout implements ViewPageI{
 
     private UserMainPagePresenter presenter;
-    
     
     private String _username;
 

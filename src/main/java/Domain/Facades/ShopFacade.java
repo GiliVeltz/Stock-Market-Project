@@ -697,6 +697,13 @@ public class ShopFacade {
         return shops;
     }
 
+    /**
+     * Get all the shops that the user has a role in
+     * 
+     * @param username the user's username
+     * @return the list of shops that the user has a role in
+     * @throws StockMarketException
+     */
     public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
