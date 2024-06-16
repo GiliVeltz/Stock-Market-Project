@@ -1,6 +1,7 @@
 package UI.View;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -18,7 +21,7 @@ import enums.Permission;
 
 
 @Route("user_shops/:shopId")
-public class ShopManagerView extends BaseView {
+public class ShopManagerView extends BaseView{
 
     private ShopManagerPresenter presenter;
     private String _username;
@@ -26,12 +29,13 @@ public class ShopManagerView extends BaseView {
     private H1 _title;
     private int _shopId;
     
-    public ShopManagerView(@PathVariable("shopId") String shopId){
+    public ShopManagerView(@OptionalParameter String shopId){
 
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
-
+        //TODO: FIX THE SHOP ID
         // Retrieve the shopId from the URL
+        Optional<String> shopId = getRouteParameters().get("shopId");
         _shopId = Integer.parseInt(shopId);
 
         // Initialize presenter

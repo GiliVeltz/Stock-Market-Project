@@ -30,15 +30,10 @@ public class LandingPageView extends BaseView{
         titleLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
         titleLayout.add(title);
 
-        Button gotToUser = new Button("Go to User Page", e -> navigateToUserMainPage());
         // Add components to the vertical layout
-        add(header, titleLayout, gotToUser);
+        add(header, titleLayout);
     }
 
-    private void navigateToUserMainPage() {
-        VaadinSession.getCurrent().setAttribute("username", "User");
-        getUI().ifPresent(ui -> ui.navigate("user"));
-    }
 }
 
 

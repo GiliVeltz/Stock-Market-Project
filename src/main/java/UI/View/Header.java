@@ -25,7 +25,6 @@ public class Header extends HorizontalLayout {
 
     private Button loginButton;
     private Button _registerButton;
-    private Button openShopButton;
     private final HeaderPresenter presenter;
     private HorizontalLayout _leftButtonLayout;
     private Dialog logoutConfirmationDialog;
@@ -43,11 +42,6 @@ public class Header extends HorizontalLayout {
         Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
 
-        // New button for opening a shop
-        openShopButton = new Button("Open Shop");
-        openShopButton.setVisible(false); // Hide initially
-        openShopButton.addClassName("pointer-cursor");
-        openShopButton.addClickListener(event -> createOpenNewShopDialog().open());
 
         // Add cursor styling
         _registerButton.addClassName("pointer-cursor");
@@ -67,7 +61,7 @@ public class Header extends HorizontalLayout {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
@@ -264,7 +258,6 @@ public class Header extends HorizontalLayout {
 
     public void createBackToMainButton() {
         Button backToMainButton = new Button("Back to Main Page", event -> {
-            VaadinSession.getCurrent().setAttribute("username", "User");
             getUI().ifPresent(ui -> ui.navigate("user"));
         });
 
@@ -281,62 +274,9 @@ public class Header extends HorizontalLayout {
         _leftButtonLayout.add(logoutButton);
     }
 
-    private Dialog createOpenNewShopDialog() {
-        Dialog dialog = new Dialog();
-
-        // Create a headline
-        H2 headline = new H2("Open New Shop");
-
-        // Create form layout
-        FormLayout formLayout = new FormLayout();
-
-        // Create form fields
-        TextField shopNameField = new TextField("Shop Name");
-        TextField bankDetailsField = new TextField("Bank Details");
-        TextField shopAddressField = new TextField("Address");
-
-        // Add fields to the form layout
-        formLayout.add(shopNameField, bankDetailsField, shopAddressField);
-
-        // Create buttons
-        Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
-            String shopName = shopNameField.getValue();
-            String bankDetails = bankDetailsField.getValue();
-            String shopAddress = shopAddressField.getValue();
-
-            presenter.openNewShop(shopName, bankDetails, shopAddress);
-
-            // Close the dialog after submission
-            dialog.close();
-        });
-
-        submitButton.addClassName("pointer-cursor");
-
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
-
-        cancelButton.addClassName("pointer-cursor");
-
-        // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
-        buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
-
-        // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
-        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        dialog.add(dialogLayout);
-
-        return dialog;
-    }
 
     public void showSuccessMessage(String message) {
         Notification.show(message);
-
-        // Show the open shop button on successful login
-        if ("Login successful".equals(message)) {
-            openShopButton.setVisible(true);
-        }
     }
 
     public void showErrorMessage(String message) {
@@ -349,5 +289,13 @@ public class Header extends HorizontalLayout {
 
     public void switchToLogin() {
         loginButton.setText("Login");
+    }
+
+    public void navigateToUserMainPage() {
+        getUI().ifPresent(ui -> ui.navigate("user"));
+    }
+
+    public void navigateToLandingPage() {
+        getUI().ifPresent(ui -> ui.navigate(""));
     }
 }

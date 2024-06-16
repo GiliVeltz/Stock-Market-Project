@@ -11,6 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinSession;
+
 import java.util.Date;
 
 import UI.Model.ShopDto;
@@ -57,8 +59,10 @@ public class HeaderPresenter {
     
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
+                                VaadinSession.getCurrent().setAttribute("username", username);
                                 view.showSuccessMessage("Login successful");
                                 view.switchToLogout();
+                                view.navigateToUserMainPage();
                                 System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Login failed");
@@ -150,7 +154,8 @@ public class HeaderPresenter {
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
                                 view.showSuccessMessage("Logout successful");
-                                view.switchToLogout();
+                                view.switchToLogin();
+                                view.navigateToLandingPage();
                                 System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Logout failed");
@@ -169,36 +174,4 @@ public class HeaderPresenter {
 
     }
 
-    public void openNewShop(String shopName, String bankDetails, String shopAddress){
-        RestTemplate restTemplate = new RestTemplate();
-        ShopDto shopDto = new ShopDto(shopName, bankDetails, shopAddress);
-
-        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-                .then(String.class, token -> {
-                    if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
-
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
-
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(shopDto, headers);
-
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/shop/openNewShop",
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
-
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("Shop opened successfully");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Failed to open shop");
-                        }
-                    } else {
-                        System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("Failed to open shop");
-                    }
-                });
-    }
 }
