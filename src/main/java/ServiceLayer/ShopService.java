@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Facades.ShopFacade;
@@ -46,6 +45,7 @@ public class ShopService {
     //     _alertService = alertService;
     // }
 
+  
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
         _tokenService = TokenService.getTokenService();

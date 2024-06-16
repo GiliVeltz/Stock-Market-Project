@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
-    @Autowired
+    // @Autowired
     private TokenService tokenService;
      // Singleton instance
      private static WebSocketServer instance;
@@ -37,6 +37,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                   // Private constructor to prevent instantiation
     private WebSocketServer() {
         // Initialization code
+        this.tokenService = TokenService.getTokenService();
     }
 
     // Method to get singleton instance

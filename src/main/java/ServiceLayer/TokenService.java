@@ -8,7 +8,6 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -18,10 +17,8 @@ import io.jsonwebtoken.Jwts;
 // and validating the tokens
 // and extracting the information from the token - if this is a guest or a user in the system for example
 
-@Service
 public class TokenService {
-
-    @Value("${jwk.secret:default-secret-key}")
+    @Value("${jwk.secret}")
     private String secret;
 
     private final long expirationTime = 1000 * 60 * 60 * 24;
