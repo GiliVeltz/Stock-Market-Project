@@ -3,13 +3,11 @@ package UI.View;
 import java.time.LocalDate;
 import java.util.Date;
 
-import com.vaadin.flow.component.datepicker.DatePicker; 
-
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -104,7 +102,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         FormLayout formLayout = new FormLayout();
 
         // Create a headline
-        H2 headline = new H2("Registeration");
+        H2 headline = new H2("Registration");
         headline.getStyle().set("margin", "0");
 
         // Create form fields
@@ -235,6 +233,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
             // Handle logout confirmation
             presenter.logoutUser();
 
+            // Switch the button text back to "Login"
+            switchToLogin();
+
             // Close the dialog after confirmation
             dialog.close();
         });
@@ -257,8 +258,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         return dialog;
     }
 
-
-    public void hideRegisterButton(){
+    public void hideRegisterButton() {
         _registerButton.setVisible(false);
     }
 
