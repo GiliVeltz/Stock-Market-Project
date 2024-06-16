@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,27 +31,27 @@ public class ShopController {
     }
 
     @PostMapping("/openNewShop")
-    public Response openNewShop( @RequestBody ShopDto shopDto,
+    public ResponseEntity<Response> openNewShop( @RequestBody ShopDto shopDto,
             @RequestHeader(value = "Authorization") String token) {
         // example request:
         // http://localhost:8080/api/user/register?shopName=test&bankDetails=test&shopAddress=test
         System.out.println("Client: token is: " + token);
-        Response resp =_shopService.openNewShop(token, shopDto);
+        ResponseEntity<Response> resp =_shopService.openNewShop(token, shopDto);
         return resp;
     }
 
     @GetMapping("/closeShop")
-    public Response closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response> closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }
 
     @GetMapping("/reopenShop")
-    public Response reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response> reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
     }
 
     @GetMapping("/searchProductInShopByName")
-    public Response searchProductInShopByName(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response> searchProductInShopByName(@RequestHeader("Authorization") String token,
             @RequestParam(required = false) Integer shopId,
             @RequestParam String query) {
         return _shopService.searchProductInShopByName(token, shopId, query);
@@ -58,7 +59,7 @@ public class ShopController {
 
     // TODO: uncomment this after merging Or's changes (category enum)
     // @GetMapping("/searchProductInShopByCategory")
-    // public Response searchByCategory(@RequestHeader("Authorization") String
+    // public ResponseEntity<Response> searchByCategory(@RequestHeader("Authorization") String
     // token,
     // @RequestParam(required = false) Integer shopId,
     // @RequestParam Category category) {
@@ -66,14 +67,14 @@ public class ShopController {
     // }
 
     @GetMapping("/searchProductsInShopByKeywords")
-    public Response searchProducstInShopByKeywords(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response> searchProducstInShopByKeywords(@RequestHeader("Authorization") String token,
             @RequestParam(required = false) Integer shopId,
             @RequestParam List<String> keywords) {
         return _shopService.searchProductsInShopByKeywords(token, shopId, keywords);
     }
 
     @GetMapping("/searchProductsInShopByPriceRange")
-    public Response searchProductsInShopByPriceRange(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response> searchProductsInShopByPriceRange(@RequestHeader("Authorization") String token,
             @RequestParam(required = false) Integer shopId,
             @RequestParam Double minPrice,
             @RequestParam Double maxPrice) {
@@ -81,43 +82,43 @@ public class ShopController {
     }
 
     @GetMapping("/getShopPurchaseHistory")
-    public Response getShopPurchaseHistory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response> getShopPurchaseHistory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopPurchaseHistory(token, shopId);
     }
 
     @PostMapping("/addShopBasicDiscount")
-    public Response addShopBasicDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>addShopBasicDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestBody BasicDiscountDto discountDto) {
         return _shopService.addShopBasicDiscount(token, shopId, discountDto);
     }
 
     @PostMapping("/addShopConditionalDiscount")
-    public Response addShopConditionalDiscount(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response>addShopConditionalDiscount(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId,
             @RequestBody ConditionalDiscountDto discountDto) {
         return _shopService.addShopConditionalDiscount(token, shopId, discountDto);
     }
 
     @GetMapping("/removeShopDiscount")
-    public Response removeShopDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>removeShopDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam Integer discountId) {
         return _shopService.removeDiscount(token, shopId, discountId);
     }
 
     @PostMapping("/updateProductQuantity")
-    public Response updateProductQuantity(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>updateProductQuantity(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam Integer productId, @RequestParam Integer quantity) {
         return _shopService.updateProductQuantity(token, shopId, productId, quantity);
     }
 
     @PostMapping("/addShopOwner")
-    public Response addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> body,
+    public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> body,
             @RequestParam Integer shopId, @RequestParam String newOwnerUsername) {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
     @PostMapping("/addShopManager")
-    public Response addShopManager(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response>addShopManager(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId,
             @RequestParam String newManagerUsername,
             @RequestBody Set<String> permissions) {
@@ -125,58 +126,58 @@ public class ShopController {
     }
 
     @PostMapping("/fireShopManager")
-    public Response fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam String managerUsername) {
         return _shopService.fireShopManager(token, shopId, managerUsername);
     }
 
     @PostMapping("/resignFromRole")
-    public Response resignFromRole(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response>resignFromRole(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.resignFromRole(token, shopId);
     }
 
     @PostMapping("/modifyManagerPermissions")
-    public Response modifyManagerPermissions(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>modifyManagerPermissions(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam String managerUsername, @RequestBody Set<String> permissions) {
         return _shopService.modifyManagerPermissions(token, shopId, managerUsername, permissions);
     }
 
     @GetMapping("/displayShopPolicyInfo")
-    public Response displayShopPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response>displayShopPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.displayShopPolicyInfo(token, shopId);
     }
 
     @GetMapping("/displayProductPolicyInfo")
-    public Response displayProductPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+    public ResponseEntity<Response>displayProductPolicyInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam Integer productId) {
         return _shopService.displayProductPolicyInfo(token, shopId, productId);
     }
 
     @GetMapping("/displayShopDiscountsInfo")
-    public Response displayShopDiscountsInfo(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response>displayShopDiscountsInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId) {
         return _shopService.displayShopDiscountsInfo(token, shopId);
     }
 
     @GetMapping("/displayProductDiscountsInfo")
-    public Response displayProductDiscountsInfo(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response>displayProductDiscountsInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId, @RequestParam Integer productId) {
         return _shopService.displayProductDiscountsInfo(token, shopId, productId);
     }
 
     @GetMapping("/displayShopGeneralInfo")
-    public Response displayShopGeneralInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+    public ResponseEntity<Response>displayShopGeneralInfo(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.displayShopGeneralInfo(token, shopId);
     }
 
     @GetMapping("/displayProductGeneralInfo")
-    public Response displayProductGeneralInfo(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Response>displayProductGeneralInfo(@RequestHeader("Authorization") String token,
             @RequestParam Integer shopId, @RequestParam Integer productId) {
         return _shopService.displayProductGeneralInfo(token, shopId, productId);
     }
 
     @GetMapping("/getUserShops")
-    public Response getUserShops(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Response>getUserShops(@RequestHeader("Authorization") String token) {
         return _shopService.getUserShops(token);
     }
 

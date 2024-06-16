@@ -8,8 +8,11 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -64,7 +67,7 @@ public class Header extends HorizontalLayout {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
@@ -99,6 +102,10 @@ public class Header extends HorizontalLayout {
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Registeration");
+        headline.getStyle().set("margin", "0");
 
         // Create form fields
         TextField usernameField = new TextField("Username");
@@ -140,7 +147,8 @@ public class Header extends HorizontalLayout {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
         dialog.add(dialogLayout);
 
         // Add listener to clear fields when dialog is opened
@@ -166,6 +174,10 @@ public class Header extends HorizontalLayout {
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Log In");
+        headline.getStyle().set("margin", "0");
 
         // Create form fields
         TextField usernameField = new TextField("Username");
@@ -197,7 +209,8 @@ public class Header extends HorizontalLayout {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
         dialog.add(dialogLayout);
 
         // Add listener to clear fields when dialog is opened
@@ -271,6 +284,9 @@ public class Header extends HorizontalLayout {
     private Dialog createOpenNewShopDialog() {
         Dialog dialog = new Dialog();
 
+        // Create a headline
+        H2 headline = new H2("Open New Shop");
+
         // Create form layout
         FormLayout formLayout = new FormLayout();
 
@@ -307,7 +323,8 @@ public class Header extends HorizontalLayout {
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);
 
         return dialog;
