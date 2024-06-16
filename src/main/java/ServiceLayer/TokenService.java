@@ -20,7 +20,8 @@ import io.jsonwebtoken.Jwts;
 
 @Service
 public class TokenService {
-    @Value("${jwk.secret}")
+
+    @Value("${jwk.secret:default-secret-key}")
     private String secret;
 
     private final long expirationTime = 1000 * 60 * 60 * 24;
