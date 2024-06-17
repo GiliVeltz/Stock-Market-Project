@@ -32,7 +32,7 @@ public class UserController {
         return _userService.register(token, userDto);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<Response> login(
             @RequestParam String username,
             @RequestParam String password,
@@ -40,7 +40,7 @@ public class UserController {
         return _userService.logIn(token, username, password);
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Response> logout(@RequestHeader(value = "Authorization") String token) {
         return _userService.logOut(token);
     }
