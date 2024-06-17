@@ -2,6 +2,8 @@ package UI;
 
 import org.springframework.stereotype.Component;
 
+
+
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnClose;
@@ -53,8 +55,8 @@ public class WebSocketClient {
         synchronized (messages) {
             messages.add(message);
         }
-        // Optionally, notify the UI to update if you have a direct reference or a way to do so
-    
+        // Optionally, notify the UI to update if you have a direct reference or a way
+
         System.out.println("Received from server: " + message);
     }
 
@@ -106,5 +108,5 @@ public class WebSocketClient {
             e.printStackTrace();
         }
     }
-
+ 
 }

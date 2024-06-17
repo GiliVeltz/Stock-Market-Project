@@ -46,6 +46,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
         Button searchShopsButton = new Button("Search Shops");
         Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
+        // Button messagesButton = new Button("My Messages");
+        Button messagesButton = new Button("View My Messages", e -> navigateToMessages());
+
 
         // New button for opening a shop
         openShopButton = new Button("Open Shop");
@@ -60,6 +63,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         searchShopsButton.addClassName("pointer-cursor");
         profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
+        messagesButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
         _leftButtonLayout = new HorizontalLayout();
@@ -72,7 +76,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton,messagesButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
@@ -110,6 +114,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
         searchShopsButton.addClickListener(event -> searchShopsDialog.open());
     }
 
+    
     private Dialog createRegistrationDialog() {
         Dialog dialog = new Dialog();
 

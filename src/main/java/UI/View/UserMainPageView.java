@@ -56,7 +56,7 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         presenter = new UserMainPagePresenter(this);
     }
     
-    
+
     private void navigateToMessages() {
         getUI().ifPresent(ui -> ui.navigate("user_messages"));
     }

@@ -48,6 +48,7 @@ public class UserMessagesPageView extends VerticalLayout implements ViewPageI {
         // Initialize your UI components here
         // messagesTextArea = new JTextArea();
         // updateMessages();
+        // WebSocketClient.addListener(this);
         presenter.fetchMessages();
 
     }
@@ -81,72 +82,6 @@ public class UserMessagesPageView extends VerticalLayout implements ViewPageI {
         this.add(messagesLayout);
     }
 
-
-    // public void createMessageTextArea(List<String> messages) {
-    //     if (messages.isEmpty()) {
-    //         add(new Paragraph("No messages found"));
-    //         return;
-    //     }
-
-    //     // Create a vertical layout for the messages
-    //     VerticalLayout messagesLayout = new VerticalLayout();
-    //     messagesLayout.setAlignItems(Alignment.START);
-
-    //     for (String message : messages) {
-    //         // Use TextArea for editable messages or Label for read-only messages
-    //         TextArea messageTextArea = new TextArea();
-    //         messageTextArea.setValue("Message: " + message);
-    //         messageTextArea.setReadOnly(true); // Make it read-only if editing is not required
-    //         messageTextArea.setWidthFull(); // Set width to fill the container
-
-    //         // Add each message TextArea to the vertical layout
-    //         messagesLayout.add(messageTextArea);
-    //     }
-
-    //     // Add the messages layout to the main layout
-    //     add(messagesLayout);
-    // }
-
-    // private Object navigateToMessage(Integer messageId) {
-
-    // }
-
-    public void createShopButtons(List<Integer> shops) {
-
-        if (shops.isEmpty()) {
-            add(new Paragraph("No shops found"));
-            return;
-        }
-
-        // Create a vertical layout for the grid
-        VerticalLayout gridLayout = new VerticalLayout();
-        gridLayout.setAlignItems(Alignment.START);
-
-        // Set a maximum of 3 buttons per row
-        int maxButtonsPerRow = 3;
-        HorizontalLayout rowLayout = new HorizontalLayout();
-
-        for (int i = 0; i < shops.size(); i++) {
-            Integer shopId = shops.get(i);
-            Button shopButton = new Button("" + shopId, e -> navigateToManageShop(shopId));
-            shopButton.addClassName("same-size-button");
-            rowLayout.add(shopButton);
-
-            if ((i + 1) % maxButtonsPerRow == 0 || i == shops.size() - 1) {
-                gridLayout.add(rowLayout);
-                rowLayout = new HorizontalLayout();
-            }
-        }
-
-        // Add the grid layout to the main layout
-        add(gridLayout);
-    }
-
-    private Object navigateToManageShop(Integer shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'navigateToManageShop'");
-    }
-
     @Override
     public void showSuccessMessage(String message) {
         Notification.show(message);
@@ -156,5 +91,6 @@ public class UserMessagesPageView extends VerticalLayout implements ViewPageI {
     public void showErrorMessage(String message) {
         Notification.show(message);
     }
+
 
 }
