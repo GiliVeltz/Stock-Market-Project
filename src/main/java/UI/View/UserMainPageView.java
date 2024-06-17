@@ -32,14 +32,15 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         // Create buttons
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
-        
+        Button myMessages = new Button("View My Messages", e -> navigateToMessages());
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
         shopsButton.addClassName("same-size-button");
+        myMessages.addClassName("same-size-button");
 
         // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton);
+        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, myMessages);
         buttonLayout.setAlignItems(Alignment.END);
 
         // Create a horizontal layout for the title to center it
@@ -55,7 +56,10 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         presenter = new UserMainPagePresenter(this);
     }
     
-
+    
+    private void navigateToMessages() {
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
+    }
     private void navigateToShops() {
         getUI().ifPresent(ui -> ui.navigate("user_shops"));
     }

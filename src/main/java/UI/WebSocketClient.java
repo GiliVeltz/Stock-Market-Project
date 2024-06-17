@@ -11,12 +11,15 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @ClientEndpoint
 public class WebSocketClient {
 
     private Session session;
+    private static final List<String> messages = new ArrayList<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -47,7 +50,18 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(String message) {
+        synchronized (messages) {
+            messages.add(message);
+        }
+        // Optionally, notify the UI to update if you have a direct reference or a way to do so
+    
         System.out.println("Received from server: " + message);
+    }
+
+    public static List<String> getMessages() {
+        synchronized (messages) {
+            return new ArrayList<>(messages); // Return a copy to avoid concurrency issues
+        }
     }
 
     /**
