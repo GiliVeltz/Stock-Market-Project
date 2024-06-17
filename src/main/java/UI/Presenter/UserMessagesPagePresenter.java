@@ -6,10 +6,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import UI.WebSocketClient;
 import UI.View.UserMessagesPageView;
 import UI.View.UserShopsPageView;
-import UI.View.ViewPageI;
+import UI.clientNotifications.Message;
+import UI.clientNotifications.WebSocketClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +28,7 @@ public class UserMessagesPagePresenter {
 
      
  
-        List<String> messages = WebSocketClient.getMessages();
+        List<Message> messages = WebSocketClient.getMessages();
         // Assuming messagesTextArea is a JTextArea or similar
         //create a TextArea for each message
         

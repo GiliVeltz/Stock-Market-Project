@@ -47,7 +47,7 @@ public class Header extends HorizontalLayout {
         Button searchShopsButton = new Button("Search Shops");
         Button shoppingCartButton = new Button("Shopping Cart");
         // Button messagesButton = new Button("My Messages");
-        Button messagesButton = new Button("View My Messages", e -> navigateToMessages());
+        Button messagesButton = new Button("My Messages", e -> navigateToMessages());
 
 
 
@@ -70,7 +70,7 @@ public class Header extends HorizontalLayout {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton,messagesButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);

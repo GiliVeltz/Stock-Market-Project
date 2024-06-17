@@ -1,4 +1,4 @@
-package UI;
+package UI.clientNotifications;
 
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,8 @@ import java.util.List;
 public class WebSocketClient {
 
     private Session session;
-    private static final List<String> messages = new ArrayList<>();
-    private static List<MessageListener> listeners = new ArrayList<>();
+    private static final List<Message> messages = new ArrayList<>();
+    // private static List<MessageListener> listeners = new ArrayList<>();
 
 
     @OnOpen
@@ -55,14 +55,15 @@ public class WebSocketClient {
     @OnMessage
     public void onMessage(String message) {
         synchronized (messages) {
-            messages.add(message);
+            Message newMessage = new Message(message);
+            messages.add(0,newMessage);
         }
         // Optionally, notify the UI to update if you have a direct reference or a way
-        notifyListeners(message);
+        // notifyListeners(message);
         System.out.println("Received from server: " + message);
     }
 
-    public static List<String> getMessages() {
+    public static List<Message> getMessages() {
         synchronized (messages) {
             return new ArrayList<>(messages); // Return a copy to avoid concurrency issues
         }
@@ -124,18 +125,18 @@ public class WebSocketClient {
         }
     }
 
-      public void addMessageListener(MessageListener listener) {
-        listeners.add(listener);
-    }
+    //   public void addMessageListener(MessageListener listener) {
+    //     listeners.add(listener);
+    // }
 
-    public void removeMessageListener(MessageListener listener) {
-        listeners.remove(listener);
-    }
+    // public void removeMessageListener(MessageListener listener) {
+    //     listeners.remove(listener);
+    // }
 
-    private void notifyListeners(String message) {
-        for (MessageListener listener : listeners) {
-            listener.onMessageReceived(message);
-        }
-    }
+    // private void notifyListeners(String message) {
+    //     for (MessageListener listener : listeners) {
+    //         listener.onMessageReceived(message);
+    //     }
+    // }
  
 }

@@ -13,8 +13,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import UI.WebSocketClient;
+
 import UI.Presenter.UserMainPagePresenter;
+import UI.clientNotifications.WebSocketClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("User Main Page")
@@ -26,8 +28,6 @@ public class UserMainPageView extends BaseView{
     private Button _openShopButton;
     private Button myMessages;
 
-    @Autowired
-    private WebSocketClient webSocketClient;
 
     public UserMainPageView() {
         // Retrieve the username from the session
@@ -53,7 +53,7 @@ public class UserMainPageView extends BaseView{
         myMessages.addClassName("same-size-button");
 
         // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout((profileButton, shopsButton, _openShopButton, myMessages);
+        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, _openShopButton,myMessages);
         buttonLayout.setAlignItems(Alignment.END);
 
         // Create a horizontal layout for the title to center it
@@ -68,8 +68,7 @@ public class UserMainPageView extends BaseView{
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);
 
-        // Register as a message listener
-        webSocketClient.addMessageListener(this);
+
     }
 
     private Dialog createOpenNewShopDialog() {
