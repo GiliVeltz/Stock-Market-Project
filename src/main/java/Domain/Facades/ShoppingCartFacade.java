@@ -201,4 +201,8 @@ public class ShoppingCartFacade {
         // add the review.
         shoppingBasket.getShop().addReview(username, productID, review);
     }
+
+    public Object getCartByUsername(String username) {
+        return _cartsRepo.getCartByUsername(username);
+    }
 }
