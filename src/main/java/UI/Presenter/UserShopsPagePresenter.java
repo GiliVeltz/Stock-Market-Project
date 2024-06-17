@@ -1,31 +1,17 @@
 package UI.Presenter;
 
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import UI.Model.UserDto;
-import UI.View.UserMainPageView;
 import UI.View.UserShopsPageView;
 import UI.View.ViewPageI;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-
 import java.util.List;
 
 public class UserShopsPagePresenter {

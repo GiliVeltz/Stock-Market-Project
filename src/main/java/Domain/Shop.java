@@ -20,7 +20,9 @@ import Domain.Alerts.CloseShopAlert;
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
+import Domain.Rules.RuleFactory;
 import Dtos.ShopDto;
+import Dtos.ShoppingBasketRuleDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
@@ -109,6 +111,7 @@ public class Shop {
         return _isClosed;
     }
 
+
     public void setProductPrice(int productId, double price) {
         _productMap.get(productId).setPrice(price);
     }
@@ -117,7 +120,9 @@ public class Shop {
         _isClosed = false;
     }
 
-    public Map<Integer, Product> getAllProducts() {return _productMap;}
+    public Map<Integer, Product> getAllProducts() {
+        return _productMap;
+    }
 
     /**
      * Check if a username has a role in shop.
@@ -574,7 +579,7 @@ public class Shop {
             throw new ProductAlreadyExistsException("Product with ID " +
                     product.getProductId() + " already exists.");
         }
-        
+
         // All constraints checked - add product to the shop
         _productMap.put(product.getProductId(), product);
 
@@ -586,8 +591,8 @@ public class Shop {
     /**
      * Remove product from the shop.
      * 
-     * @param username the username of the function activator
-     * @param _productName  the product name we want to remove
+     * @param username     the username of the function activator
+     * @param _productName the product name we want to remove
      * @throws StockMarketException
      */
     public synchronized void removeProductFromShop(String userName, String _productName) throws StockMarketException {
@@ -599,8 +604,10 @@ public class Shop {
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot remove product.");
 
-        // check if user has permission to remove product, or the user is the founder or the owner (dont need specific permission to remove products)
-        if (!checkPermission(userName, Permission.DELETE_PRODUCT) && !checkPermission(userName, Permission.FOUNDER) && !checkPermission(userName, Permission.OWNER)){
+        // check if user has permission to remove product, or the user is the founder or
+        // the owner (dont need specific permission to remove products)
+        if (!checkPermission(userName, Permission.DELETE_PRODUCT) && !checkPermission(userName, Permission.FOUNDER)
+                && !checkPermission(userName, Permission.OWNER)) {
             logger.log(Level.SEVERE, "Shop - removeProductFromShop: user " + userName
                     + " doesn't have permission to remove products in shop with id " + _shopId);
             throw new PermissionException(
@@ -632,25 +639,31 @@ public class Shop {
     /**
      * Edit product from the shop.
      * 
-     * @param username the username of the function activator
-     * @param productNameOld  the product name we want to edit
-     * @param productNameNew  thenew  product name
-     * @param productCategoryNew  the new product category
-     * @param productPriceNew  the new product price
+     * @param username           the username of the function activator
+     * @param productNameOld     the product name we want to edit
+     * @param productNameNew     thenew product name
+     * @param productCategoryNew the new product category
+     * @param productPriceNew    the new product price
      * @throws StockMarketException
      */
-    public synchronized void editProductInShop(String userName, String productNameOld, String productNameNew, Category productCategoryNew, double productPriceNew) throws StockMarketException {
+    public synchronized void editProductInShop(String userName, String productNameOld, String productNameNew,
+            Category productCategoryNew, double productPriceNew) throws StockMarketException {
         // print logs to inform about the action
-        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + productNameOld + " in the shop with id " + _shopId);
+        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + productNameOld
+                + " in the shop with id " + _shopId);
 
         // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot remove product.");
 
-        // check if user has permission to edit product, or the user is the founder or the owner (dont need specific permission to remove products)
-        if (!checkPermission(userName, Permission.EDIT_PRODUCT) && !checkPermission(userName, Permission.FOUNDER) && !checkPermission(userName, Permission.OWNER)){
-            logger.log(Level.SEVERE, "Shop - editProductInShop: user " + userName + " doesn't have permission to edit products in shop with id " + _shopId);
-            throw new PermissionException("User " + userName + " doesn't have permission to edit product in shop with id " + _shopId);
+        // check if user has permission to edit product, or the user is the founder or
+        // the owner (dont need specific permission to remove products)
+        if (!checkPermission(userName, Permission.EDIT_PRODUCT) && !checkPermission(userName, Permission.FOUNDER)
+                && !checkPermission(userName, Permission.OWNER)) {
+            logger.log(Level.SEVERE, "Shop - editProductInShop: user " + userName
+                    + " doesn't have permission to edit products in shop with id " + _shopId);
+            throw new PermissionException(
+                    "User " + userName + " doesn't have permission to edit product in shop with id " + _shopId);
         }
 
         // check if product exists
@@ -662,7 +675,8 @@ public class Shop {
             }
         }
         if (product == null) {
-            logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: " + productNameOld + " from shop with id " + _shopId);
+            logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: "
+                    + productNameOld + " from shop with id " + _shopId);
             throw new ProductDoesNotExistsException("Product with name " + productNameOld + " does not exist.");
         }
 
@@ -915,11 +929,13 @@ public class Shop {
     public void ValidateProdcutPolicy(User u, Product p) throws StockMarketException {
         logger.log(Level.FINE,
                 "Shop - ValidateProdcutPolicy: Starting validation of product in shop with id: " + _shopId);
-        
-        // if the user recived is null, means its a guest user in the system, so we need to check if the product policy allows guest users (have any policy)
+
+        // if the user recived is null, means its a guest user in the system, so we need
+        // to check if the product policy allows guest users (have any policy)
         if (u == null) {
-            if (p.getProductPolicy().getRules().size() > 0){
-                logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: the product " + p.getProductName() + " in shop with id: " + _shopId + " doesn't allow guest users");
+            if (p.getProductPolicy().getRules().size() > 0) {
+                logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: the product " + p.getProductName()
+                        + " in shop with id: " + _shopId + " doesn't allow guest users");
                 throw new ProdcutPolicyException("Guest user violates the shop policy of shop with id: " + _shopId);
             }
             return;
@@ -1004,6 +1020,10 @@ public class Shop {
 
     public String getShopPolicyInfo() {
         return _shopPolicy.toString();
+    }
+
+    public ShopPolicy getShopPolicy() {
+        return _shopPolicy;
     }
 
     public String getProductPolicyInfo(Integer productId) throws StockMarketException {
@@ -1121,5 +1141,16 @@ public class Shop {
     public void addReview(String username, int productID, String review) {
         Product product = _productMap.get(productID);
         product.addReview(username, review);
+    }
+
+    // this function changes the shop policy
+    public void changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules) throws StockMarketException {
+        if (checkPermission(username, Permission.CHANGE_SHOP_POLICY)) {
+            _shopPolicy = new ShopPolicy();
+            for (ShoppingBasketRuleDto rule : shopRules) {
+                Rule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
+                _shopPolicy.addRule(newRule);
+            }
+        }
     }
 }

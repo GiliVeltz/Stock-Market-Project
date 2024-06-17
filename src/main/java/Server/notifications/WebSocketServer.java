@@ -16,16 +16,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 //Todo: make sure the class is thread safe.
 /**
- * This class is responsible for handling WebSocket communication within the application.
- * It extends TextWebSocketHandler, which provides a simple way to handle text messages over WebSocket connections.
- * The WebSocketServer class provides methods for sending messages to specific clients.
+ * This class is responsible for handling WebSocket communication within the
+ * application.
+ * It extends TextWebSocketHandler, which provides a simple way to handle text
+ * messages over WebSocket connections.
+ * The WebSocketServer class provides methods for sending messages to specific
+ * clients.
  */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
     // @Autowired
     private TokenService tokenService;
-     // Singleton instance
-     private static WebSocketServer instance;
+    // Singleton instance
+    private static WebSocketServer instance;
     // assumption messages as aformat of:"targetUsername:message"
 
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
@@ -34,7 +37,7 @@ public class WebSocketServer extends TextWebSocketHandler {
     private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
                                                                                                // messageQueue>
 
-                  // Private constructor to prevent instantiation
+    // Private constructor to prevent instantiation
     private WebSocketServer() {
         // Initialization code
         this.tokenService = TokenService.getTokenService();
@@ -46,7 +49,7 @@ public class WebSocketServer extends TextWebSocketHandler {
             instance = new WebSocketServer();
         }
         return instance;
-    }                                                                               
+    }
 
     /**
      * Handles a new WebSocket connection after it has been established.
@@ -83,12 +86,13 @@ public class WebSocketServer extends TextWebSocketHandler {
             System.out.println("Connected: " + clientKey);
 
             // // Send any queued messages sent while user was loggedOut
-            // Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            // Queue<String> queue = messageQueues.getOrDefault(username, new
+            // ConcurrentLinkedQueue<>());
             // while (!queue.isEmpty()) {
-            //     String message = queue.poll();
-            //     if (session.isOpen()) {
-            //         session.sendMessage(new TextMessage(message));
-            //     }
+            // String message = queue.poll();
+            // if (session.isOpen()) {
+            // session.sendMessage(new TextMessage(message));
+            // }
             // }
             // messageQueues.remove(username);
         } else {
@@ -96,13 +100,14 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
-        //TODO : remove this lines
+        // TODO : remove this lines
         if (sessions.size() > 1) {
             broadcastMessage("Hello all clients!");
-            
+
         }
     }
-    //check for any queued message and if exist send them to the client
+
+    // check for any queued message and if exist send them to the client
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
@@ -119,14 +124,12 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-   
-    
-     /**
+    /**
      * Handles the closing of a WebSocket connection.
      * This method is called when the connection with a client is closed.
      *
      * @param session The WebSocket session that was closed.
-     * @param status The status code for the closure.
+     * @param status  The status code for the closure.
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -134,7 +137,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         System.out.println("Disconnected: " + session.getId());
     }
 
-     /**
+    /**
      * Handles a text message received from a client.
      * This method is called when a new text message arrives.
      *
@@ -163,7 +166,6 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-   
     /**
      * Broadcasts a text message to all connected users.
      *
@@ -184,13 +186,14 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-     /**
+    /**
      * Sends a text message to a specific user.
-     * This method looks up the session for the username and sends the message if the session exists.
+     * This method looks up the session for the username and sends the message if
+     * the session exists.
      * if it is a registered user but not logged in than the message will be queued.
      * 
      * @param username The username of the recipient.
-     * @param message The message to be sent.
+     * @param message  The message to be sent.
      * @throws IOException If an I/O error occurs while sending the message.
      */
     public void sendMessage(String targetUser, String message) {
@@ -208,20 +211,21 @@ public class WebSocketServer extends TextWebSocketHandler {
             System.out.println("Client not found or not open, message queued for : " + targetUser);
         }
     }
-    
+
     private boolean validateToken(String token) {
-    //    return tokenService.validateToken(token);
-    return true;
+        // return tokenService.validateToken(token);
+        return true;
     }
 
     /**
-    * Replaces a guest user's token with a logged-in user's new token.
-    * This method is called when a guest user logs in and their token is replaced with a new token.
-    
-    * @param oldToken The old token of the guest user.
-    * @param newToken The new token for the logged-in user.
-    * @param username The username of the logged-in user.
-    */
+     * Replaces a guest user's token with a logged-in user's new token.
+     * This method is called when a guest user logs in and their token is replaced
+     * with a new token.
+     * 
+     * @param oldToken The old token of the guest user.
+     * @param newToken The new token for the logged-in user.
+     * @param username The username of the logged-in user.
+     */
     public void replaceGuestTokenToUserToken(String oldToken, String newToken, String username) {
         if (username != null && oldToken != null) {
             String guestKey = "guest-" + oldToken;
@@ -236,15 +240,18 @@ public class WebSocketServer extends TextWebSocketHandler {
         checkForQueuedMessages(username);
     }
 
-    public void closeSession(String userName) {
+    public void changeLoggedInSession(String userName, String guestToken) {
         WebSocketSession session = sessions.get(userName);
         if (session != null) {
             try {
-                session.close();
-            } catch (IOException e) {
+                sessions.remove(userName);
+                String guestKey = "guest-" + guestToken;
+                sessions.put(guestKey, session);
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
 
+    }
 }
