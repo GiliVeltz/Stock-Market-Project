@@ -714,4 +714,23 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeShopPolicy(username, shopRules);
     }
+
+    // This function is responsible for getting all the shops in the system
+    public List<ShopDto> getShopsEntity() {
+        List<Shop> shops = getAllShops();
+        List<ShopDto> shopsDto = new ArrayList<>();
+        for (Shop shop : shops) {
+            shopsDto.add(new ShopDto(shop));
+        }
+        return shopsDto;
+    }
+
+    // This function is responsible for getting all the information about a shop
+    public ShopDto getShopInfo(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shop);
+        }
+        return null;
+    }
 }

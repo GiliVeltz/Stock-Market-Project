@@ -1298,9 +1298,41 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testGetShopInfoAsUser(String shopId) {
-        // TODO Auto-generated method stub
-        // TODO Gili getShopGeneralInfo - #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsUser'");
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("username");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User user = new User("username", _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        
+        try {
+            _shopFacade.openNewShop("username", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testGetShopInfoAsUser Error message: " + e.getMessage());
+            return false;
+        }
+
+        // Act
+        ResponseEntity<Response> res = _shopServiceUnderTest.displayShopGeneralInfo(token, Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testGetShopInfoAsUser Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
     }
 
     @Override
