@@ -2,15 +2,21 @@ package UI.View;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
-import com.vaadin.flow.component.datepicker.DatePicker; 
-
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -57,6 +63,7 @@ public class Header extends HorizontalLayout {
         Span spacer = new Span();
         spacer.getStyle().set("flex-grow", "1"); // This will make the spacer flexible and push the buttons apart
 
+
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
         rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
@@ -74,6 +81,11 @@ public class Header extends HorizontalLayout {
         // Create login dialog
         Dialog loginDialog = createLoginDialog();
 
+        Dialog searchProductsDialog = createSearchProductsDialog();
+
+        // Create login dialog
+        Dialog searchShopsDialog = createSearchShopsDialog();
+    
         // Create logout confirmation dialog
         logoutConfirmationDialog = createLogoutConfirmationDialog();
 
@@ -87,6 +99,9 @@ public class Header extends HorizontalLayout {
 
         // Add click listener to the register button
         _registerButton.addClickListener(event -> registrationDialog.open());
+
+        searchProductsButton.addClickListener(event -> searchProductsDialog.open());
+        searchShopsButton.addClickListener(event -> searchShopsDialog.open());
     }
 
     private Dialog createRegistrationDialog() {
@@ -96,7 +111,7 @@ public class Header extends HorizontalLayout {
         FormLayout formLayout = new FormLayout();
 
         // Create a headline
-        H2 headline = new H2("Registeration");
+        H2 headline = new H2("Registration");
         headline.getStyle().set("margin", "0");
 
         // Create form fields
@@ -227,6 +242,9 @@ public class Header extends HorizontalLayout {
             // Handle logout confirmation
             presenter.logoutUser();
 
+            // Switch the button text back to "Login"
+            switchToLogin();
+
             // Close the dialog after confirmation
             dialog.close();
         });
@@ -249,8 +267,7 @@ public class Header extends HorizontalLayout {
         return dialog;
     }
 
-
-    public void hideRegisterButton(){
+    public void hideRegisterButton() {
         _registerButton.setVisible(false);
     }
 

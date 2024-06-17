@@ -132,6 +132,7 @@ public class ShopFacade {
                     productDto._productName, shopId));
         int productId = _shopRepository.getUniqueProductID();
         Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
+        newProduct.updateProductQuantity(productDto._productQuantity);
         getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
 
