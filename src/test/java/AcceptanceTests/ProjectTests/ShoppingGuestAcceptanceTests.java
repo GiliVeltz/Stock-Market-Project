@@ -158,8 +158,8 @@ public class ShoppingGuestAcceptanceTests {
     // Test the buying senerio of a shopping cart (all or nothing) as a user.
     @Test
     public void testBuyingShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 1)), "userName", "address")); // success - all products are available to buy them
-        assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 2)), "userName", "address")); // fail - one of the pruducts (or more) is not available
+        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 1)), "123456789", "address")); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 2)), "123456789", "address")); // fail - one of the pruducts (or more) is not available
         // assertTrue(_bridge.testBuyingShoppingCartPoliciesUser() ); // success - all
         // shop policies are valid
         // assertFalse(_bridge.testBuyingShoppingCartPoliciesUser() ); // fail - one of
