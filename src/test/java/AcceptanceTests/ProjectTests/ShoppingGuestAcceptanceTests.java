@@ -74,19 +74,10 @@ public class ShoppingGuestAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId1")); // success - exist
-                                                                                                      // product and
-                                                                                                      // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId1")); // fail - non
-                                                                                                       // exist product
-                                                                                                       // but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId2")); // fail - exist
-                                                                                                       // product but
-                                                                                                       // non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId2")); // fail - non
-                                                                                                       // exist product
-                                                                                                       // and non exist
-                                                                                                       // shop
+        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId1")); // success - exist product and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId1")); // fail - non exist product but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId2")); // fail - exist product but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId2")); // fail - non exist product and non exist shop
     }
 
     // Test search product information in a specific shop, according to product
@@ -95,25 +86,10 @@ public class ShoppingGuestAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId1")); // success -
-                                                                                                         // exist
-                                                                                                         // category and
-                                                                                                         // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId1")); // fail - non
-                                                                                                          // exist
-                                                                                                          // category
-                                                                                                          // but exist
-                                                                                                          // shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId2")); // fail -
-                                                                                                          // exist
-                                                                                                          // category
-                                                                                                          // but non
-                                                                                                          // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId2")); // fail - non
-                                                                                                          // exist
-                                                                                                          // category
-                                                                                                          // and non
-                                                                                                          // exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId1")); // success - exist category and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId1")); // fail - non exist category but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId2")); // fail - exist category but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId2")); // fail - non exist category and non exist shop
     }
 
     // Test search product information in a specific shop, according to key words as
@@ -122,18 +98,10 @@ public class ShoppingGuestAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingKeyWordsInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword1", "shopId1")); // success - exist
-                                                                                                 // keyword and exist
-                                                                                                 // shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword2", "shopId1")); // fail - non exist
-                                                                                                  // keyword but exist
-                                                                                                  // shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword1", "shopId2")); // fail - exist
-                                                                                                  // keyword but non
-                                                                                                  // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword2", "shopId2")); // fail - non exist
-                                                                                                  // keyword and non
-                                                                                                  // exist shop
+        assertTrue(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword1", "shopId1")); // success - exist keyword and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword2", "shopId1")); // fail - non exist keyword but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword1", "shopId2")); // fail - exist keyword but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsGuest("keyword2", "shopId2")); // fail - non exist keyword and non exist shop
     }
 
     // Test a guest can watch his items in the shopping cart.
@@ -147,8 +115,10 @@ public class ShoppingGuestAcceptanceTests {
     // TODO: TAL
     @Test
     public void testBuyingShoppingCartAsGuest() {
-        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest(new ArrayList<Integer>(), "123456789", "address")); // success - all products are available to buy them
-        //assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest(new ArrayList<Integer>(), "123456789", "address")); // fail - one of the pruducts (or more) is not available
+        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest("success", new ArrayList<Integer>(), "123456789", "address")); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest("fail", new ArrayList<Integer>(), "123456789", "address")); // fail - one of the pruducts (or more) is not available
+        assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuestThreading("success", new ArrayList<Integer>(), "123456789", "address")); // success - all products are available to buy only for 1 guest.
+        assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartGuestThreading("fail", new ArrayList<Integer>(), "123456789", "address")); // fail - some products are not available to buy for any guest.
         // assertTrue(_bridge.testBuyingShoppingCartPoliciesGuest() ); // success - all
         // shop policies are valid
         // assertFalse(_bridge.testBuyingShoppingCartPoliciesGuest() ); // fail - one of

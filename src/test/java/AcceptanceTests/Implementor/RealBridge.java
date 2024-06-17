@@ -9,8 +9,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.hibernate.sql.exec.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1354,8 +1360,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(List<Integer> basketsToBuy, String cardNumber,
-            String address) {
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -1395,27 +1400,23 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // user "user" open 2 shops using ShopSerivce
         ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
-        //ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
 
         ShopDto shopDto2 = new ShopDto("shopTestGuest2", "bankDetails2", "address2");
-        //ResponseEntity<Response> res2 = _shopServiceUnderTest.openNewShop(userToken, shopDto2);
 
         ShopDto shopDto3 = new ShopDto("shopTestGuest3", "bankDetails3", "address3");
-        //ResponseEntity<Response> res3 = _shopServiceUnderTest.openNewShop(userToken, shopDto3);
 
         // shop owner adds a product1 to the shop using ShopSerivce
         ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res6 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // shop owner adds a product2 to the shop using ShopSerivce
         ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res7 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto2);
 
         ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res8 = _shopServiceUnderTest.addProductToShop(userToken, 1, productDto3);
 
         ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res9 = _shopServiceUnderTest.addProductToShop(userToken, 2, productDto4);
+        if (test.equals("fail")) {
+            productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+        }
 
         try {
             _shopFacade.openNewShop("user", shopDto1);
@@ -1432,103 +1433,53 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res8 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
-        ResponseEntity<Response> res9 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
-        ResponseEntity<Response> res10 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
-        ResponseEntity<Response> res11 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1);
-        ResponseEntity<Response> res12 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2);
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2);
 
         // Act
-        ResponseEntity<Response> res13 = _userServiceUnderTest.purchaseCart(guestToken,
+        ResponseEntity<Response> res6 = _userServiceUnderTest.purchaseCart(guestToken,
                 new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
 
         // Assert
-        // if (res1.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "res1 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res1 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res2.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "res2 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res2 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res3.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "res3 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res3 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res4.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res4 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res5.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res5 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res6.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res6 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res7.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "res7 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
-        //     return false;
-        // }
-        if (res8.getBody().getErrorMessage() != null) {
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
             System.out.println(
-                    "res8 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res9.getBody().getErrorMessage() != null) {
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
             System.out.println(
-                    "res9 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        if (res10.getBody().getErrorMessage() != null) {
+        if (res3.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
             System.out.println(
-                    "res10 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
             return false;
         }
-        if (res11.getBody().getErrorMessage() != null) {
+        if (res4.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
             System.out.println(
-                    "res11 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
             return false;
         }
-        if (res12.getBody().getErrorMessage() != null) {
+        if (res5.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
             System.out.println(
-                    "res12 testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
             return false;
         }
-        boolean result = res13.getBody().getErrorMessage() == null;
-        return res13.getBody().getErrorMessage() == null;
+        return res6.getBody().getErrorMessage() == null;
     }
 
     @Override
@@ -1584,27 +1535,20 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // user "user" open 2 shops using ShopSerivce
         ShopDto shopDto1 = new ShopDto("shopTestUser1", "bankDetails1", "address1");
-        //ResponseEntity<Response> res3 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
 
         ShopDto shopDto2 = new ShopDto("shopTestUser2", "bankDetails2", "address2");
-        //ResponseEntity<Response> res4 = _shopServiceUnderTest.openNewShop(userToken, shopDto2);
 
         ShopDto shopDto3 = new ShopDto("shopTestUser3", "bankDetails3", "address3");
-        //ResponseEntity<Response> res5 = _shopServiceUnderTest.openNewShop(userToken, shopDto3);
 
         // shop owner adds a product1 to the shop using ShopSerivce
         ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res6 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // shop owner adds a product2 to the shop using ShopSerivce
         ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res7 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto2);
 
         ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
-        //ResponseEntity<Response> res8 = _shopServiceUnderTest.addProductToShop(userToken, 1, productDto3);
 
         ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 0);
-        //ResponseEntity<Response> res9 = _shopServiceUnderTest.addProductToShop(userToken, 2, productDto4);
 
         try {
             _shopFacade.openNewShop("user", shopDto1);
@@ -1620,17 +1564,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             return false;
         }
 
-        
-
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res10 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
-        ResponseEntity<Response> res11 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
-        ResponseEntity<Response> res12 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0);
-        ResponseEntity<Response> res13 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1);
-        ResponseEntity<Response> res14 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0);
+        ResponseEntity<Response> res6 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1);
+        ResponseEntity<Response> res7 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2);
 
         // Act
-        ResponseEntity<Response> res15 = _userServiceUnderTest.purchaseCart(userBuyerToken,
+        ResponseEntity<Response> res8 = _userServiceUnderTest.purchaseCart(userBuyerToken,
                 new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
 
         // Assert
@@ -1648,91 +1590,201 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                     "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        // if (res3.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res4.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res5.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res6.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res7.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res8.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res8.getBody().getErrorMessage());
-        //     return false;
-        // }
-        // if (res9.getBody().getErrorMessage() != null) {
-        //     logger.info(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
-        //     System.out.println(
-        //             "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res9.getBody().getErrorMessage());
-        //     return false;
-        // }
-        if (res10.getBody().getErrorMessage() != null) {
+        if (res3.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
             System.out.println(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res10.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
             return false;
         }
-        if (res11.getBody().getErrorMessage() != null) {
+        if (res4.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
             System.out.println(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res11.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
             return false;
         }
-        if (res12.getBody().getErrorMessage() != null) {
+        if (res5.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
             System.out.println(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res12.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
             return false;
         }
-        if (res13.getBody().getErrorMessage() != null) {
+        if (res6.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res13.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
             System.out.println(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res13.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
             return false;
         }
-        if (res14.getBody().getErrorMessage() != null) {
+        if (res7.getBody().getErrorMessage() != null) {
             logger.info(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res14.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
             System.out.println(
-                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res14.getBody().getErrorMessage());
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
             return false;
         }
-        return res15.getBody().getErrorMessage() == null;
+        return res8.getBody().getErrorMessage() == null;
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String guestToken2 = "guestToken2";
+        when(_tokenServiceMock.validateToken(guestToken2)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken2)).thenReturn(guestToken2);
+        when(_tokenServiceMock.isGuest(guestToken2)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+
+        ShoppingCart shoppingCart2 = new ShoppingCart(_shopFacade);
+        
+        _shoppingCartFacade.addCartForGuestForTests(guestToken2, shoppingCart2);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 1);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+
+        if (test.equals("fail")) {
+            productDto2 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+        }
+
+        try {
+            _shopFacade.openNewShop("user", shopDto1);
+            _shopFacade.addProductToShop(0, productDto, "user");
+            _shopFacade.addProductToShop(0, productDto2, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAllOrNothingBuyingShoppingCartGuestThreading Error message: " + e.getMessage());
+            return false;
+        }
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
+
+        // Act
+        ArrayList<ResponseEntity<Response>> results = new ArrayList<ResponseEntity<Response>>();
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+
+        // Act
+        // Task for first thread
+        Runnable task1 = () -> {
+            results.add(_userServiceUnderTest.purchaseCart(guestToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            results.add(_userServiceUnderTest.purchaseCart(guestToken2, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+        };
+
+        // Execute tasks
+        executor.execute(task1);
+        executor.execute(task2);
+
+        // Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted
+        executor.shutdown();
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if (res5.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        boolean task1Result = (results.get(0).getBody().getErrorMessage() == null);
+        boolean task2Result = (results.get(1).getBody().getErrorMessage() == null);
+
+        return (task1Result && !task2Result) || (!task1Result && task2Result);
     }
 
     @Override
