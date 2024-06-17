@@ -14,6 +14,7 @@ import Domain.ShoppingCart;
 import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
+import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.StockMarketException;
 
@@ -204,6 +205,21 @@ public class ShoppingCartFacade {
 
     public Object getCartByUsername(String username) {
         return _cartsRepo.getCartByUsername(username);
+    }
+
+    public List<BasketDto> viewShoppingCart(String token, String username) throws StockMarketException {
+        ShoppingCart cart;
+
+        if (username == null) {
+            cart = _guestsCarts.get(token);
+        } else {
+            cart = _cartsRepo.getCartByUsername(username);
+        }
+        List<BasketDto> baskets = new ArrayList<>();
+        for (ShoppingBasket basket : cart.getShoppingBaskets()) {
+            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdList(), basket.calculateShoppingBasketPrice()));
+        }
+        return baskets;
     }
 
     // for tests
