@@ -40,7 +40,7 @@ public class ShoppingCart {
         _shopFacade = ShopFacade.getShopFacade();
         _user = null;
     }
-    
+
     // for tests
     public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
         _shoppingBaskets = new ArrayList<>();
@@ -60,7 +60,13 @@ public class ShoppingCart {
      */
     public void purchaseCart(PurchaseCartDetailsDto details, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
-        purchaseCartEditStock(details.basketsToBuy);
+        try {
+            purchaseCartEditStock(details.basketsToBuy);
+        } catch (StockMarketException e) {
+            logger.log(Level.SEVERE, "StockMarketException has been thrown: " + e.getMessage(), e);
+            throw e;
+        }
+        
         Map<Double, String> priceToShopDetails = new HashMap<>();
         double overallPrice = 0;
 
@@ -131,6 +137,7 @@ public class ShoppingCart {
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
+                throw e;
             } catch (ShopPolicyException e) {
                 logger.log(Level.SEVERE,
                         "ShoppingCart - purchaseCart - Basket " + basketId + " Validated the policy of the shop.");
@@ -138,6 +145,7 @@ public class ShoppingCart {
                 for (Integer basket : boughtBasketList) {
                     _shoppingBaskets.get(basket).cancelPurchase();
                 }
+                throw e;
             }
         }
     }
@@ -172,7 +180,7 @@ public class ShoppingCart {
      * @param shopID    the shop the product is from.
      * @param user      the user that wants to add the prodcut.
      * @throws ProdcutPolicyException
-     * @throws ProductDoesNotExistsException 
+     * @throws ProductDoesNotExistsException
      */
     public void addProduct(int productID, int shopID) throws StockMarketException {
         // Check if the product exists in the shop.
@@ -214,7 +222,8 @@ public class ShoppingCart {
             }
         } else {
             logger.log(Level.WARNING, "No shopping basket found for shop: " + shopID);
-            throw new StockMarketException("Trying to remove product from shopping cart, but no shopping basket found for shop: " + shopID);
+            throw new StockMarketException(
+                    "Trying to remove product from shopping cart, but no shopping basket found for shop: " + shopID);
         }
     }
 
@@ -240,7 +249,7 @@ public class ShoppingCart {
 
     // return all the products in the cart
     public Map<Integer, Product> getProducts() throws StockMarketException {
-        Map<Integer, Product> products = new HashMap<Integer,Product>();
+        Map<Integer, Product> products = new HashMap<Integer, Product>();
         for (ShoppingBasket basket : _shoppingBaskets) {
             for (Product product : basket.getProductsList()) {
                 products.put(product.getProductId(), product);

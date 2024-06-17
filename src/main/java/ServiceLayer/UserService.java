@@ -134,7 +134,7 @@ public class UserService {
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
-    public Response purchaseCart(String token, PurchaseCartDetailsDto details) {
+    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -148,32 +148,35 @@ public class UserService {
                     _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Cart bought has been failed: " + e.getMessage());
             logger.log(Level.SEVERE, "Cart bought has been failed: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for checking if a user is a system admin
-    public Response isSystemAdmin(String userId) {
+    public ResponseEntity<Response> isSystemAdmin(String userId) {
         Response response = new Response();
         try {
             if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 logger.info("User is not an admin: " + userId);
                 response.setReturnValue("User is not an admin");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to check if user is an admin: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     /**
@@ -185,49 +188,54 @@ public class UserService {
      *         an error message if not. () List<Order>
      * @throws Exception If the session token is invalid.
      */
-    public Response getUserPurchaseHistory(String token, String username) {
+    public ResponseEntity<Response> getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+
                 String adminUsername = _tokenService.extractUsername(token);
                 boolean isAdmin = _userFacade.isAdmin(adminUsername);
                 if (!isAdmin) {
                     response.setErrorMessage("User is not an admin");
                     logger.log(Level.SEVERE, "User is not an admin");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+
                 // get purchase history of a user
                 response.setReturnValue(_userFacade.getPurchaseHistory(username));
 
                 if (response.getErrorMessage() != null) {
                     response.setErrorMessage("Failed to get purchase history from user: " + username);
                     logger.log(Level.SEVERE, "Failed to get purchase history from user: " + username);
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
 
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
+
         } catch (Exception e) {
             response.setErrorMessage("Failed to get purchase history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to get purchase history: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for getting the purchase history of a user.
-    public Response getPersonalPurchaseHistory(String token) {
+    public ResponseEntity<Response> getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (!_tokenService.isUserAndLoggedIn(token)) {
                     response.setErrorMessage("User is not logged in");
                     logger.log(Level.SEVERE, "User is not logged in");
-                    return response;
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
                 String username = _tokenService.extractUsername(token);
                 logger.info("Purchase history request for user: " + username);
@@ -235,18 +243,19 @@ public class UserService {
                 logger.info("Purchase history retrieved for user: " + username);
                 response.setReturnValue(purchaseHistory);
 
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to retrieve purchase history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to retrieve purchase history: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for getting the purchase history of a shop.
-    public Response addProductToShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -255,20 +264,21 @@ public class UserService {
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
                     _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
                 } else {
-                    throw new Exception("Token is incorrect");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to add product: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to add product: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for removing a product from the shopping cart.
-    public Response removeProductFromShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -279,20 +289,21 @@ public class UserService {
                     _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID,
                             shopID);
                 } else {
-                    throw new Exception("Token is incorrect");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to remove product: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to remove product: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     // this function is responsible for getting the shopping cart of a user: returns a list of products in the cart.
-    public Response getShoppingCart(String token) {
+    public ResponseEntity<Response> getShoppingCart(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -301,32 +312,34 @@ public class UserService {
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
                     response.setReturnValue(_shoppingCartFacade.getUserCart(_tokenService.extractUsername(token)));
                 } else {
-                    throw new Exception("Token is incorrect");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to get shopping cart: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to get shopping cart: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
     
     // this function is responsible for changing the email of a user.
-    public Response changeEmail(String username, String email){
+    public ResponseEntity<Response> changeEmail(String username, String email){
         Response response = new Response();
         try {
             _userFacade.changeEmail(username, email);
         } catch (Exception e) {
             response.setErrorMessage("Failed to change email for user: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to change email for user: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // this function is responsible for write a review for a product that bought by the user (only after the purchase, and logged in user)
-    public Response writeReview(String token, int productID, int shopID, String review){
+    public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review){
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -335,15 +348,16 @@ public class UserService {
                     List<Order> purchaseHistory = _userFacade.getPurchaseHistory(username);
                     _shoppingCartFacade.writeReview(username, purchaseHistory, productID, shopID, review);
                 } else {
-                    throw new Exception("Token is incorrect");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to write review: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to write review: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 }

@@ -74,8 +74,8 @@ public class ShopFacadeTests {
         _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
         _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
-       _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0);
-        _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0);
+       _product1dto = new ProductDto("name1", Category.CLOTHING, 1.0, 1);
+        _product2dto = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
         _product2 = new Product(3,"name2", Category.CLOTHING, 1.0);
         _product3 = new Product(4,"name3", Category.CLOTHING, 80.0);
         try{
@@ -375,8 +375,8 @@ public class ShopFacadeTests {
         _shop1.addProductToShop("founderName1", _product2);
 
         // Act - try to edit a product from an existing shop
-        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
-        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0, 1);
         _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
 
         // Assert - Verify that the product is edited in the shop
@@ -392,8 +392,8 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to edit a product from an existing shop
-        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
-        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0, 1);
         try {
             _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
             fail("Editing a product that does not exist in the shop should raise an error");
@@ -410,8 +410,8 @@ public class ShopFacadeTests {
         ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
 
         // Act - try to edit a product from a non-existing shop
-        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
-        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+        ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
+        ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0, 1);
         try {
             _ShopFacadeUnderTests.editProductInShop(3, productDtoOld, productDtoNew, "founderName1");
             fail("Editing a product in a non-existing shop should raise an error");
@@ -432,8 +432,8 @@ public class ShopFacadeTests {
         // Task for first thread
         Runnable task1 = () -> {
             try {
-                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
-                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
+                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0, 1);
                 _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
             } catch (StockMarketException e) {
                 fail(e.getMessage());
@@ -443,8 +443,8 @@ public class ShopFacadeTests {
         // Task for second thread
         Runnable task2 = () -> {
             try {
-                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0);
-                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0);
+                ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
+                ProductDto productDtoNew = new ProductDto("newName", Category.CLOTHING, 1.0, 1);
                 _ShopFacadeUnderTests.editProductInShop(_shop1.getShopId(), productDtoOld, productDtoNew, "founderName1");
             } catch (StockMarketException e) {
                 fail(e.getMessage());
@@ -776,7 +776,7 @@ public class ShopFacadeTests {
         // _ShopFacadeUnderTests.getPurchaseHistory(shopId);
 
         // Assert - Verify that the purchase history is not retrieved
-        assertNotNull(shopService.getShopPurchaseHistory(token, shopId).getErrorMessage());
+        assertNotNull(shopService.getShopPurchaseHistory(token, shopId).getBody().getErrorMessage());
 
     }
 
@@ -805,7 +805,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         // Act - try to get the purchase history for the system admin
-        Object result = shopService.getShopPurchaseHistory(token, shopId).getReturnValue();
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getBody().getReturnValue();
 
         // Assert - Verify that the purchase history is not retrieved
         assertNotNull(result);
@@ -834,7 +834,7 @@ public class ShopFacadeTests {
         when(_userFacadeMock.isAdmin(userName)).thenReturn(true);
 
         // Act - try to get the purchase history for the shop owner
-        Object result = shopService.getShopPurchaseHistory(token, shopId).getErrorMessage();
+        Object result = shopService.getShopPurchaseHistory(token, shopId).getBody().getErrorMessage();
 
         // Assert - Verify that the purchase history is not retrieved
         assertNotNull(result);
