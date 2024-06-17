@@ -1,10 +1,15 @@
 package UI.View;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -14,10 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("User Main Page")
 @Route(value = "user")
-public class UserMainPageView extends VerticalLayout implements ViewPageI, MessageListener {
+public class UserMainPageView extends BaseView{
 
     private UserMainPagePresenter presenter;
     private String _username;
+    private Button _openShopButton;
     private Button myMessages;
 
     @Autowired
@@ -37,6 +43,9 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI, Messa
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
         myMessages = new Button("View My Messages", e -> navigateToMessages());
+        // New button for opening a shop
+        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
+        _openShopButton.addClassName("pointer-cursor");
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
@@ -44,7 +53,7 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI, Messa
         myMessages.addClassName("same-size-button");
 
         // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, myMessages);
+        VerticalLayout buttonLayout = new VerticalLayout((profileButton, shopsButton, _openShopButton, myMessages);
         buttonLayout.setAlignItems(Alignment.END);
 
         // Create a horizontal layout for the title to center it
@@ -61,6 +70,55 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI, Messa
 
         // Register as a message listener
         webSocketClient.addMessageListener(this);
+    }
+
+    private Dialog createOpenNewShopDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create a headline
+        H2 headline = new H2("Open New Shop");
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create form fields
+        TextField shopNameField = new TextField("Shop Name");
+        TextField bankDetailsField = new TextField("Bank Details");
+        TextField shopAddressField = new TextField("Address");
+
+        // Add fields to the form layout
+        formLayout.add(shopNameField, bankDetailsField, shopAddressField);
+
+        // Create buttons
+        Button submitButton = new Button("Submit", event -> {
+            // Handle form submission
+            String shopName = shopNameField.getValue();
+            String bankDetails = bankDetailsField.getValue();
+            String shopAddress = shopAddressField.getValue();
+
+            presenter.openNewShop(shopName, bankDetails, shopAddress);
+
+            // Close the dialog after submission
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialog.add(dialogLayout);
+
+        return dialog;
     }
 
     private void navigateToMessages() {
@@ -86,9 +144,4 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI, Messa
         Notification.show(message);
     }
 
-    @Override
-    public void onMessageReceived(String message) {
-        // Change the button color to red
-        getUI().ifPresent(ui -> ui.access(() -> myMessages.getStyle().set("background-color", "red")));
-    }
 }

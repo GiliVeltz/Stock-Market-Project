@@ -180,4 +180,15 @@ public class ShopController {
     public ResponseEntity<Response>getUserShops(@RequestHeader("Authorization") String token) {
         return _shopService.getUserShops(token);
     }
+
+    @GetMapping("/getShopManagerPermissions")
+    public ResponseEntity<Response> getShopManagerPermissions(@RequestHeader("Authorization") String token,
+    @RequestParam Integer shopId) {
+        return _shopService.getShopManagerPermissions(token, shopId);
+    }
+
+    @GetMapping("/getUserShopsNames")
+    public ResponseEntity<Response>getUserShopsNames(@RequestHeader("Authorization") String token) {
+        return _shopService.getUserShopsNames(token);
+    }
 }

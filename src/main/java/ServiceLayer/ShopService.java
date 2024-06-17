@@ -1443,4 +1443,75 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Receive the shops which the user has roles in.
+     * @param token the users session token
+     * @return the shops which the user has roles in.
+     */
+    public ResponseEntity<Response> getShopManagerPermissions(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<String> permissions = _shopFacade.getShopManagerPermissions(username, shopId);
+                    response.setReturnValue(permissions);
+                    logger.info(String.format("Recieved successfuly shop permissions of shop with id ", shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to load permissions for user of shop with id %d. Error: %s", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Receive the shops names which the user has roles in.
+     * @param token the users session token
+     * @return the shops names which the user has roles in.
+     */
+    public ResponseEntity<Response> getUserShopsNames(String token) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::getUserShopsNames entring"));
+            if (!_tokenService.validateToken(token)) 
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in.");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username)){
+                response.setErrorMessage(String.format("User does not exist.",username));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            List<String> shopsNames = _shopFacade.getUserShopsNames(username);
+            response.setReturnValue(shopsNames);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+            response.setErrorMessage(String.format( "ShopService::getUserShopsNames failed to get users shops. "+e.getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
 }

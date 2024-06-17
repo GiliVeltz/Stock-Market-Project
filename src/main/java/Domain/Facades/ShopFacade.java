@@ -744,4 +744,39 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeShopPolicy(username, shopRules);
     }
+
+    /**
+     * Get the permissions of a user in a shop
+     * @param username the user's username
+     * @param shopId the shop's ID
+     * @return the list of permissions of the user in the shop
+     * @throws StockMarketException
+     */
+    public List<String> getShopManagerPermissions(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        Set<Permission> permissions = shop.getRole(username).getPermissions();
+        List<String> permissionsList = permissions.stream().map(permission -> permission.toString()).collect(Collectors.toList());
+        return permissionsList;
+    }
+
+
+    /**
+     * Get all the shops names that the user has a role in
+     * 
+     * @param username the user's username
+     * @return the list of shops names that the user has a role in
+     * @throws StockMarketException
+     */
+    public List<String> getUserShopsNames(String username) throws StockMarketException {
+        List<String> shops = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.checkIfHasRole(username)) {
+                shops.add(shop.getShopName());
+            }
+        }
+        return shops;
+    }
 }
