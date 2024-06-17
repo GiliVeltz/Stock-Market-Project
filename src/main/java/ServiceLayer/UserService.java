@@ -362,4 +362,26 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // this function is responsible for setting the user personal details.
+    public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    _userFacade.setUserDetails(username, userDto);
+                } else {
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to set user details: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to set user details: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

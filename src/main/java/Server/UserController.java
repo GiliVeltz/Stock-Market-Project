@@ -83,6 +83,12 @@ public class UserController {
         return resp;
     }
 
+    @PostMapping("/setUserDetails")
+    public ResponseEntity<Response> setUserDetails(@RequestHeader(value = "Authorization") String token, @RequestParam UserDto userDto) {
+        ResponseEntity<Response> resp = _userService.setUserDetails(token, userDto);
+        return resp;
+    }
+
     @GetMapping("/getPersonalPurchaseHistory")
     public ResponseEntity<Response> getPersonalPurchaseHistory(@RequestHeader(value = "Authorization") String token) {
         // example request:
