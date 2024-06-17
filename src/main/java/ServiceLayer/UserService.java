@@ -370,7 +370,7 @@ public class UserService {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
-                    _userFacade.setUserDetails(username, userDto);
+                    response.setReturnValue(_userFacade.setUserDetails(username, userDto));
                 } else {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }

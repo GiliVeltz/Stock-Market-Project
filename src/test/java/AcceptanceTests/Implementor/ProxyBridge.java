@@ -244,18 +244,8 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserEditEmail(String username, String password, String newEmail) {
+    public boolean TestUserEditPrivateDetails(String username, String newPassword, String newEmail) {
         throw new UnsupportedOperationException("Unimplemented method 'TestUserEditEmail' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserEditPassword(String username, String newPassword, String email) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditPassword' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserEditUsername(String newName, String newPassword, String email) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditUsername' in ProxyBridge class");
     }
 
     @Override

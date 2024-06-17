@@ -1,5 +1,7 @@
 package AcceptanceTests.Implementor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -1985,21 +1987,37 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean TestUserEditEmail(String username, String password, String newEmail) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditEmail'");
-    }
+    public boolean TestUserEditPrivateDetails(String username, String newPassword, String newEmail) {
+        //Arrange
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-    @Override
-    public boolean TestUserEditPassword(String username, String newPassword, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditPassword'");
-    }
+        // initiate a user object
+        User user = new User("bob", "bobspassword", "email@email.com", new Date());
+        UserDto userDto = new UserDto(user.getUserName(), newPassword, newEmail, user.getBirthDate());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
 
-    @Override
-    public boolean TestUserEditUsername(String newName, String newPassword, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditUsername'");
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act
+        ResponseEntity<Response> res = _userServiceUnderTest.setUserDetails(token, userDto);
+
+        // Assert
+        if(res.getBody().getErrorMessage() != null)
+            logger.info("TestUserEditPrivateDetails Error message: " + res.getBody().getErrorMessage());
+
+        UserDto userDtoAfterEdit = (UserDto) res.getBody().getReturnValue();
+        if(userDtoAfterEdit == null){
+            logger.info("TestUserEditPrivateDetails Error message: userDtoAfterEdit is null");
+            return false;
+        }
+        return userDtoAfterEdit.email.equals(newEmail) && userDtoAfterEdit.username.equals(username) && userDtoAfterEdit.birthDate.equals(user.getBirthDate());
     }
 
     // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------

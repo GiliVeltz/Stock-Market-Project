@@ -142,7 +142,7 @@ public class UserFacade {
     }
 
     // set the user personal new details
-    public void setUserDetails(String username, UserDto userDto) throws StockMarketException {
+    public UserDto setUserDetails(String username, UserDto userDto) throws StockMarketException {
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("new UserName is empty.");
         }
@@ -158,13 +158,16 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
 
+        User user = getUserByUsername(username);
+
         if (!doesUserExist(userDto.username)) {
             throw new StockMarketException("Username already exists.");
         } else {
-            User user = getUserByUsername(username);
             user.setEmail(userDto.email);
             user.setPassword(userDto.password);
             user.setBirthDate(userDto.birthDate);
         }
+
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 }
