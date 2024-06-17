@@ -51,10 +51,6 @@ public class ShoppingCartFacade {
         _guestsCarts.put(guestID, cart);
     }
 
-    public void addCartForGuestForTests(String guestID, ShoppingCart cart) {
-        _guestsCarts.put(guestID, cart);
-    }
-
     /*
      * Add a cart for a user.
      * If user already has a cart - we will use the same cart as before.
