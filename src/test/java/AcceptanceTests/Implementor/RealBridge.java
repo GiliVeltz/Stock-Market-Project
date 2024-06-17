@@ -1878,18 +1878,68 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 "Unimplemented method 'TestUserReportSystemManagerOnBreakingIntegrityRules'");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean TestUserViewHistoryPurchaseList(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewHistoryPurchaseList'");
-    }
+        // Arrange
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-    @Override
-    public boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password,
-            String productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem'");
+        // initiate a user object
+        User user = new User(username, password, "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuest(username);
+        _shoppingCartFacade.addCartForUser(username, user);
+        
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product", Category.CLOTHING, 100, 1);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
+
+        // this user adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+
+        // this user buys the product using UserService
+        List<Integer> shoppingBackets = new ArrayList<>();
+        shoppingBackets.add(0);
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(shoppingBackets, "123456789", "address");
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(token, purchaseCartDetailsDto);
+
+        // Act
+        ResponseEntity<Response> res5 = _userServiceUnderTest.getPersonalPurchaseHistory(token);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewHistoryPurchaseList Error message: " + res1.getBody().getErrorMessage());
+        if(res2.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewHistoryPurchaseList Error message: " + res2.getBody().getErrorMessage());
+        if(res3.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewHistoryPurchaseList Error message: " + res3.getBody().getErrorMessage());
+        if(res4.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewHistoryPurchaseList Error message: " + res4.getBody().getErrorMessage());
+        if(res5.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewHistoryPurchaseList Error message: " + res5.getBody().getErrorMessage());
+
+        // check if the purchased cart indeed returned
+        List<Order> purchaseHistory = (List<Order>) res5.getBody().getReturnValue();
+        if(purchaseHistory.size() == 0){
+            logger.info("TestUserViewHistoryPurchaseList Error message: purchase history is empty");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -2023,7 +2073,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act - this user adds a product to the shopping cart using UserService
         ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), Integer.parseInt(shopId));
-
+        
         // Assert
         if(res1.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
@@ -2032,5 +2082,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
         return res3.getBody().getErrorMessage() == null;
+    }
+
+    @Override
+    public boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password,
+            String productId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem'");
     }
 }
