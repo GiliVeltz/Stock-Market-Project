@@ -15,18 +15,22 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import UI.WebSocketClient;
 import UI.Presenter.UserMainPagePresenter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("User Main Page")
 @Route(value = "user")
 public class UserMainPageView extends BaseView{
 
     private UserMainPagePresenter presenter;
-    
     private String _username;
     private Button _openShopButton;
+    private Button myMessages;
 
-    public UserMainPageView(){
+
+    public UserMainPageView() {
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
@@ -39,7 +43,7 @@ public class UserMainPageView extends BaseView{
         // Create buttons
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
-        
+        myMessages = new Button("View My Messages", e -> navigateToMessages());
         // New button for opening a shop
         _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
         _openShopButton.addClassName("pointer-cursor");
@@ -56,9 +60,10 @@ public class UserMainPageView extends BaseView{
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
         shopsButton.addClassName("same-size-button");
+        myMessages.addClassName("same-size-button");
 
         // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, _openShopButton);
+        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, _openShopButton,myMessages);
         buttonLayout.setAlignItems(Alignment.END);
 
         // Create a horizontal layout for the title to center it
@@ -72,6 +77,8 @@ public class UserMainPageView extends BaseView{
 
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);
+
+
     }
 
     private Dialog createOpenNewShopDialog() {
@@ -122,7 +129,11 @@ public class UserMainPageView extends BaseView{
 
         return dialog;
     }
-    
+
+    private void navigateToMessages() {
+        myMessages.getStyle().remove("background-color");
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
+    }
 
     private void navigateToShops() {
         getUI().ifPresent(ui -> ui.navigate("user_shops"));
@@ -130,6 +141,16 @@ public class UserMainPageView extends BaseView{
 
     private void navigateToProfile() {
         getUI().ifPresent(ui -> ui.navigate("profile"));
+    }
+
+    @Override
+    public void showSuccessMessage(String message) {
+        Notification.show(message);
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+        Notification.show(message);
     }
 
 }

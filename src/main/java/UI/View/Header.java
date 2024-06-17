@@ -49,6 +49,9 @@ public class Header extends HorizontalLayout {
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
         Button shoppingCartButton = new Button("Shopping Cart");
+        // Button messagesButton = new Button("My Messages");
+        Button messagesButton = new Button("My Messages", e -> navigateToMessages());
+
 
 
         // Add cursor styling
@@ -57,6 +60,7 @@ public class Header extends HorizontalLayout {
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
+        messagesButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
         _leftButtonLayout = new HorizontalLayout();
@@ -105,6 +109,11 @@ public class Header extends HorizontalLayout {
 
         searchProductsButton.addClickListener(event -> searchProductsDialog.open());
         searchShopsButton.addClickListener(event -> searchShopsDialog.open());
+    }
+
+
+    private void navigateToMessages() {
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
     }
 
     private Dialog createRegistrationDialog() {
