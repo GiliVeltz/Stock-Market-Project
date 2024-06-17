@@ -1489,7 +1489,7 @@ public class ShopService {
         }
     }
   
-     * Receive the shops names which the user has roles in.
+     /* Receive the shops names which the user has roles in.
      * @param token the users session token
      * @return the shops names which the user has roles in.
      */
