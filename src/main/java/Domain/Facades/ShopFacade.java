@@ -73,6 +73,7 @@ public class ShopFacade {
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
         int shopId = _shopRepository.getUniqueShopID();
         _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
+        getShopByShopId(shopId).notifyReOpenShop(userName);
         return shopId;
     }
 
