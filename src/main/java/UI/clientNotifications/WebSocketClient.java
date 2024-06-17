@@ -55,7 +55,6 @@ public class WebSocketClient {
     @OnMessage
     public void onMessage(String message) {
         synchronized (messages) {
-            //create a new message object with current time
             Message newMessage = new Message(message);
             messages.add(0,newMessage);
         }
