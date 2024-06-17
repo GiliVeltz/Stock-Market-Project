@@ -44,7 +44,6 @@ public class BasePresenter {
             UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
 
             // Optionally, you can handle the response here
-            System.out.println("Extracted Token: " + token);
         } catch (Exception e) {
             e.printStackTrace();
             Notification.show("Failed to initialize system.");

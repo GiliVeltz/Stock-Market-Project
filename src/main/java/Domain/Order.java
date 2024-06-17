@@ -14,6 +14,7 @@ public class Order {
 
     // Constructor
     public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
+        _orderId = orderId;
         this._shoppingBasketMap = new HashMap<>();
         setShoppingBasketMap(shoppingBasket);
         this._totalOrderAmount = 0.0;

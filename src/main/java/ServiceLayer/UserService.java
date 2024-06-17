@@ -15,6 +15,7 @@ import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Exceptions.UnauthorizedException;
 
 @Service
 public class UserService {
