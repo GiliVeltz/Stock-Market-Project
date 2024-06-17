@@ -9,6 +9,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinSession;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -54,8 +56,10 @@ public class HeaderPresenter {
     
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
+                                VaadinSession.getCurrent().setAttribute("username", username);
                                 view.showSuccessMessage("Login successful");
                                 view.switchToLogout();
+                                view.navigateToUserMainPage();
                                 System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Login failed: " + responseBody.getErrorMessage());
@@ -139,6 +143,7 @@ public class HeaderPresenter {
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
                                 view.showSuccessMessage("Logout successful");
                                 view.switchToLogin();
+                                view.navigateToLandingPage();
                                 System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Logout failed: " + responseBody.getErrorMessage());
@@ -155,47 +160,6 @@ public class HeaderPresenter {
                     }
                 });
     }
-
-    public void openNewShop(String shopName, String bankDetails, String shopAddress) {
-        RestTemplate restTemplate = new RestTemplate();
-        ShopDto shopDto = new ShopDto(shopName, bankDetails, shopAddress);
-
-        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-                .then(String.class, token -> {
-                    if (token != null && !token.isEmpty()) {
-
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
-
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(shopDto, headers);
-
-                        try {
-                            ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/shop/openNewShop",
-                                HttpMethod.POST,
-                                requestEntity,
-                                Response.class);
-    
-                            Response responseBody = response.getBody();
-                            if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
-                                view.showSuccessMessage("Shop opened successfully");
-                                System.out.println(response.getBody());
-                            } else {
-                                view.showErrorMessage("Failed to open shop: " + responseBody.getErrorMessage());
-                            }
-                        } catch (HttpClientErrorException e) {
-                            ResponseHandler.handleResponse(e.getStatusCode());
-                        } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    } else {
-                        System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("Failed to open shop");
-                    }
-                });
-    }
-    
     public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
         RestTemplate restTemplate = new RestTemplate();
     }
@@ -203,5 +167,6 @@ public class HeaderPresenter {
     public void searchShop(String shopName, String bankshopId) {
         RestTemplate restTemplate = new RestTemplate();
     }
-}
 
+    
+}
