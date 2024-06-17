@@ -1659,12 +1659,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return true;
     }
 
-    // Not sure if neccery or how to test it >> maybe its enough
-    // testLogoutToTheSystem
     @Override
     public boolean TestWhenUserLogoutThenHeBecomeGuest(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestWhenUserLogoutThenHeBecomeGuest'");
+        return testLogoutToTheSystem(username);
     }
 
     @Override

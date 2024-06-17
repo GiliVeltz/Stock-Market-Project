@@ -137,11 +137,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestWhenUserLogoutThenHeBecomeGuest() {
-        assertTrue(_bridge.TestWhenUserLogoutThenHeBecomeGuest("username") ); // success - user logged out and become guest
-        //assertFalse(_bridge.TestWhenUserLogoutThenHeBecomeGuest("username") ); // fail
+        assertTrue(_bridge.TestWhenUserLogoutThenHeBecomeGuest("Bob") ); // success - user logged out and become guest
+        assertFalse(_bridge.TestWhenUserLogoutThenHeBecomeGuest("notUsername")); // not a user in the system
     }
     
     // Test that a user can open a shop and be the founder of the shop.
