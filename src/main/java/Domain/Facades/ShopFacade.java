@@ -732,6 +732,7 @@ public class ShopFacade {
             return new ShopDto(shop);
         }
         return null;
+    }
       
     /**
      * Get the permissions of a user in a shop
