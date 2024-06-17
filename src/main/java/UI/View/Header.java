@@ -114,6 +114,11 @@ public class Header extends HorizontalLayout implements ViewPageI {
         searchShopsButton.addClickListener(event -> searchShopsDialog.open());
     }
 
+
+    private void navigateToMessages() {
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
+    }
+
     
     private void navigateToMessages() {
         getUI().ifPresent(ui -> ui.navigate("user_messages"));
