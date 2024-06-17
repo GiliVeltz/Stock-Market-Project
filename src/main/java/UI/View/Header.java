@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -363,26 +365,20 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // MultiSelectListBox to store and display keywords
         MultiSelectListBox<String> keyWordField = new MultiSelectListBox<>();
-        keyWordField.setHeight("100px"); // Adjust height as needed
-        keyWordField.setWidth("150px"); // Adjust width as needed
+        keyWordField.setHeight("100px");
+        keyWordField.setWidth("150px");
 
         TextField keywordInputField = new TextField("Key Words");
         Button addKeywordButton = new Button("Add Keyword", event -> {
             String keyword = keywordInputField.getValue().trim();
             if (!keyword.isEmpty() && !keyWordField.getSelectedItems().contains(keyword)) {
-                // Get current items and add the new keyword
                 Set<String> currentKeywords = new LinkedHashSet<>(keyWordField.getSelectedItems());
                 currentKeywords.add(keyword);
-
-                // Update the keyWordField with all keywords
                 keyWordField.setItems(currentKeywords);
-
-                // Clear the input field
                 keywordInputField.clear();
             }
         });
 
-        // Custom CSS styling to add space between items in MultiSelectListBox
         keyWordField.getElement().setAttribute("style", "padding-bottom: 10px;");
 
         // Create form fields
@@ -397,6 +393,16 @@ public class Header extends HorizontalLayout implements ViewPageI {
         
         TextField productNameField = new TextField("By Product Name");
 
+        // Add value change listeners to update field states
+         ValueChangeListener<ValueChangeEvent<?>> listener = event -> updateFieldStates(categoryField, keyWordField, keywordInputField, addKeywordButton, minPriceField, maxPriceField, productNameField);
+
+        categoryField.addValueChangeListener(listener);
+        keyWordField.addValueChangeListener(listener);
+        minPriceField.addValueChangeListener(listener);
+        maxPriceField.addValueChangeListener(listener);
+        productNameField.addValueChangeListener(listener);
+
+
         // Add fields to the form layout
         formLayout.add(minPriceField, maxPriceField, categoryField, productNameField, keywordInputField, keyWordField, addKeywordButton);
 
@@ -409,6 +415,23 @@ public class Header extends HorizontalLayout implements ViewPageI {
             String maxPrice = maxPriceField.getValue();
             String productName = productNameField.getValue();
 
+            // Convert empty values to null
+            if (category.isEmpty()) {
+                category = null;
+            }
+            if (keyWords.isEmpty()) {
+                keyWords = null;
+            }
+            if (minPrice.isEmpty()) {
+                minPrice = null;
+            }
+            if (maxPrice.isEmpty()) {
+                maxPrice = null;
+            }
+            if (productName.isEmpty()) {
+                productName = null;
+            }
+
             presenter.SearchProducts(category, keyWords, minPrice, maxPrice, productName);
 
             // Close the dialog after submission
@@ -420,8 +443,12 @@ public class Header extends HorizontalLayout implements ViewPageI {
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addClassName("pointer-cursor");
 
+         // Create refresh button
+        Button refreshButton = new Button("Refresh", event -> resetFields(categoryField, keyWordField, keywordInputField, minPriceField, maxPriceField, productNameField));
+        refreshButton.addClassName("pointer-cursor");
+
         // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton);
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton, refreshButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
 
@@ -431,6 +458,30 @@ public class Header extends HorizontalLayout implements ViewPageI {
         dialog.add(dialogLayout);
 
         return dialog;
+    }
+
+    
+    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
+        boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !minPriceField.isEmpty() || !maxPriceField.isEmpty() || !productNameField.isEmpty();
+        boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
+    
+        categoryField.setEnabled(!anyFieldFilled || !categoryField.isEmpty());
+        keyWordField.setEnabled(!anyFieldFilled || !keyWordField.isEmpty());
+        keywordInputField.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
+        addKeywordButton.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
+        minPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        maxPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        productNameField.setEnabled(!anyFieldFilled || !productNameField.isEmpty());
+    }
+
+    private void resetFields(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
+        categoryField.clear();
+        keyWordField.clear();
+        keywordInputField.clear();
+        minPriceField.clear();
+        maxPriceField.clear();
+        productNameField.clear();
+        updateFieldStates(categoryField, keyWordField, keywordInputField, null, minPriceField, maxPriceField, productNameField);
     }
 
     public Dialog createSearchShopsDialog(){
@@ -447,6 +498,13 @@ public class Header extends HorizontalLayout implements ViewPageI {
         // Create form fields
         TextField shopNameField = new TextField("Shop Name");
         TextField shopIdField = new TextField("Shop ID");
+        shopIdField.setPattern("[0-9]+");
+        shopIdField.setErrorMessage("Please enter a valid shop ID");
+
+        // Add value change listeners to ensure only one filter is active
+        shopNameField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
+        shopIdField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
+
 
         // Add fields to the form layout
         formLayout.add(shopNameField, shopIdField);
@@ -457,6 +515,14 @@ public class Header extends HorizontalLayout implements ViewPageI {
             String shopName = shopNameField.getValue();
             String shopId = shopIdField.getValue();
 
+            // Convert empty values to null
+            if (shopName.isEmpty()) {
+                shopName = null;
+            }
+            if (shopId.isEmpty()) {
+                shopId = null;
+            }
+
             presenter.searchShop(shopName, shopId);
 
             // Close the dialog after submission
@@ -466,11 +532,14 @@ public class Header extends HorizontalLayout implements ViewPageI {
         searchButton.addClassName("pointer-cursor");
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
-
         cancelButton.addClassName("pointer-cursor");
 
+        // Create refresh button
+        Button refreshButton = new Button("Refresh", event -> resetFields(shopNameField, shopIdField));
+        refreshButton.addClassName("pointer-cursor");
+
         // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton);
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton, refreshButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
 
@@ -481,6 +550,21 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         return dialog;
     }
+
+    private void updateFieldStates(TextField shopNameField, TextField shopIdField) {
+        boolean isShopNameFilled = !shopNameField.isEmpty();
+        boolean isShopIdFilled = !shopIdField.isEmpty();
+    
+        shopNameField.setEnabled(!isShopIdFilled);
+        shopIdField.setEnabled(!isShopNameFilled);
+    }
+
+    private void resetFields(TextField shopNameField, TextField shopIdField) {
+        shopNameField.clear();
+        shopIdField.clear();
+        updateFieldStates(shopNameField, shopIdField);
+    }
+
 
     @Override
     public void showSuccessMessage(String message) {
