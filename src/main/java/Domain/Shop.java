@@ -11,6 +11,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.Alerts.Alert;
+import Domain.Alerts.CloseShopAlert;
+import Domain.Alerts.CredentialsModifyAlert;
+import Domain.Alerts.PurchaseFromShopAlert;
+import Domain.Alerts.ReOpenShopAlert;
+import Domain.Alerts.CloseShopAlert;
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
@@ -26,6 +32,7 @@ import Exceptions.RoleException;
 import Exceptions.ShopException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
+import Server.notifications.NotificationHandler;
 import enums.Category;
 import enums.Permission;
 
@@ -47,6 +54,8 @@ public class Shop {
     private ShopPolicy _shopPolicy;
     private int _nextDiscountId;
     private boolean _isClosed;
+    private NotificationHandler _notificationHandler;
+    
 
     // Constructor
     public Shop(Integer shopId, String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
@@ -70,6 +79,9 @@ public class Shop {
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             _nextDiscountId = 0;
             _isClosed = false;
+            _notificationHandler = NotificationHandler.getInstance();
+
+            
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);
         } catch (Exception e) {
@@ -98,6 +110,7 @@ public class Shop {
     public boolean isShopClosed() {
         return _isClosed;
     }
+
 
     public void setProductPrice(int productId, double price) {
         _productMap.get(productId).setPrice(price);
@@ -133,6 +146,10 @@ public class Shop {
             throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
         }
         return _userToRole.get(username);
+    }
+
+    public Map<String, Role> getUserToRoleMap() {
+        return _userToRole;
     }
 
     /**
@@ -371,11 +388,13 @@ public class Shop {
         }
         // All constraints checked
         manager.modifyPermissions(username, permissions);
+        notifyModifiedPermissions(username, userRole, permissions,getShopId());
         logger.log(Level.INFO,
                 "Shop - modifyPermissions: " + username + " successfuly modified permissions. Now the permission are: "
                         + permissions
                         + " to user " + userRole + " in the shop with id " + _shopId);
     }
+
 
     /**
      * Function to fire a manager/owner. All people he assigned fired too.
@@ -814,22 +833,6 @@ public class Shop {
         return isOwnerOrFounder(role);
     }
 
-    // before removing the shop send notificstion to all relevasnt users
-    public void notifyRemoveShop() {
-        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
-            String userName = entry.getKey();
-            // TODO: StoreClosedAlert();
-        }
-    }
-
-    // before reopening the shop send notificstion to all relevasnt users
-    public void notifyReOpenShop() {
-        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
-            String userName = entry.getKey();
-            // TODO: StoreReOpenAlert();
-        }
-    }
-
     public String getBankDetails() {
         return _bankDetails;
     }
@@ -1076,9 +1079,57 @@ public class Shop {
     public Map<Integer, Discount> getDiscounts() {
         return _discounts;
     }
+    /**
+     * Notify owner of the shop that a purchase has been made.
+     * @param buyingUser the buying user.   
+     * @param productIdList the product id list.
+     */
+    public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
+            _notificationHandler.sendMessage(owner, alert);
+        }
+    }
 
-    // TODO: maybe add policy facade to implement the policy logic.
+    /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
+    public void notifyCloseShop(String username) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new CloseShopAlert(owner, username, _shopId);
+            _notificationHandler.sendMessage(owner, alert);
+        }
+    }
 
+    /**
+     * Notify the users that the shop has been re-opened.
+     * @param username the  user that re-opened the shop.
+     */
+    public void notifyReOpenShop(String username) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new ReOpenShopAlert(owner, username, _shopId);
+            _notificationHandler.sendMessage(owner, alert);
+        }
+    }
+    /**
+     * Notify the user that his permissions have been modified.
+     * @param fromUser the user that modified the permissions.
+     * @param targetUser the user that the permissions have been modified.
+     * @param permissions the new permissions.
+     * @param shopId the shop id.
+     */
+    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId) {
+        List <String> newPermissions = new ArrayList<String>();
+        for (Permission p : permissions) {
+            newPermissions.add(p.toString());
+        }
+        Alert alert = new CredentialsModifyAlert(fromUser, targetUser, newPermissions, shopId);
+        _notificationHandler.sendMessage(targetUser, alert);
+    }
     /**
      * Get all the products in the shop.
      */

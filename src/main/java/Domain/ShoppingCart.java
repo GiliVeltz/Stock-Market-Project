@@ -120,7 +120,9 @@ public class ShoppingCart {
             throw new ShippingFailedException("Shipping failed");
         }
     }
-
+    public String getUsernameString() {
+        return _user == null ? "Guest" : _user.getUserName();
+    }
     /*
      * Go thorugh the list of baskets to buy and purchase them.
      * If an exception is thrown, cancel the purchase of all the baskets that were
@@ -133,7 +135,7 @@ public class ShoppingCart {
 
         for (Integer basketId : busketsToBuy) {
             try {
-                if (!_shoppingBaskets.get(basketId).purchaseBasket())
+                if (!_shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {

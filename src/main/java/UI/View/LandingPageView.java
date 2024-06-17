@@ -16,7 +16,7 @@ import com.vaadin.flow.server.StreamResource;
 @PageTitle("Landing Page")
 @Route(value = "")
 @RouteAlias(value = "")
-public class LandingPageView extends BaseView implements ViewPageI {
+public class LandingPageView extends BaseView{
 
     
     public LandingPageView() {
@@ -44,9 +44,8 @@ public class LandingPageView extends BaseView implements ViewPageI {
        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
        cartImageLayout.add(cartImage);
 
-        Button gotToUser = new Button("Go to User Page", e -> navigateToUserMainPage());
         // Add components to the vertical layout
-        add(header, titleLayout, cartImageLayout, gotToUser);
+        add(header, titleLayout, cartImageLayout);
     }
 
 
@@ -60,10 +59,8 @@ public class LandingPageView extends BaseView implements ViewPageI {
         Notification.show(message);
     }
 
-    private void navigateToUserMainPage() {
-        VaadinSession.getCurrent().setAttribute("username", "User");
-        getUI().ifPresent(ui -> ui.navigate("user"));
-    }
+    
+
 }
 
 
