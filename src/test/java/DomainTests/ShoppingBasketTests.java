@@ -457,7 +457,7 @@ public class ShoppingBasketTests {
         shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
 
         // Act
-        boolean result = shoppingBasket.purchaseBasket("");
+        boolean result = shoppingBasket.purchaseBasket("Guest");
         
         // Assert
         assertTrue(result);
