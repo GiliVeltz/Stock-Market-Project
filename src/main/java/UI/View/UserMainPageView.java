@@ -5,6 +5,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -42,6 +43,15 @@ public class UserMainPageView extends BaseView{
         // New button for opening a shop
         _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
         _openShopButton.addClassName("pointer-cursor");
+        // Initialize the cart image
+        Image cartImage = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
+        cartImage.setWidth("400px");
+
+        // Create a horizontal layout for the cart image to center it
+        HorizontalLayout cartImageLayout = new HorizontalLayout();
+        cartImageLayout.setWidthFull(); // Make the layout take full width
+        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        cartImageLayout.add(cartImage);
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
@@ -58,7 +68,7 @@ public class UserMainPageView extends BaseView{
         titleLayout.add(welcomeMessage);
 
         // Add components to the vertical layout
-        add(header, titleLayout, buttonLayout);
+        add(header, titleLayout, cartImageLayout, buttonLayout);
 
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
@@ -25,6 +26,8 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
 
+import Dtos.ProductDto;
+import UI.Model.ShopDto;
 import UI.Presenter.HeaderPresenter;
 
 public class Header extends HorizontalLayout {
@@ -472,7 +475,6 @@ public class Header extends HorizontalLayout {
         shopNameField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
         shopIdField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
 
-
         // Add fields to the form layout
         formLayout.add(shopNameField, shopIdField);
 
@@ -490,10 +492,13 @@ public class Header extends HorizontalLayout {
                 shopId = null;
             }
 
-            presenter.searchShop(shopName, shopId);
+            // Store search criteria in session
+            VaadinSession.getCurrent().setAttribute("searchShopName", shopName);
+            VaadinSession.getCurrent().setAttribute("searchShopId", shopId);
 
-            // Close the dialog after submission
-            dialog.close(); 
+            // Navigate to search results view
+            getUI().ifPresent(ui -> ui.navigate("search shops"));
+            dialog.close();
         });
 
         searchButton.addClassName("pointer-cursor");

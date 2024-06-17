@@ -196,4 +196,10 @@ public class ShopController {
     public ResponseEntity<Response>getUserShopsNames(@RequestHeader("Authorization") String token) {
         return _shopService.getUserShopsNames(token);
     }
+    
+    @SuppressWarnings("rawtypes")
+    @GetMapping("/searchAndDisplayShopByID")
+    public ResponseEntity<Response> searchAndDisplayShopByID(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.searchAndDisplayShopByID(token, shopId);
+    }
 }
