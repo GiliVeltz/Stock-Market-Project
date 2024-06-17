@@ -129,7 +129,7 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test if the user logouts from the system - his shopping cart we saved in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
+    @Disabled("This test is disabled cuase needs to implement in real bridge - not working")
     @Test
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
