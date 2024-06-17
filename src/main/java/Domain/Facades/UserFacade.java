@@ -134,4 +134,10 @@ public class UserFacade {
         }
         user.setEmail(email);
     }
+
+    // getting the user personal details
+    public UserDto getUserDetails(String username) {
+        User user = _userRepository.getUserByUsername(username);
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
+    }
 }

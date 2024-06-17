@@ -1950,10 +1950,38 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 "Unimplemented method 'TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem'");
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean TestUserViewPrivateDetails(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewPrivateDetails'");
+        // Arrange
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        // initiate a user object
+        User user = new User(username, password, "email@email.com", new Date(10, 10, 2021));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act
+        ResponseEntity<Response> res = _userServiceUnderTest.getUserDetails(token);
+
+        // Assert
+        if(res.getBody().getErrorMessage() != null)
+            logger.info("TestUserViewPrivateDetails Error message: " + res.getBody().getErrorMessage());
+        
+        UserDto userDto = (UserDto) res.getBody().getReturnValue();
+        if(userDto == null){
+            logger.info("TestUserViewPrivateDetails Error message: userDto is null");
+            return false;
+        }
+        return userDto.username.equals(username);
     }
 
     @Override

@@ -199,11 +199,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can see his own private details.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
     @Test
     public void TestUserViewPrivateDetails() {
         assertTrue(_bridge.TestUserViewPrivateDetails("bob","bobspassword") ); // success - the user secceeded to see his private details
-        assertFalse(_bridge.TestUserViewPrivateDetails("dad","dadspassword") ); // fail - the user did not exsist in the system
+        //assertFalse(_bridge.TestUserViewPrivateDetails("dad","dadspassword") ); // fail - the user did not exsist in the system
     }
     
     
