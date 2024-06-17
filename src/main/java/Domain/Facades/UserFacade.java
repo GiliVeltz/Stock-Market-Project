@@ -134,4 +134,40 @@ public class UserFacade {
         }
         user.setEmail(email);
     }
+
+    // getting the user personal details
+    public UserDto getUserDetails(String username) {
+        User user = _userRepository.getUserByUsername(username);
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
+    }
+
+    // set the user personal new details
+    public UserDto setUserDetails(String username, UserDto userDto) throws StockMarketException {
+        if (userDto.username == null || userDto.username.isEmpty()) {
+            throw new StockMarketException("new UserName is empty.");
+        }
+        if (userDto.email == null || userDto.email.isEmpty()) {
+            throw new StockMarketException("new Email is empty.");
+        }
+        if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
+            throw new StockMarketException("new Password is empty, or too short.");
+        }
+        if (!_EmailValidator.isValidEmail(userDto.email)) {
+            throw new StockMarketException("new Email is not valid.");
+        }
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        userDto.password = encodedPass;
+
+        User user = getUserByUsername(username);
+
+        if (!doesUserExist(userDto.username)) {
+            throw new StockMarketException("Username already exists.");
+        } else {
+            user.setEmail(userDto.email);
+            user.setPassword(userDto.password);
+            user.setBirthDate(userDto.birthDate);
+        }
+
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
+    }
 }

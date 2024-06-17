@@ -1467,7 +1467,29 @@ public class ShopService {
     }
 
     /**
-     * Receive the shops names which the user has roles in.
+     * Receive all the shops in the system.
+     * @param token the users session token
+     * @return the shops in the system.
+     */
+    public ResponseEntity<Response> getShopsEntity(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                List<ShopDto> shops = _shopFacade.getShopsEntity();
+                response.setReturnValue(shops);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shops entity. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+  
+     /* Receive the shops names which the user has roles in.
      * @param token the users session token
      * @return the shops names which the user has roles in.
      */
@@ -1500,6 +1522,27 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     
+    /**
+     * Receive the shop information.
+     * @param token the users session token
+     * @return the shop information.
+     */
+    public ResponseEntity<Response> getShopInfo(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                ShopDto shop = _shopFacade.getShopInfo(shopId);
+                response.setReturnValue(shop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop info. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

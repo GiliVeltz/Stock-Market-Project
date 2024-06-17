@@ -74,6 +74,21 @@ public class UserController {
         return resp;
     }
 
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<Response> getUserDetails(@RequestHeader(value = "Authorization") String token) {
+        // example request:
+        // "http://localhost:8080/api/user/getUserDetails" -H "Authorization":
+        // user_token_here"
+        ResponseEntity<Response> resp = _userService.getUserDetails(token);
+        return resp;
+    }
+
+    @PostMapping("/setUserDetails")
+    public ResponseEntity<Response> setUserDetails(@RequestHeader(value = "Authorization") String token, @RequestParam UserDto userDto) {
+        ResponseEntity<Response> resp = _userService.setUserDetails(token, userDto);
+        return resp;
+    }
+
     @GetMapping("/getPersonalPurchaseHistory")
     public ResponseEntity<Response> getPersonalPurchaseHistory(@RequestHeader(value = "Authorization") String token) {
         // example request:
