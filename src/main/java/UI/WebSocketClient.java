@@ -2,7 +2,8 @@ package UI;
 
 import org.springframework.stereotype.Component;
 
-
+import UI.View.MessageListener;
+import UI.View.UserMainPageView;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -22,7 +23,7 @@ public class WebSocketClient {
 
     private Session session;
     private static final List<String> messages = new ArrayList<>();
-    private static List<WebSocketMessageListener> listeners = new ArrayList<>();
+    private static List<MessageListener> listeners = new ArrayList<>();
 
 
     @OnOpen
@@ -58,7 +59,7 @@ public class WebSocketClient {
             messages.add(message);
         }
         // Optionally, notify the UI to update if you have a direct reference or a way
-
+        notifyListeners(message);
         System.out.println("Received from server: " + message);
     }
 
@@ -111,18 +112,18 @@ public class WebSocketClient {
         }
     }
 
-    public static void addListener(WebSocketMessageListener listener) {
+      public void addMessageListener(MessageListener listener) {
         listeners.add(listener);
     }
 
-    private void notifyListeners(String message) {
-        for (WebSocketMessageListener listener : listeners) {
-            listener.onMessageReceived(message);
-        }
+    public void removeMessageListener(MessageListener listener) {
+        listeners.remove(listener);
     }
 
-    public interface WebSocketMessageListener {
-        void onMessageReceived(String message);
+    private void notifyListeners(String message) {
+        for (MessageListener listener : listeners) {
+            listener.onMessageReceived(message);
+        }
     }
  
 }

@@ -115,6 +115,9 @@ public class Header extends HorizontalLayout implements ViewPageI {
     }
 
     
+    private void navigateToMessages() {
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
+    }
     private Dialog createRegistrationDialog() {
         Dialog dialog = new Dialog();
 

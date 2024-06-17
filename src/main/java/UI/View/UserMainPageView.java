@@ -8,19 +8,22 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
 import UI.WebSocketClient;
 import UI.Presenter.UserMainPagePresenter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("User Main Page")
 @Route(value = "user")
-public class UserMainPageView extends VerticalLayout implements ViewPageI{
+public class UserMainPageView extends VerticalLayout implements ViewPageI, MessageListener {
 
     private UserMainPagePresenter presenter;
-    
     private String _username;
+    private Button myMessages;
 
-    public UserMainPageView(){
+    @Autowired
+    private WebSocketClient webSocketClient;
+
+    public UserMainPageView() {
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
@@ -33,7 +36,7 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         // Create buttons
         Button profileButton = new Button("My Profile", e -> navigateToProfile());
         Button shopsButton = new Button("View My Shops", e -> navigateToShops());
-        Button myMessages = new Button("View My Messages", e -> navigateToMessages());
+        myMessages = new Button("View My Messages", e -> navigateToMessages());
 
         // Apply CSS class to buttons
         profileButton.addClassName("same-size-button");
@@ -56,14 +59,15 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);
 
-        // Register WebSocket message listener
-        WebSocketClient.addListener(this);
+        // Register as a message listener
+        webSocketClient.addMessageListener(this);
     }
-    
 
     private void navigateToMessages() {
+        myMessages.getStyle().remove("background-color");
         getUI().ifPresent(ui -> ui.navigate("user_messages"));
     }
+
     private void navigateToShops() {
         getUI().ifPresent(ui -> ui.navigate("user_shops"));
     }
@@ -82,4 +86,9 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
         Notification.show(message);
     }
 
+    @Override
+    public void onMessageReceived(String message) {
+        // Change the button color to red
+        getUI().ifPresent(ui -> ui.access(() -> myMessages.getStyle().set("background-color", "red")));
+    }
 }
