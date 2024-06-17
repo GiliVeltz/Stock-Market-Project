@@ -49,6 +49,7 @@ public class ShoppingCart {
         _shopFacade = shopFacade;
         _user = null;
     }
+    
     public ShoppingCart(ShopFacade shopFacade) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
@@ -56,8 +57,6 @@ public class ShoppingCart {
         _shopFacade = shopFacade;
         _user = null;
     }
-
-
 
     /*
      * This method is responsible for purchasing the cart.
