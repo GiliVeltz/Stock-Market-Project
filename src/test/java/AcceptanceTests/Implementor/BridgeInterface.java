@@ -163,13 +163,7 @@ public interface BridgeInterface {
     boolean TestUserViewPrivateDetails(String username, String password);
     
     @Test
-    boolean TestUserEditEmail(String username, String password, String newEmail);
-
-    @Test
-    boolean TestUserEditPassword(String username, String newPassword, String email);
-    
-    @Test
-    boolean TestUserEditUsername(String newName, String newPassword, String email);
+    boolean TestUserEditPrivateDetails(String username, String newPassword, String newEmail);
 
     // SHOP OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     

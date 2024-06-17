@@ -468,9 +468,98 @@ public class UserFacadeTests {
             Thread.currentThread().interrupt();
         }
 
-        
-        
         executor.shutdown(); // shut down executor service
     }
 
+    @Test   
+    public void testSetUserDetails_whenUserIsNull_thenError() throws StockMarketException {
+        // Arrange
+        String userTest = null;
+        String email = "email@example.com";
+        String password = "password";
+    
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+    
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails(userTest, new UserDto(userTest, password, email, new Date())));
+    }
+
+    @Test
+    public void testSetUserDetails_whenUserNameIsEmpty_thenError() throws StockMarketException {
+        // Arrange
+        String email = "email@email.com";
+        String password = "password";
+
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails("", new UserDto("", password, email, new Date())));
+    }
+
+    @Test
+    public void testSetUserDetails_whenEmailIsEmpty_thenError() throws StockMarketException {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "";
+        String password = "password";
+
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails(userTest, new UserDto(userTest, password, email, new Date())));
+    }
+
+    @Test
+    public void testSetUserDetails_whenPasswordIsEmpty_thenError() throws StockMarketException {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "email@email.com";
+        String password = "";
+        
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails(userTest, new UserDto(userTest, password, email, new Date())));
+    }
+
+    @Test
+    public void testSetUserDetails_whenUserDoesNotExist_thenError() throws StockMarketException {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "email@email.com";
+        String password = "password";
+
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+
+        // Act & Assert
+        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails(userTest, new UserDto(userTest, password, email, new Date())));
+    }
+
+    @Test
+    public void testSetUserDetails_whenUserDetailsAreCorrect_thenSuccess() throws StockMarketException {
+        // Arrange
+        String userTest = "john_doe";
+        String email = "email@email.com";
+        String password = "password";
+        @SuppressWarnings("deprecation")
+        Date birthDate = new Date(10,10,2021);
+
+        _registeredUsers.add(_user1);
+        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
+        UserDto userDto = new UserDto(userTest, password, email, birthDate);
+
+        // Act
+        _userFacadeUnderTest.setUserDetails(userTest, userDto);
+        User ansUser = _userFacadeUnderTest.getUserByUsername(userTest);
+
+        // Assert
+        assertEquals(email, ansUser.getEmail());
+        //assertEquals(password, ansUser.getPassword());
+        assertEquals(userTest, ansUser.getUserName());
+        assertEquals(birthDate, ansUser.getBirthDate());
+    }
 }

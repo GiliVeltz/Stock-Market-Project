@@ -745,6 +745,25 @@ public class ShopFacade {
         shop.changeShopPolicy(username, shopRules);
     }
 
+    // This function is responsible for getting all the shops in the system
+    public List<ShopDto> getShopsEntity() {
+        List<Shop> shops = getAllShops();
+        List<ShopDto> shopsDto = new ArrayList<>();
+        for (Shop shop : shops) {
+            shopsDto.add(new ShopDto(shop));
+        }
+        return shopsDto;
+    }
+
+    // This function is responsible for getting all the information about a shop
+    public ShopDto getShopInfo(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shop);
+        }
+        return null;
+    }
+      
     /**
      * Get the permissions of a user in a shop
      * @param username the user's username
