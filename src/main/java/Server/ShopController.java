@@ -191,4 +191,9 @@ public class ShopController {
     @RequestParam Integer shopId) {
         return _shopService.getShopManagerPermissions(token, shopId);
     }
+
+    @GetMapping("/getUserShopsNames")
+    public ResponseEntity<Response>getUserShopsNames(@RequestHeader("Authorization") String token) {
+        return _shopService.getUserShopsNames(token);
+    }
 }

@@ -750,4 +750,22 @@ public class ShopFacade {
         List<String> permissionsList = permissions.stream().map(permission -> permission.toString()).collect(Collectors.toList());
         return permissionsList;
     }
+
+
+    /**
+     * Get all the shops names that the user has a role in
+     * 
+     * @param username the user's username
+     * @return the list of shops names that the user has a role in
+     * @throws StockMarketException
+     */
+    public List<String> getUserShopsNames(String username) throws StockMarketException {
+        List<String> shops = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.checkIfHasRole(username)) {
+                shops.add(shop.getShopName());
+            }
+        }
+        return shops;
+    }
 }

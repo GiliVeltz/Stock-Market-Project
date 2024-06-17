@@ -40,7 +40,7 @@ public class UserShopsPageView extends BaseView {
     }
     
 
-    public void createShopButtons(List<Integer> shops) {
+    public void createShopButtons(List<Integer> shops, List<String> shopNames) {
 
         if(shops.isEmpty()){
             add(new Paragraph("No shops found"));
@@ -57,7 +57,7 @@ public class UserShopsPageView extends BaseView {
 
         for (int i = 0; i < shops.size(); i++) {
             Integer shopId = shops.get(i);
-            Button shopButton = new Button("" + shopId, e -> navigateToManageShop(shopId));
+            Button shopButton = new Button("" + shopNames.get(i), e -> navigateToManageShop(shopId));
             shopButton.addClassName("same-size-button");
             rowLayout.add(shopButton);
 
