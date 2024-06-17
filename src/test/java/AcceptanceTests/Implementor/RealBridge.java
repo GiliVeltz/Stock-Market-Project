@@ -1720,20 +1720,22 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 add(user);
             }
         }, new ArrayList<>());
+        _shopFacade = new ShopFacade();
+        _shoppingCartFacade = new ShoppingCartFacade();
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
 
         // create a shopingcart for the username
-        _shoppingCartFacade.addCartForGuest(username);
-        _shoppingCartFacade.addCartForUser(username, user);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        _shoppingCartFacade.addCartForGuestForTests(username, shoppingCart);
         
         // this user opens a shop using ShopSerivce
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
 
         // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
+        ProductDto productDto = new ProductDto("product", Category.CLOTHING, 100, 1);
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
 
         // this user adds a product to the shopping cart using UserService
