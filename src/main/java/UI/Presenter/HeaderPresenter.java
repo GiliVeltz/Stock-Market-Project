@@ -38,7 +38,7 @@ public class HeaderPresenter {
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
     
-                        String url = "http://localhost:" + _serverPort + "/api/user/login?username=" + username + "&password=" + password;
+                        String url = "https://localhost:" + _serverPort + "/api/user/login?username=" + username + "&password=" + password;
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
     
                         try {
@@ -91,7 +91,7 @@ public class HeaderPresenter {
     
                         try {
                             ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/register",
+                                "https://localhost:" + _serverPort + "/api/user/register",
                                 HttpMethod.POST,
                                 requestEntity,
                                 String.class);
