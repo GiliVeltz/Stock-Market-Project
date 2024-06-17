@@ -84,27 +84,16 @@ public class WebSocketServer extends TextWebSocketHandler {
             // User is logged in
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
-
-            // // Send any queued messages sent while user was loggedOut
-            // Queue<String> queue = messageQueues.getOrDefault(username, new
-            // ConcurrentLinkedQueue<>());
-            // while (!queue.isEmpty()) {
-            // String message = queue.poll();
-            // if (session.isOpen()) {
-            // session.sendMessage(new TextMessage(message));
-            // }
-            // }
-            // messageQueues.remove(username);
         } else {
             // User is a guest
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
-        // TODO : remove this lines
-        if (sessions.size() > 1) {
-            broadcastMessage("Hello all clients!");
+        // // TODO : remove this lines
+        // if (sessions.size() > 1) {
+        //     broadcastMessage("Hello all clients!");
 
-        }
+        // }
     }
 
     // check for any queued message and if exist send them to the client

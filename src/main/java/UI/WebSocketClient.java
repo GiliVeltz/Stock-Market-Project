@@ -3,7 +3,6 @@ package UI;
 import org.springframework.stereotype.Component;
 
 import UI.View.MessageListener;
-import UI.View.UserMainPageView;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -78,6 +77,19 @@ public class WebSocketClient {
     public void sendMessage(String message) {
         if (session != null && session.isOpen()) {
             session.getAsyncRemote().sendText(message);
+        }
+    }
+    /**
+     * closes the session
+     * 
+     */
+    public void closeSession() {
+        if (session != null && session.isOpen()) {
+            try {
+                session.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
