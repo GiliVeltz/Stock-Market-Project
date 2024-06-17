@@ -1432,31 +1432,39 @@ public class ShopService {
         }
     }
 
-    public Response getShopManagerPermissions(String token, int shopId){
+    /**
+     * Receive the shops which the user has roles in.
+     * @param token the users session token
+     * @return the shops which the user has roles in.
+     */
+    public ResponseEntity<Response> getShopManagerPermissions(String token, Integer shopId) {
         Response response = new Response();
         try {
-            logger.log(Level.SEVERE,String.format("ShopService::getShopManagerPermissions entring"));
-            if (!_tokenService.validateToken(token)) 
-                throw new StockMarketException("Invalid session token.");
-            if (!_tokenService.isUserAndLoggedIn(token)) 
-                throw new StockMarketException("User is not logged in.");
-
-            String username = _tokenService.extractUsername(token);
-
-            if (!_userFacade.doesUserExist(username))
-                throw new StockMarketException(String.format("User does not exist.",username));
-
-            List<String> permissions = _shopFacade.getShopManagerPermissions(username, shopId);
-            response.setReturnValue(permissions);
-
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<String> permissions = _shopFacade.getShopManagerPermissions(username, shopId);
+                    response.setReturnValue(permissions);
+                    logger.info(String.format("Recieved successfuly shop permissions of shop with id ", shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to load permissions for user of shop with id %d. Error: %s", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        catch(StockMarketException e){
-            logger.log(Level.INFO, e.getMessage(), e);
-
-            response.setErrorMessage(String.format(
-                "ShopService::getShopManagerPermissions failed to get users shops. "+e.getMessage()));
-
-        }
-        return response;
     }
+
+    
 }

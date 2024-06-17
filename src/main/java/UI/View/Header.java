@@ -313,4 +313,222 @@ public class Header extends HorizontalLayout {
     public void navigateToLandingPage() {
         getUI().ifPresent(ui -> ui.navigate(""));
     }
+
+    private Dialog createSearchProductsDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create a headline
+        H2 headline = new H2("Search Product");
+        headline.getStyle().set("margin", "0");
+
+        H5 comment = new H5("An empty search will return all products");
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create form fields
+        ComboBox<String> categoryField = new ComboBox<>("By Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
+
+        // MultiSelectListBox to store and display keywords
+        MultiSelectListBox<String> keyWordField = new MultiSelectListBox<>();
+        keyWordField.setHeight("100px");
+        keyWordField.setWidth("150px");
+
+        TextField keywordInputField = new TextField("Key Words");
+        Button addKeywordButton = new Button("Add Keyword", event -> {
+            String keyword = keywordInputField.getValue().trim();
+            if (!keyword.isEmpty() && !keyWordField.getSelectedItems().contains(keyword)) {
+                Set<String> currentKeywords = new LinkedHashSet<>(keyWordField.getSelectedItems());
+                currentKeywords.add(keyword);
+                keyWordField.setItems(currentKeywords);
+                keywordInputField.clear();
+            }
+        });
+
+        keyWordField.getElement().setAttribute("style", "padding-bottom: 10px;");
+
+        // Create form fields
+        TextField minPriceField = new TextField("Minimum Price");
+        minPriceField.setPattern("[0-9]+");
+        minPriceField.setErrorMessage("Please enter a valid minimum price");
+
+        TextField maxPriceField = new TextField("Maximum Price");
+        maxPriceField.setPattern("[0-9]+");
+        maxPriceField.setErrorMessage("Please enter a valid maximum price");
+
+
+        TextField productNameField = new TextField("By Product Name");
+
+        // Add value change listeners to update field states
+         ValueChangeListener<ValueChangeEvent<?>> listener = event -> updateFieldStates(categoryField, keyWordField, keywordInputField, addKeywordButton, minPriceField, maxPriceField, productNameField);
+
+        categoryField.addValueChangeListener(listener);
+        keyWordField.addValueChangeListener(listener);
+        minPriceField.addValueChangeListener(listener);
+        maxPriceField.addValueChangeListener(listener);
+        productNameField.addValueChangeListener(listener);
+
+
+        // Add fields to the form layout
+        formLayout.add(minPriceField, maxPriceField, categoryField, productNameField, keywordInputField, keyWordField, addKeywordButton);
+
+        // Create buttons
+        Button searchButton = new Button("Search", event -> {
+            // Handle form submission
+            String category = categoryField.getValue();
+            Set<String> keyWords = new HashSet<>(keyWordField.getSelectedItems()); // Get selected keywords
+            String minPrice = minPriceField.getValue();
+            String maxPrice = maxPriceField.getValue();
+            String productName = productNameField.getValue();
+
+            // Convert empty values to null
+            if (category.isEmpty()) {
+                category = null;
+            }
+            if (keyWords.isEmpty()) {
+                keyWords = null;
+            }
+            if (minPrice.isEmpty()) {
+                minPrice = null;
+            }
+            if (maxPrice.isEmpty()) {
+                maxPrice = null;
+            }
+            if (productName.isEmpty()) {
+                productName = null;
+            }
+
+            presenter.SearchProducts(category, keyWords, minPrice, maxPrice, productName);
+
+            // Close the dialog after submission
+            dialog.close();
+        });
+
+        searchButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        cancelButton.addClassName("pointer-cursor");
+
+         // Create refresh button
+        Button refreshButton = new Button("Refresh", event -> resetFields(categoryField, keyWordField, keywordInputField, minPriceField, maxPriceField, productNameField));
+        refreshButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton, refreshButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, comment, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialog.add(dialogLayout);
+
+        return dialog;
+    }
+
+
+    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
+        boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !minPriceField.isEmpty() || !maxPriceField.isEmpty() || !productNameField.isEmpty();
+        boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
+
+        categoryField.setEnabled(!anyFieldFilled || !categoryField.isEmpty());
+        keyWordField.setEnabled(!anyFieldFilled || !keyWordField.isEmpty());
+        keywordInputField.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
+        addKeywordButton.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
+        minPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        maxPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        productNameField.setEnabled(!anyFieldFilled || !productNameField.isEmpty());
+    }
+
+    private void resetFields(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
+        categoryField.clear();
+        keyWordField.clear();
+        keywordInputField.clear();
+        minPriceField.clear();
+        maxPriceField.clear();
+        productNameField.clear();
+        updateFieldStates(categoryField, keyWordField, keywordInputField, null, minPriceField, maxPriceField, productNameField);
+    }
+
+    public Dialog createSearchShopsDialog(){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Search Shops");
+        headline.getStyle().set("margin", "0");
+        H5 comment = new H5("An empty search will return all shops");
+
+        // Create form fields
+        TextField shopNameField = new TextField("Shop Name");
+        TextField shopIdField = new TextField("Shop ID");
+        shopIdField.setPattern("[0-9]+");
+        shopIdField.setErrorMessage("Please enter a valid shop ID");
+
+        // Add value change listeners to ensure only one filter is active
+        shopNameField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
+        shopIdField.addValueChangeListener(event -> updateFieldStates(shopNameField, shopIdField));
+
+
+        // Add fields to the form layout
+        formLayout.add(shopNameField, shopIdField);
+
+        // Create buttons
+        Button searchButton = new Button("Search", event -> {
+            // Handle form submission
+            String shopName = shopNameField.getValue();
+            String shopId = shopIdField.getValue();
+
+            // Convert empty values to null
+            if (shopName.isEmpty()) {
+                shopName = null;
+            }
+            if (shopId.isEmpty()) {
+                shopId = null;
+            }
+
+            presenter.searchShop(shopName, shopId);
+
+            // Close the dialog after submission
+            dialog.close(); 
+        });
+
+        searchButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create refresh button
+        Button refreshButton = new Button("Refresh", event -> resetFields(shopNameField, shopIdField));
+        refreshButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton, refreshButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, comment, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialog.add(dialogLayout);
+
+        return dialog;
+    }
+
+    private void updateFieldStates(TextField shopNameField, TextField shopIdField) {
+        boolean isShopNameFilled = !shopNameField.isEmpty();
+        boolean isShopIdFilled = !shopIdField.isEmpty();
+
+        shopNameField.setEnabled(!isShopIdFilled);
+        shopIdField.setEnabled(!isShopNameFilled);
+    }
+
+    private void resetFields(TextField shopNameField, TextField shopIdField) {
+        shopNameField.clear();
+        shopIdField.clear();
+        updateFieldStates(shopNameField, shopIdField);
+    }
 }
