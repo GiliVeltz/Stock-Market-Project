@@ -18,10 +18,10 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import UI.Message;
+import UI.WebSocketClient;
 import UI.Presenter.UserMessagesPagePresenter;
 import UI.Presenter.UserShopsPagePresenter;
-import UI.clientNotifications.Message;
-import UI.clientNotifications.WebSocketClient;
 
 @PageTitle("User Messages Page")
 @Route(value = "user_messages")

@@ -6,10 +6,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import UI.Message;
+import UI.WebSocketClient;
 import UI.View.UserMessagesPageView;
 import UI.View.UserShopsPageView;
-import UI.clientNotifications.Message;
-import UI.clientNotifications.WebSocketClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

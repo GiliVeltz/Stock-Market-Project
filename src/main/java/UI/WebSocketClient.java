@@ -1,4 +1,4 @@
-package UI.clientNotifications;
+package UI;
 
 import org.springframework.stereotype.Component;
 
