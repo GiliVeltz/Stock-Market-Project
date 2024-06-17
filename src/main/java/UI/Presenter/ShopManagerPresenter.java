@@ -1,5 +1,6 @@
 package UI.Presenter;
 
+import java.security.Permission;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
@@ -46,7 +47,7 @@ public class ShopManagerPresenter {
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 view.showSuccessMessage("User permissions loaded successfully");
                                 if (responseJson.get("errorMessage").isNull()) {
-                                    List<String> permissions = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+                                    List<String> permissions = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
                                     view.createPermissionButtons(permissions);
                                 }else {
                                     view.showErrorMessage("User permissions loading failed");

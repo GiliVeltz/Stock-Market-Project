@@ -12,6 +12,8 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -20,8 +22,8 @@ import UI.Presenter.ShopManagerPresenter;
 import enums.Permission;
 
 
-@Route("user_shops/:shopId")
-public class ShopManagerView extends BaseView{
+@Route(value = "user_shops")
+public class ShopManagerView extends BaseView implements HasUrlParameter<Integer>{
 
     private ShopManagerPresenter presenter;
     private String _username;
@@ -29,14 +31,10 @@ public class ShopManagerView extends BaseView{
     private H1 _title;
     private int _shopId;
     
-    public ShopManagerView(@OptionalParameter String shopId){
+    public ShopManagerView(){
 
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
-        //TODO: FIX THE SHOP ID
-        // Retrieve the shopId from the URL
-        Optional<String> shopId = getRouteParameters().get("shopId");
-        _shopId = Integer.parseInt(shopId);
 
         // Initialize presenter
         presenter = new ShopManagerPresenter(this);
@@ -93,12 +91,21 @@ public class ShopManagerView extends BaseView{
             if(_permissions.contains(Permission.APPOINT_MANAGER)){
                 appointManagerBtn.setEnabled(false);
             }
-            
         }
+        buttonsLayout.add(viewProductsbtn, viewDiscountsBtn, changeProductPolicyBtn, changeShopPolicyBtn, appointManagerBtn, appointOwnerBtn, viewSubordinateBtn, viewShopRolesBtn, viewPurchasesBtn);
+        add(buttonsLayout);
     }
 
     public int getShopId() {
         return _shopId;
+    }
+
+    // Retrieve the shop ID from the URL
+    @Override
+    public void setParameter(BeforeEvent event, Integer parameter) {
+        if(parameter != null){
+            _shopId = parameter;
+        }
     }
     
 }

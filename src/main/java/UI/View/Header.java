@@ -39,7 +39,6 @@ public class Header extends HorizontalLayout {
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
-        Button profileButton = new Button("My Profile");
         Button shoppingCartButton = new Button("Shopping Cart");
 
 
@@ -48,7 +47,6 @@ public class Header extends HorizontalLayout {
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
-        profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
@@ -61,7 +59,7 @@ public class Header extends HorizontalLayout {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
