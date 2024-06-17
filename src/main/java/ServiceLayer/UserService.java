@@ -93,7 +93,7 @@ public class UserService {
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
                     //close this session
-                    WebSocketServer.getInstance().closeSession(userName);
+                    WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
                     Alert alert = new GeneralAlert("system Administrator", userName, "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
                     return new ResponseEntity<>(response, HttpStatus.OK);
