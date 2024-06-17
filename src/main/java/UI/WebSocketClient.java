@@ -22,6 +22,8 @@ public class WebSocketClient {
 
     private Session session;
     private static final List<String> messages = new ArrayList<>();
+    private static List<WebSocketMessageListener> listeners = new ArrayList<>();
+
 
     @OnOpen
     public void onOpen(Session session) {
@@ -107,6 +109,20 @@ public class WebSocketClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void addListener(WebSocketMessageListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners(String message) {
+        for (WebSocketMessageListener listener : listeners) {
+            listener.onMessageReceived(message);
+        }
+    }
+
+    public interface WebSocketMessageListener {
+        void onMessageReceived(String message);
     }
  
 }

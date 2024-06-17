@@ -9,6 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import UI.WebSocketClient;
 import UI.Presenter.UserMainPagePresenter;
 
 @PageTitle("User Main Page")
@@ -54,6 +55,9 @@ public class UserMainPageView extends VerticalLayout implements ViewPageI{
 
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);
+
+        // Register WebSocket message listener
+        WebSocketClient.addListener(this);
     }
     
 
