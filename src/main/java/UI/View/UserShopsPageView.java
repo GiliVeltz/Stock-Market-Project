@@ -10,16 +10,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.Presenter.LandingPagePresenter;
-import UI.Presenter.UserMainPagePresenter;
 import UI.Presenter.UserShopsPagePresenter;
 
 @PageTitle("User Shops Page")
 @Route(value = "user_shops")
-public class UserShopsPageView extends VerticalLayout implements ViewPageI{
+public class UserShopsPageView extends BaseView {
 
     private UserShopsPagePresenter presenter;
     
@@ -40,8 +37,6 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
 
         H1 title = new H1("My Shops");
         add(title);
-
-        
     }
     
 
@@ -76,20 +71,8 @@ public class UserShopsPageView extends VerticalLayout implements ViewPageI{
         add(gridLayout);
     }
 
-    private Object navigateToManageShop(Integer shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'navigateToManageShop'");
-    }
-
-
-    @Override
-    public void showSuccessMessage(String message) {
-        Notification.show(message);
-    }
-
-    @Override
-    public void showErrorMessage(String message) {
-        Notification.show(message);
+    public void navigateToManageShop(Integer shopId) {
+        getUI().ifPresent(ui -> ui.navigate("user_shops/" + shopId));
     }
 
 }
