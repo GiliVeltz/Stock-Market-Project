@@ -1709,46 +1709,63 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     @Override
     public boolean TestUserWriteReviewOnPurchasedProduct(String username, String password, String productId) {
         // Arrange
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        MockitoAnnotations.openMocks(this);
 
-        // initiate a user object
-        User user = new User(username, password, "email@email.com", new Date());
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
                 add(user);
             }
         }, new ArrayList<>());
+
         _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+        _shoppingCartFacade.addCartForUser("guestToken", user);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
 
-        // create a shopingcart for the username
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
-        _shoppingCartFacade.addCartForGuestForTests(username, shoppingCart);
-        
-        // this user opens a shop using ShopSerivce
-        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
+        // user "user" open shop using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
 
-        // this user adds a product to the shop using ShopSerivce
-        ProductDto productDto = new ProductDto("product", Category.CLOTHING, 100, 1);
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
-        // this user adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
 
-        // this user buys the product using UserService
-        List<Integer> shoppingBackets = new ArrayList<>();
-        shoppingBackets.add(0);
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(shoppingBackets, "123456789", "address");
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(token, purchaseCartDetailsDto);
+        // user buys the product using UserService
+        List<Integer> basketsToBuy = new ArrayList<>();
+        basketsToBuy.add(0);
+        String cardNumber = "123456789";
+        String address = "address";
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
 
         // Act
-        ResponseEntity<Response> res5 = _userServiceUnderTest.writeReview(token, Integer.parseInt(productId), 0, "review");
+        ResponseEntity<Response> res5 = _userServiceUnderTest.writeReview(userToken, Integer.parseInt(productId), 0, "review");
 
         // Assert
         if(res1.getBody().getErrorMessage() != null)
@@ -1759,6 +1776,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res3.getBody().getErrorMessage());
         if(res4.getBody().getErrorMessage() != null)
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res4.getBody().getErrorMessage());
+        
         logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res5.getBody().getErrorMessage());
         return res5.getBody().getErrorMessage() == null;
     }
