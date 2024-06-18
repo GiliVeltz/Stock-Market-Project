@@ -119,7 +119,6 @@ public class SystemService {
             String token = _tokenService.generateGuestToken();
             String id = _tokenService.extractGuestId(token);
             logger.info("New guest entered into the system, ID:" + id);
-            System.out.println("Entered user!!");
             _userFacade.addNewGuest(id);
             _shoppingCartFacade.addCartForGuest(id);
             response.setReturnValue(token);
