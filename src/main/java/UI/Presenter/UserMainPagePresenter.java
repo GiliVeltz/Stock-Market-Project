@@ -1,4 +1,6 @@
 package UI.Presenter;
+import java.util.Date;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -7,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.vaadin.flow.component.UI;
 
+import Dtos.UserDto;
 import UI.Model.ShopDto;
 import UI.View.UserMainPageView;
 
@@ -50,5 +53,18 @@ public class UserMainPagePresenter {
                     }
                 });
     }
+
+    public UserDto getUserInfo(String username) {
+        // Here, you would typically fetch user information from your backend or database
+        // For demonstration purposes, create a dummy UserDto
+        UserDto user = new UserDto(username, "password", "user@example.com", new Date());
+        return user;
+    }
+
+    public void updateUserInfo(UserDto username) {
+        // Here, you would typically fetch user information from your backend or database
+        // For demonstration purposes, create a dummy UserDto
+    }
+
     
 }

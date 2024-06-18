@@ -15,7 +15,6 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Presenter.UserShopsPagePresenter;
 
 @PageTitle("User Shops Page")
-@Route(value = "user_shops")
 public class UserShopsPageView extends BaseView {
 
     private UserShopsPagePresenter presenter;
