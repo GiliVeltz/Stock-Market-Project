@@ -5,6 +5,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
+import enums.Category;
+
 // Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object.
 // A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
 public class ProxyBridge implements BridgeInterface{
@@ -63,7 +65,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductCategoryAsGuest(String category) {
+    public boolean testGetProductInfoUsingProductCategoryAsGuest(Category category) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryAsGuest' in ProxyBridge class");
     }
 
@@ -83,7 +85,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductCategoryInShopAsGuest(String category, String shopId) {
+    public boolean testGetProductInfoUsingProductCategoryInShopAsGuest(Category category, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryInShopAsGuest' in ProxyBridge class");
     }
 
@@ -133,7 +135,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductCategoryAsUser(String category) {
+    public boolean testGetProductInfoUsingProductCategoryAsUser(Category category) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryAsUser' in ProxyBridge class");
     }
 
@@ -154,7 +156,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId) {
+    public boolean testGetProductInfoUsingProductCategoryInShopAsUser(Category category, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductCategoryInShopAsUser' in ProxyBridge class");
     }
 
