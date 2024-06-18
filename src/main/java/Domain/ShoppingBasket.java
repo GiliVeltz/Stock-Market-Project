@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
+import Server.notifications.WebSocketServer;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.
@@ -119,7 +120,7 @@ public class ShoppingBasket implements Cloneable {
      * If an exception is thrown, cancel the purchase of all the products that were
      * bought. This function only updates the item's stock.
      */
-    public boolean purchaseBasket() throws StockMarketException {
+    public boolean purchaseBasket(String username) throws StockMarketException {
         logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
@@ -153,9 +154,15 @@ public class ShoppingBasket implements Cloneable {
                 return false;
             }
         }
+        notfyPurchaseFromShop(username, _productIdList, _shop);
         System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
+    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) {
+        shop.notfyPurchaseFromShop(buyingUser,productIdList);
+    }
+ 
+    
 
     // Cancel the purchase of all products in the basket
     public void cancelPurchase() throws StockMarketException {

@@ -1,5 +1,10 @@
 package AcceptanceTests.Implementor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+
+import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +82,13 @@ public interface BridgeInterface {
     boolean testCheckAndViewItemsInShoppingCartAsGuest(String status);
 
     @Test
-    boolean testCheckAllOrNothingBuyingShoppingCartGuest();
+    boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address);
+
+    @Test
+    boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address);
+
+    @Test
+    boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address);
     
     @Test
     boolean testBuyingShoppingCartPoliciesGuest();
@@ -163,13 +174,7 @@ public interface BridgeInterface {
     boolean TestUserViewPrivateDetails(String username, String password);
     
     @Test
-    boolean TestUserEditEmail(String username, String password, String newEmail);
-
-    @Test
-    boolean TestUserEditPassword(String username, String newPassword, String email);
-    
-    @Test
-    boolean TestUserEditUsername(String newName, String newPassword, String email);
+    boolean TestUserEditPrivateDetails(String username, String newPassword, String newEmail);
 
     // SHOP OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
     
@@ -229,5 +234,4 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
-
 }

@@ -1,5 +1,7 @@
 package AcceptanceTests.Implementor;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
@@ -101,8 +103,18 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartGuest() {
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuest' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address) {
+        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartUser' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
+        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuestTherding' in ProxyBridge class");
     }
 
     @Override
@@ -244,18 +256,8 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserEditEmail(String username, String password, String newEmail) {
+    public boolean TestUserEditPrivateDetails(String username, String newPassword, String newEmail) {
         throw new UnsupportedOperationException("Unimplemented method 'TestUserEditEmail' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserEditPassword(String username, String newPassword, String email) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditPassword' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserEditUsername(String newName, String newPassword, String email) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEditUsername' in ProxyBridge class");
     }
 
     @Override
