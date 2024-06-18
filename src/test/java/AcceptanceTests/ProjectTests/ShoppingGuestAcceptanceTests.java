@@ -1,11 +1,11 @@
 package AcceptanceTests.ProjectTests;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import AcceptanceTests.Implementor.BridgeInterface;
-import org.junit.jupiter.api.Disabled;
 import AcceptanceTests.Implementor.RealBridge;
 
 @ExtendWith(RealBridge.class)
@@ -29,12 +29,10 @@ public class ShoppingGuestAcceptanceTests {
     }
     
     // Test search product information according to product name as a guest in the system.
-    // TODO: GILI
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameAsGuest("productId1") ); // success - exist product
-        assertFalse(_bridge.testGetProductInfoUsingProductNameAsGuest("productId2") ); // fail - non exist product
+        assertTrue(_bridge.testGetProductInfoUsingProductNameAsGuest("productName1") ); // success - exist product
+        assertFalse(_bridge.testGetProductInfoUsingProductNameAsGuest("productName2") ); // fail - non exist product
     }
     
     // Test search product information according to product category as a guest in the system.
@@ -42,8 +40,8 @@ public class ShoppingGuestAcceptanceTests {
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsGuest("caterogy1") ); // success - exist category
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsGuest("caterogy2") ); // fail - non exist category
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsGuest("CLOTHING") ); // success - exist category
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsGuest("GROCERY") ); // fail - non exist category
     }
     
     // Test search product information according to key words as a guest in the system.
@@ -60,14 +58,12 @@ public class ShoppingGuestAcceptanceTests {
     // TODO: GILI
     
     // Test search product information in a specific shop, according to product name as a guest in the system.
-    // TODO: GILI
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId1") ); // success - exist product and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId1") ); // fail - non exist product but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId1", "shopId2") ); // fail - exist product but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productId2", "shopId2") ); // fail - non exist product and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName1", "0") ); // success - exist product and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName2", "0") ); // fail - non exist product but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName1", "1") ); // fail - exist product but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName2", "1") ); // fail - non exist product and non exist shop
     }
     
     // Test search product information in a specific shop, according to product category as a guest in the system.

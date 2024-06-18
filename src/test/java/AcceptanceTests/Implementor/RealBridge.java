@@ -1112,10 +1112,62 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameAsGuest(String productId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsGuest'");
+    public boolean testGetProductInfoUsingProductNameAsGuest(String productName) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.searchProductInShopByName(guestToken, null, productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        logger.info("testGetProductInfoUsingProductNameAsGuest Error message: " + res3.getBody().getErrorMessage());
+        System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res3.getBody().getErrorMessage());
+        return res3.getBody().getErrorMessage() == null;
+
+        
     }
 
     @Override
@@ -1140,12 +1192,63 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productId, String shopId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsGuest'");
-    }
+    public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId) {
+              // Arrange
+              MockitoAnnotations.openMocks(this);
+
+              String guestToken = "guestToken";
+              when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+              when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+              when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+      
+              String userToken = "userToken";
+              when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+              when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+              when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+              when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+      
+              // create a user in the system
+              User user = new User("user", "password", "email@email.com", new Date());
+              _userFacade = new UserFacade(new ArrayList<User>() {
+                  {
+                      add(user);
+                  }
+              }, new ArrayList<>());
+      
+              // initiate _shopServiceUnderTest
+              _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+      
+              // initiate userServiceUnderTest
+              _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+      
+              // this user opens a shop using ShopSerivce
+              ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+              ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto);
+              
+      
+              // this user adds a product to the shop using ShopSerivce
+              ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+              ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+      
+              // Act - this user searches a product in all shops by its name using shopService
+              ResponseEntity<Response> res3 = _shopServiceUnderTest.searchProductInShopByName(guestToken, Integer.parseInt(shopId), productName);
+      
+              // Assert
+              if(res1.getBody().getErrorMessage() != null){
+                  logger.info("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
+                  System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
+                  return false;
+              }
+              if(res2.getBody().getErrorMessage() != null){
+                  logger.info("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res2.getBody().getErrorMessage());
+                  System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res2.getBody().getErrorMessage());
+                  return false;
+              }
+              logger.info("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res3.getBody().getErrorMessage());
+              System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res3.getBody().getErrorMessage());
+              return res3.getBody().getErrorMessage() == null;
+      
+              }
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryInShopAsGuest(String category, String shopId) {
@@ -1338,10 +1441,64 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameAsUser(String productId) {
-        // TODO Auto-generated method stub
-        // TODO Gili getProductGeneralInfo #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsUser'");
+    public boolean testGetProductInfoUsingProductNameAsUser(String productName) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String shopOwnerToken = "shopOwnerToken";
+        when(_tokenServiceMock.validateToken(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(shopOwnerToken)).thenReturn("owner");
+        when(_tokenServiceMock.isUserAndLoggedIn(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(shopOwnerToken)).thenReturn(false);
+
+        // create users in the system
+        User owner = new User("owner", "password1", "email1@email.com", new Date());
+        User user = new User("user", "password2", "email2@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(owner);
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(shopOwnerToken, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(shopOwnerToken, 0, productDto);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.searchProductInShopByName(userToken, null, productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsUser Error message: " + res2.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        logger.info("testGetProductInfoUsingProductNameAsUser Error message: " + res3.getBody().getErrorMessage());
+        System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res3.getBody().getErrorMessage());
+        return res3.getBody().getErrorMessage() == null;
+
     }
 
     @Override
@@ -1366,19 +1523,66 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameInShop(String productId, String shopId) {
-        // #416
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameInShop'");
+    public boolean testGetProductInfoUsingProductNameInShopAsUser(String productName, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String shopOwnerToken = "shopOwnerToken";
+        when(_tokenServiceMock.validateToken(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(shopOwnerToken)).thenReturn("owner");
+        when(_tokenServiceMock.isUserAndLoggedIn(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(shopOwnerToken)).thenReturn(false);
+
+        // create users in the system
+        User owner = new User("owner", "password1", "email1@email.com", new Date());
+        User user = new User("user", "password2", "email2@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(owner);
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(shopOwnerToken, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(shopOwnerToken, 0, productDto);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.searchProductInShopByName(userToken, Integer.parseInt(shopId), productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res2.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        logger.info("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res3.getBody().getErrorMessage());
+        System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res3.getBody().getErrorMessage());
+        return res3.getBody().getErrorMessage() == null;
+
     }
 
-    @Override
-    public boolean testGetProductInfoUsingProductNameInShopAsUser(String productId, String shopId) {
-        // #416
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsUser'");
-    }
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId) {
