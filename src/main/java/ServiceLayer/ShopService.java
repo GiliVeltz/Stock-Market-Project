@@ -21,6 +21,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShopWithIdDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -1384,7 +1385,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops which the user has roles in.
      */
-    public ResponseEntity<Response> getUserShops(String token) {
+    public ResponseEntity<Response> getUserShopsIds(String token) {
         Response response = new Response();
         try {
             logger.log(Level.SEVERE,String.format("ShopService::getUserShops entring"));
@@ -1487,7 +1488,7 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                List<ShopDto> shops = _shopFacade.getShopsEntity();
+                List<ShopWithIdDto> shops = _shopFacade.getShopsEntity();
                 response.setReturnValue(shops);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
