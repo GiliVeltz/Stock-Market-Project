@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import UI.View.UserMainPageView;
 import UI.View.UserShopsPageView;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +35,7 @@ public class UserShopsPagePresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/getUserShops",
+                                "http://localhost:" + "8080" + "/api/shop/getUserShops",
                                 HttpMethod.GET,
                                 requestEntity,
                                 String.class);
