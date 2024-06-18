@@ -52,6 +52,5 @@ public class GuestAcceptanceTests {
         assertFalse(_bridge.testLoginToTheSystem("","bobspassword") ); // fail - empty username
         assertFalse(_bridge.testLoginToTheSystem("Bob","") ); // fail - empty pasword
         assertFalse(_bridge.testLoginToTheSystem("Mom","momspassword")); // not a user in the system
-    }
-    
+    } 
 }
