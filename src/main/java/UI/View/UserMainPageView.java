@@ -6,22 +6,18 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
-import com.vaadin.flow.component.html.Span;
 
 @CssImport("./styles/shared-styles.css")
 @PageTitle("User Main Page")
@@ -30,90 +26,60 @@ public class UserMainPageView extends BaseView {
 
     private String _username;
     private Button _openShopButton;
-
-    // Make shopsLayout a member variable
     private VerticalLayout shopsLayout;
 
     public UserMainPageView() {
-        // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
-        // Create welcome message
         H2 welcomeMessage = new H2("Welcome " + _username + "!");
-
-        // Create the header component
         Header header = new LoggedInHeader("8080");
 
-        // // Create tabs with icons
-        // Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
-        // Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
+        Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
+        Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
 
-        // // Apply icon on top theme to tabs
-        // profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
-        // shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
 
-        // // Create Tabs component and apply custom style
-        // Tabs tabs = new Tabs(profileTab, shopsTab);
-        // tabs.addClassName("custom-tabs"); // Apply custom CSS class
+        Tabs tabs = new Tabs(profileTab, shopsTab);
+        tabs.addClassName("custom-tabs");
 
-        // // Create layouts for tabs content
-        // VerticalLayout profileLayout = new VerticalLayout();
-        // HorizontalLayout shopsLayout = new HorizontalLayout(); // Initialize shopsLayout
+        VerticalLayout profileLayout = new VerticalLayout();
+        shopsLayout = new VerticalLayout(); // Use class-level variable
 
-        // // Initialize UserShopsPageView
         UserShopsPageView userShopsPageView = new UserShopsPageView();
-        
-        // // Add userShopsPageView to shopsLayout
-        // shopsLayout.add(header);
-        // header.setVisible(true); // Ensure header is visible when shopsLayout is visible
+        shopsLayout.add(userShopsPageView);
 
-        // Attach content to the tabs
-        // tabs.addSelectedChangeListener(event -> {
-        //     if (event.getSelectedTab() == profileTab) {
-        //         profileLayout.setVisible(true);
-        //     } else if (event.getSelectedTab() == shopsTab) {
-        //         shopsLayout.setVisible(true);
-        //     } 
-        // });
+        tabs.addSelectedChangeListener(event -> {
+            profileLayout.setVisible(event.getSelectedTab() == profileTab);
+            shopsLayout.setVisible(event.getSelectedTab() == shopsTab);
+        });
 
-        // // Initialize the tab content
-        // tabs.setSelectedTab(profileTab);
-        // profileLayout.setVisible(true);
-        // shopsLayout.setVisible(false);
+        tabs.setSelectedTab(profileTab);
+        profileLayout.setVisible(true);
+        shopsLayout.setVisible(false);
 
-        // Create a horizontal layout for the title to center it
-        // HorizontalLayout titleLayout = new HorizontalLayout();
-        // titleLayout.setWidthFull(); // Make the layout take full width
-        // titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the content
-        // titleLayout.add(welcomeMessage);
+        HorizontalLayout titleLayout = new HorizontalLayout();
+        titleLayout.setWidthFull();
+        titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        titleLayout.add(welcomeMessage);
 
-        // Create a layout for the tabs and center it
-        // HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
-        // tabsLayout.setWidthFull(); // Make the layout take full width
-        // tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the tabs
+        HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
+        tabsLayout.setWidthFull();
+        tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        // // Create the main layout and add components
-        // VerticalLayout mainLayout = new VerticalLayout();
-        // mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        // mainLayout.add(titleLayout, tabsLayout);
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        mainLayout.add(titleLayout, tabsLayout);
 
-        // Initialize presenter
-        // presenter = new UserMainPagePresenter(this);
+        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
+        _openShopButton.setWidth("120px");
 
-        // Create the "Open Shop" button with small width
-        // _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
-        // _openShopButton.setWidth("120px"); // Set a fixed width for the button
+        HorizontalLayout buttonLayout = new HorizontalLayout(_openShopButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        // // Create a layout for the button and align it to the bottom-right
-        // HorizontalLayout buttonLayout = new HorizontalLayout(_openShopButton);
-        // buttonLayout.setWidthFull();
-        // buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-        // buttonLayout.setAlignItems(FlexComponent.Alignment.END);
-
-        // Add components to the vertical layout
-        // add(header, mainLayout, buttonLayout, userShopsPageView);
-        add(header,userShopsPageView);
-
+        add(header, mainLayout, shopsLayout, profileLayout, buttonLayout);
     }
 
     private Dialog createOpenNewShopDialog() {
@@ -133,7 +99,7 @@ public class UserMainPageView extends BaseView {
             String bankDetails = bankDetailsField.getValue();
             String shopAddress = shopAddressField.getValue();
 
-            // presenter.openNewShop(shopName, bankDetails, shopAddress);
+            // Handle submission logic here
 
             dialog.close();
         });
