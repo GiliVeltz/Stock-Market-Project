@@ -19,9 +19,9 @@ import java.util.List;
 
 public class UserShopsPagePresenter {
 
-    private final UserMainPageView view;
+    private final UserShopsPageView view;
 
-    public UserShopsPagePresenter(UserMainPageView view) {
+    public UserShopsPagePresenter(UserShopsPageView view) {
         this.view = view;
     }
 

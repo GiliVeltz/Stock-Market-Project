@@ -26,7 +26,6 @@ import java.util.List;
 import com.vaadin.flow.component.html.Span;
 
 import UI.Presenter.UserMainPagePresenter;
-import UI.Presenter.UserShopsPagePresenter;
 
 @CssImport("./styles/shared-styles.css")
 @PageTitle("User Main Page")
@@ -34,26 +33,28 @@ import UI.Presenter.UserShopsPagePresenter;
 public class UserMainPageView extends BaseView {
 
     private UserMainPagePresenter presenter;
-    private UserShopsPagePresenter shopsPresenter;
     private String _username;
     private Button _openShopButton;
 
     // Make shopsLayout a member variable
     private VerticalLayout shopsLayout;
 
+    // Reference to UserShopsPageView
+    private UserShopsPageView userShopsPageView;
+
     public UserMainPageView() {
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
         // Create welcome message
-        H1 welcomeMessage = new H1("Welcome, " + _username + "!");
+        H2 welcomeMessage = new H2("Welcome " + _username + "!");
 
         // Create the header component
         Header header = new LoggedInHeader("8080");
 
         // Create tabs with icons
         Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
-        Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("View My Shops"));
+        Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
 
         // Apply icon on top theme to tabs
         profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
@@ -61,7 +62,6 @@ public class UserMainPageView extends BaseView {
 
         // Create Tabs component and apply custom style
         Tabs tabs = new Tabs(profileTab, shopsTab);
-        // tabs.addThemeVariants(TabsVariant.LUMO_CENTERED);
         tabs.addClassName("custom-tabs"); // Apply custom CSS class
 
         // Create layouts for tabs content
@@ -71,10 +71,8 @@ public class UserMainPageView extends BaseView {
         // Profile tab content
         // Add your profile tab content here
 
-        // Shops tab content
-        shopsPresenter = new UserShopsPagePresenter(this);
-        shopsPresenter.fetchShops(_username);
-        shopsLayout.add(new H1("My Shops"));
+        // Initialize UserShopsPageView
+        userShopsPageView = new UserShopsPageView();
 
         // Attach content to the tabs
         tabs.addSelectedChangeListener(event -> {
@@ -84,6 +82,9 @@ public class UserMainPageView extends BaseView {
                 profileLayout.setVisible(true);
             } else if (event.getSelectedTab() == shopsTab) {
                 shopsLayout.setVisible(true);
+                userShopsPageView.setVisible(true); // Show UserShopsPageView content
+            } else {
+                userShopsPageView.setVisible(false); // Hide UserShopsPageView content for other tabs
             }
         });
 
@@ -91,6 +92,7 @@ public class UserMainPageView extends BaseView {
         tabs.setSelectedTab(profileTab);
         profileLayout.setVisible(true);
         shopsLayout.setVisible(false);
+        userShopsPageView.setVisible(false); // Initially hide UserShopsPageView content
 
         // Create a horizontal layout for the title to center it
         HorizontalLayout titleLayout = new HorizontalLayout();
@@ -106,7 +108,7 @@ public class UserMainPageView extends BaseView {
         // Create the main layout and add components
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        mainLayout.add(titleLayout, tabsLayout, profileLayout, shopsLayout);
+        mainLayout.add(titleLayout, tabsLayout, profileLayout, shopsLayout, userShopsPageView);
 
         // Add components to the vertical layout
         add(header, mainLayout);
@@ -115,28 +117,8 @@ public class UserMainPageView extends BaseView {
         presenter = new UserMainPagePresenter(this);
     }
 
-    public void createShopButtons(List<Integer> shops, List<String> shopNames) {
-        VerticalLayout gridLayout = new VerticalLayout();
-        if (shops.isEmpty()) {
-            gridLayout.add(new Paragraph("No shops found"));
-        } else {
-            int maxButtonsPerRow = 3;
-            HorizontalLayout rowLayout = new HorizontalLayout();
-
-            for (int i = 0; i < shops.size(); i++) {
-                Integer shopId = shops.get(i);
-                Button shopButton = new Button("" + shopNames.get(i), e -> navigateToManageShop(shopId));
-                shopButton.addClassName("same-size-button");
-                rowLayout.add(shopButton);
-
-                if ((i + 1) % maxButtonsPerRow == 0 || i == shops.size() - 1) {
-                    gridLayout.add(rowLayout);
-                    rowLayout = new HorizontalLayout();
-                }
-            }
-        }
-        shopsLayout.add(gridLayout); // Add grid layout to shopsLayout
-    }
+    // Optionally remove the createShopButtons method from UserMainPageView
+    // as it's now handled by UserShopsPageView directly
 
     private void navigateToShops() {
         getUI().ifPresent(ui -> ui.navigate("user_shops"));
@@ -184,7 +166,6 @@ public class UserMainPageView extends BaseView {
         return dialog;
     }
 
-    public void navigateToManageShop(Integer shopId) {
-        getUI().ifPresent(ui -> ui.navigate("user_shops/" + shopId));
-    }
+    // Optionally remove the navigateToManageShop method from UserMainPageView
+    // as it's now handled by UserShopsPageView directly
 }
