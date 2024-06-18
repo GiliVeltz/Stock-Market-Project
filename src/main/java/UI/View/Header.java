@@ -15,6 +15,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.notification.Notification;
@@ -40,12 +41,19 @@ public class Header extends HorizontalLayout {
         // Initialize the presenter
         presenter = new HeaderPresenter(this, serverPort);
 
+        // Create an Image component
+        Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
+
+        // Set the size of the image
+        image.setWidth("100px");
+        image.setHeight("100px");
+
         // Create the buttons
         _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
-        Button shoppingCartButton = new Button("Shopping Cart");
+        Button shoppingCartButton = new Button(image);
         // Button messagesButton = new Button("My Messages");
         Button messagesButton = new Button("My Messages", e -> navigateToMessages());
 
@@ -106,6 +114,10 @@ public class Header extends HorizontalLayout {
 
         searchProductsButton.addClickListener(event -> searchProductsDialog.open());
         searchShopsButton.addClickListener(event -> searchShopsDialog.open());
+
+        shoppingCartButton.addClickListener(event -> {
+            getUI().ifPresent(ui -> ui.navigate("user_cart"));
+        });
     }
 
 
@@ -283,6 +295,16 @@ public class Header extends HorizontalLayout {
     public void createBackToMainButton() {
         Button backToMainButton = new Button("Back to Main Page", event -> {
             getUI().ifPresent(ui -> ui.navigate("user"));
+        });
+
+        backToMainButton.addClassName("pointer-cursor");
+        _leftButtonLayout.remove(_registerButton);
+        _leftButtonLayout.add(backToMainButton);
+    }
+
+    public void createBackToMainButtonGuest() {
+        Button backToMainButton = new Button("Back to Main Page", event -> {
+            getUI().ifPresent(ui -> ui.navigate(""));
         });
 
         backToMainButton.addClassName("pointer-cursor");
