@@ -89,57 +89,57 @@ public class ShopManagerPresenter {
     }
 
     public void appointManager(String newManagerUsername, Set<Permission> selectedPermissions) {
-    RestTemplate restTemplate = new RestTemplate();
-    UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-            .then(String.class, token -> {
-                if (token != null && !token.isEmpty()) {
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add("Authorization", token);
-                    headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
 
-                    // Convert permissions to a set of strings
-                    Set<String> permissionsList = selectedPermissions.stream()
-                            .map(Enum::name)
-                            .collect(Collectors.toSet());
+                        // Convert permissions to a set of strings
+                        Set<String> permissionsList = selectedPermissions.stream()
+                                .map(Enum::name)
+                                .collect(Collectors.toSet());
 
-                    // Create request body with permissions
-                    Map<String, Object> requestBody = new HashMap<>();
-                    requestBody.put("shopId", view.getShopId());
-                    requestBody.put("newManagerUsername", newManagerUsername);
-                    requestBody.put("permissions", permissionsList);
+                        // Create request body with permissions
+                        Map<String, Object> requestBody = new HashMap<>();
+                        requestBody.put("shopId", view.getShopId());
+                        requestBody.put("newManagerUsername", newManagerUsername);
+                        requestBody.put("permissions", permissionsList);
 
-                    HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+                        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-                    try {
-                        ResponseEntity<String> response = restTemplate.exchange(
-                            "http://localhost:" + view.getServerPort() + "/api/shop/addShopManager",
-                            HttpMethod.POST,
-                            requestEntity,
-                            String.class
-                        );
+                        try {
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addShopManager",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                            );
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            JsonNode responseJson = objectMapper.readTree(response.getBody());
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                JsonNode responseJson = objectMapper.readTree(response.getBody());
 
-                            if (responseJson.get("errorMessage").isNull()) {
-                                view.showSuccessMessage("Manager appointed successfully");
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    view.showSuccessMessage("Manager appointed successfully");
+                                } else {
+                                    view.showErrorMessage("Failed to appoint manager: " + responseJson.get("errorMessage").asText());
+                                }
                             } else {
-                                view.showErrorMessage("Failed to appoint manager: " + responseJson.get("errorMessage").asText());
+                                view.showErrorMessage("Failed to appoint manager with status code: " + response.getStatusCodeValue());
                             }
-                        } else {
-                            view.showErrorMessage("Failed to appoint manager with status code: " + response.getStatusCodeValue());
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage());
+                            e.printStackTrace();
                         }
-                    } catch (HttpClientErrorException e) {
-                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
-                    } catch (Exception e) {
-                        view.showErrorMessage("Failed to appoint manager: " + e.getMessage());
-                        e.printStackTrace();
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
                     }
-                } else {
-                    view.showErrorMessage("Authorization token not found. Please log in.");
-                }
-            });
+                });
 }
 
 
@@ -155,7 +155,51 @@ public class ShopManagerPresenter {
 
     }
 
-    public void appointOwner(){
+    public void appointOwner(String newOwnerUsername){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
 
+                        // Create request body with permissions
+                        Map<String, Object> requestBody = new HashMap<>();
+                        requestBody.put("shopId", view.getShopId());
+                        requestBody.put("newOwnerUsername", newOwnerUsername);
+
+                        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+                        try {
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addShopOwner",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                            );
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                JsonNode responseJson = objectMapper.readTree(response.getBody());
+
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    view.showSuccessMessage("Owner appointed successfully");
+                                } else {
+                                    view.showErrorMessage("Failed to appoint owner: " + responseJson.get("errorMessage").asText());
+                                }
+                            } else {
+                                view.showErrorMessage("Failed to appoint owner with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
     }
 }
