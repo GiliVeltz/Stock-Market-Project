@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
+import enums.Category;
 
 @ExtendWith(RealBridge.class)
 public class ShoppingUserAcceptanceTests{
@@ -41,12 +42,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser("caterogy1") ); // success - exist category
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsUser("caterogy2") ); // fail - non exist category
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.CLOTHING) ); // success - exist category
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.GROCERY) ); // fail - non exist category
     }
     
     // Test search product information according to key words as a User in the system.
@@ -72,14 +71,12 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information in a specific shop, according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy1", "shopId1") ); // success - exist category and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy2", "shopId1") ); // fail - non exist category but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy1", "shopId2") ); // fail - exist category but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy2", "shopId2") ); // fail - non exist category and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.CLOTHING, "0") ); // success - exist category and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.GROCERY, "0") ); // fail - non exist category but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.CLOTHING, "1") ); // fail - exist category but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.GROCERY, "1") ); // fail - non exist category and non exist shop
     }
     
     // Test search product information in a specific shop, according to key words as a User in the system.
