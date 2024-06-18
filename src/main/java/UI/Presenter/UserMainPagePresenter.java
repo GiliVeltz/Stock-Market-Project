@@ -1,4 +1,5 @@
 package UI.Presenter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
 import Dtos.UserDto;
@@ -60,17 +62,17 @@ public class UserMainPagePresenter {
                 });
     }
 
-public CompletableFuture<UserDto> getUserInfo() {
-    RestTemplate restTemplate = new RestTemplate();
-    HttpHeaders headers = new HttpHeaders();
 
-    CompletableFuture<UserDto> future = new CompletableFuture<>();
+public void getUserInfo() {
+    RestTemplate restTemplate = new RestTemplate();
 
     UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
             .then(String.class, token -> {
                 if (token != null && !token.isEmpty()) {
-                    headers.set("Authorization", token);
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Authorization", token);
                     HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
                     try {
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + SERVER_PORT + "/api/user/getUserDetails",
@@ -78,30 +80,37 @@ public CompletableFuture<UserDto> getUserInfo() {
                                 requestEntity,
                                 Response.class);
 
-                        Response responseBody = response.getBody();
-                        if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
-                            view.showSuccessMessage("Fetch user details succeed");
-                            future.complete((UserDto) responseBody.getReturnValue());
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                UserDto userDto = objectMapper.convertValue(responseBody.getReturnValue(), UserDto.class);
+                                view.usernameField.setValue(userDto.username);
+                                view.passwordField.setValue(userDto.password);
+                                view.emailField.setValue(userDto.email);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                view.birthDateField.setValue(dateFormat.format(userDto.birthDate));
+
+                                view.showSuccessMessage("Fetch user details succeed");
+                            } else {
+                                view.showErrorMessage("Fetch user details failed: " + responseBody.getErrorMessage());
+                            }
                         } else {
-                            view.showErrorMessage("Fetch user details failed: " + responseBody.getErrorMessage());
-                            future.complete(new UserDto()); // Return a new UserDto with null values or handle as needed
+                            view.showErrorMessage("Fetch user details failed: " + response.getStatusCode());
                         }
                     } catch (HttpClientErrorException e) {
-                        ResponseHandler.handleResponse(e.getStatusCode());
-                        future.complete(new UserDto()); // Return a new UserDto with null values or handle as needed
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
                     } catch (Exception e) {
-                        view.showErrorMessage("Fetch user details failed: " + e.getMessage());
+                        view.showErrorMessage("Failed to parse response: " + e.getMessage());
                         e.printStackTrace();
-                        future.complete(new UserDto()); // Return a new UserDto with null values or handle as needed
                     }
                 } else {
                     view.showErrorMessage("Authorization token not found. Please log in.");
-                    future.complete(new UserDto()); // Return a new UserDto with null values or handle as needed
                 }
             });
-
-    return future;
 }
+
             
     public void updateUserInfo(UserDto userDto) {
         RestTemplate restTemplate = new RestTemplate();

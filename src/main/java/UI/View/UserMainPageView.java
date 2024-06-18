@@ -1,6 +1,5 @@
 package UI.View;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -34,186 +33,177 @@ import Dtos.UserDto;
 @Route(value = "user")
 public class UserMainPageView extends BaseView {
 
-    private UserMainPagePresenter presenter;
-    private String _username;
-    private Button _openShopButton;
-    private VerticalLayout shopsLayout;
-    private Button saveButton;
-    private Button editButton;
-    private TextField usernameField = new TextField("Username");
-    private TextField passwordField = new TextField("Password");
-    private TextField emailField = new TextField("Email");
-    private  TextField birthDateField = new TextField("Birth Date");
+private UserMainPagePresenter presenter;
+private String _username;
+private Button _openShopButton;
+private VerticalLayout shopsLayout;
+private Button saveButton; // Moved saveButton declaration to class level
+private Button editButton;
+public  TextField usernameField = new TextField("Username");
+public TextField passwordField = new TextField("Password");
+public TextField emailField = new TextField("Email");
+public TextField birthDateField = new TextField("Birth Date");
 
+public UserMainPageView() {
+    _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
-    public UserMainPageView() {
-        _username = (String) VaadinSession.getCurrent().getAttribute("username");
+    H2 welcomeMessage = new H2("Welcome " + _username + "!");
+    Header header = new LoggedInHeader("8080");
 
-        H2 welcomeMessage = new H2("Welcome " + _username + "!");
-        Header header = new LoggedInHeader("8080");
+    Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
+    Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
 
-        Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
-        Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
+    profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+    shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
 
-        profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
-        shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+    Tabs tabs = new Tabs(profileTab, shopsTab);
+    tabs.addClassName("custom-tabs");
 
-        Tabs tabs = new Tabs(profileTab, shopsTab);
-        tabs.addClassName("custom-tabs");
+    VerticalLayout profileLayout = new VerticalLayout();
+    shopsLayout = new VerticalLayout(); // Use class-level variable
 
-        VerticalLayout profileLayout = new VerticalLayout();
-        shopsLayout = new VerticalLayout();
+    UserShopsPageView userShopsPageView = new UserShopsPageView();
+    shopsLayout.add(userShopsPageView);
 
-        UserShopsPageView userShopsPageView = new UserShopsPageView();
-        shopsLayout.add(userShopsPageView);
+    FormLayout userInfoLayout = new FormLayout();
 
-        FormLayout userInfoLayout = new FormLayout();
-        TextField usernameField = new TextField("Username");
-        TextField passwordField = new TextField("Password");
-        TextField emailField = new TextField("Email");
-        TextField birthDateField = new TextField("Birth Date");
+    // Fetch user information from presenter
+    UserDto userDto = new UserDto();
+    presenter = new UserMainPagePresenter(this);
+    presenter.getUserInfo(); // Blocking call to get the result
+    // Handle the retrieved UserDto here
+    // Display user information in non-editable fields
+    usernameField.setReadOnly(true);
+    userInfoLayout.addFormItem(usernameField, "Username");
 
-        // Initialize edit and save buttons
-        editButton = new Button("Edit Details", event -> {
-            // Switch to edit mode
-            usernameField.setReadOnly(false);
-            passwordField.setReadOnly(false);
-            emailField.setReadOnly(false);
-            birthDateField.setReadOnly(false);
+    passwordField.setReadOnly(true);
+    userInfoLayout.addFormItem(passwordField, "Password");
 
-            saveButton.setVisible(true);
-            editButton.setVisible(false);
-        });
+    emailField.setReadOnly(true);
+    userInfoLayout.addFormItem(emailField, "Email");
 
-        saveButton = new Button("Save", event -> {
-            // Save changes to presenter or backend
-            presenter.updateUserInfo(new UserDto(usernameField.getValue(), passwordField.getValue(), emailField.getValue(), null));
+    birthDateField.setReadOnly(true);
+    userInfoLayout.addFormItem(birthDateField, "Birth Date");
 
-            // Notify user of successful save
-            Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
+    // Initialize edit and save buttons
+    
+    editButton = new Button("Edit Details", event -> {
+        // Switch to edit mode
+        usernameField.setReadOnly(false);
+        emailField.setReadOnly(false);
+        birthDateField.setReadOnly(false);
 
-            // Switch back to view mode
-            usernameField.setReadOnly(true);
-            passwordField.setReadOnly(true);
-            emailField.setReadOnly(true);
-            birthDateField.setReadOnly(true);
+        saveButton.setVisible(true);
+        editButton.setVisible(false);
+    });
 
-            // Hide the save button
-            saveButton.setVisible(false);
-            editButton.setVisible(true);
-        });
-        saveButton.setVisible(false); // Initially hide save button
+    saveButton = new Button("Save", event -> {
+        // Save changes to presenter or backend
+        presenter.updateUserInfo(new UserDto(usernameField.getValue(), passwordField.getValue(), emailField.getValue(), null));
 
-        HorizontalLayout editSaveButtonLayout = new HorizontalLayout(editButton, saveButton);
-        editSaveButtonLayout.setWidthFull();
-        editSaveButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        // Notify user of successful save
+        Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
 
-        VerticalLayout dialogLayout = new VerticalLayout(userInfoLayout, editSaveButtonLayout);
-        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        // Switch back to view mode
+        usernameField.setReadOnly(true);
+        passwordField.setReadOnly(true);
+        emailField.setReadOnly(true);
+        birthDateField.setReadOnly(true);
 
-        profileLayout.add(dialogLayout);
+        // Hide the save button
+        saveButton.setVisible(false);
+        editButton.setVisible(true);
+    });
+    saveButton.setVisible(false); // Initially hide save button
 
-        tabs.addSelectedChangeListener(event -> {
-            profileLayout.setVisible(event.getSelectedTab() == profileTab);
-            shopsLayout.setVisible(event.getSelectedTab() == shopsTab);
-        });
+    HorizontalLayout editSaveButtonLayout = new HorizontalLayout(editButton, saveButton);
+    editSaveButtonLayout.setWidthFull();
+    editSaveButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        tabs.setSelectedTab(profileTab);
-        profileLayout.setVisible(true);
-        shopsLayout.setVisible(false);
+    VerticalLayout dialogLayout = new VerticalLayout(userInfoLayout, editSaveButtonLayout);
+    dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        HorizontalLayout titleLayout = new HorizontalLayout();
-        titleLayout.setWidthFull();
-        titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        titleLayout.add(welcomeMessage);
+    profileLayout.add(dialogLayout);
 
-        HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
-        tabsLayout.setWidthFull();
-        tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+    tabs.addSelectedChangeListener(event -> {
+        profileLayout.setVisible(event.getSelectedTab() == profileTab);
+        shopsLayout.setVisible(event.getSelectedTab() == shopsTab);
+    });
 
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        mainLayout.add(titleLayout, tabsLayout);
+    tabs.setSelectedTab(profileTab);
+    profileLayout.setVisible(true);
+    shopsLayout.setVisible(false);
 
-        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
-        _openShopButton.setWidth("120px");
+    HorizontalLayout titleLayout = new HorizontalLayout();
+    titleLayout.setWidthFull();
+    titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+    titleLayout.add(welcomeMessage);
 
-        HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
-        openShopButtonLayout.setWidthFull();
-        openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-        openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
+    HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
+    tabsLayout.setWidthFull();
+    tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        add(header, mainLayout, shopsLayout, profileLayout, openShopButtonLayout);
+    VerticalLayout mainLayout = new VerticalLayout();
+    mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+    mainLayout.add(titleLayout, tabsLayout);
 
-        // Fetch user information asynchronously after the view has been initialized
-        initializeUserInfo();
-    }
+    _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
+    _openShopButton.setWidth("120px");
 
-    private void initializeUserInfo() {
-        presenter = new UserMainPagePresenter(this);
-        presenter.getUserInfo().thenAccept(userDto -> {
-            // Display user information in non-editable fields
-            UI.getCurrent().access(() -> {
-                usernameField.setValue(userDto.username);
-                passwordField.setValue(userDto.password);
-                emailField.setValue(userDto.email);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                birthDateField.setValue(dateFormat.format(userDto.birthDate));
-            });
-        }).exceptionally(ex -> {
-            UI.getCurrent().access(() -> {
-                showErrorMessage("Failed to fetch user details: " + ex.getMessage());
-            });
-            return null;
-        });
-    }
+    HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
+    openShopButtonLayout.setWidthFull();
+    openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+    openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-    private Dialog createOpenNewShopDialog() {
-        Dialog dialog = new Dialog();
+    add(header, mainLayout, shopsLayout, profileLayout, openShopButtonLayout);
+}
 
-        // Create a headline
-        H2 headline = new H2("Open New Shop");
-        
-        // Create form layout
-        FormLayout formLayout = new FormLayout();
-        
-        // Create form fields
-        TextField shopNameField = new TextField("Shop Name");
-        TextField bankDetailsField = new TextField("Bank Details");
-        TextField shopAddressField = new TextField("Address");
-        
-        // Add fields to the form layout
-        formLayout.add(shopNameField, bankDetailsField, shopAddressField);
-        
-        // Create buttons
-        Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
-            String shopName = shopNameField.getValue();
-            String bankDetails = bankDetailsField.getValue();
-            String shopAddress = shopAddressField.getValue();
-        
-            presenter.openNewShop(shopName, bankDetails, shopAddress);
-        
-            // Close the dialog after submission
-            dialog.close();
-        });
-        
-        submitButton.addClassName("pointer-cursor");
-        
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
-        
-        cancelButton.addClassName("pointer-cursor");
-        
-        // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
-        buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
-        
-        // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
-        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        dialog.add(dialogLayout);
-        
-        return dialog;
-    }
+private Dialog createOpenNewShopDialog() {
+    Dialog dialog = new Dialog();
+
+    // Create a headline
+    H2 headline = new H2("Open New Shop");
+    
+    // Create form layout
+    FormLayout formLayout = new FormLayout();
+    
+    // Create form fields
+    TextField shopNameField = new TextField("Shop Name");
+    TextField bankDetailsField = new TextField("Bank Details");
+    TextField shopAddressField = new TextField("Address");
+    
+    // Add fields to the form layout
+    formLayout.add(shopNameField, bankDetailsField, shopAddressField);
+    
+    // Create buttons
+    Button submitButton = new Button("Submit", event -> {
+        // Handle form submission
+        String shopName = shopNameField.getValue();
+        String bankDetails = bankDetailsField.getValue();
+        String shopAddress = shopAddressField.getValue();
+    
+        presenter.openNewShop(shopName, bankDetails, shopAddress);
+    
+        // Close the dialog after submission
+        dialog.close();
+    });
+    
+    submitButton.addClassName("pointer-cursor");
+    
+    Button cancelButton = new Button("Cancel", event -> dialog.close());
+    
+    cancelButton.addClassName("pointer-cursor");
+    
+    // Create button layout
+    HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+    buttonLayout.setWidthFull();
+    buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
+    
+    // Add form layout and button layout to the dialog
+    VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+    dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+    dialog.add(dialogLayout);
+    
+    return dialog;
+}
 }

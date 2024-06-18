@@ -147,7 +147,7 @@ public class SystemService {
                 if (id != null) {
                     logger.info("Guest with id: " + id + " left the system");
                     _userFacade.removeGuest(id);
-                    _shoppingCartFacade.removeCartForGuest(token);
+                    _shoppingCartFacade.removeCartForGuest(id);
                     response.setReturnValue("Guest left system Successfully");
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
