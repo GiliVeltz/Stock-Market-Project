@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import UI.View.UserMainPageView;
 import UI.View.UserShopsPageView;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,9 +19,9 @@ import java.util.List;
 
 public class UserShopsPagePresenter {
 
-    private final UserShopsPageView view;
+    private final UserMainPageView view;
 
-    public UserShopsPagePresenter(UserShopsPageView view) {
+    public UserShopsPagePresenter(UserMainPageView view) {
         this.view = view;
     }
 
