@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,14 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     // only for tests!
@@ -225,5 +234,12 @@ public class ShoppingCartFacade {
     // for tests
     public void addCartForGuestForTests(String guestID, ShoppingCart cart) {
         _guestsCarts.put(guestID, cart);
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        ShoppingCart cartUI = new ShoppingCart();
+        _cartsRepo.addCartForUser("tal", cartUI);
+        addProductToUserCart("tal", 0, 0);    
     }
 }

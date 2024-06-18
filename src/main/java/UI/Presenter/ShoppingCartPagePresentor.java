@@ -6,7 +6,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import UI.Model.Response; // Add this import statement
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.vaadin.flow.component.UI;
 
@@ -31,19 +37,30 @@ public class ShoppingCartPagePresentor {
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
 
-                        HttpEntity<List<BasketDto>> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         String username = (String) UI.getCurrent().getSession().getAttribute("username");
                         
-                        ResponseEntity<String> response = restTemplate.exchange(
+                        ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/user/viewShoppingCart?username=" + username,
                                 HttpMethod.GET,
                                 requestEntity,
-                                String.class);
+                                Response.class);
 
                         if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("Cart opened successfully");
-                            System.out.println(response.getBody());
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                List<BasketDto> basketDtoList = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, BasketDto.class));
+                                view.showBaskets(basketDtoList);
+                                view.showSuccessMessage("Cart opened successfully");
+                            }
+                            else {
+                                view.showErrorMessage("Failed to parse JSON response");
+                            }                       
                         } else {
                             view.showErrorMessage("Failed to open cart");
                         }
