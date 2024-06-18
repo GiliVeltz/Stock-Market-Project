@@ -90,6 +90,9 @@ public class UserService {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
                     String newToken = _tokenService.generateGuestToken();
+                    String id = _tokenService.extractGuestId(newToken);
+                    _userFacade.addNewGuest(id);
+                    _shoppingCartFacade.addCartForGuest(id);
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
                     //close this session
