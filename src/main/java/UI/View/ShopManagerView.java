@@ -1,17 +1,20 @@
 package UI.View;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.Manager;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
@@ -26,6 +29,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
+import UI.Model.ShopManagerDto;
 import UI.Presenter.ShopManagerPresenter;
 
 
@@ -39,6 +43,8 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private int _shopId;
     private Dialog _appointManagerDialog;
     private Dialog _appointOwnerDialog;
+    private Dialog _viewRolesDialog;
+    private List<ShopManagerDto> _managers;
     
     public ShopManagerView(){
 
@@ -73,7 +79,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
         Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
         Button viewSubordinateBtn = new Button("View Subordinates", e -> presenter.viewSubordinate());
-        Button viewShopRolesBtn = new Button("View Shop Roles", e -> presenter.viewShopRoles());
+        Button viewShopRolesBtn = new Button("View Shop Roles", e -> _viewRolesDialog.open());
         Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
         Button viewProductsbtn = new Button("View Products", e -> presenter.viewProducts());
 
@@ -121,6 +127,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
+        _viewRolesDialog = createViewRolesDialog();
     }
 
     public int getShopId() {
@@ -236,6 +243,36 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         dialog.add(formLayout, submitButton, cancelButton);
 
         return dialog;
+    }
+
+    public Dialog createViewRolesDialog() {
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+         // Create a grid
+        Grid<ShopManagerDto> grid = new Grid<>(ShopManagerDto.class, false);
+        grid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
+        grid.addColumn(ShopManagerDto::getRole).setHeader("Role");
+        grid.addColumn(manager -> String.join(", ", 
+                manager.getPermissions().stream()
+                    .map(p -> PermissionMapper.getPermissionName(p))
+                    .toArray(String[]::new)
+        )).setHeader("Permissions");
+
+        // Create a list to hold managers and fetch them
+        presenter.fetchShopManagers();
+
+        if(_managers != null){
+            // Set items to the grid
+            grid.setItems(_managers);
+        }
+        
+        dialog.add(grid);
+        return dialog;
+    }
+
+    public void setManagers(List<ShopManagerDto> managers) {
+        _managers = managers;
     }
     
 }

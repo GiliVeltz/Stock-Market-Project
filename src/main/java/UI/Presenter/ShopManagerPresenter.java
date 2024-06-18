@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
 import UI.Model.Permission;
+import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
 
 public class ShopManagerPresenter {
@@ -140,7 +141,53 @@ public class ShopManagerPresenter {
                         view.showErrorMessage("Authorization token not found. Please log in.");
                     }
                 });
-}
+    }
+
+    public void fetchShopManagers(){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagers?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                String.class);
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+
+                        try{
+                            JsonNode responseJson = objectMapper.readTree(response.getBody());
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("Managers loaded successfully");
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    List<ShopManagerDto> managers = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, ShopManagerDto.class));
+                                    view.setManagers(managers);
+                                }else {
+                                    view.showErrorMessage("Managers loading failed");
+                                    view.getUI().ifPresent(ui -> ui.navigate("user"));
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Managers loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                            view.getUI().ifPresent(ui -> ui.navigate("user"));
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
 
 
     public void viewSubordinate() {

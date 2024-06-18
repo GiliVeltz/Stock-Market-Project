@@ -14,6 +14,7 @@ import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Domain.Product;
+import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Domain.Shop;
@@ -27,6 +28,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShopManagerDto;
 import Dtos.ShopWithIdDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
@@ -842,5 +844,28 @@ public class ShopFacade {
 
         openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
         addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+    }
+
+    public List<ShopManagerDto> getShopManagers(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        List<ShopManagerDto> managers = new ArrayList<>();
+        for (Map.Entry<String, Role> entry : roles.entrySet()) {
+            Set<Permission> permissions = entry.getValue().getPermissions();
+            String role;
+            if(permissions.contains(Permission.FOUNDER)){
+                role = "Founder";
+            }else if(permissions.contains(Permission.OWNER)){
+                role = "Owner";
+            }else{
+                role = "Manager";
+            }
+            ShopManagerDto manager = new ShopManagerDto(entry.getKey(), role , permissions);
+            managers.add(manager);
+        }
+        return managers;
     }
 }
