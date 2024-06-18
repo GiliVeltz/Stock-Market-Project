@@ -1,6 +1,11 @@
 package Domain.Alerts;
-
 // Purpose: Interface for the Alert class.
-interface Alert {
-    public void SendAlert();
+public interface Alert {
+
+    public String getMessage();
+    public void setMessage();
+    public String getFromUser();
+    public boolean isEmpty();
+    public int getShopId();
+    public String getTargetUser();
 }
