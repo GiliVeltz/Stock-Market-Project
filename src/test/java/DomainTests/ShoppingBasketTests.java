@@ -457,7 +457,7 @@ public class ShoppingBasketTests {
         shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
 
         // Act
-        boolean result = shoppingBasket.purchaseBasket();
+        boolean result = shoppingBasket.purchaseBasket("Guest");
         
         // Assert
         assertTrue(result);
@@ -485,7 +485,7 @@ public class ShoppingBasketTests {
         shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
 
         // Act
-        boolean result = shoppingBasket.purchaseBasket();
+        boolean result = shoppingBasket.purchaseBasket(buyer.getUserName());
         
         // Assert
         assertFalse(result);
@@ -515,7 +515,7 @@ public class ShoppingBasketTests {
         shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
 
         // Act
-        boolean result = shoppingBasket.purchaseBasket();
+        boolean result = shoppingBasket.purchaseBasket(buyer.getUserName());
         
         // Assert
         assertFalse(result);
@@ -544,7 +544,7 @@ public class ShoppingBasketTests {
 
         // Act & Assert
         assertThrows(ShopPolicyException.class, () -> {
-            shoppingBasket.purchaseBasket();
+            shoppingBasket.purchaseBasket(buyer.getUserName());
         });
         assertEquals(product.getProductQuantity(), 3);
         assertEquals(product2.getProductQuantity(), 10);
@@ -578,7 +578,7 @@ public class ShoppingBasketTests {
         // Task for first thread
         Callable<Boolean> task1 = () -> {
             try {
-                return shoppingBasket.purchaseBasket();
+                return shoppingBasket.purchaseBasket(buyer.getUserName());
             } catch (StockMarketException e) {
                 return false;
             }
@@ -587,7 +587,7 @@ public class ShoppingBasketTests {
         // Task for second thread
         Callable<Boolean> task2 = () -> {
             try {
-                return shoppingBasket2.purchaseBasket();
+                return shoppingBasket2.purchaseBasket(buyer.getUserName());
             } catch (StockMarketException e) {
                 return false;
             }
@@ -640,7 +640,7 @@ public class ShoppingBasketTests {
         // Task for first thread
         Callable<Boolean> task1 = () -> {
             try {
-                return shoppingBasket.purchaseBasket();
+                return shoppingBasket.purchaseBasket(buyer.getUserName());
             } catch (StockMarketException e) {
                 return false;
             }
@@ -649,7 +649,7 @@ public class ShoppingBasketTests {
         // Task for second thread
         Callable<Boolean> task2 = () -> {
             try {
-                return shoppingBasket2.purchaseBasket();
+                return shoppingBasket2.purchaseBasket(buyer.getUserName());
             } catch (StockMarketException e) {
                 return false;
             }

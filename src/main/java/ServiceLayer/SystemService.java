@@ -6,7 +6,8 @@ import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import Domain.Alerts.Alert;
+import Domain.Alerts.GeneralAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
@@ -373,5 +374,45 @@ public class SystemService {
             logger.log(Level.SEVERE, "Failed to change external service information person phone: " + e.getMessage(), e);
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // send alert notification to targetUser with message
+    public Response sendAlertNotification(String token, String targetUser, String message) {
+        Response response = new Response();
+        try {
+            // check validation of token
+            if (!_tokenService.validateToken(token)) {
+                throw new Exception("Invalid session token.");
+            }
+            // check if user is logged in
+            if (!_tokenService.isUserAndLoggedIn(token)) {
+                response.setErrorMessage("User is not logged in");
+                logger.log(Level.SEVERE, "User is not logged in");
+            }
+            // check if system is open
+            if (!isSystemOpen()) {
+                response.setErrorMessage("System is not open");
+                logger.log(Level.SEVERE, "System is not open");
+            }
+            // check validation of the arguments
+            if(targetUser == null || targetUser.length() == 0 || message == null || message.length() == 0){
+                response.setErrorMessage("One or more of the arguments are null");
+                logger.log(Level.SEVERE, "One or more of the arguments are null");
+            }
+            String fromUser = _tokenService.extractUsername(token);
+            Alert generalAlert = new GeneralAlert(fromUser,targetUser, message);
+            if(_userFacade.notifyUser(targetUser, generalAlert)){
+                logger.info("Alert notification sent to user: " + targetUser + " by admin: " + fromUser);
+                response.setReturnValue("Alert notification sent successfully");
+            }
+             else {
+                response.setErrorMessage("Failed to send alert notification");
+                logger.log(Level.SEVERE, "Failed to send alert notification");
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to send alert notification: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to send alert notification: " + e.getMessage(), e);
+        }
+        return response;
     }
 }

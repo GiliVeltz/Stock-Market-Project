@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.Alert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Repositories.MemoryUserRepository;
@@ -13,6 +14,7 @@ import Domain.Repositories.UserRepositoryInterface;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
+import Server.notifications.NotificationHandler;
 
 @RestController
 public class UserFacade {
@@ -45,7 +47,7 @@ public class UserFacade {
         if (username == null)
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
-            throw new UserException(String.format("Username %s does not exist.",username));
+            throw new UserException(String.format("Username %s does not exist.", username));
         return _userRepository.getUserByUsername(username);
     }
 
@@ -134,4 +136,50 @@ public class UserFacade {
         }
         user.setEmail(email);
     }
+
+    // getting the user personal details
+    public UserDto getUserDetails(String username) {
+        User user = _userRepository.getUserByUsername(username);
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
+    }
+
+    // set the user personal new details
+    public UserDto setUserDetails(String username, UserDto userDto) throws StockMarketException {
+        if (userDto.username == null || userDto.username.isEmpty()) {
+            throw new StockMarketException("new UserName is empty.");
+        }
+        if (userDto.email == null || userDto.email.isEmpty()) {
+            throw new StockMarketException("new Email is empty.");
+        }
+        if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
+            throw new StockMarketException("new Password is empty, or too short.");
+        }
+        if (!_EmailValidator.isValidEmail(userDto.email)) {
+            throw new StockMarketException("new Email is not valid.");
+        }
+        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
+        userDto.password = encodedPass;
+
+        User user = getUserByUsername(username);
+
+        if (!doesUserExist(userDto.username)) {
+            throw new StockMarketException("Username already exists.");
+        } else {
+            user.setEmail(userDto.email);
+            user.setPassword(userDto.password);
+            user.setBirthDate(userDto.birthDate);
+        }
+
+        return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
+    }
+
+    public boolean notifyUser(String targetUser, Alert alert) {
+        try {
+            NotificationHandler.getInstance().sendMessage(targetUser, alert);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

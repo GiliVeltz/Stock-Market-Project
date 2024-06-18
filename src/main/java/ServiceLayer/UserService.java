@@ -2,20 +2,27 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Websocket;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.vaadin.flow.component.notification.Notification;
 
 import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
 import Domain.User;
+import Domain.Alerts.GeneralAlert;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
+import Server.notifications.NotificationHandler;
+import Server.notifications.WebSocketServer;
 import Exceptions.UnauthorizedException;
+import Domain.Alerts.*;
 
 @Service
 public class UserService {
@@ -51,8 +58,17 @@ public class UserService {
                     User user = _userFacade.getUserByUsername(userName);
                     System.out.println("user"+user.getUserName()+"password"+user.getPassword());
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    response.setReturnValue(_tokenService.generateUserToken(userName));
-                    logger.info("User " + userName + " Logged In Successfully");
+                    //update the new token for the user
+                    String newToken = _tokenService.generateUserToken(userName);
+                    response.setReturnValue(newToken);
+             
+                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello new logged in user! Welcome to the system!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                    
+                    logger.info("User " + userName + " Logged In Succesfully");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
@@ -79,6 +95,10 @@ public class UserService {
                     _shoppingCartFacade.addCartForGuest(id);
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
+                    //close this session
+                    WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
+                    Alert alert = new GeneralAlert("system Administrator", userName, "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage("A user with the username given in the token does not exist.");
@@ -340,6 +360,50 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to write review: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to write review: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // this function is responsible for getting the user personal details.
+    public ResponseEntity<Response> getUserDetails(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    response.setReturnValue(_userFacade.getUserDetails(username));
+                } else {
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to get user details: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to get user details: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // this function is responsible for setting the user personal details.
+    public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    response.setReturnValue(_userFacade.setUserDetails(username, userDto));
+                } else {
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to set user details: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to set user details: " + e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
