@@ -106,7 +106,7 @@ public class UserController {
         return resp;
     }
 
-    @GetMapping("/addProductToShoppingCart")
+    @PostMapping("/addProductToShoppingCart")
     public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:
@@ -116,7 +116,7 @@ public class UserController {
         return resp;
     }
 
-    @GetMapping("/removeProductFromShoppingCart")
+    @PostMapping("/removeProductFromShoppingCart")
     public ResponseEntity<Response> removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:

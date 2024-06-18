@@ -1,25 +1,18 @@
 package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.hibernate.sql.exec.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +30,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import Domain.*;
 import Domain.Authenticators.*;
 import Domain.ExternalServices.ExternalServiceHandler;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
