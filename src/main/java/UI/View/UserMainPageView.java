@@ -1,5 +1,6 @@
 package UI.View;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -21,6 +22,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutionException;
 
 import com.vaadin.flow.component.html.Span;
 
@@ -36,8 +38,13 @@ public class UserMainPageView extends BaseView {
     private String _username;
     private Button _openShopButton;
     private VerticalLayout shopsLayout;
-    private Button saveButton; // Moved saveButton declaration to class level
+    private Button saveButton;
     private Button editButton;
+    private TextField usernameField = new TextField("Username");
+    private TextField passwordField = new TextField("Password");
+    private TextField emailField = new TextField("Email");
+    private  TextField birthDateField = new TextField("Birth Date");
+
 
     public UserMainPageView() {
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
@@ -55,41 +62,18 @@ public class UserMainPageView extends BaseView {
         tabs.addClassName("custom-tabs");
 
         VerticalLayout profileLayout = new VerticalLayout();
-        shopsLayout = new VerticalLayout(); // Use class-level variable
+        shopsLayout = new VerticalLayout();
 
         UserShopsPageView userShopsPageView = new UserShopsPageView();
         shopsLayout.add(userShopsPageView);
 
         FormLayout userInfoLayout = new FormLayout();
-
-        // Fetch user information from presenter
-        presenter = new UserMainPagePresenter(this);
-        UserDto userDto = presenter.getUserInfo(_username);
-
-        // Display user information in non-editable fields
         TextField usernameField = new TextField("Username");
-        usernameField.setValue(userDto.username);
-        usernameField.setReadOnly(true);
-        userInfoLayout.addFormItem(usernameField, "Username");
-
         TextField passwordField = new TextField("Password");
-        passwordField.setValue(userDto.password);
-        passwordField.setReadOnly(true);
-        userInfoLayout.addFormItem(passwordField, "Password");
-
         TextField emailField = new TextField("Email");
-        emailField.setValue(userDto.email);
-        emailField.setReadOnly(true);
-        userInfoLayout.addFormItem(emailField, "Email");
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         TextField birthDateField = new TextField("Birth Date");
-        birthDateField.setValue(dateFormat.format(userDto.birthDate));
-        birthDateField.setReadOnly(true);
-        userInfoLayout.addFormItem(birthDateField, "Birth Date");
 
         // Initialize edit and save buttons
-        
         editButton = new Button("Edit Details", event -> {
             // Switch to edit mode
             usernameField.setReadOnly(false);
@@ -160,6 +144,28 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
         add(header, mainLayout, shopsLayout, profileLayout, openShopButtonLayout);
+
+        // Fetch user information asynchronously after the view has been initialized
+        initializeUserInfo();
+    }
+
+    private void initializeUserInfo() {
+        presenter = new UserMainPagePresenter(this);
+        presenter.getUserInfo().thenAccept(userDto -> {
+            // Display user information in non-editable fields
+            UI.getCurrent().access(() -> {
+                usernameField.setValue(userDto.username);
+                passwordField.setValue(userDto.password);
+                emailField.setValue(userDto.email);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                birthDateField.setValue(dateFormat.format(userDto.birthDate));
+            });
+        }).exceptionally(ex -> {
+            UI.getCurrent().access(() -> {
+                showErrorMessage("Failed to fetch user details: " + ex.getMessage());
+            });
+            return null;
+        });
     }
 
     private Dialog createOpenNewShopDialog() {
