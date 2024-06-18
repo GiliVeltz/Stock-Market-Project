@@ -140,7 +140,7 @@ public class UserMainPageView extends BaseView {
             profileLayout.setVisible(event.getSelectedTab() == profileTab);
             shopsLayout.setVisible(event.getSelectedTab() == shopsTab);
             messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
-
+            _openShopButton.setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
         });
 
         tabs.setSelectedTab(profileTab);
@@ -173,7 +173,7 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        add(header, mainLayout, shopsLayout, profileLayout, openShopButtonLayout,messagesLayout);
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
     }
 
     private Dialog createOpenNewShopDialog() {
