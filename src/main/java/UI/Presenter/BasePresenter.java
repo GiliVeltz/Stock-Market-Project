@@ -5,14 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 
+import UI.WebSocketClient;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
 
 public class BasePresenter {
 
     private static final String SERVER_PORT = "8080";
+    
+    @Autowired
+    private WebSocketClient webSocketClient;
 
     public BasePresenter() {
+        this.webSocketClient = new WebSocketClient();
     }
 
     // For the first time client enter the system [[If client has nothing in localStorage => It's first time]]
@@ -42,6 +50,7 @@ public class BasePresenter {
 
             // Store the token in local storage using JavaScript
             UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", token);
+            webSocketClient.connect(token);
 
             // Optionally, you can handle the response here
         } catch (Exception e) {
