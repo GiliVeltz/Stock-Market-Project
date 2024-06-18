@@ -40,9 +40,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductNameAsGuest("productName2") ); // fail - non exist product
     }
 
-    // Test search product information according to product category as a guest in
-    // the system.
-    // TODO: GILI
+    // Test search product information according to product category as a guest in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryAsGuest() {
@@ -75,16 +73,14 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName2", "1") ); // fail - non exist product and non exist shop
     }
 
-    // Test search product information in a specific shop, according to product
-    // category as a guest in the system.
-    // TODO: GILI
+    // Test search product information in a specific shop, according to product category as a guest in the system.
     @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId1")); // success - exist category and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId1")); // fail - non exist category but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy1", "shopId2")); // fail - exist category but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("caterogy2", "shopId2")); // fail - non exist category and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("CLOTHING", "0")); // success - exist category and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("GROCERY", "0")); // fail - non exist category but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("CLOTHING", "1")); // fail - exist category but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest("GROCERY", "1")); // fail - non exist category and non exist shop
     }
 
     // Test search product information in a specific shop, according to key words as
