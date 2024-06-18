@@ -89,7 +89,7 @@ public UserMainPageView() {
     
     editButton = new Button("Edit Details", event -> {
         // Switch to edit mode
-        usernameField.setReadOnly(false);
+        passwordField.setReadOnly(false);
         emailField.setReadOnly(false);
         birthDateField.setReadOnly(false);
 
