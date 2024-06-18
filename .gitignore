@@ -66,3 +66,7 @@ mvnw
 tsconfig.json
 types.d.ts
 index.html
+
+
+#for package-lock.json
+package-lock.json

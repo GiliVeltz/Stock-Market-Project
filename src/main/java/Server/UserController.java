@@ -45,6 +45,13 @@ public class UserController {
         return _userService.logOut(token);
     }
 
+    @GetMapping("/viewShoppingCart")
+    public ResponseEntity<Response> viewShoppingCart(
+            @RequestParam String username,
+            @RequestHeader(value = "Authorization") String token) {
+        return _userService.viewShoppingCart(token, username);
+    }
+
     @PostMapping("/purchaseCart")
     public ResponseEntity<Response> purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {
@@ -71,6 +78,21 @@ public class UserController {
         // "http://localhost:8080/api/user/getUserPurchaseHistory" -H "Authorization":
         // user_token_here"
         ResponseEntity<Response> resp = _userService.getUserPurchaseHistory(token, username);
+        return resp;
+    }
+
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<Response> getUserDetails(@RequestHeader(value = "Authorization") String token) {
+        // example request:
+        // "http://localhost:8080/api/user/getUserDetails" -H "Authorization":
+        // user_token_here"
+        ResponseEntity<Response> resp = _userService.getUserDetails(token);
+        return resp;
+    }
+
+    @PostMapping("/setUserDetails")
+    public ResponseEntity<Response> setUserDetails(@RequestHeader(value = "Authorization") String token, @RequestParam UserDto userDto) {
+        ResponseEntity<Response> resp = _userService.setUserDetails(token, userDto);
         return resp;
     }
 

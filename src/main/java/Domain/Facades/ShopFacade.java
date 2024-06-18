@@ -1,7 +1,9 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +17,12 @@ import Domain.Product;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Domain.Shop;
+import Domain.Alerts.Alert;
+import Domain.Alerts.AppointedManagerAlert;
+import Domain.Alerts.AppointedOwnerAlert;
+import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
+import Domain.User;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -36,6 +43,14 @@ public class ShopFacade {
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -68,6 +83,7 @@ public class ShopFacade {
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
         int shopId = _shopRepository.getUniqueShopID();
         _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
+        getShopByShopId(shopId).notifyReOpenShop(userName);
         return shopId;
     }
 
@@ -79,8 +95,8 @@ public class ShopFacade {
             else {
                 Shop shopToClose = getShopByShopId(shopId);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
-                    getShopByShopId(shopId).notifyRemoveShop();
                     shopToClose.closeShop();
+                    getShopByShopId(shopId).notifyCloseShop(userName);
                 } else {
                     throw new StockMarketException(String.format(
                             "User %s can't cloase the Shop: %d. Only the fonder has the permission", userName, shopId));
@@ -100,7 +116,7 @@ public class ShopFacade {
             else {
                 Shop shopToReOpen = getShopByShopId(shopId);
                 if (shopToReOpen.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
-                    getShopByShopId(shopId).notifyReOpenShop();
+                    getShopByShopId(shopId).notifyReOpenShop(userName);
                     shopToReOpen.reopenShop();
                 } else {
                     throw new Exception(String.format(
@@ -330,7 +346,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -459,6 +477,13 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
+        notifyAppointOwner(username, ownerUsername, shopId);
+    }
+
+    // notify the owner that he was appointed
+    private void notifyAppointOwner(String username, String targetUser, int shopId) {
+        Alert alert = new AppointedOwnerAlert(username, targetUser, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**
@@ -481,6 +506,13 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
+        notifyAppointManager(username, managerUsername, permissions,shopId);
+    }
+
+    //notify the manager that he was appointed
+    private void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
+        Alert alert = new AppointedManagerAlert(username, targetUser, permissions, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**
@@ -495,10 +527,20 @@ public class ShopFacade {
     public Set<String> fireShopManager(String username, Integer shopId, String managerUsername)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
+        Set<String> result = new HashSet<String>();
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
-        }
-        return shop.fireRole(username, managerUsername);
+        }      
+        result = shop.fireRole(username, managerUsername);
+        notifyFireUser(username,managerUsername, shopId);
+
+        return result;
+        
+    }
+    //notify the manager that he was fired
+    public void notifyFireUser(String targetUser, String manager, int shopId) {
+        Alert alert = new FireManagerAlert(manager, targetUser, shopId);
+        _userFacade.notifyUser(targetUser, alert);
     }
 
     /**
@@ -537,6 +579,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+        
     }
 
     public String getShopPolicyInfo(Integer shopId) throws StockMarketException {
@@ -713,5 +756,71 @@ public class ShopFacade {
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeShopPolicy(username, shopRules);
+    }
+
+    // This function is responsible for getting all the shops in the system
+    public List<ShopDto> getShopsEntity() {
+        List<Shop> shops = getAllShops();
+        List<ShopDto> shopsDto = new ArrayList<>();
+        for (Shop shop : shops) {
+            shopsDto.add(new ShopDto(shop));
+        }
+        return shopsDto;
+    }
+
+    // This function is responsible for getting all the information about a shop
+    public ShopDto getShopInfo(Integer shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shop);
+        }
+        return null;
+    }
+      
+    /**
+     * Get the permissions of a user in a shop
+     * @param username the user's username
+     * @param shopId the shop's ID
+     * @return the list of permissions of the user in the shop
+     * @throws StockMarketException
+     */
+    public List<String> getShopManagerPermissions(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        Set<Permission> permissions = shop.getRole(username).getPermissions();
+        List<String> permissionsList = permissions.stream().map(permission -> permission.toString()).collect(Collectors.toList());
+        return permissionsList;
+    }
+
+
+    /**
+     * Get all the shops names that the user has a role in
+     * 
+     * @param username the user's username
+     * @return the list of shops names that the user has a role in
+     * @throws StockMarketException
+     */
+    public List<String> getUserShopsNames(String username) throws StockMarketException {
+        List<String> shops = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.checkIfHasRole(username)) {
+                shops.add(shop.getShopName());
+            }
+        }
+        return shops;
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
+
+        openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
     }
 }

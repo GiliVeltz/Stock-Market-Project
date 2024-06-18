@@ -1,8 +1,13 @@
 package UI.Model;
 
-public class Response {
+public class Response<T> {
     private String errorMessage;
-    private String returnValue;
+    private T returnValue;
+
+    public Response(String errorMessage, T returnValue) {
+        this.errorMessage = errorMessage;
+        this.returnValue = returnValue;
+    }
 
     // Getters and setters
     public String getErrorMessage() {
@@ -13,11 +18,12 @@ public class Response {
         this.errorMessage = errorMessage;
     }
 
-    public String getReturnValue() {
+    public T getReturnValue() {
         return returnValue;
     }
 
-    public void setReturnValue(String returnValue) {
+    public void setReturnValue(T returnValue) {
         this.returnValue = returnValue;
     }
 }
+

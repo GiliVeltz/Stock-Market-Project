@@ -15,6 +15,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.notification.Notification;
@@ -27,11 +28,10 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
 
-public class Header extends HorizontalLayout implements ViewPageI {
+public class Header extends HorizontalLayout {
 
     private Button loginButton;
     private Button _registerButton;
-    private Button openShopButton;
     private final HeaderPresenter presenter;
     private HorizontalLayout _leftButtonLayout;
     private Dialog logoutConfirmationDialog;
@@ -41,27 +41,31 @@ public class Header extends HorizontalLayout implements ViewPageI {
         // Initialize the presenter
         presenter = new HeaderPresenter(this, serverPort);
 
+        // Create an Image component
+        Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
+
+        // Set the size of the image
+        image.setWidth("100px");
+        image.setHeight("100px");
+
         // Create the buttons
         _registerButton = new Button("Register");
         loginButton = new Button("Login");
         Button searchProductsButton = new Button("Search Products");
         Button searchShopsButton = new Button("Search Shops");
-        Button profileButton = new Button("My Profile");
-        Button shoppingCartButton = new Button("Shopping Cart");
+        Button shoppingCartButton = new Button(image);
+        // Button messagesButton = new Button("My Messages");
+        Button messagesButton = new Button("My Messages", e -> navigateToMessages());
 
-        // New button for opening a shop
-        openShopButton = new Button("Open Shop");
-        openShopButton.setVisible(false); // Hide initially
-        openShopButton.addClassName("pointer-cursor");
-        openShopButton.addClickListener(event -> createOpenNewShopDialog().open());
+
 
         // Add cursor styling
         _registerButton.addClassName("pointer-cursor");
         loginButton.addClassName("pointer-cursor");
         searchProductsButton.addClassName("pointer-cursor");
         searchShopsButton.addClassName("pointer-cursor");
-        profileButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
+        messagesButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
         _leftButtonLayout = new HorizontalLayout();
@@ -74,7 +78,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(openShopButton, searchProductsButton, searchShopsButton, profileButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
@@ -110,6 +114,15 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
         searchProductsButton.addClickListener(event -> searchProductsDialog.open());
         searchShopsButton.addClickListener(event -> searchShopsDialog.open());
+
+        shoppingCartButton.addClickListener(event -> {
+            getUI().ifPresent(ui -> ui.navigate("user_cart"));
+        });
+    }
+
+
+    private void navigateToMessages() {
+        getUI().ifPresent(ui -> ui.navigate("user_messages"));
     }
 
     private Dialog createRegistrationDialog() {
@@ -281,8 +294,17 @@ public class Header extends HorizontalLayout implements ViewPageI {
 
     public void createBackToMainButton() {
         Button backToMainButton = new Button("Back to Main Page", event -> {
-            VaadinSession.getCurrent().setAttribute("username", "User");
             getUI().ifPresent(ui -> ui.navigate("user"));
+        });
+
+        backToMainButton.addClassName("pointer-cursor");
+        _leftButtonLayout.remove(_registerButton);
+        _leftButtonLayout.add(backToMainButton);
+    }
+
+    public void createBackToMainButtonGuest() {
+        Button backToMainButton = new Button("Back to Main Page", event -> {
+            getUI().ifPresent(ui -> ui.navigate(""));
         });
 
         backToMainButton.addClassName("pointer-cursor");
@@ -298,53 +320,29 @@ public class Header extends HorizontalLayout implements ViewPageI {
         _leftButtonLayout.add(logoutButton);
     }
 
-    private Dialog createOpenNewShopDialog() {
-        Dialog dialog = new Dialog();
 
-        // Create a headline
-        H2 headline = new H2("Open New Shop");
+    public void showSuccessMessage(String message) {
+        Notification.show(message);
+    }
 
-        // Create form layout
-        FormLayout formLayout = new FormLayout();
+    public void showErrorMessage(String message) {
+        Notification.show(message);
+    }
 
-        // Create form fields
-        TextField shopNameField = new TextField("Shop Name");
-        TextField bankDetailsField = new TextField("Bank Details");
-        TextField shopAddressField = new TextField("Address");
+    public void switchToLogout() {
+        loginButton.setText("Logout");
+    }
 
-        // Add fields to the form layout
-        formLayout.add(shopNameField, bankDetailsField, shopAddressField);
+    public void switchToLogin() {
+        loginButton.setText("Login");
+    }
 
-        // Create buttons
-        Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
-            String shopName = shopNameField.getValue();
-            String bankDetails = bankDetailsField.getValue();
-            String shopAddress = shopAddressField.getValue();
+    public void navigateToUserMainPage() {
+        getUI().ifPresent(ui -> ui.navigate("user"));
+    }
 
-            presenter.openNewShop(shopName, bankDetails, shopAddress);
-
-            // Close the dialog after submission
-            dialog.close();
-        });
-
-        submitButton.addClassName("pointer-cursor");
-
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
-
-        cancelButton.addClassName("pointer-cursor");
-
-        // Create button layout
-        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
-        buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
-
-        // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
-        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        dialog.add(dialogLayout);
-
-        return dialog;
+    public void navigateToLandingPage() {
+        getUI().ifPresent(ui -> ui.navigate(""));
     }
 
     private Dialog createSearchProductsDialog() {
@@ -385,12 +383,12 @@ public class Header extends HorizontalLayout implements ViewPageI {
         TextField minPriceField = new TextField("Minimum Price");
         minPriceField.setPattern("[0-9]+");
         minPriceField.setErrorMessage("Please enter a valid minimum price");
-        
+
         TextField maxPriceField = new TextField("Maximum Price");
         maxPriceField.setPattern("[0-9]+");
         maxPriceField.setErrorMessage("Please enter a valid maximum price");
-    
-        
+
+
         TextField productNameField = new TextField("By Product Name");
 
         // Add value change listeners to update field states
@@ -460,11 +458,11 @@ public class Header extends HorizontalLayout implements ViewPageI {
         return dialog;
     }
 
-    
+
     private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
         boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !minPriceField.isEmpty() || !maxPriceField.isEmpty() || !productNameField.isEmpty();
         boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
-    
+
         categoryField.setEnabled(!anyFieldFilled || !categoryField.isEmpty());
         keyWordField.setEnabled(!anyFieldFilled || !keyWordField.isEmpty());
         keywordInputField.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
@@ -554,7 +552,7 @@ public class Header extends HorizontalLayout implements ViewPageI {
     private void updateFieldStates(TextField shopNameField, TextField shopIdField) {
         boolean isShopNameFilled = !shopNameField.isEmpty();
         boolean isShopIdFilled = !shopIdField.isEmpty();
-    
+
         shopNameField.setEnabled(!isShopIdFilled);
         shopIdField.setEnabled(!isShopNameFilled);
     }
@@ -563,29 +561,5 @@ public class Header extends HorizontalLayout implements ViewPageI {
         shopNameField.clear();
         shopIdField.clear();
         updateFieldStates(shopNameField, shopIdField);
-    }
-
-
-    @Override
-    public void showSuccessMessage(String message) {
-        Notification.show(message);
-
-        // Show the open shop button on successful login
-        if ("Login successful".equals(message)) {
-            openShopButton.setVisible(true);
-        }
-    }
-
-    @Override
-    public void showErrorMessage(String message) {
-        Notification.show(message);
-    }
-
-    public void switchToLogout() {
-        loginButton.setText("Logout");
-    }
-
-    public void switchToLogin() {
-        loginButton.setText("Login");
     }
 }
