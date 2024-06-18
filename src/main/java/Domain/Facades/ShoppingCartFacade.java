@@ -144,7 +144,7 @@ public class ShoppingCartFacade {
         ArrayList<Integer> allBaskets = new ArrayList<Integer>();
 
         for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
-            allBaskets.add(i + 1);
+            allBaskets.add(i);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         details.basketsToBuy = allBaskets;
         _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());

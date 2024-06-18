@@ -1,5 +1,6 @@
 package Server;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,18 +113,21 @@ public class ShopController {
     }
 
     @PostMapping("/addShopOwner")
-    public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> body,
-            @RequestParam Integer shopId, @RequestParam String newOwnerUsername) {
+    public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        String newOwnerUsername = (String) request.get("newOwnerUsername");
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
     @PostMapping("/addShopManager")
-    public ResponseEntity<Response>addShopManager(@RequestHeader("Authorization") String token,
-            @RequestParam Integer shopId,
-            @RequestParam String newManagerUsername,
-            @RequestBody Set<String> permissions) {
+    public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
+                                                @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        String newManagerUsername = (String) request.get("newManagerUsername");
+        Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.addShopManager(token, shopId, newManagerUsername, permissions);
     }
+
 
     @PostMapping("/fireShopManager")
     public ResponseEntity<Response>fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
