@@ -21,8 +21,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
-import java.util.List;
-
 import com.vaadin.flow.component.html.Span;
 
 import UI.Presenter.UserMainPagePresenter;
@@ -97,36 +95,39 @@ public class UserMainPageView extends BaseView {
         // Create a horizontal layout for the title to center it
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setWidthFull(); // Make the layout take full width
-        titleLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the content
         titleLayout.add(welcomeMessage);
 
         // Create a layout for the tabs and center it
         HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
         tabsLayout.setWidthFull(); // Make the layout take full width
-        tabsLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the tabs
+        tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the tabs
 
         // Create the main layout and add components
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         mainLayout.add(titleLayout, tabsLayout, profileLayout, shopsLayout, userShopsPageView);
 
-        // Add components to the vertical layout
-        add(header, mainLayout);
-
         // Initialize presenter
         presenter = new UserMainPagePresenter(this);
+
+        // Create the "Open Shop" button with small width
+        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
+        _openShopButton.setWidth("120px"); // Set a fixed width for the button
+
+        // Create a layout for the button and align it to the bottom-right
+        HorizontalLayout buttonLayout = new HorizontalLayout(_openShopButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.END);
+
+        // Add components to the vertical layout
+        add(header, mainLayout, buttonLayout);
+
     }
 
     // Optionally remove the createShopButtons method from UserMainPageView
     // as it's now handled by UserShopsPageView directly
-
-    private void navigateToShops() {
-        getUI().ifPresent(ui -> ui.navigate("user_shops"));
-    }
-
-    private void navigateToProfile() {
-        getUI().ifPresent(ui -> ui.navigate("profile"));
-    }
 
     private Dialog createOpenNewShopDialog() {
         Dialog dialog = new Dialog();
@@ -157,7 +158,7 @@ public class UserMainPageView extends BaseView {
 
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
         VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -165,7 +166,4 @@ public class UserMainPageView extends BaseView {
 
         return dialog;
     }
-
-    // Optionally remove the navigateToManageShop method from UserMainPageView
-    // as it's now handled by UserShopsPageView directly
 }

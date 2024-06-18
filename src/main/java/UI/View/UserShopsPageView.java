@@ -60,4 +60,5 @@ public class UserShopsPageView extends BaseView {
     public void navigateToManageShop(Integer shopId) {
         getUI().ifPresent(ui -> ui.navigate("user_shops/" + shopId));
     }
+    
 }
