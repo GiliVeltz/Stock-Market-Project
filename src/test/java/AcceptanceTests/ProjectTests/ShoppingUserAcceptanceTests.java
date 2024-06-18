@@ -42,7 +42,6 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.CLOTHING) ); // success - exist category
@@ -72,7 +71,6 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information in a specific shop, according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.CLOTHING, "0") ); // success - exist category and exist shop
