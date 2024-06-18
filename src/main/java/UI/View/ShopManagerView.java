@@ -38,6 +38,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private H1 _title;
     private int _shopId;
     private Dialog _appointManagerDialog;
+    private Dialog _appointOwnerDialog;
     
     public ShopManagerView(){
 
@@ -70,7 +71,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
         Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
-        Button appointOwnerBtn = new Button("Appoint Owner", e -> presenter.appointOwner());
+        Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
         Button viewSubordinateBtn = new Button("View Subordinates", e -> presenter.viewSubordinate());
         Button viewShopRolesBtn = new Button("View Shop Roles", e -> presenter.viewShopRoles());
         Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
@@ -119,6 +120,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
+        _appointOwnerDialog = createAppointOwnerDialog();
     }
 
     public int getShopId() {
@@ -195,8 +197,43 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             }
         });
 
+        // Add a cancel button
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
         // Add components to the dialog
-        dialog.add(formLayout, submitButton);
+        dialog.add(formLayout, submitButton, cancelButton);
+
+        return dialog;
+    }
+
+
+    public Dialog createAppointOwnerDialog() {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create the TextField for the new manager's username
+        TextField usernameField = new TextField("New Owner Username");
+        formLayout.add(usernameField);
+
+        // Add a submit button
+        Button submitButton = new Button("Appoint", event -> {
+            String username = usernameField.getValue();
+            if (username.isEmpty()) {
+                Notification.show("Please enter a username"); 
+            } else {
+                // Handle the appointment logic here
+                presenter.appointOwner(username);
+                dialog.close();
+            }
+        });
+
+        // Add a cancel button
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        // Add components to the dialog
+        dialog.add(formLayout, submitButton, cancelButton);
 
         return dialog;
     }

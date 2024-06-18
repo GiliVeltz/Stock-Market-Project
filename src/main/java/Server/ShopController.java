@@ -113,8 +113,9 @@ public class ShopController {
     }
 
     @PostMapping("/addShopOwner")
-    public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> body,
-            @RequestParam Integer shopId, @RequestParam String newOwnerUsername) {
+    public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        String newOwnerUsername = (String) request.get("newOwnerUsername");
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
