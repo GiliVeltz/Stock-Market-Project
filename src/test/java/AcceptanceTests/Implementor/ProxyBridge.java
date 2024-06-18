@@ -1,5 +1,7 @@
 package AcceptanceTests.Implementor;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
@@ -101,8 +103,18 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartGuest() {
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuest' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address) {
+        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartUser' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
+        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuestTherding' in ProxyBridge class");
     }
 
     @Override
@@ -135,10 +147,6 @@ public class ProxyBridge implements BridgeInterface{
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeyWordsAsUser' in ProxyBridge class");
     }
 
-    @Override
-    public boolean testGetProductInfoUsingProductNameInShop(String productId, String shopId) {
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameInShop' in ProxyBridge class");
-    }
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsUser(String productId, String shopId) {

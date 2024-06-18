@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,9 @@ public class UserFacade {
         _guestIds = guestIds;
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
+
+        // For testing UI
+        // initUI();
     }
 
     // Public method to provide access to the _UserFacade
@@ -180,6 +184,12 @@ public class UserFacade {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() {
+        _userRepository.addUser(new User("tal", 
+                this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
     }
 
 }

@@ -34,12 +34,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information according to product name as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductNameAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameAsUser("productId1") ); // success - exist product
-        assertFalse(_bridge.testGetProductInfoUsingProductNameAsUser("productId2") ); // fail - non exist product
+        assertTrue(_bridge.testGetProductInfoUsingProductNameAsUser("productName1") ); // success - exist product
+        assertFalse(_bridge.testGetProductInfoUsingProductNameAsUser("productName2") ); // fail - non exist product
     }
     
     // Test search product information according to product category as a User in the system.
@@ -65,13 +63,12 @@ public class ShoppingUserAcceptanceTests{
     // TODO: GILI - need to implement this test
     
     // Test search product information in a specific shop, according to product name as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId1", "shopId1") ); // success - exist product and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId2", "shopId1") ); // fail - non exist product but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId1", "shopId2") ); // fail - exist product but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId2", "shopId2") ); // fail - non exist product and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName1", "0") ); // success - exist product and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName2", "0") ); // fail - non exist product but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName1", "1") ); // fail - exist product but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName2", "1") ); // fail - non exist product and non exist shop
     }
     
     // Test search product information in a specific shop, according to product category as a User in the system.

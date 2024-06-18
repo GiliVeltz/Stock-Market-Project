@@ -1,17 +1,25 @@
 package AcceptanceTests.Implementor;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-
+import org.hibernate.sql.exec.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +37,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import Domain.*;
 import Domain.Authenticators.*;
 import Domain.ExternalServices.ExternalServiceHandler;
+import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
 import Dtos.ProductDto;
@@ -124,7 +133,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com", new Date()));
+                add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com",
+                        new Date()));
             }
         }, new ArrayList<>());
         try {
@@ -172,7 +182,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Test
-    public boolean testAddExternalService(String newSerivceName, String informationPersonName, String informationPersonPhone, Integer securityIdForService){
+    public boolean testAddExternalService(String newSerivceName, String informationPersonName,
+            String informationPersonPhone, Integer securityIdForService) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -186,12 +197,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _shopFacade = new ShopFacade();
         _shoppingCartFacade = new ShoppingCartFacade();
-        _userFacade = new UserFacade(new ArrayList<User>(){
+        _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
+                        new Date()));
             }
-        }
-        , new ArrayList<>());
+        }, new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest("manager");
         try {
@@ -202,7 +213,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
 
         ExternalServiceDto externalServiceDto = new ExternalServiceDto(-1, "existSerivce", "name", "111");
-        
+
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
@@ -210,17 +221,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _externalServiceHandler.addExternalService(externalServiceDto);
 
         ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
-        if(res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testAddExternalService Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
 
         ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
-        if(res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testAddExternalService Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName, informationPersonPhone);
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName,
+                informationPersonPhone);
 
         // Act
         ResponseEntity<Response> res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
@@ -231,7 +243,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Test
-    public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName, String newInformationPersonName, String newInformationPersonPhone){
+    public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName,
+            String newInformationPersonName, String newInformationPersonPhone) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -245,17 +258,17 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _shopFacade = new ShopFacade();
         _shoppingCartFacade = new ShoppingCartFacade();
-        _userFacade = new UserFacade(new ArrayList<User>(){
+        _userFacade = new UserFacade(new ArrayList<User>() {
             {
-                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
+                        new Date()));
             }
-        }
-        , new ArrayList<>());
+        }, new ArrayList<>());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
-                
+
         _shoppingCartFacade.addCartForGuest("manager");
 
         try {
@@ -269,32 +282,39 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _externalServiceHandler.addExternalService(externalServiceDto);
 
         ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
-        if(res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testChangeExternalService Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
 
         ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
-        if(res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testChangeExternalService Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name", "111");
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name",
+                "111");
 
         // Act
-        ResponseEntity<Response> res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto, newSerivceName);
-        ResponseEntity<Response> res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token, externalServiceDto2, newInformationPersonName);
-        ResponseEntity<Response> res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token, externalServiceDto2, newInformationPersonPhone);
+        ResponseEntity<Response> res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto,
+                newSerivceName);
+        ResponseEntity<Response> res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token,
+                externalServiceDto2, newInformationPersonName);
+        ResponseEntity<Response> res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token,
+                externalServiceDto2, newInformationPersonPhone);
 
         // Assert
-        if(res3.getBody().getErrorMessage() != null)
+        if (res3.getBody().getErrorMessage() != null)
             logger.info("changeExternalServiceName Error message: " + res3.getBody().getErrorMessage());
-        if(res4.getBody().getErrorMessage() != null)
-            logger.info("changeExternalServiceInformationPersonName Error message: " + res4.getBody().getErrorMessage());
-        if(res5.getBody().getErrorMessage() != null)
-        logger.info("changeExternalServiceInformationPersonPhone Error message: " + res5.getBody().getErrorMessage());
-        
-        return res3.getBody().getErrorMessage() == null && res4.getBody().getErrorMessage() == null && res5.getBody().getErrorMessage() == null;
+        if (res4.getBody().getErrorMessage() != null)
+            logger.info(
+                    "changeExternalServiceInformationPersonName Error message: " + res4.getBody().getErrorMessage());
+        if (res5.getBody().getErrorMessage() != null)
+            logger.info(
+                    "changeExternalServiceInformationPersonPhone Error message: " + res5.getBody().getErrorMessage());
+
+        return res3.getBody().getErrorMessage() == null && res4.getBody().getErrorMessage() == null
+                && res5.getBody().getErrorMessage() == null;
     }
 
     // GUEST TESTS
@@ -398,13 +418,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getBody().getErrorMessage() == null;
     }
 
-    // SYSTEM ADMIN TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // SYSTEM ADMIN TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
-    public boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName){
+    public boolean testSystemManagerViewHistoryPurcaseInUsers(String managerName, String userName) {
         // Arrange
         MockitoAnnotations.openMocks(this);
-        
+
         User manager = new User(managerName, "managersPassword", "email@email.com",
                 new Date());
         manager.setIsSystemAdmin(true);
@@ -434,15 +455,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Test
-    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId){
+    public boolean testSystemManagerViewHistoryPurcaseInShops(String namanger, Integer shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
-        
+
         User manager = new User("manager", "managersPassword", "email@email.com",
                 new Date());
         manager.setIsSystemAdmin(true);
 
-        ShopDto shopDto = new ShopDto("shopName" ,"bankDetails", "address");
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -451,7 +472,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
-        
+
         try {
             _shopFacade.openNewShop(namanger, shopDto);
         } catch (StockMarketException e) {
@@ -475,7 +496,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getBody().getErrorMessage() == null;
     }
 
-    // STORE MANAGER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // STORE MANAGER TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
     public boolean testPermissionForShopManager(String username, Integer shopId, String permission) {
@@ -497,7 +519,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
-        
+
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
@@ -505,26 +527,29 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         _shopServiceUnderTest.openNewShop(token, shopDto);
-        
+
         Set<String> permissions = new HashSet<>();
-        if(permission.equals("possiblePermission")){
+        if (permission.equals("possiblePermission")) {
             permissions.add("ADD_PRODUCT");
         }
-        
+
         _shopServiceUnderTest.addShopManager(token, shopId, username, permissions);
 
         // Act
-        ResponseEntity<Response> res = _shopServiceUnderTest.addProductToShop(token, shopId, new ProductDto("productName", Category.CLOTHING, 100, 1));
+        ResponseEntity<Response> res = _shopServiceUnderTest.addProductToShop(token, shopId,
+                new ProductDto("productName", Category.CLOTHING, 100, 1));
 
         // Assert
         logger.info("testPermissionForShopManager Error message: " + res.getBody().getErrorMessage());
         return res.getBody().getErrorMessage() == null;
     }
 
-    // SHOP OWNER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
+    // SHOP OWNER TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     @Test
-    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName, String productAmount){
+    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
+            String productAmount) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -538,14 +563,17 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
         when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
-        
+
         _passwordEncoder = new PasswordEncoderUtil();
-        
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount), 1);
-        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmount), 1);
+        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING,
+                Integer.parseInt(productAmount), 1);
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -568,28 +596,31 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productExistDto);
-        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productExistDto);
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
 
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAddProductToShop Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAddProductToShop Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        if (res3.getBody().getErrorMessage() != null){
+        if (res3.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAddProductToShop Error message: " + res3.getBody().getErrorMessage());
             return false;
         }
         return res3.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName){
+    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -609,12 +640,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(tokenNotShopOwnerUserName)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(tokenNotShopOwnerUserName)).thenReturn("NotShopOwnerUserName");
         when(_tokenServiceMock.isUserAndLoggedIn(tokenNotShopOwnerUserName)).thenReturn(true);
-        
+
         _passwordEncoder = new PasswordEncoderUtil();
-        
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User NotShopOwnerUserName = new User("NotShopOwnerUserName", _passwordEncoder.encodePassword("NotShopOwnerUserNamePassword"), "email@email.com", new Date());
+
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User NotShopOwnerUserName = new User("NotShopOwnerUserName",
+                _passwordEncoder.encodePassword("NotShopOwnerUserNamePassword"), "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto(productName, Category.CLOTHING, 10, 1);
 
@@ -640,20 +674,23 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
-        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
-        ResponseEntity<Response> res4 = _shopServiceUnderTest.removeProductFromShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwner");
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.removeProductFromShop(tokenShopOwner,
+                Integer.parseInt(shopId), productDto);
 
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveProductFromShop Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res3.getBody().getErrorMessage() != null){
+        if (res3.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveProductFromShop Error message: " + res3.getBody().getErrorMessage());
             return false;
         }
-        if (res4.getBody().getErrorMessage() != null){
+        if (res4.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveProductFromShop Error message: " + res4.getBody().getErrorMessage());
             return false;
         }
@@ -661,7 +698,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Test
-    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName, String productNameNew, String productAmount, String productAmountNew){
+    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
+            String productNameNew, String productAmount, String productAmountNew) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -678,14 +716,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User shopOwner = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopOwnerPassword"),
+                "email@email.com", new Date());
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        
+
         ProductDto productDto = new ProductDto("ProductName", Category.CLOTHING, Integer.parseInt(productAmount), 1);
-        ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productAmountNew), 1);
-        ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productAmountNew), 1);
+        ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productAmountNew),
+                1);
+        ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING,
+                Integer.parseInt(productAmountNew), 1);
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -708,36 +750,42 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwnerUserName");
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDto);
-        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId), productDtoExist);
-        ResponseEntity<Response> res4 = _shopServiceUnderTest.editProductInShop(tokenShopOwner, Integer.parseInt(shopId), productDto, productDtoNew);
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwnerUserName");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDtoExist);
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.editProductInShop(tokenShopOwner,
+                Integer.parseInt(shopId), productDto, productDtoNew);
 
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerEditProductInShop Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerEditProductInShop Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-        if (res3.getBody().getErrorMessage() != null){
+        if (res3.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerEditProductInShop Error message: " + res3.getBody().getErrorMessage());
             return false;
         }
-        if (res4.getBody().getErrorMessage() != null){
+        if (res4.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerEditProductInShop Error message: " + res4.getBody().getErrorMessage());
             return false;
         }
         return res4.getBody().getErrorMessage() == null;
     }
-    
-    @Test
-    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy){return false;}
 
     @Test
-    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername){
+    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
+        return false;
+    }
+
+    @Test
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -749,9 +797,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"), "email@email.com", new Date());
-        User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"),
+                "email@email.com", new Date());
+        User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com",
+                new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -763,7 +814,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }, new ArrayList<>());
 
         _shopFacade = new ShopFacade();
-        
+
         try {
             _shopFacade.openNewShop("shopOwnerUserName", shopDto);
         } catch (StockMarketException e) {
@@ -776,23 +827,25 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "existOwner");
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), newOwnerUsername);
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "existOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                newOwnerUsername);
 
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
         return res2.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername){
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -804,9 +857,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-        User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"), "email@email.com", new Date());
-        User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"), "email@email.com", new Date());
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"),
+                "email@email.com", new Date());
+        User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"),
+                "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -833,23 +889,26 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         permissions.add("ADD_PRODUCT");
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId), "existManager", permissions);
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId), newManagerUsername, permissions);
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
+                "existManager", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
+                newManagerUsername, permissions);
 
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
         return res2.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername, String permission){
+    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -859,8 +918,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
+                "email@EMAIL.COM", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -886,34 +947,37 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         permissions.add("ADD_PRODUCT");
 
         Set<String> permissionsToRemove = new HashSet<>();
-        if(permission.equals("newPermission")){
+        if (permission.equals("newPermission")) {
             permissionsToRemove.add("ADD_PRODUCT");
         }
-        if (permission.equals("invalidPermission")){
+        if (permission.equals("invalidPermission")) {
             permissionsToRemove.add("NON_EXIST_PERMISSION");
         }
-        if (permission.equals("nonexistPermission")){
+        if (permission.equals("nonexistPermission")) {
             permissionsToRemove.add("EDIT_PRODUCT");
         }
-        
+
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId), "managerUserName", permissions);
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId), "managerUserName", permissionsToRemove);
-        
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
+                "managerUserName", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
+                "managerUserName", permissionsToRemove);
+
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
-            return false;            
+            return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
-            return false;            
+            return false;
         }
         return res2.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername, String permission){
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -923,8 +987,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"), "email@EMAIL.COM", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
+                "email@EMAIL.COM", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -950,34 +1016,36 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         permissions.add("ADD_PRODUCT");
 
         Set<String> permissionsToRemove = new HashSet<>();
-        if(permission.equals("existPermission")){
+        if (permission.equals("existPermission")) {
             permissionsToRemove.add("ADD_PRODUCT");
         }
-        if (permission.equals("invalidPermission")){
+        if (permission.equals("invalidPermission")) {
             permissionsToRemove.add("NON_EXIST_PERMISSION");
         }
-        if (permission.equals("nonexistPermission")){
+        if (permission.equals("nonexistPermission")) {
             permissionsToRemove.add("EDIT_PRODUCT");
         }
-        
+
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId), "managerUserName", permissions);
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId), "managerUserName", permissionsToRemove);
-        
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
+                "managerUserName", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
+                "managerUserName", permissionsToRemove);
+
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
-            return false;            
+            return false;
         }
-        if (res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
-            return false;            
+            return false;
         }
         return res2.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerCloseShop(String username, String shopId){
+    public boolean testShopOwnerCloseShop(String username, String shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
 
@@ -987,8 +1055,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-        User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com", new Date());
+        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com",
+                new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -1017,9 +1087,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         logger.info("testShopOwnerCloseShop Error message: " + res.getBody().getErrorMessage());
         return res.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerGetShopInfo(String username, String shopId){
+    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
         MockitoAnnotations.openMocks(this);
 
         String tokenShopOwner = "shopOwner";
@@ -1030,7 +1100,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         _passwordEncoder = new PasswordEncoderUtil();
 
-        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -1052,21 +1123,24 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _shopServiceUnderTest.displayShopGeneralInfo(tokenShopOwner, Integer.parseInt(shopId));
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.displayShopGeneralInfo(tokenShopOwner,
+                Integer.parseInt(shopId));
 
         // Assert
         logger.info("testShopOwnerGetShopInfo Error message: " + res1.getBody().getErrorMessage());
         return res1.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
-    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId){ return false; }
-    
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
+        return false;
+    }
+
     @Test
-    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId){
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
-        
+
         User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com",
                 new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
@@ -1101,8 +1175,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         logger.info("testShopOwnerViewHistoryPurcaseInShop Error message: " + res.getBody().getErrorMessage());
         return res.getBody().getErrorMessage() == null;
     }
-    
-    //  --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
@@ -1112,10 +1186,66 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameAsGuest(String productId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsGuest'");
+    public boolean testGetProductInfoUsingProductNameAsGuest(String productName) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // create a user in the system
+        User user = new User("user", _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+
+        //this user opens a shop adds a product to the shop using shopFacade
+        try {
+            _shopFacade.openNewShop("user", shopDto);
+            _shopFacade.addProductToShop(0, productDto, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testGetProductInfoUsingProductNameAsGuest Error message: " + e.getMessage());
+            return false;
+        }
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.searchProductInShopByName(guestToken, null, productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        // check if the some products indeed returned
+        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+            logger.info("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
+            System.out.println("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -1140,11 +1270,65 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productId, String shopId) {
-        // TODO Auto-generated method stub
-        // #416
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsGuest'");
+    public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+_passwordEncoder = new PasswordEncoderUtil();
+
+        // create a user in the system
+        User user = new User("user", _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+
+        //this user opens a shop adds a product to the shop using shopFacade
+        try {
+            _shopFacade.openNewShop("user", shopDto);
+            _shopFacade.addProductToShop(0, productDto, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + e.getMessage());
+            return false;
+        }
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.searchProductInShopByName(guestToken, Integer.parseInt(shopId), productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        // check if the some products indeed returned
+        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+            logger.info("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+            System.out.println("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -1207,17 +1391,20 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken,
+                Integer.parseInt(productId), 0);
 
         // Assert
-        if(res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testAddProductToShoppingCartAsGuest Error message: " + res1.getBody().getErrorMessage());
-            System.out.println("testAddProductToShoppingCartAsGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out
+                    .println("testAddProductToShoppingCartAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        if(res2.getBody().getErrorMessage() != null){
+        if (res2.getBody().getErrorMessage() != null) {
             logger.info("testAddProductToShoppingCartAsGuest Error message: " + res2.getBody().getErrorMessage());
-            System.out.println("testAddProductToShoppingCartAsGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out
+                    .println("testAddProductToShoppingCartAsGuest Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
         logger.info("testAddProductToShoppingCartAsGuest Error message: " + res3.getBody().getErrorMessage());
@@ -1253,7 +1440,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // initialize _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade();
-        
+
         // create a shopping cart for the user
         _shoppingCartFacade.addCartForGuest(tokenCheck);
 
@@ -1280,16 +1467,437 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Assert
         logger.info("testCheckAndViewItemsInShoppingCartAsGuest Error message: " + res.getBody().getErrorMessage());
-        if(status.equals("fail"))
+        if (status.equals("fail"))
             return res.getBody().getErrorMessage() != null;
         return res.getBody().getErrorMessage() == null;
     }
 
     @Override
-    public boolean testCheckAllOrNothingBuyingShoppingCartGuest() {
-        // TODO Auto-generated method stub
-        when(_tokenServiceMock.isGuest(token)).thenReturn(true);
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartGuest'");
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+
+        ShopDto shopDto2 = new ShopDto("shopTestGuest2", "bankDetails2", "address2");
+
+        ShopDto shopDto3 = new ShopDto("shopTestGuest3", "bankDetails3", "address3");
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+
+        ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
+
+        ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 5);
+        if (test.equals("fail")) {
+            productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+        }
+
+        try {
+            _shopFacade.openNewShop("user", shopDto1);
+            _shopFacade.openNewShop("user", shopDto2);
+            _shopFacade.openNewShop("user", shopDto3);
+            _shopFacade.addProductToShop(0, productDto, "user");
+            _shopFacade.addProductToShop(0, productDto2, "user");
+            _shopFacade.addProductToShop(1, productDto3, "user");
+            _shopFacade.addProductToShop(2, productDto4, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + e.getMessage());
+            return false;
+        }
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2);
+
+        // Act
+        ResponseEntity<Response> res6 = _userServiceUnderTest.purchaseCart(guestToken,
+                new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if (res5.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        return res6.getBody().getErrorMessage() == null;
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber,
+            String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String userBuyerToken = "BuyerToken";
+        when(_tokenServiceMock.validateToken(userBuyerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userBuyerToken)).thenReturn("buyer");
+        when(_tokenServiceMock.isUserAndLoggedIn(userBuyerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userBuyerToken)).thenReturn(false);
+
+        // create a user in the system
+        User shopOwner = new User("shopOwner", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        UserDto userDto = new UserDto("buyer", "passBuyer", "buyer@email.com", new Date());
+        ResponseEntity<Response> res1 = _userServiceUnderTest.register(guestToken, userDto);
+
+        ResponseEntity<Response> res2 = _userServiceUnderTest.logIn(guestToken, "buyer", "passBuyer");
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestUser1", "bankDetails1", "address1");
+
+        ShopDto shopDto2 = new ShopDto("shopTestUser2", "bankDetails2", "address2");
+
+        ShopDto shopDto3 = new ShopDto("shopTestUser3", "bankDetails3", "address3");
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+
+        ProductDto productDto3 = new ProductDto("product3", Category.CLOTHING, 100, 5);
+
+        ProductDto productDto4 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+
+        try {
+            _shopFacade.openNewShop("user", shopDto1);
+            _shopFacade.openNewShop("user", shopDto2);
+            _shopFacade.openNewShop("user", shopDto3);
+            _shopFacade.addProductToShop(0, productDto, "user");
+            _shopFacade.addProductToShop(0, productDto2, "user");
+            _shopFacade.addProductToShop(1, productDto3, "user");
+            _shopFacade.addProductToShop(2, productDto4, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAllOrNothingBuyingShoppingCartUser Error message: " + e.getMessage());
+            return false;
+        }
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0);
+        ResponseEntity<Response> res6 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1);
+        ResponseEntity<Response> res7 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2);
+
+        // Act
+        ResponseEntity<Response> res8 = _userServiceUnderTest.purchaseCart(userBuyerToken,
+                new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if (res5.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        if (res6.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res6.getBody().getErrorMessage());
+            return false;
+        }
+        if (res7.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res7.getBody().getErrorMessage());
+            return false;
+        }
+        return res8.getBody().getErrorMessage() == null;
+    }
+
+    @Override
+    public boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String guestToken2 = "guestToken2";
+        when(_tokenServiceMock.validateToken(guestToken2)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken2)).thenReturn(guestToken2);
+        when(_tokenServiceMock.isGuest(guestToken2)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+
+        ShoppingCart shoppingCart2 = new ShoppingCart(_shopFacade);
+        
+        _shoppingCartFacade.addCartForGuestForTests(guestToken2, shoppingCart2);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open 2 shops using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 1);
+
+        // shop owner adds a product2 to the shop using ShopSerivce
+        ProductDto productDto2 = new ProductDto("product2", Category.CLOTHING, 100, 5);
+
+        if (test.equals("fail")) {
+            productDto2 = new ProductDto("product4", Category.CLOTHING, 100, 0);
+        }
+
+        try {
+            _shopFacade.openNewShop("user", shopDto1);
+            _shopFacade.addProductToShop(0, productDto, "user");
+            _shopFacade.addProductToShop(0, productDto2, "user");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testCheckAllOrNothingBuyingShoppingCartGuestThreading Error message: " + e.getMessage());
+            return false;
+        }
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
+
+        // Act
+        ArrayList<ResponseEntity<Response>> results = new ArrayList<ResponseEntity<Response>>();
+        ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
+
+        // Act
+        // Task for first thread
+        Runnable task1 = () -> {
+            results.add(_userServiceUnderTest.purchaseCart(guestToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+        };
+
+        // Task for second thread
+        Runnable task2 = () -> {
+            results.add(_userServiceUnderTest.purchaseCart(guestToken2, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+        };
+
+        // Execute tasks
+        executor.execute(task1);
+        executor.execute(task2);
+
+        // Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted
+        executor.shutdown();
+
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Cancel currently executing tasks
+
+                // Wait a while for tasks to respond to being cancelled
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            executor.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if (res5.getBody().getErrorMessage() != null) {
+            logger.info(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            System.out.println(
+                    "testCheckAllOrNothingBuyingShoppingCartGuest Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        boolean task1Result = (results.get(0).getBody().getErrorMessage() == null);
+        boolean task2Result = (results.get(1).getBody().getErrorMessage() == null);
+
+        return (task1Result && !task2Result) || (!task1Result && task2Result);
     }
 
     @Override
@@ -1338,10 +1946,69 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameAsUser(String productId) {
-        // TODO Auto-generated method stub
-        // TODO Gili getProductGeneralInfo #416
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameAsUser'");
+    public boolean testGetProductInfoUsingProductNameAsUser(String productName) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String shopOwnerToken = "shopOwnerToken";
+        when(_tokenServiceMock.validateToken(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(shopOwnerToken)).thenReturn("owner");
+        when(_tokenServiceMock.isUserAndLoggedIn(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(shopOwnerToken)).thenReturn(false);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // create users in the system
+        User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
+        User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(owner);
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+
+        //this user opens a shop adds a product to the shop using shopFacade
+        try {
+            _shopFacade.openNewShop("owner", shopDto);
+            _shopFacade.addProductToShop(0, productDto, "owner");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testGetProductInfoUsingProductNameAsUser Error message: " + e.getMessage());
+            return false;
+        }
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.searchProductInShopByName(userToken, null, productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        // check if the some products indeed returned
+        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+            logger.info("testGetProductInfoUsingProductNameAsUser message: search result is empty");
+            System.out.println("testGetProductInfoUsingProductNameAsUser message: search result is empty");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -1366,19 +2033,71 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingProductNameInShop(String productId, String shopId) {
-        // #416
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingProductNameInShop'");
+    public boolean testGetProductInfoUsingProductNameInShopAsUser(String productName, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        String shopOwnerToken = "shopOwnerToken";
+        when(_tokenServiceMock.validateToken(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(shopOwnerToken)).thenReturn("owner");
+        when(_tokenServiceMock.isUserAndLoggedIn(shopOwnerToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(shopOwnerToken)).thenReturn(false);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // create users in the system
+        User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
+        User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(owner);
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+
+        //this user opens a shop adds a product to the shop using shopFacade
+        try {
+            _shopFacade.openNewShop("owner", shopDto);
+            _shopFacade.addProductToShop(0, productDto, "owner");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testGetProductInfoUsingProductNameInShopAsUser Error message: " + e.getMessage());
+            return false;
+        }
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // Act - this user searches a product in all shops by its name using shopService
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.searchProductInShopByName(userToken, Integer.parseInt(shopId), productName);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
+            System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        // check if the some products indeed returned
+        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+            logger.info("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+            System.out.println("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+            return false;
+        }
+        return true;
     }
 
-    @Override
-    public boolean testGetProductInfoUsingProductNameInShopAsUser(String productId, String shopId) {
-        // #416
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'testGetProductInfoUsingProductNameInShopAsUser'");
-    }
 
     @Override
     public boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId) {
@@ -1411,8 +2130,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
 
-        User user = new User("UziNavon", _passwordEncoder.encodePassword("userPassword"), "email@email.com", new Date());
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+        User user = new User("UziNavon", _passwordEncoder.encodePassword("userPassword"), "email@email.com",
+                new Date());
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
@@ -1439,9 +2160,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act
         ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
-        
+
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testAddProductToShoppingCartAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
@@ -1470,7 +2191,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // initialize _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade();
-        
+
         // create a shopping cart for the user
         _shoppingCartFacade.addCartForGuest(username);
         _shoppingCartFacade.addCartForUser(username, user);
@@ -1498,7 +2219,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Assert
         logger.info("testCheckAndViewItemsInShoppingCartAsUser Error message: " + res.getBody().getErrorMessage());
-        if(status.equals("fail"))
+        if (status.equals("fail"))
             return res.getBody().getErrorMessage() != null;
         return res.getBody().getErrorMessage() == null;
     }
@@ -1558,12 +2279,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Arrange
         MockitoAnnotations.openMocks(this);
-        
+
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_tokenServiceMock.generateGuestToken()).thenReturn(_tokenService.generateGuestToken());
         when(_passwordEncoderMock.encodePassword("password")).thenReturn("password");
-        
+
         // create a user in the system
         User user = new User("Bob", "password", "email@email.com", new Date());
         _userFacade = new UserFacade(new ArrayList<User>() {
@@ -1684,23 +2405,24 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.isGuest(tokenUserTom)).thenReturn(true);
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        
+
         _shopFacade = new ShopFacade();
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-        
-        if(username == "Bob"){}
-            res1 = _shopServiceUnderTest.openNewShop(tokenUserBob, shopDto);
 
-        if(username == "Tom")
+        if (username == "Bob") {
+        }
+        res1 = _shopServiceUnderTest.openNewShop(tokenUserBob, shopDto);
+
+        if (username == "Tom")
             res1 = _shopServiceUnderTest.openNewShop(tokenUserTom, shopDto);
-    
+
         // Assert
-        if (res1.getBody().getErrorMessage() != null){
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("testShopOwnerAddProductToShop Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        
+
         assertEquals(1, _shopFacade.getAllShops().size());
         return true;
 
@@ -1768,13 +2490,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res5 = _userServiceUnderTest.writeReview(userToken, Integer.parseInt(productId), 0, "review");
 
         // Assert
-        if(res1.getBody().getErrorMessage() != null)
+        if (res1.getBody().getErrorMessage() != null)
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res1.getBody().getErrorMessage());
-        if(res2.getBody().getErrorMessage() != null)
+        if (res2.getBody().getErrorMessage() != null)
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res2.getBody().getErrorMessage());
-        if(res3.getBody().getErrorMessage() != null)
+        if (res3.getBody().getErrorMessage() != null)
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res3.getBody().getErrorMessage());
-        if(res4.getBody().getErrorMessage() != null)
+        if (res4.getBody().getErrorMessage() != null)
             logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res4.getBody().getErrorMessage());
         
         logger.info("TestUserWriteReviewOnPurchasedProduct Error message: " + res5.getBody().getErrorMessage());
@@ -1796,38 +2518,39 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(tokenBob)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(tokenBob)).thenReturn("bob");
         when(_tokenServiceMock.isUserAndLoggedIn(tokenBob)).thenReturn(true);
-       
-       
+
         _passwordEncoder = new PasswordEncoderUtil();
-       
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-       _userFacade = new UserFacade(new ArrayList<User>() {
-           {
-               add(shopFounder);
-           }
-       }, new ArrayList<>());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+            }
+        }, new ArrayList<>());
 
-       _shopFacade = new ShopFacade();
+        _shopFacade = new ShopFacade();
 
-       try {
-           _shopFacade.openNewShop("Founder", shopDto);
-           _shopFacade.addProductToShop(0, productDto, "Founder");
-       } catch (StockMarketException e) {
-           e.printStackTrace();
-           logger.warning("TestUserRatingPurchasedProduct Error message: " + e.getMessage());
-           return false;
-       }
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+            _shopFacade.addProductToShop(0, productDto, "Founder");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("TestUserRatingPurchasedProduct Error message: " + e.getMessage());
+            return false;
+        }
 
-       _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-       _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-       // Act
-       ResponseEntity<Response> res1 = _shopServiceUnderTest.addProductRating(tokenShopFounder, 0, Integer.parseInt(productId), Integer.parseInt(score));
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addProductRating(tokenShopFounder, 0,
+                Integer.parseInt(productId), Integer.parseInt(score));
 
-       // Assert
-       if (res1.getBody().getErrorMessage() != null){
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("TestUserRatingPurchasedProduct Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
@@ -1849,37 +2572,38 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.validateToken(tokenBob)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(tokenBob)).thenReturn("bob");
         when(_tokenServiceMock.isUserAndLoggedIn(tokenBob)).thenReturn(true);
-       
-       
+
         _passwordEncoder = new PasswordEncoderUtil();
-       
-        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-       _userFacade = new UserFacade(new ArrayList<User>() {
-           {
-               add(shopFounder);
-           }
-       }, new ArrayList<>());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+            }
+        }, new ArrayList<>());
 
-       _shopFacade = new ShopFacade();
+        _shopFacade = new ShopFacade();
 
-       try {
-           _shopFacade.openNewShop("Founder", shopDto);
-        //    _shopFacade.addProductToShop(0, productDto, "Founder");
-       } catch (StockMarketException e) {
-           e.printStackTrace();
-           logger.warning("TestUserRatingPurchasedProduct Error message: " + e.getMessage());
-           return false;
-       }
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+            // _shopFacade.addProductToShop(0, productDto, "Founder");
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("TestUserRatingPurchasedProduct Error message: " + e.getMessage());
+            return false;
+        }
 
-       _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-       _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-       // Act
-       ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopRating(tokenShopFounder, Integer.parseInt(shopId), Integer.parseInt(score));
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopRating(tokenShopFounder, Integer.parseInt(shopId),
+                Integer.parseInt(score));
 
-       // Assert
-       if (res1.getBody().getErrorMessage() != null){
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
             logger.info("TestUserRatingPurchasedProduct Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
@@ -2040,7 +2764,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return userDtoAfterEdit.email.equals(newEmail) && userDtoAfterEdit.username.equals(username) && userDtoAfterEdit.birthDate.equals(user.getBirthDate());
     }
 
-    // SHOPPING CART TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // SHOPPING CART TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public boolean testAddProductToShoppingCartUser(String username, String productId, String shopId) {
@@ -2081,12 +2806,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token, Integer.parseInt(productId), Integer.parseInt(shopId));
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token,
+                Integer.parseInt(productId), Integer.parseInt(shopId));
 
         // Assert
-        if(res1.getBody().getErrorMessage() != null)
+        if (res1.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
-        if(res2.getBody().getErrorMessage() != null)
+        if (res2.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res2.getBody().getErrorMessage());
 
         logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
@@ -2141,9 +2867,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), Integer.parseInt(shopId));
         
         // Assert
-        if(res1.getBody().getErrorMessage() != null)
+        if (res1.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
-        if(res2.getBody().getErrorMessage() != null)
+        if (res2.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res2.getBody().getErrorMessage());
 
         logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());

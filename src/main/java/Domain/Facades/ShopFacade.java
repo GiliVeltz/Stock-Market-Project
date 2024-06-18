@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
+import Domain.User;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -41,6 +43,14 @@ public class ShopFacade {
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -336,7 +346,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -798,5 +810,17 @@ public class ShopFacade {
             }
         }
         return shops;
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
+
+        openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
     }
 }

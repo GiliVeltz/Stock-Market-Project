@@ -1,5 +1,10 @@
 package AcceptanceTests.Implementor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+
+import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,25 +55,25 @@ public interface BridgeInterface {
     boolean testGetShopInfoAsGuest(String shopId);
 
     @Test
-    boolean testGetProductInfoUsingProductNameAsGuest(String productId);
+    boolean testGetProductInfoUsingProductNameAsGuest(String productName);
     
     @Test
     boolean testGetProductInfoUsingProductCategoryAsGuest(String category);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String kewWord);
+    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String kewWord1, String kewWord2);
+    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord1, String keyWord2);
 
     @Test
-    boolean testGetProductInfoUsingProductNameInShopAsGuest(String productId, String shopId);
+    boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId);
     
     @Test
     boolean testGetProductInfoUsingProductCategoryInShopAsGuest(String category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsInShopAsGuest(String kewWord, String shopId);
+    boolean testGetProductInfoUsingKeyWordsInShopAsGuest(String keyWord, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsGuest(String productId);
@@ -77,7 +82,13 @@ public interface BridgeInterface {
     boolean testCheckAndViewItemsInShoppingCartAsGuest(String status);
 
     @Test
-    boolean testCheckAllOrNothingBuyingShoppingCartGuest();
+    boolean testCheckAllOrNothingBuyingShoppingCartGuest(String test, List<Integer> basketsToBuy, String cardNumber, String address);
+
+    @Test
+    boolean testCheckAllOrNothingBuyingShoppingCartUser(List<Integer> basketsToBuy, String cardNumber, String address);
+
+    @Test
+    boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address);
     
     @Test
     boolean testBuyingShoppingCartPoliciesGuest();
@@ -88,7 +99,7 @@ public interface BridgeInterface {
     boolean testGetShopInfoAsUser(String shopId);
     
     @Test
-    boolean testGetProductInfoUsingProductNameAsUser(String productId);
+    boolean testGetProductInfoUsingProductNameAsUser(String productName);
 
     @Test
     boolean testGetProductInfoUsingProductCategoryAsUser(String category);
@@ -98,12 +109,9 @@ public interface BridgeInterface {
     
     @Test
     boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord1, String keyWord2);
-
-    @Test
-    boolean testGetProductInfoUsingProductNameInShop(String productId, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingProductNameInShopAsUser(String productId, String shopId);
+    boolean testGetProductInfoUsingProductNameInShopAsUser(String productName, String shopId);
     
     @Test
     boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId);
@@ -223,5 +231,4 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
-
 }

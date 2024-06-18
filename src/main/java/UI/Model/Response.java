@@ -1,24 +1,13 @@
 package UI.Model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude
 public class Response<T> {
     private String errorMessage;
     private T returnValue;
 
-    // // Getters and setters
-    // public String getErrorMessage() {
-    //     return errorMessage;
-    // }
-
-    // public void setErrorMessage(String errorMessage) {
-    //     this.errorMessage = errorMessage;
-    // }
-
-    // public String getReturnValue() {
-    //     return returnValue;
-    // }
+    public Response(String errorMessage, T returnValue) {
+        this.errorMessage = errorMessage;
+        this.returnValue = returnValue;
+    }
 
     // public void setReturnValue(String returnValue) {
     //     this.returnValue = returnValue;
@@ -50,3 +39,4 @@ public class Response<T> {
         this.returnValue = returnValue;
     }
 }
+
