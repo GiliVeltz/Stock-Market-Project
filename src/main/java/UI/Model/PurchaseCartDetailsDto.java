@@ -1,4 +1,4 @@
-package Dtos;
+package UI.Model;
 
 import java.util.List;
 
