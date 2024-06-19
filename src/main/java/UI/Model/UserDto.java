@@ -59,4 +59,8 @@ public class UserDto {
     public void setPassword(String password) {
         this.password = password;
     }
+    //get birth date    
+    public Date getBirthDate() {
+        return birthDate;
+    }
 }
