@@ -433,7 +433,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -458,7 +460,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -830,6 +834,22 @@ public class ShopFacade {
             }
         }
         return shops;
+    }
+
+    /**
+     * Adds keywords to a product in a shop
+     * @param username
+     * @param shopId
+     * @param productId
+     * @param keywords
+     * @throws StockMarketException
+     */
+    public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        shop.addKeywordsToProduct(username, productId, keywords);
     }
 
     // function to initilaize data for UI testing
