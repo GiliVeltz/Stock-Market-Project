@@ -5,6 +5,7 @@ import java.util.List;
 
 import Domain.Rules.Rule;
 import Dtos.ShoppingBasketDto;
+import Dtos.UserDto;
 
 /**
  * The base class for policies.
@@ -74,10 +75,19 @@ public abstract class Policy<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rule<ShoppingBasketDto>> getRulesDto() {
+    public List<Rule<ShoppingBasketDto>> getShoppingBasketRulesDto() {
         List<Rule<ShoppingBasketDto>> _rules = new ArrayList<>();
         for (Rule<T> rule : this._rules) {
             _rules.add((Rule<ShoppingBasketDto>) rule);
+        }
+        return _rules;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Rule<UserDto>> getUsersRulesDto() {
+        List<Rule<UserDto>> _rules = new ArrayList<>();
+        for (Rule<T> rule : this._rules) {
+            _rules.add((Rule<UserDto>) rule);
         }
         return _rules;
     }

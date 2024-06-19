@@ -14,7 +14,7 @@ public class ShopPolicyDto {
     }
 
     public ShopPolicyDto(Policy<ShoppingBasket> policy) {
-        _rules = policy.getRulesDto();
+        _rules = policy.getShoppingBasketRulesDto();
     }
 
     public List<Rule<ShoppingBasketDto>> getRules() {
