@@ -550,6 +550,10 @@ public class Shop {
         return _shopRating;
     }
 
+    public Integer getShopRatersCounter() {
+        return _shopRatersCounter;
+    }
+
     public void addShopRating(Integer rating) throws StockMarketException {
         // limit the rating to 1-5
         if (rating < 1 || rating > 5) {

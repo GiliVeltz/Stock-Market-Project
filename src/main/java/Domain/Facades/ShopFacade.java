@@ -382,6 +382,15 @@ public class ShopFacade {
         return _shopRepository.getAllShops();
     }
 
+    public List<ShopDto> getAllShopsDto() {
+        List<ShopDto> shops = new ArrayList<>();
+        for(Shop shop : getAllShops()){
+            ShopDto shopDto = new ShopDto(shop);
+            shops.add(shopDto);
+        }
+        return shops;
+    }
+
     public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
             throws StockMarketException {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
