@@ -36,7 +36,6 @@ public class ShoppingGuestAcceptanceTests {
     }
 
     // Test get information about a shop as a guest in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetShopInfoAsGuest() {
         assertTrue(_bridge.testGetShopInfoAsGuest("0")); // success - exist shop
