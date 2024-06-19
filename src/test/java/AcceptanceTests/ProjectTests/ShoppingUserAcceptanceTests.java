@@ -80,8 +80,6 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information in a specific shop, according to key words as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingKeywordsInShopAsUser() {
         assertTrue(_bridge.testGetProductInfoUsingKeywordsInShopAsUser(List.of("keyword1"), "0") ); // success - exist keyword and exist shop
