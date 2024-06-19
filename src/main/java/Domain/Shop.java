@@ -148,7 +148,23 @@ public class Shop {
         return _userToRole.get(username);
     }
 
-    public Map<String, Role> getUserToRoleMap() {
+    /**
+     * Get all the roles in the shop.
+     * @param username the username of the user that does the action.
+     * @return a map of all the roles in the shop.
+     * @throws StockMarketException
+     */
+    public Map<String, Role> getUserToRoleMap(String username) throws StockMarketException {
+        logger.log(Level.INFO,
+                "Shop - getUserToRoleMap: " + username + " trying get all roles info from the shop with id " + _shopId);
+        if (!checkPermission(username, Permission.GET_ROLES_INFO)) {
+            logger.log(Level.SEVERE, "Shop - getUserToRoleMap: user " + username
+                    + " doesn't have permission to get roles info in shop with id " + _shopId);
+            throw new PermissionException(
+                    "User " + username + " doesn't have permission to get roles info in shop with id " + _shopId);
+        }
+        logger.log(Level.INFO, "Shop - getUserToRoleMap: " + username
+                + " successfuly got all roles info from the shop with id " + _shopId);
         return _userToRole;
     }
 
@@ -532,6 +548,10 @@ public class Shop {
 
     public Double getShopRating() {
         return _shopRating;
+    }
+
+    public Integer getShopRatersCounter() {
+        return _shopRatersCounter;
     }
 
     public void addShopRating(Integer rating) throws StockMarketException {
