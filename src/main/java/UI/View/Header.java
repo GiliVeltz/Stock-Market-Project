@@ -45,8 +45,8 @@ public class Header extends HorizontalLayout {
         Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
 
         // Set the size of the image
-        image.setWidth("100px");
-        image.setHeight("100px");
+        image.setWidth("75px");
+        image.setHeight("75px");
 
         // Create the buttons
         _registerButton = new Button("Register");
