@@ -26,7 +26,8 @@ import java.util.concurrent.ExecutionException;
 import com.vaadin.flow.component.html.Span;
 
 import UI.Presenter.UserMainPagePresenter;
-import Dtos.UserDto;
+// import Dtos.UserDto;
+import UI.Model.UserDto;
 
 @CssImport("./styles/shared-styles.css")
 @PageTitle("User Main Page")
