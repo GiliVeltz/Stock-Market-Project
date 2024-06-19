@@ -14,7 +14,6 @@ import java.util.logging.Level;
 
 import Domain.Order;
 import Domain.User;
-import Domain.Alerts.GeneralAlert;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -90,6 +89,9 @@ public class UserService {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
                     String newToken = _tokenService.generateGuestToken();
+                    String id = _tokenService.extractGuestId(newToken);
+                    _userFacade.addNewGuest(id);
+                    _shoppingCartFacade.addCartForGuest(id);
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
                     //close this session
@@ -401,6 +403,26 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to set user details: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to set user details: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Response> viewShoppingCart(String token, String username) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    response.setReturnValue(_shoppingCartFacade.viewShoppingCart(token, username));
+                } else {
+                    response.setReturnValue(_shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to view shopping cart: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to view shopping cart: " + e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

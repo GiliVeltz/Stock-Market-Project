@@ -1,5 +1,7 @@
 package AcceptanceTests.ProjectTests;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
+import enums.Category;
 
 @ExtendWith(RealBridge.class)
 public class ShoppingUserAcceptanceTests{
@@ -26,6 +29,22 @@ public class ShoppingUserAcceptanceTests{
         _bridge.init(); // Ensure mocks are initialized
     }
     
+    // Test get search a shop and display its products by shop ID as a User in the system.
+    @Test
+    public void testSearchAndDisplayShopByIDAsUser() {
+        assertTrue(_bridge.testSearchAndDisplayShopByIDAsUser("0", true)); // success - exist shop, has products
+        assertTrue(_bridge.testSearchAndDisplayShopByIDAsUser("0", false)); // success - exist shop, no products
+        assertFalse(_bridge.testSearchAndDisplayShopByIDAsUser("1", false) ); // fail - non exist shop, no products
+    }
+
+    // Test search a shop and display its products by shop name as a User in the system.
+    @Test
+    public void testSearchAndDisplayShopByNameAsUser() {
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsUser("shopName1", true)); // success - exist shop, has products
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsUser("shopName1", false)); // success - exist shop, no products
+        assertFalse(_bridge.testSearchAndDisplayShopByNameAsUser("shopName2", false) ); // fail - non exist shop, no products
+    }
+
     // Test get information about a shop as a User in the system.
     @Test
     public void testGetShopInfoAsUser() {
@@ -34,66 +53,55 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test search product information according to product name as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductNameAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameAsUser("productId1") ); // success - exist product
-        assertFalse(_bridge.testGetProductInfoUsingProductNameAsUser("productId2") ); // fail - non exist product
+        assertTrue(_bridge.testGetProductInfoUsingProductNameAsUser("productName1") ); // success - exist product
+        assertFalse(_bridge.testGetProductInfoUsingProductNameAsUser("productName2") ); // fail - non exist product
     }
     
     // Test search product information according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser("caterogy1") ); // success - exist category
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsUser("caterogy2") ); // fail - non exist category
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.CLOTHING) ); // success - exist category
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.GROCERY) ); // fail - non exist category
     }
     
     // Test search product information according to key words as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
-    public void testGetProductInfoUsingKeyWordsAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingKeyWordsAsUser("word1") ); // success - exist key word
-        assertTrue(_bridge.testGetProductInfoUsingKeyWordsAsUser("word1", "word2") ); // success - one key word exist and one not
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsAsUser("word2") ); // fail - non exist key word
+    public void testGetProductInfoUsingKeywordsAsUser() {
+        assertTrue(_bridge.testGetProductInfoUsingKeywordsAsUser(List.of("keyword1"))); // success - exist key word
+        assertTrue(_bridge.testGetProductInfoUsingKeywordsAsUser(List.of("keyword1", "keyword2"))); // success - one key word exist and one not
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsAsUser(List.of("keyword2"))); // fail - non exist key word
     }
     
     // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
     // TODO: GILI - need to implement this test
     
     // Test search product information in a specific shop, according to product name as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testGetProductInfoUsingProductNameInShopAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId1", "shopId1") ); // success - exist product and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId2", "shopId1") ); // fail - non exist product but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId1", "shopId2") ); // fail - exist product but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productId2", "shopId2") ); // fail - non exist product and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName1", "0") ); // success - exist product and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName2", "0") ); // fail - non exist product but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName1", "1") ); // fail - exist product but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName2", "1") ); // fail - non exist product and non exist shop
     }
     
     // Test search product information in a specific shop, according to product category as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy1", "shopId1") ); // success - exist category and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy2", "shopId1") ); // fail - non exist category but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy1", "shopId2") ); // fail - exist category but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser("caterogy2", "shopId2") ); // fail - non exist category and non exist shop
+        assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.CLOTHING, "0") ); // success - exist category and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.GROCERY, "0") ); // fail - non exist category but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.CLOTHING, "1") ); // fail - exist category but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.GROCERY, "1") ); // fail - non exist category and non exist shop
     }
     
     // Test search product information in a specific shop, according to key words as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: GILI - need to implement this test
     @Test
-    public void testGetProductInfoUsingKeyWordsInShopAsUser() {
-        assertTrue(_bridge.testGetProductInfoUsingKeyWordsInShopAsUser("keyword1", "shopId1") ); // success - exist keyword and exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsUser("keyword2", "shopId1") ); // fail - non exist keyword but exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsUser("keyword1", "shopId2") ); // fail - exist keyword but non exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeyWordsInShopAsUser("keyword2", "shopId2") ); // fail - non exist keyword and non exist shop
+    public void testGetProductInfoUsingKeywordsInShopAsUser() {
+        assertTrue(_bridge.testGetProductInfoUsingKeywordsInShopAsUser(List.of("keyword1"), "0") ); // success - exist keyword and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsUser(List.of("keyword2"), "0") ); // fail - non exist keyword but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsUser(List.of("keyword1"), "1") ); // fail - exist keyword but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsUser(List.of("keyword2"), "1") ); // fail - non exist keyword and non exist shop
     }
     
     // Test when add product to shopping cart- it stays there as a User in the system.

@@ -105,6 +105,6 @@ public class TokenService {
     
     // change the check in the function
     public boolean isGuest(String token) {
-        return extractUsername(token) != null;
+        return extractUsername(token) == null;
     }
     }

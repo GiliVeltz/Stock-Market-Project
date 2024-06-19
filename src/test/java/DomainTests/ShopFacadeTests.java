@@ -58,6 +58,7 @@ public class ShopFacadeTests {
     private Shop _shop2;
     private Shop _shop3;
     private ShopDto _shop4;
+    private ShopDto _shop11;
     private ProductDto _product1dto;
     private ProductDto _product2dto;
     private Product _product2;
@@ -71,6 +72,7 @@ public class ShopFacadeTests {
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
         _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
+        _shop11 = new ShopDto("shopName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
         _shop3 = new Shop(3, "shopName3", "founderName3", "bank3", "addresss3");
         _shop4 = new ShopDto("shopName4", "bank4", "addresss4");
@@ -476,6 +478,38 @@ public class ShopFacadeTests {
         assertEquals(1, _shopsList.size());
         assertEquals(1, _shopsList.get(0).getShopProducts().size());
         assertEquals("newName", _shopsList.get(0).getShopProducts().get(3).getProductName());
+    }
+
+    @Test
+    public void testsOpenNewShop_whenAlreadyExist_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        _shopsList.add(_shop1);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+
+        // Act - try to open a new shop with an existing ID
+        try {
+            _ShopFacadeUnderTests.openNewShop("founderName1", _shop11);
+            fail("Opening a shop with an existing ID should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals(1, _shopsList.size());
+        }
+    }
+
+    @Test
+    public void testsOpenNewShop_whenShopNameIsNull_thenRaiseError() throws StockMarketException {
+        // Arrange - Create a new ShopFacade object
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopDto _shopDto = new ShopDto(null, "bank1", "addresss1");
+
+        // Act - try to open a new shop with a null shop name
+        try {
+            _ShopFacadeUnderTests.openNewShop("founderName1", _shopDto);
+            fail("Opening a shop with a null shop name should raise an error");
+        } catch (Exception e) {
+            // Assert - Verify that the expected exception is thrown
+            assertEquals("Shop name is null or empty.", e.getMessage());
+        }
     }
 
     @Test

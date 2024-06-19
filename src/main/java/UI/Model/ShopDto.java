@@ -12,6 +12,11 @@ public class ShopDto {
     @NotBlank(message = "Shop address is required")
     private String shopAddress;
     
+    private Double shopRating;
+
+    private Integer shopRatersCounter;
+
+    private boolean isShopClosed;
 
     // Constructors, getters, and setters
 
@@ -22,6 +27,18 @@ public class ShopDto {
         this.shopName = shopName;
         this.bankDetails = bankDetails;
         this.shopAddress = shopAddress;
+        this.shopRating = -1.0;
+        this.shopRatersCounter = 0;
+        this.isShopClosed = false;
+    }
+
+    public ShopDto(String shopName, String bankDetails, String shopAddress, Double shopRating, Integer shopRatersCounter, boolean isShopClosed) {
+        this.shopName = shopName;
+        this.bankDetails = bankDetails;
+        this.shopAddress = shopAddress;
+        this.shopRating = shopRating;
+        this.shopRatersCounter = shopRatersCounter;
+        this.isShopClosed = isShopClosed;
     }
 
     // Getters and setters
@@ -49,4 +66,19 @@ public class ShopDto {
     public void setShopAddress(String shopAddress) {
         this.shopAddress = shopAddress;
     }
+
+    public Double getShopRating() { return shopRating;}
+
+    public void setShopRating(Double shopRating){
+        this.shopRating = shopRating;
+    }
+
+    public Integer getShopRatersCounter() { return shopRatersCounter;}
+
+    public void setShopRatersCounter(Integer shopRatersCounter){
+        this.shopRatersCounter = shopRatersCounter;
+    }
+
+    public boolean getIsShopClosed() { return isShopClosed;}
 }
+
