@@ -54,6 +54,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
+        // Create the header component
+        Header header = new BrowsePagesHeader("8080");
+        add(header);
+        
         // Initialize presenter
         presenter = new ShopManagerPresenter(this);
         presenter.fetchManagerPermissions(_username);
