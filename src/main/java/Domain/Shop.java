@@ -148,7 +148,23 @@ public class Shop {
         return _userToRole.get(username);
     }
 
-    public Map<String, Role> getUserToRoleMap() {
+    /**
+     * Get all the roles in the shop.
+     * @param username the username of the user that does the action.
+     * @return a map of all the roles in the shop.
+     * @throws StockMarketException
+     */
+    public Map<String, Role> getUserToRoleMap(String username) throws StockMarketException {
+        logger.log(Level.INFO,
+                "Shop - getUserToRoleMap: " + username + " trying get all roles info from the shop with id " + _shopId);
+        if (!checkPermission(username, Permission.GET_ROLES_INFO)) {
+            logger.log(Level.SEVERE, "Shop - getUserToRoleMap: user " + username
+                    + " doesn't have permission to get roles info in shop with id " + _shopId);
+            throw new PermissionException(
+                    "User " + username + " doesn't have permission to get roles info in shop with id " + _shopId);
+        }
+        logger.log(Level.INFO, "Shop - getUserToRoleMap: " + username
+                + " successfuly got all roles info from the shop with id " + _shopId);
         return _userToRole;
     }
 
@@ -532,6 +548,10 @@ public class Shop {
 
     public Double getShopRating() {
         return _shopRating;
+    }
+
+    public Integer getShopRatersCounter() {
+        return _shopRatersCounter;
     }
 
     public void addShopRating(Integer rating) throws StockMarketException {
@@ -1152,5 +1172,44 @@ public class Shop {
                 _shopPolicy.addRule(newRule);
             }
         }
+    }
+
+      
+    public synchronized void addKeywordsToProduct(String userName, Integer productId, List<String> keywords) throws StockMarketException {
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - addKeywordsToProduct: " + userName + " trying add key words to product " + productId
+                + " in the shop with id " + _shopId);
+
+        // check if shop is closed
+        if (isShopClosed())
+            throw new StockMarketException("Shop is closed, cannot edit product.");
+
+        // check if user has permission to edit product, or the user is the founder or
+        // the owner (dont need specific permission to remove products)
+        if (!checkPermission(userName, Permission.EDIT_PRODUCT) && !checkPermission(userName, Permission.FOUNDER)
+                && !checkPermission(userName, Permission.OWNER)) {
+            logger.log(Level.SEVERE, "Shop - addKeywordsToProduct: user " + userName
+                    + " doesn't have permission to edit products in shop with id " + _shopId);
+            throw new PermissionException(
+                    "User " + userName + " doesn't have permission to edit product in shop with id " + _shopId);
+        }
+
+        // check if product exists
+        if (!_productMap.containsKey(productId)) {
+            logger.log(Level.SEVERE, "Shop - addKeywordsToProduct: Error while trying to get product with id: " + productId
+                    + " from shop with id " + _shopId);
+            throw new ProductDoesNotExistsException("Product with ID " + productId + " does not exist.");
+        }
+        
+
+        // All constraints checked - edit product in the shop
+        Product product = _productMap.get(productId);
+        for (String keyword : keywords) {
+            product.addKeyword(keyword);
+        }
+
+        // print logs to inform about the action
+        logger.log(Level.INFO, "Shop - addKeywordsToProduct: " + userName + " successfully added keywords to product "
+                + productId + " in the shop with id " + _shopId);
     }
 }

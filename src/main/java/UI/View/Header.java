@@ -45,8 +45,8 @@ public class Header extends HorizontalLayout {
         Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
 
         // Set the size of the image
-        image.setWidth("100px");
-        image.setHeight("100px");
+        image.setWidth("75px");
+        image.setHeight("75px");
 
         // Create the buttons
         _registerButton = new Button("Register");
@@ -57,6 +57,7 @@ public class Header extends HorizontalLayout {
         // Button messagesButton = new Button("My Messages");
         Button messagesButton = new Button("My Messages", e -> navigateToMessages());
 
+        Button allShopsButton = new Button("All Shops");
 
 
         // Add cursor styling
@@ -66,6 +67,7 @@ public class Header extends HorizontalLayout {
         searchShopsButton.addClassName("pointer-cursor");
         shoppingCartButton.addClassName("pointer-cursor");
         messagesButton.addClassName("pointer-cursor");
+        allShopsButton.addClassName("pointer-cursor");
 
         // Create horizontal layout for left buttons
         _leftButtonLayout = new HorizontalLayout();
@@ -78,7 +80,7 @@ public class Header extends HorizontalLayout {
 
         // Create horizontal layout for right buttons
         HorizontalLayout rightButtonLayout = new HorizontalLayout();
-        rightButtonLayout.add(searchProductsButton, searchShopsButton, shoppingCartButton);
+        rightButtonLayout.add(searchProductsButton, searchShopsButton, allShopsButton, shoppingCartButton);
 
         // Add left buttons, spacer, and right buttons to the main layout
         add(_leftButtonLayout, spacer, rightButtonLayout);
@@ -117,6 +119,10 @@ public class Header extends HorizontalLayout {
 
         shoppingCartButton.addClickListener(event -> {
             getUI().ifPresent(ui -> ui.navigate("user_cart"));
+        });
+
+        allShopsButton.addClickListener(event -> {
+            getUI().ifPresent(ui -> ui.navigate("all_shops"));
         });
     }
 
