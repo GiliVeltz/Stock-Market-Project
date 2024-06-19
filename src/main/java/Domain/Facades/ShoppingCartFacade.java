@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import Domain.ShoppingCart;
 import Domain.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.ShoppingCartRepositoryInterface;
+import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.StockMarketException;
 
@@ -27,6 +29,14 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade() {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     // only for tests!
@@ -206,8 +216,33 @@ public class ShoppingCartFacade {
         return _cartsRepo.getCartByUsername(username);
     }
 
+    public List<BasketDto> viewShoppingCart(String token, String username) throws StockMarketException {
+        ShoppingCart cart;
+
+        if (username == null) {
+            cart = _guestsCarts.get(token);
+        } else {
+            cart = _cartsRepo.getCartByUsername(username);
+        }
+        List<BasketDto> baskets = new ArrayList<>();
+        for (ShoppingBasket basket : cart.getShoppingBaskets()) {
+            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdList(), basket.calculateShoppingBasketPrice()));
+        }
+        return baskets;
+    }
+
     // for tests
     public void addCartForGuestForTests(String guestID, ShoppingCart cart) {
         _guestsCarts.put(guestID, cart);
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        ShoppingCart cartUI = new ShoppingCart();
+        _cartsRepo.addCartForUser("tal", cartUI);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 1, 1);
+        addProductToUserCart("tal", 2, 1);    
     }
 }

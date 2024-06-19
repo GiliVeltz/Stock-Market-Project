@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Domain.Product;
+import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Domain.Shop;
@@ -21,10 +23,13 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
+import Domain.User;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShopManagerDto;
+import Dtos.ShopWithIdDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
@@ -41,6 +46,14 @@ public class ShopFacade {
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -71,6 +84,25 @@ public class ShopFacade {
     }
 
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
+        // check if the shop name already exists in the system, should be unique
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopDto.shopName)) {
+                throw new StockMarketException(String.format("Shop name: %s already exists in the system.",
+                        shopDto.shopName));
+            }
+        }
+        
+        // check and validate the shop details
+        if (shopDto.shopName == null || shopDto.shopName.isEmpty()) {
+            throw new StockMarketException("Shop name is null or empty.");
+        }
+        if (shopDto.bankDetails == null || shopDto.bankDetails.isEmpty()) {
+            throw new StockMarketException("Bank details is null or empty.");
+        }
+        if (shopDto.shopAddress == null || shopDto.shopAddress.isEmpty()) {
+            throw new StockMarketException("Shop address is null or empty.");
+        }
+
         int shopId = _shopRepository.getUniqueShopID();
         _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         getShopByShopId(shopId).notifyReOpenShop(userName);
@@ -336,7 +368,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -346,6 +380,15 @@ public class ShopFacade {
 
     public List<Shop> getAllShops() {
         return _shopRepository.getAllShops();
+    }
+
+    public List<ShopDto> getAllShopsDto() {
+        List<ShopDto> shops = new ArrayList<>();
+        for(Shop shop : getAllShops()){
+            ShopDto shopDto = new ShopDto(shop);
+            shops.add(shopDto);
+        }
+        return shops;
     }
 
     public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
@@ -401,7 +444,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -426,7 +471,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -747,11 +794,11 @@ public class ShopFacade {
     }
 
     // This function is responsible for getting all the shops in the system
-    public List<ShopDto> getShopsEntity() {
+    public List<ShopWithIdDto> getShopsEntity() {
         List<Shop> shops = getAllShops();
-        List<ShopDto> shopsDto = new ArrayList<>();
+        List<ShopWithIdDto> shopsDto = new ArrayList<>();
         for (Shop shop : shops) {
-            shopsDto.add(new ShopDto(shop));
+            shopsDto.add(new ShopWithIdDto(shop));
         }
         return shopsDto;
     }
@@ -798,5 +845,59 @@ public class ShopFacade {
             }
         }
         return shops;
+    }
+
+    /**
+     * Adds keywords to a product in a shop
+     * @param username
+     * @param shopId
+     * @param productId
+     * @param keywords
+     * @throws StockMarketException
+     */
+    public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        shop.addKeywordsToProduct(username, productId, keywords);
+    }
+
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
+
+        openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
+    }
+
+    public List<ShopManagerDto> getShopManagers(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        List<ShopManagerDto> managers = new ArrayList<>();
+        for (Map.Entry<String, Role> entry : roles.entrySet()) {
+            Set<Permission> permissions = entry.getValue().getPermissions();
+            String role;
+            if(permissions.contains(Permission.FOUNDER)){
+                role = "Founder";
+            }else if(permissions.contains(Permission.OWNER)){
+                role = "Owner";
+            }else{
+                role = "Manager";
+            }
+            ShopManagerDto manager = new ShopManagerDto(entry.getKey(), role , permissions);
+            managers.add(manager);
+        }
+        return managers;
     }
 }

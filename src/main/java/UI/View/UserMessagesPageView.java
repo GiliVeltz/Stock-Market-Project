@@ -41,16 +41,13 @@ public class UserMessagesPageView extends VerticalLayout{
        
 
         // Create the header component
-        Header header = new BrowsePagesHeader("8080");
-        add(header);
+        // Header header = new BrowsePagesHeader("8080");
+        // add(header);
 
         H1 title = new H1("My Messages");
         title.getStyle().set("margin", "20px 0");
         add(title);
-        // Initialize your UI components here
-        // messagesTextArea = new JTextArea();
-        // updateMessages();
-        // WebSocketClient.addListener(this);
+       
         presenter.fetchMessages();
 
     }

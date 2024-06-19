@@ -45,6 +45,13 @@ public class UserController {
         return _userService.logOut(token);
     }
 
+    @GetMapping("/viewShoppingCart")
+    public ResponseEntity<Response> viewShoppingCart(
+            @RequestParam String username,
+            @RequestHeader(value = "Authorization") String token) {
+        return _userService.viewShoppingCart(token, username);
+    }
+
     @PostMapping("/purchaseCart")
     public ResponseEntity<Response> purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {
@@ -99,7 +106,7 @@ public class UserController {
         return resp;
     }
 
-    @GetMapping("/addProductToShoppingCart")
+    @PostMapping("/addProductToShoppingCart")
     public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:
@@ -109,7 +116,7 @@ public class UserController {
         return resp;
     }
 
-    @GetMapping("/removeProductFromShoppingCart")
+    @PostMapping("/removeProductFromShoppingCart")
     public ResponseEntity<Response> removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
             @RequestParam int productID, @RequestParam int shopID) {
         // example request:

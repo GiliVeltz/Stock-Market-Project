@@ -15,7 +15,6 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Presenter.UserShopsPagePresenter;
 
 @PageTitle("User Shops Page")
-@Route(value = "user_shops")
 public class UserShopsPageView extends BaseView {
 
     private UserShopsPagePresenter presenter;
@@ -30,10 +29,6 @@ public class UserShopsPageView extends BaseView {
         // Initialize presenter
         presenter = new UserShopsPagePresenter(this);
         presenter.fetchShops(_username);
-
-        // Create the header component
-        Header header = new BrowsePagesHeader("8080");
-        add(header);
 
         H1 title = new H1("My Shops");
         add(title);
@@ -76,4 +71,3 @@ public class UserShopsPageView extends BaseView {
     }
 
 }
-
