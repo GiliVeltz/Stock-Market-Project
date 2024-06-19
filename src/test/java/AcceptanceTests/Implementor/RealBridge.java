@@ -1503,7 +1503,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(String kewWord, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(List<String> keywords, String shopId) {
         // TODO Auto-generated method stub
         // #416
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsGuest'");
@@ -2452,7 +2452,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsUser(String keyWord1, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsUser(List<String> keywords, String shopId) {
         // #416
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsUser'");

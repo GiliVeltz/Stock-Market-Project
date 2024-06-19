@@ -69,7 +69,7 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryInShopAsGuest(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeywordsInShopAsGuest(String keyWord, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsGuest(List<String> keywords, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsGuest(String productId);
@@ -110,7 +110,7 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryInShopAsUser(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeywordsInShopAsUser(String keyWord1, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsUser(List<String> keywords, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsUser(String productId, String shopId);
