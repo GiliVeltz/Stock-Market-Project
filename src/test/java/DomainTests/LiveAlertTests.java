@@ -20,7 +20,7 @@ public class LiveAlertTests {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private final int testPort = 9999; // Example port for test
+    private final int testPort = 8080; // Example port for test
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -107,8 +107,9 @@ public class LiveAlertTests {
                 PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
                 BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
 
+
             // Send a message that is expected to receive a response from the server
-            testOut.println("Expected response from server");
+            testOut.println("REQUEST_MESSAGE");
 
             // Wait for and read the response
             String response = testIn.readLine();
