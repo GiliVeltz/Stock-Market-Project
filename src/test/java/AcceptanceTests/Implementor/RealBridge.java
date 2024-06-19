@@ -1173,8 +1173,70 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
 
     @Override
-    public boolean testSearchAndDisplayShopByIDAsGuest(String shopId) {
-        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsGuest' in ProxyBridge class");
+    public boolean testSearchAndDisplayShopByIDAsGuest(String shopId, boolean shopContainsProducts) {
+       // Arrange
+       MockitoAnnotations.openMocks(this);
+
+       String guestToken = "guestToken";
+       when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+       when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+       when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+       String userToken = "userToken";
+       when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+       when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+       when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+       when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+       _passwordEncoder = new PasswordEncoderUtil();
+
+       // create a user in the system
+       User user = new User("user", _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
+       _userFacade = new UserFacade(new ArrayList<User>() {
+           {
+               add(user);
+           }
+       }, new ArrayList<>());
+
+       _shopFacade = new ShopFacade();
+       ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+       ProductDto productDto1 = new ProductDto("productName1", Category.CLOTHING, 100, 1);
+       ProductDto productDto2 = new ProductDto("productName2", Category.CLOTHING, 50, 1);
+
+       //this user opens a shop , and if required - adds a product to the shop using shopFacade
+       try {
+           _shopFacade.openNewShop("user", shopDto);
+           if (shopContainsProducts) {
+                _shopFacade.addProductToShop(0, productDto1, "user");
+                _shopFacade.addProductToShop(0, productDto2, "user");
+           }
+       } 
+       catch (StockMarketException e) {
+           e.printStackTrace();
+           logger.warning("testSearchAndDisplayShopByIDAsGuest Error message: " + e.getMessage());
+           return false;
+       }
+       // initiate _shopServiceUnderTest
+       _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+       // initiate userServiceUnderTest
+       _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+       // Act - this user searches a product in a specific shop by its name using shopService
+       ResponseEntity<Response> res1 = _shopServiceUnderTest.searchAndDisplayShopByID(guestToken, Integer.parseInt(shopId));
+
+       // Assert
+       if(res1.getBody().getErrorMessage() != null){
+           logger.info("testSearchAndDisplayShopByIDAsGuest Error message: " + res1.getBody().getErrorMessage());
+           System.out.println("testSearchAndDisplayShopByIDAsGuest Error message: " + res1.getBody().getErrorMessage());
+           return false;
+       }
+       // check if the some products indeed returned
+       if (res1.getBody().getReturnValue().toString().contains("not found")) {
+           logger.info("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
+           System.out.println("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
+           return false;
+       }
+       return true;
     }
 
     @Override
@@ -2137,9 +2199,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     // SHOPPING USER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    
+
     @Override
-    public boolean testSearchAndDisplayShopByIDAsUser(String shopId) {
+    public boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts) {
         throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
     }
 

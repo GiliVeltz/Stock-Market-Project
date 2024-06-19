@@ -1313,16 +1313,17 @@ public class ShopService {
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
                         return new ResponseEntity<>(response, HttpStatus.OK);
                     } else {
-                        response.setReturnValue(
-                                String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
-                        logger.info(String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
-                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                        // if no products in shop - returns null as the product list
+                        shopProductMapForResponse.put(shopDto, null);
+                        response.setReturnValue(shopProductMapForResponse);
+                        logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
+                        return new ResponseEntity<>(response, HttpStatus.OK);
                     }
                 }
                 else {
                     response.setReturnValue(
-                                String.format("Shop with ID %s doesn't exist", shopId.toString()));
-                    logger.info(String.format("Shop with ID %s doesn't exist", shopId.toString()));
+                            String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
+                    logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
             }
