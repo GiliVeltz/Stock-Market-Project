@@ -1168,7 +1168,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return res.getBody().getErrorMessage() == null;
     }
 
-    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    @Override
+    public boolean testSearchAndDisplayShopByIDAsGuest(String shopId) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsGuest' in ProxyBridge class");
+    }
 
     @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
@@ -2125,6 +2132,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean testBuyingShoppingCartPoliciesGuest() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesGuest'");
+    }
+
+
+    // SHOPPING USER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    
+    @Override
+    public boolean testSearchAndDisplayShopByIDAsUser(String shopId) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
     }
 
     @Override

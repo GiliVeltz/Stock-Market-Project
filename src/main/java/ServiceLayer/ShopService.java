@@ -1293,15 +1293,21 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_shopFacade.isShopIdExist(shopId)) {
+                    //create a map of shopDTO, List<ProductDTO>s to return
                     Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                    //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    //get all products in the shop as "Product" objects 
                     List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                
                     if (products != null && !products.isEmpty()) {
+                        //convert the "Product" objects to "ProductDTO" objects
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product: products) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
+                        // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
                         response.setReturnValue(shopProductMapForResponse);
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
