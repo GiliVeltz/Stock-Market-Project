@@ -54,6 +54,9 @@ public interface BridgeInterface {
     boolean testSearchAndDisplayShopByIDAsGuest(String shopId, boolean shopContainsProducts);
 
     @Test
+    boolean testSearchAndDisplayShopByNameAsGuest(String shopName, boolean shopContainsProducts); 
+
+    @Test
     boolean testGetShopInfoAsGuest(String shopId);
 
     @Test
@@ -96,6 +99,9 @@ public interface BridgeInterface {
 
     @Test
     boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts);
+
+    @Test
+    boolean testSearchAndDisplayShopByNameAsUser(String shopName, boolean shopContainsProducts);
 
     @Test
     boolean testGetShopInfoAsUser(String shopId);

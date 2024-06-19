@@ -1240,6 +1240,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
+    public boolean testSearchAndDisplayShopByNameAsGuest(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsGuest' in realBridge class");
+    }
+    
+    @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
@@ -2310,6 +2315,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return true;    }
 
     @Override
+    public boolean testSearchAndDisplayShopByNameAsUser(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsUser' in realBridge class");
+    }
+    
+        @Override
     public boolean testGetShopInfoAsUser(String shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
