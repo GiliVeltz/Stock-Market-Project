@@ -163,12 +163,12 @@ public class ShopFacade {
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
         // If the product name exists in the shop, raise an error
-        if (getShopByShopId(shopId).isProductNameExist(productDto._productName))
+        if (getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
-                    productDto._productName, shopId));
+                    productDto.productName, shopId));
         int productId = _shopRepository.getUniqueProductID();
-        Product newProduct = new Product(productId, productDto._productName, productDto._category, productDto._price);
-        newProduct.updateProductQuantity(productDto._productQuantity);
+        Product newProduct = new Product(productId, productDto.productName, productDto.category, productDto.price);
+        newProduct.updateProductQuantity(productDto.productQuantity);
         getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
 
@@ -187,13 +187,13 @@ public class ShopFacade {
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
         // If one of the inputs in productDto is null, raise an error
-        if (productDto == null || productDto._productName == null || productDto._productName.isEmpty())
+        if (productDto == null || productDto.productName == null || productDto.productName.isEmpty())
             throw new StockMarketException("Product name is null.");
         // If the product name does not exists in the shop, raise an error
-        if (!getShopByShopId(shopId).isProductNameExist(productDto._productName))
+        if (!getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
-                    productDto._productName, shopId));
-        getShopByShopId(shopId).removeProductFromShop(userName, productDto._productName);
+                    productDto.productName, shopId));
+        getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
     }
 
     /*
@@ -216,31 +216,31 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
 
         // If one of the inputs in productDto is null, raise an error
-        if (productDtoOld == null || productDtoOld._productName == null || productDtoOld._productName.isEmpty())
+        if (productDtoOld == null || productDtoOld.productName == null || productDtoOld.productName.isEmpty())
             throw new StockMarketException("Old product name is null.");
-        if (productDtoNew == null || productDtoNew._productName == null || productDtoNew._productName.isEmpty())
+        if (productDtoNew == null || productDtoNew.productName == null || productDtoNew.productName.isEmpty())
             throw new StockMarketException("New product name is null.");
-        if (productDtoOld == null || productDtoOld._category == null)
+        if (productDtoOld == null || productDtoOld.category == null)
             throw new StockMarketException("Old product category is null.");
-        if (productDtoNew == null || productDtoNew._category == null)
+        if (productDtoNew == null || productDtoNew.category == null)
             throw new StockMarketException("New product category is null.");
-        if (productDtoOld == null || productDtoOld._price == 0.0)
+        if (productDtoOld == null || productDtoOld.price == 0.0)
             throw new StockMarketException("Old product price can not be 0.");
-        if (productDtoNew == null || productDtoNew._price == 0.0)
+        if (productDtoNew == null || productDtoNew.price == 0.0)
             throw new StockMarketException("New product price can not be 0..");
 
         // If the product name does not exists in the shop, raise an error
-        if (!getShopByShopId(shopId).isProductNameExist(productDtoOld._productName))
+        if (!getShopByShopId(shopId).isProductNameExist(productDtoOld.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
-                    productDtoOld._productName, shopId));
+                    productDtoOld.productName, shopId));
 
         // If the new product name already exists in the shop, raise an error
-        if (getShopByShopId(shopId).isProductNameExist(productDtoNew._productName))
+        if (getShopByShopId(shopId).isProductNameExist(productDtoNew.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
-                    productDtoNew._productName, shopId));
+                    productDtoNew.productName, shopId));
 
-        getShopByShopId(shopId).editProductInShop(userName, productDtoOld._productName, productDtoNew._productName,
-                productDtoNew._category, productDtoNew._price);
+        getShopByShopId(shopId).editProductInShop(userName, productDtoOld.productName, productDtoNew.productName,
+                productDtoNew.category, productDtoNew.price);
     }
 
     /**
@@ -740,6 +740,24 @@ public class ShopFacade {
         }
         return null;
     }
+
+     /**
+     * Returns all the products in a shop by its ID as DTO.
+     * 
+     * @param shopId
+     * @return
+     */
+    public List<ProductDto> getAllProductsDtoInShopByID(Integer shopId) {
+        List<ProductDto> productDtos = new ArrayList<>();
+
+        List<Product> products = getAllProductsInShopByID(shopId);
+        for(Product product : products)
+        {
+            productDtos.add(new ProductDto(product));
+        }
+        return productDtos;
+    }
+
 
     /**
      * Returns all shopIds of shops with the input name.

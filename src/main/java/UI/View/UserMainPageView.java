@@ -6,6 +6,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -87,6 +88,15 @@ public class UserMainPageView extends BaseView {
 
         birthDateField.setReadOnly(true);
         userInfoLayout.addFormItem(birthDateField, "Birth Date");
+        // Initialize the cart image
+        Image cartImage = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
+        cartImage.setWidth("400px");
+
+        // Create a horizontal layout for the cart image to center it
+        HorizontalLayout cartImageLayout = new HorizontalLayout();
+        cartImageLayout.setWidthFull(); // Make the layout take full width
+        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        cartImageLayout.add(cartImage);
 
         // Initialize edit and save buttons
 
