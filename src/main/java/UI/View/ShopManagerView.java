@@ -17,9 +17,11 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -45,6 +47,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _appointOwnerDialog;
     private Dialog _viewRolesDialog;
     private List<ShopManagerDto> _managers;
+    private Grid<ShopManagerDto> _viewRolesGrid;
     
     public ShopManagerView(){
 
@@ -79,7 +82,14 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
         Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
         Button viewSubordinateBtn = new Button("View Subordinates", e -> presenter.viewSubordinate());
-        Button viewShopRolesBtn = new Button("View Shop Roles", e -> _viewRolesDialog.open());
+        Button viewShopRolesBtn = new Button("View Shop Roles", e -> {
+            presenter.fetchShopManagers(managers -> {
+                setManagers(managers);
+                _viewRolesDialog = createViewRolesDialog();
+                _viewRolesDialog.open();
+            
+            });
+        });
         Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
         Button viewProductsbtn = new Button("View Products", e -> presenter.viewProducts());
 
@@ -127,7 +137,6 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
-        _viewRolesDialog = createViewRolesDialog();
     }
 
     public int getShopId() {
@@ -245,30 +254,81 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
-    public Dialog createViewRolesDialog() {
-        // Create a dialog
-        Dialog dialog = new Dialog();
+    // public Dialog createViewRolesDialog() {
+    //     // Create a dialog
+    //     Dialog dialog = new Dialog();
 
-         // Create a grid
-        Grid<ShopManagerDto> grid = new Grid<>(ShopManagerDto.class, false);
-        grid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
-        grid.addColumn(ShopManagerDto::getRole).setHeader("Role");
-        grid.addColumn(manager -> String.join(", ", 
-                manager.getPermissions().stream()
-                    .map(p -> PermissionMapper.getPermissionName(p))
-                    .toArray(String[]::new)
-        )).setHeader("Permissions");
+    //      // Create a grid
+    //     _viewRolesGrid = new Grid<>(ShopManagerDto.class, false);
+    //     _viewRolesGrid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
+    //     _viewRolesGrid.addColumn(ShopManagerDto::getRole).setHeader("Role");
+    //     _viewRolesGrid.addColumn(manager -> String.join(", ", 
+    //             manager.getPermissions().stream()
+    //                 .map(p -> PermissionMapper.getPermissionName(p))
+    //                 .toArray(String[]::new)
+    //     )).setHeader("Permissions");
 
-        // Create a list to hold managers and fetch them
-        presenter.fetchShopManagers();
 
-        if(_managers != null){
-            // Set items to the grid
-            grid.setItems(_managers);
-        }
+    //     if(_managers != null){
+    //         // Set items to the grid
+    //         _viewRolesGrid.setItems(_managers);
+    //     }
         
-        dialog.add(grid);
-        return dialog;
+    //     dialog.add(_viewRolesGrid);
+    //     dialog.setWidth("800px"); // Set the desired width
+    //     dialog.setHeight("400px"); // Set the desired height
+    //     return dialog;
+    // }
+
+    public Dialog createViewRolesDialog() {
+    // Create a dialog
+    Dialog dialog = new Dialog();
+
+    // Create a grid
+    _viewRolesGrid = new Grid<>(ShopManagerDto.class, false);
+    _viewRolesGrid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
+    _viewRolesGrid.addColumn(ShopManagerDto::getRole).setHeader("Role");
+
+    // Add a column for expand/collapse toggle
+    _viewRolesGrid.addComponentColumn(shopManager -> {
+        Button toggleButton = new Button("Details");
+        toggleButton.addClickListener(e -> {
+            if (_viewRolesGrid.isDetailsVisible(shopManager)) {
+                _viewRolesGrid.setDetailsVisible(shopManager, false);
+                toggleButton.setText("Details");
+            } else {
+                _viewRolesGrid.setDetailsVisible(shopManager, true);
+                toggleButton.setText("Hide");
+            }
+        });
+        return toggleButton;
+    }).setHeader("Permissions");
+
+    // Set the details generator for expandable rows
+    _viewRolesGrid.setItemDetailsRenderer(new ComponentRenderer<>(shopManager -> {
+        VerticalLayout detailsLayout = new VerticalLayout();
+        shopManager.getPermissions().forEach(permission -> {
+            Span permissionSpan = new Span(PermissionMapper.getPermissionName(permission));
+            detailsLayout.add(permissionSpan);
+        });
+        return detailsLayout;
+    }));
+
+    // Set items to the grid if available
+    if (_managers != null) {
+        _viewRolesGrid.setItems(_managers);
+    }
+
+    dialog.add(_viewRolesGrid);
+    dialog.setWidth("900px"); // Set the desired width of the dialog
+    dialog.setHeight("500px"); // Set the desired height of the dialog
+
+    return dialog;
+}
+
+
+    public void openViewRolesDialog() {
+        _viewRolesDialog.open();
     }
 
     public void setManagers(List<ShopManagerDto> managers) {

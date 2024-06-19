@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpEntity;
@@ -17,9 +18,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
+import UI.Model.BasketDto;
 import UI.Model.Permission;
+import UI.Model.Response;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
 
@@ -143,7 +147,7 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void fetchShopManagers(){
+    public void fetchShopManagers(Consumer<List<ShopManagerDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -153,21 +157,22 @@ public class ShopManagerPresenter {
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<String> response = restTemplate.exchange(
+                        ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagers?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
-                                String.class);
-
-                        ObjectMapper objectMapper = new ObjectMapper();
+                                Response.class);
 
                         try{
-                            JsonNode responseJson = objectMapper.readTree(response.getBody());
                             if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
                                 view.showSuccessMessage("Managers loaded successfully");
-                                if (responseJson.get("errorMessage").isNull()) {
-                                    List<ShopManagerDto> managers = objectMapper.convertValue(responseJson.get("returnValue"), objectMapper.getTypeFactory().constructCollectionType(List.class, ShopManagerDto.class));
-                                    view.setManagers(managers);
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShopManagerDto> managers = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopManagerDto.class));
+                                    callback.accept(managers);
                                 }else {
                                     view.showErrorMessage("Managers loading failed");
                                     view.getUI().ifPresent(ui -> ui.navigate("user"));

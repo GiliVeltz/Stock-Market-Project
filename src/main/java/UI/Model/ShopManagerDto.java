@@ -3,9 +3,15 @@ package UI.Model;
 import java.util.Set;
 
 public class ShopManagerDto {
-    private String username;
-    private String role;
-    private Set<Permission> permissions;
+    String username;
+    String role;
+    Set<Permission> permissions;
+
+    public ShopManagerDto() {
+        this.username = null;
+        this.role = null;
+        this.permissions = null;
+    }
 
     public ShopManagerDto(String username, String role, Set<Permission> permissions) {
         this.username = username;
