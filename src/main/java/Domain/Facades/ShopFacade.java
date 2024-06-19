@@ -433,7 +433,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -458,7 +460,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }

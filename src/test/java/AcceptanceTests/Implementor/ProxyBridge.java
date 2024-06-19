@@ -85,7 +85,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(String kewWord, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(List<String> keywords, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsGuest' in ProxyBridge class");
     }
 
@@ -151,7 +151,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsUser(String keyWord1, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsUser(List<String> keywords, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsUser' in ProxyBridge class");
     }
 
