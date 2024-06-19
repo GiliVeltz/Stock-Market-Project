@@ -40,7 +40,7 @@ public class ShoppingGuestAcceptanceTests {
     public void testSearchAndDisplayShopByNameAsGuest() {
         assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", true) ); // success - exist shop, has products
         assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", false) ); // success - exist shop, no products
-        assertFalse(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName2", false) ); // fail - non exist shop, no products
+        assertFalse(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName2", false) ); // fail - no exist shop, no products
     }
 
     // Test get information about a shop as a guest in the system.
