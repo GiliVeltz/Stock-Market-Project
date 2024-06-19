@@ -29,12 +29,20 @@ public class ShoppingUserAcceptanceTests{
         _bridge.init(); // Ensure mocks are initialized
     }
     
-    // Test get search a shop and display its products as a User in the system.
+    // Test get search a shop and display its products by shop ID as a User in the system.
     @Test
     public void testSearchAndDisplayShopByIDAsUser() {
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsUser("0", true)); // success - exist shop, has products
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsUser("0", false)); // success - exist shop, no products
         assertFalse(_bridge.testSearchAndDisplayShopByIDAsUser("1", false) ); // fail - non exist shop, no products
+    }
+
+    // Test search a shop and display its products by shop name as a User in the system.
+    @Test
+    public void testSearchAndDisplayShopByNameAsUser() {
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsUser("shopName1", true)); // success - exist shop, has products
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsUser("shopName1", false)); // success - exist shop, no products
+        assertFalse(_bridge.testSearchAndDisplayShopByNameAsUser("shopName2", false) ); // fail - non exist shop, no products
     }
 
     // Test get information about a shop as a User in the system.

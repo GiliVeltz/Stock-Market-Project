@@ -3,6 +3,7 @@ package AcceptanceTests.Implementor;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import enums.Category;
@@ -57,6 +58,11 @@ public class ProxyBridge implements BridgeInterface{
     @Override
     public boolean testSearchAndDisplayShopByIDAsGuest(String shopId, boolean shopContainsProducts) {
         throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsGuest' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testSearchAndDisplayShopByNameAsGuest(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsGuest' in ProxyBridge class");
     }
 
     @Override
@@ -127,6 +133,11 @@ public class ProxyBridge implements BridgeInterface{
     @Override
     public boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts) {
         throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testSearchAndDisplayShopByNameAsUser(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsUser' in ProxyBridge class");
     }
 
     @Override
