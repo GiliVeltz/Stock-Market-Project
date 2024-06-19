@@ -4,15 +4,6 @@ public class Response<T> {
     private String errorMessage;
     private T returnValue;
 
-    public Response(String errorMessage, T returnValue) {
-        this.errorMessage = errorMessage;
-        this.returnValue = returnValue;
-    }
-
-    // public void setReturnValue(String returnValue) {
-    //     this.returnValue = returnValue;
-    // }
-
     // consructor.
     public Response() {
     }

@@ -1,32 +1,32 @@
 package UI.Presenter;
 
-
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.vaadin.flow.component.UI;
+
+import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDto;
-import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vaadin.flow.component.UI;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import UI.View.ShopView;
 
-import UI.View.AllShopView;
+public class ShopViewPresenter {
 
-public class AllShopPresenter {
+    ShopView _view;
 
-    AllShopView view;
-
-    public AllShopPresenter(AllShopView view) {
-        this.view = view;
+    public ShopViewPresenter(ShopView view){
+        this._view = view;
     }
 
-    @SuppressWarnings("rawtypes")
-    public void getAllShops(){
-        RestTemplate restTemplate = new RestTemplate();
+    public void getShopProducts(){
+         RestTemplate restTemplate = new RestTemplate();
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -37,8 +37,9 @@ public class AllShopPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        Integer shopId = (Integer) UI.getCurrent().getSession().getAttribute("shopId");
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/getAllShops",
+                                "http://localhost:" + _view.getServerPort() + "/api/shop/getAllProductInShop?shopId=" + shopId,
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
@@ -48,23 +49,24 @@ public class AllShopPresenter {
 
                             if (responseBody.getErrorMessage() == null) {
                                 ObjectMapper objectMapper = new ObjectMapper();
-                                List<ShopDto> shopDtoList = objectMapper.convertValue(
+                                List<ProductDto> productDtoList = objectMapper.convertValue(
                                         responseBody.getReturnValue(),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopDto.class));
-                                view.showShops(shopDtoList);
-                                view.showSuccessMessage("shops present successfully");
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ProductDto.class));
+                                _view.displayAllProducts(productDtoList);
+                                _view.showSuccessMessage("products present successfully");
                             }
                             else {
-                                view.showErrorMessage("Failed to parse JSON response");
+                                _view.showErrorMessage("Failed to parse JSON response");
                             }                       
                         } else {
-                            view.showErrorMessage("Failed to present shops");
+                            _view.showErrorMessage("Failed to present products");
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("Failed to present shops");
+                        _view.showErrorMessage("Failed to present products");
                     }
                 });
+
     }
 
 }

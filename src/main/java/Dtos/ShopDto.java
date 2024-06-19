@@ -6,6 +6,7 @@ import Domain.Shop;
 @JsonInclude
 public class ShopDto {
     public String shopName;
+    public Integer shopId;
     public String bankDetails;
     public String shopAddress;
     public Double shopRating;
@@ -19,6 +20,7 @@ public class ShopDto {
     }
 
     public ShopDto (Shop shop) {
+        this.shopId = shop.getShopId();
         this.shopName = shop.getShopName();
         this.bankDetails = shop.getBankDetails();
         this.shopAddress = shop.getShopAddress();

@@ -217,10 +217,10 @@ public class ShopController {
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopManagers(token, shopId);
     }
-    
-    @SuppressWarnings("rawtypes")
-    @GetMapping("/searchAndDisplayShopByID")
-    public ResponseEntity<Response> searchAndDisplayShopByID(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
-        return _shopService.searchAndDisplayShopByID(token, shopId);
+
+    @GetMapping(value = "/getAllProductInShop", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response>getAllProductInShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getAllProductInShop(token, shopId);
     }
+    
 }

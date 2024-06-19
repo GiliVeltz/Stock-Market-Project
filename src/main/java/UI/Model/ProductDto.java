@@ -1,53 +1,66 @@
 package UI.Model;
 
+import javax.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import enums.Category;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDto {
 
-    private String _productName;
-    private Category _category;
-    private double _price;
-    private int _productQuantity;
+    @NotBlank(message = "Product name is required")
+    private String productName;
+    
+    @NotBlank(message = "Category is required")
+    private Category category;
+
+    @NotBlank(message = "Price is required")
+    private double price;
+
+    @NotBlank(message = "Product quantity is required")
+    private int productQuantity;
 
     // Constructor
+    public ProductDto(){}
+
     public ProductDto(String productName, Category category, double price, int productQuantity) {
-        this._productName = productName;
-        this._category = category;
-        this._price = price;
-        this._productQuantity = productQuantity;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productQuantity = productQuantity;
     }
 
     // Getters and setters
     public String getProductName() {
-        return _productName;
+        return productName;
     }
 
     public void setProductName(String newProductName) {
-        _productName = newProductName;
+        this.productName = newProductName;
     }
 
     public Category getCategory() {
-        return _category;
+        return category;
     }
 
     public void setCategory(Category newCategory) {
-        _category = newCategory;
+        this.category = newCategory;
     }
 
     public double getPrice() {
-        return _price;
+        return this.price;
     }
 
     public void setPrice(double newPrice) {
-        _price = newPrice;
+        this.price = newPrice;
     }
 
-    public int getQuantity() {
-        return _productQuantity;
-    }
+    // public Integer getProductQuantity() { // Update getter name
+    //     return this.productQuantity;
+    // }
 
-    public void setQuantity(int newQuantity) {
-        _productQuantity = newQuantity;
-    }
-
+    // public void setProductQuantity(int newQuantity) { // Update setter name
+    //     this.productQuantity = newQuantity;
+    // }
 }
