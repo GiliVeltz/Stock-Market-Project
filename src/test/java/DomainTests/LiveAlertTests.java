@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +46,9 @@ public class LiveAlertTests {
                 }
                 else if ("CUSTOMER_BUY".equals(request)) {
                     out.println("Purchase alert: Customer bought an item");
+                }
+                else if ("NO_RESPONSE".equals(request)) {
+                    // Do nothing
                 }
 
             } catch (Exception e) {
@@ -154,4 +158,39 @@ public class LiveAlertTests {
             assertEquals("Purchase alert: Customer bought an item", response, "Unexpected response received from server");
         }
     }
+    //Q: what more to tes?
+    //A: We can test more scenarios such as sending a message that triggers an alert for a customer buying from the store
+    //A: We can also test the case where the server does not respond to a message sent by the client
+    //A: We can test the case where the server responds with an error message when the client sends a message
+    //please implement the all above tests
+
+    //test test the case where the server does not respond to a message sent by the client
+    @Test
+    public void testServerDoesNotRespond() {
+        assertTimeout(Duration.ofMillis(500), () -> {
+            // Simulate sending a close shop request and receiving the alert
+            try (Socket testClient = new Socket("localhost", testPort)) {
+                testClient.setSoTimeout(200); // Set socket read timeout to 200ms
+                try (PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
+                     BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
+
+                    // Send close shop request
+                    testOut.println("NO_RESPONSE");
+
+                    // Wait for and read the response
+                    String response = null;
+                    try {
+                        response = testIn.readLine();
+                    } catch (SocketTimeoutException e) {
+                        // Expected behavior, the server does not respond
+                    }
+
+                    // Assert the response is as expected
+                    assertEquals(null, response, "Unexpected response for no response from server");
+                }
+            }
+        });
+    }
+
+
 }
