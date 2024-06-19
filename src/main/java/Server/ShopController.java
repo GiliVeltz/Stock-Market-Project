@@ -46,7 +46,7 @@ public class ShopController {
         return _shopService.closeShop(token, shopId);
     }
 
-    @GetMapping("/reopenShop")
+    @PostMapping("/reopenShop")
     public ResponseEntity<Response> reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
     }
@@ -100,7 +100,7 @@ public class ShopController {
         return _shopService.addShopConditionalDiscount(token, shopId, discountDto);
     }
 
-    @GetMapping("/removeShopDiscount")
+    @PostMapping("/removeShopDiscount")
     public ResponseEntity<Response>removeShopDiscount(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
             @RequestParam Integer discountId) {
         return _shopService.removeDiscount(token, shopId, discountId);
@@ -182,7 +182,7 @@ public class ShopController {
 
     @GetMapping("/getUserShops")
     public ResponseEntity<Response>getUserShops(@RequestHeader("Authorization") String token) {
-        return _shopService.getUserShops(token);
+        return _shopService.getUserShopsIds(token);
     }
 
     @GetMapping("/getShopsEntity")

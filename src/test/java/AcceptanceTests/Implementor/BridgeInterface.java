@@ -1,15 +1,14 @@
 package AcceptanceTests.Implementor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
-import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import enums.Category;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -58,22 +57,19 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductNameAsGuest(String productName);
     
     @Test
-    boolean testGetProductInfoUsingProductCategoryAsGuest(String category);
+    boolean testGetProductInfoUsingProductCategoryAsGuest(Category category);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord);
+    boolean testGetProductInfoUsingKeywordsAsGuest(List<String> keyWords);
     
-    @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord1, String keyWord2);
-
     @Test
     boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingProductCategoryInShopAsGuest(String category, String shopId);
+    boolean testGetProductInfoUsingProductCategoryInShopAsGuest(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsInShopAsGuest(String keyWord, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsGuest(String keyWord, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsGuest(String productId);
@@ -102,22 +98,19 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductNameAsUser(String productName);
 
     @Test
-    boolean testGetProductInfoUsingProductCategoryAsUser(String category);
+    boolean testGetProductInfoUsingProductCategoryAsUser(Category category);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord);
-    
-    @Test
-    boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord1, String keyWord2);
-    
+    boolean testGetProductInfoUsingKeywordsAsUser(List<String> keywords);
+        
     @Test
     boolean testGetProductInfoUsingProductNameInShopAsUser(String productName, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingProductCategoryInShopAsUser(String category, String shopId);
+    boolean testGetProductInfoUsingProductCategoryInShopAsUser(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsInShopAsUser(String keyWord1, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsUser(String keyWord1, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsUser(String productId, String shopId);

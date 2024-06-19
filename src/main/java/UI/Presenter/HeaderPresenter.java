@@ -155,6 +155,7 @@ public class HeaderPresenter {
     
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
+                                UI.getCurrent().getSession().setAttribute("username", null);
                                 view.showSuccessMessage("Logout successful");
                                 view.switchToLogin();
                                 view.navigateToLandingPage();
