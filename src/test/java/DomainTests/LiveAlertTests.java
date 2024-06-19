@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,13 @@ public class LiveAlertTests {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private final int testPort = 8080; // Example port for test
+    private int testPort; 
 
     @BeforeEach
     public void setUp() throws Exception {
         // Setup mock server
-        serverSocket = new ServerSocket(testPort);
+        serverSocket = new ServerSocket(0);
+        testPort = serverSocket.getLocalPort();
         new Thread(() -> {
             try {
                 clientSocket = serverSocket.accept();
@@ -43,11 +45,9 @@ public class LiveAlertTests {
                     out.println("Expected response from server");
                 } else if ("REMOVE_SUBSCRIPTION".equals(request)) {
                     out.println("Subscription successfully removed");
-                }
-                else if ("CUSTOMER_BUY".equals(request)) {
+                } else if ("CUSTOMER_BUY".equals(request)) {
                     out.println("Purchase alert: Customer bought an item");
-                }
-                else if ("NO_RESPONSE".equals(request)) {
+                } else if ("NO_RESPONSE".equals(request)) {
                     // Do nothing
                 }
 
@@ -111,7 +111,6 @@ public class LiveAlertTests {
                 PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
                 BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
 
-
             // Send a message that is expected to receive a response from the server
             testOut.println("REQUEST_MESSAGE");
 
@@ -145,8 +144,8 @@ public class LiveAlertTests {
     @Test
     public void testCustomerBuysFromStoreAlert() throws Exception {
         try (Socket testClient = new Socket("localhost", testPort);
-             PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
-             BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
+                PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
+                BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
 
             // Send a message or command that simulates a customer buying from the store
             testOut.println("CUSTOMER_BUY");
@@ -155,16 +154,21 @@ public class LiveAlertTests {
             String response = testIn.readLine();
 
             // Assert the response is as expected
-            assertEquals("Purchase alert: Customer bought an item", response, "Unexpected response received from server");
+            assertEquals("Purchase alert: Customer bought an item", response,
+                    "Unexpected response received from server");
         }
     }
-    //Q: what more to tes?
-    //A: We can test more scenarios such as sending a message that triggers an alert for a customer buying from the store
-    //A: We can also test the case where the server does not respond to a message sent by the client
-    //A: We can test the case where the server responds with an error message when the client sends a message
-    //please implement the all above tests
+    // Q: what more to tes?
+    // A: We can test more scenarios such as sending a message that triggers an
+    // alert for a customer buying from the store
+    // A: We can also test the case where the server does not respond to a message
+    // sent by the client
+    // A: We can test the case where the server responds with an error message when
+    // the client sends a message
+    // please implement the all above tests
 
-    //test test the case where the server does not respond to a message sent by the client
+    // test test the case where the server does not respond to a message sent by the
+    // client
     @Test
     public void testServerDoesNotRespond() {
         assertTimeout(Duration.ofMillis(500), () -> {
@@ -172,7 +176,8 @@ public class LiveAlertTests {
             try (Socket testClient = new Socket("localhost", testPort)) {
                 testClient.setSoTimeout(200); // Set socket read timeout to 200ms
                 try (PrintWriter testOut = new PrintWriter(testClient.getOutputStream(), true);
-                     BufferedReader testIn = new BufferedReader(new InputStreamReader(testClient.getInputStream()))) {
+                        BufferedReader testIn = new BufferedReader(
+                                new InputStreamReader(testClient.getInputStream()))) {
 
                     // Send close shop request
                     testOut.println("NO_RESPONSE");
@@ -191,6 +196,5 @@ public class LiveAlertTests {
             }
         });
     }
-
 
 }
