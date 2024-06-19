@@ -836,6 +836,14 @@ public class ShopFacade {
         return shops;
     }
 
+    /**
+     * Adds keywords to a product in a shop
+     * @param username
+     * @param shopId
+     * @param productId
+     * @param keywords
+     * @throws StockMarketException
+     */
     public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
