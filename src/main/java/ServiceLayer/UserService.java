@@ -414,7 +414,7 @@ public class UserService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     response.setReturnValue(_shoppingCartFacade.viewShoppingCart(token, username));
                 } else {
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    response.setReturnValue(_shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

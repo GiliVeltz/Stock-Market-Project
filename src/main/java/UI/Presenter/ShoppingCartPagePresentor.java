@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.vaadin.flow.component.UI;
 
+import UI.Model.PurchaseCartDetailsDto;
 import UI.Model.BasketDto;
 import UI.View.ShoppingCartPageView;
 
@@ -66,7 +67,46 @@ public class ShoppingCartPagePresentor {
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("Failed to open shop");
+                        view.showErrorMessage("Failed to open cart");
+                    }
+                });
+    }
+
+    public void purchaseCart(List<Integer> selectedIndexes, String cardNumber, String address) {
+        RestTemplate restTemplate = new RestTemplate();
+        PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(selectedIndexes, cardNumber, address);
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<PurchaseCartDetailsDto> requestEntity = new HttpEntity<>(details, headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/user/purchaseCart?details=" + details,
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                view.showSuccessMessage("Cart purchased successfully");
+                            }
+                            else {
+                                view.showErrorMessage("Failed to parse JSON response");
+                            }                       
+                        } else {
+                            view.showErrorMessage("Failed to purchase cart");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to purchase cart");
                     }
                 });
     }

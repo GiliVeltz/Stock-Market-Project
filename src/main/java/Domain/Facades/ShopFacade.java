@@ -841,6 +841,9 @@ public class ShopFacade {
         // shop.addProductToShop("Tal", product);
 
         openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
         addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
     }
 }
