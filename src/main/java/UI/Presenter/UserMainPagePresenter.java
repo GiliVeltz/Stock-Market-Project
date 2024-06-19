@@ -1,20 +1,17 @@
 package UI.Presenter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
-import Dtos.UserDto;
+// import Dtos.UserDto;
+import UI.Model.UserDto;
 import UI.Model.Response;
 import UI.Model.ShopDto;
 import UI.View.UserMainPageView;
@@ -63,6 +60,7 @@ public class UserMainPagePresenter {
     }
 
 
+@SuppressWarnings("rawtypes")
 public void getUserInfo() {
     RestTemplate restTemplate = new RestTemplate();
 
@@ -86,11 +84,11 @@ public void getUserInfo() {
                             if (responseBody.getErrorMessage() == null) {
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 UserDto userDto = objectMapper.convertValue(responseBody.getReturnValue(), UserDto.class);
-                                view.usernameField.setValue(userDto.username);
-                                view.passwordField.setValue(userDto.password);
-                                view.emailField.setValue(userDto.email);
+                                view.usernameField.setValue(userDto.getUsername());
+                                view.passwordField.setValue(userDto.getPassword());
+                                view.emailField.setValue(userDto.getEmail());
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                view.birthDateField.setValue(dateFormat.format(userDto.birthDate));
+                                view.birthDateField.setValue(dateFormat.format(userDto.getBirthDate()));
 
                                 view.showSuccessMessage("Fetch user details succeed");
                             } else {
@@ -112,6 +110,7 @@ public void getUserInfo() {
 }
 
             
+    @SuppressWarnings("rawtypes")
     public void updateUserInfo(UserDto userDto) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

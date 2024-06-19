@@ -1,14 +1,9 @@
 package UI.View;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.catalina.Manager;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -22,10 +17,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -54,6 +47,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
+        // Create the header component
+        Header header = new BrowsePagesHeader("8080");
+        add(header);
+        
         // Initialize presenter
         presenter = new ShopManagerPresenter(this);
         presenter.fetchManagerPermissions(_username);

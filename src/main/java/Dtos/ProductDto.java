@@ -24,5 +24,4 @@ public class ProductDto {
         this._price = product.getPrice();
         this._productQuantity = product.getProductQuantity();
     }
-
 }

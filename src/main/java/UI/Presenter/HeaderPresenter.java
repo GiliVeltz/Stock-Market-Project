@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import UI.Model.ShopDto;
 import UI.Model.UserDto;
 import UI.View.Header;
 import UI.View.SearchShopResultsView;
@@ -41,6 +40,7 @@ public class HeaderPresenter {
         this._serverPort = serverPort;
     }
     
+    @SuppressWarnings("rawtypes")
     public void loginUser(String username, String password) {
         RestTemplate restTemplate = new RestTemplate();
     
@@ -89,7 +89,7 @@ public class HeaderPresenter {
                 });
     }
     
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("rawtypes")
     public void registerUser(String username, String email, String password, Date birDate) {
         RestTemplate restTemplate = new RestTemplate();
         UserDto userDto = new UserDto(username, email, password, birDate);
@@ -129,6 +129,7 @@ public class HeaderPresenter {
                 });
     }
     
+    @SuppressWarnings("rawtypes")
     public void logoutUser() {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -175,11 +176,14 @@ public class HeaderPresenter {
                     }
                 });
     }
+
+    @SuppressWarnings("unused")
     public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
         RestTemplate restTemplate = new RestTemplate();
     }
 
 
+    @SuppressWarnings("unused")
     public void searchShop(String shopName, String shopId) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
