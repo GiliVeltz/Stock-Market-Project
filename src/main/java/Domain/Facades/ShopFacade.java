@@ -27,6 +27,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShopWithIdDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
@@ -81,6 +82,25 @@ public class ShopFacade {
     }
 
     public Integer openNewShop(String userName, ShopDto shopDto) throws StockMarketException {
+        // check if the shop name already exists in the system, should be unique
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopDto.shopName)) {
+                throw new StockMarketException(String.format("Shop name: %s already exists in the system.",
+                        shopDto.shopName));
+            }
+        }
+        
+        // check and validate the shop details
+        if (shopDto.shopName == null || shopDto.shopName.isEmpty()) {
+            throw new StockMarketException("Shop name is null or empty.");
+        }
+        if (shopDto.bankDetails == null || shopDto.bankDetails.isEmpty()) {
+            throw new StockMarketException("Bank details is null or empty.");
+        }
+        if (shopDto.shopAddress == null || shopDto.shopAddress.isEmpty()) {
+            throw new StockMarketException("Shop address is null or empty.");
+        }
+
         int shopId = _shopRepository.getUniqueShopID();
         _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         getShopByShopId(shopId).notifyReOpenShop(userName);
@@ -759,11 +779,11 @@ public class ShopFacade {
     }
 
     // This function is responsible for getting all the shops in the system
-    public List<ShopDto> getShopsEntity() {
+    public List<ShopWithIdDto> getShopsEntity() {
         List<Shop> shops = getAllShops();
-        List<ShopDto> shopsDto = new ArrayList<>();
+        List<ShopWithIdDto> shopsDto = new ArrayList<>();
         for (Shop shop : shops) {
-            shopsDto.add(new ShopDto(shop));
+            shopsDto.add(new ShopWithIdDto(shop));
         }
         return shopsDto;
     }
@@ -829,6 +849,9 @@ public class ShopFacade {
         // shop.addProductToShop("Tal", product);
 
         openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
         addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
     }
 }

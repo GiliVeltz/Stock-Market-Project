@@ -240,6 +240,9 @@ public class ShoppingCartFacade {
     public void initUI() throws StockMarketException {
         ShoppingCart cartUI = new ShoppingCart();
         _cartsRepo.addCartForUser("tal", cartUI);
-        addProductToUserCart("tal", 0, 0);    
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 1, 1);
+        addProductToUserCart("tal", 2, 1);    
     }
 }
