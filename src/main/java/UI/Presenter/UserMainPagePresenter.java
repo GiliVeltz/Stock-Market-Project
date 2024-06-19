@@ -1,13 +1,9 @@
 package UI.Presenter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -64,6 +60,7 @@ public class UserMainPagePresenter {
     }
 
 
+@SuppressWarnings("rawtypes")
 public void getUserInfo() {
     RestTemplate restTemplate = new RestTemplate();
 
@@ -113,6 +110,7 @@ public void getUserInfo() {
 }
 
             
+    @SuppressWarnings("rawtypes")
     public void updateUserInfo(UserDto userDto) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

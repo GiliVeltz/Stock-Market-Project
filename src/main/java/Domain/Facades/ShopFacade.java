@@ -1,7 +1,6 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,13 +22,12 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
-import Domain.User;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
-import Dtos.ShopWithIdDto;
+import Dtos.ShopGetterDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ShopException;
@@ -794,11 +792,11 @@ public class ShopFacade {
     }
 
     // This function is responsible for getting all the shops in the system
-    public List<ShopWithIdDto> getShopsEntity() {
+    public List<ShopGetterDto> getShopsEntities() {
         List<Shop> shops = getAllShops();
-        List<ShopWithIdDto> shopsDto = new ArrayList<>();
+        List<ShopGetterDto> shopsDto = new ArrayList<>();
         for (Shop shop : shops) {
-            shopsDto.add(new ShopWithIdDto(shop));
+            shopsDto.add(new ShopGetterDto(shop));
         }
         return shopsDto;
     }
