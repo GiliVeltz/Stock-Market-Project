@@ -63,7 +63,7 @@ public class UserMainPageView extends BaseView {
         tabs.addClassName("custom-tabs");
 
         VerticalLayout profileLayout = new VerticalLayout();
-        
+
         shopsLayout = new VerticalLayout(); // Use class-level variable
         UserShopsPageView userShopsPageView = new UserShopsPageView();
         shopsLayout.add(userShopsPageView);
@@ -71,7 +71,6 @@ public class UserMainPageView extends BaseView {
         messagesLayout = new VerticalLayout();
         UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
         messagesLayout.add(userMessagesPageView);
-
 
         FormLayout userInfoLayout = new FormLayout();
 
@@ -132,15 +131,31 @@ public class UserMainPageView extends BaseView {
         VerticalLayout dialogLayout = new VerticalLayout(userInfoLayout, editSaveButtonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-
         profileLayout.add(dialogLayout);
-        
 
         tabs.addSelectedChangeListener(event -> {
-            profileLayout.setVisible(event.getSelectedTab() == profileTab);
-            shopsLayout.setVisible(event.getSelectedTab() == shopsTab);
-            messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
-            _openShopButton.setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
+            boolean isProfileTabSelected = event.getSelectedTab() == profileTab;
+            boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
+            boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
+
+            profileLayout.setVisible(isProfileTabSelected);
+
+            if (isShopsTabSelected) {
+                shopsLayout.removeAll();
+                UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
+                shopsLayout.add(UpdateduserShopsPageView);
+            }
+            shopsLayout.setVisible(isShopsTabSelected);
+
+            if (isMessagesTabSelected) {
+                messagesLayout.removeAll();
+                UserMessagesPageView UpdateduserMessagesPageView = constructMessagesContent();
+                messagesLayout.add(UpdateduserMessagesPageView);
+            }
+            messagesLayout.setVisible(isMessagesTabSelected);
+            // messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
+            _openShopButton
+                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
         });
 
         tabs.setSelectedTab(profileTab);
@@ -167,6 +182,8 @@ public class UserMainPageView extends BaseView {
         // _myMessagesButton = new Button("My Messages", e -> {
         // getUI().ifPresent(ui -> ui.navigate("user_messages"));
         // });
+        // Add a click listener to the messagesTab
+        // Setup for messagesTab with a selected change listener
 
         HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
         openShopButtonLayout.setWidthFull();
@@ -174,6 +191,13 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
         add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
+    }
+
+    // Method to construct or reload the messages content
+    private UserMessagesPageView constructMessagesContent() { 
+        UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
+        // Example: Add components to layout, such as messages
+        return userMessagesPageView;
     }
 
     private Dialog createOpenNewShopDialog() {
