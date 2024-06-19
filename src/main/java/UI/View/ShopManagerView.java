@@ -58,10 +58,6 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         presenter = new ShopManagerPresenter(this);
         presenter.fetchManagerPermissions(_username);
 
-        // Create the header component
-        Header header = new BrowsePagesHeader("8080");
-        add(header);
-
     }
 
     public void createPermissionButtons(List<String> permissions) {
