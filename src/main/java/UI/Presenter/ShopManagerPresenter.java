@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpEntity;
@@ -17,9 +18,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
+import UI.Model.BasketDto;
 import UI.Model.Permission;
+import UI.Model.Response;
+import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
 
 public class ShopManagerPresenter {
@@ -140,7 +145,54 @@ public class ShopManagerPresenter {
                         view.showErrorMessage("Authorization token not found. Please log in.");
                     }
                 });
-}
+    }
+
+    public void fetchShopManagers(Consumer<List<ShopManagerDto>> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagers?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        try{
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Managers loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShopManagerDto> managers = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopManagerDto.class));
+                                    callback.accept(managers);
+                                }else {
+                                    view.showErrorMessage("Managers loading failed");
+                                    view.getUI().ifPresent(ui -> ui.navigate("user"));
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Managers loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                            view.getUI().ifPresent(ui -> ui.navigate("user"));
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
 
 
     public void viewSubordinate() {
