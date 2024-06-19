@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -198,7 +199,23 @@ public class ShopController {
 
     @GetMapping("/getUserShopsNames")
     public ResponseEntity<Response>getUserShopsNames(@RequestHeader("Authorization") String token) {
-        return _shopService.getUserShopsNames(token);
+        ResponseEntity<Response> resp = _shopService.getUserShopsNames(token);
+        return resp;
+    }
+
+    @GetMapping("/searchAndDisplayShopByID")
+    public ResponseEntity<Response> searchAndDisplayShopByID(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.searchAndDisplayShopByID(token, shopId);
+    }
+
+    @GetMapping(value = "/getAllShops", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response>getAllShops(@RequestHeader("Authorization") String token) {
+        return _shopService.getAllShops(token);
+    }
+
+    @GetMapping("/getShopManagers")
+    public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopManagers(token, shopId);
     }
     
     @SuppressWarnings("rawtypes")

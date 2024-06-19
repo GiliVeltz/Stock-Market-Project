@@ -14,4 +14,11 @@ public class UserDto {
         this.email = email;
         this.birthDate = birthDate;
     }
+
+    public UserDto(){
+        this.username = "";
+        this.password = "";
+        this.email = "email";
+        this.birthDate = null;
+    }
 }

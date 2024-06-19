@@ -3,6 +3,7 @@ package AcceptanceTests.Implementor;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import enums.Category;
@@ -55,6 +56,16 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
+    public boolean testSearchAndDisplayShopByIDAsGuest(String shopId, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsGuest' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testSearchAndDisplayShopByNameAsGuest(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsGuest' in ProxyBridge class");
+    }
+
+    @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsGuest' in ProxyBridge class");
     }
@@ -85,7 +96,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(String kewWord, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsGuest(List<String> keywords, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsGuest' in ProxyBridge class");
     }
 
@@ -120,6 +131,16 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
+    public boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testSearchAndDisplayShopByNameAsUser(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsUser' in ProxyBridge class");
+    }
+
+    @Override
     public boolean testGetShopInfoAsUser(String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsUser' in ProxyBridge class");
     }
@@ -151,7 +172,7 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testGetProductInfoUsingKeywordsInShopAsUser(String keyWord1, String shopId) {
+    public boolean testGetProductInfoUsingKeywordsInShopAsUser(List<String> keywords, String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetProductInfoUsingKeywordsInShopAsUser' in ProxyBridge class");
     }
 

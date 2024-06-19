@@ -14,6 +14,7 @@ import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Domain.Product;
+import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.ShopRepositoryInterface;
 import Domain.Shop;
@@ -27,6 +28,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.ShopManagerDto;
 import Dtos.ShopWithIdDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
@@ -380,6 +382,15 @@ public class ShopFacade {
         return _shopRepository.getAllShops();
     }
 
+    public List<ShopDto> getAllShopsDto() {
+        List<ShopDto> shops = new ArrayList<>();
+        for(Shop shop : getAllShops()){
+            ShopDto shopDto = new ShopDto(shop);
+            shops.add(shopDto);
+        }
+        return shops;
+    }
+
     public Map<Integer, List<Product>> getProductInShopByCategory(Integer shopId, Category productCategory)
             throws StockMarketException {
         Map<Integer, List<Product>> productsByShop = new HashMap<>();
@@ -433,7 +444,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -458,7 +471,9 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                productsByShop.put(shop.getShopId(), products);
+                if (!products.isEmpty()) {
+                    productsByShop.put(shop.getShopId(), products);
+                }
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -832,6 +847,14 @@ public class ShopFacade {
         return shops;
     }
 
+    /**
+     * Adds keywords to a product in a shop
+     * @param username
+     * @param shopId
+     * @param productId
+     * @param keywords
+     * @throws StockMarketException
+     */
     public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
@@ -853,5 +876,28 @@ public class ShopFacade {
         addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
         addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
         addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
+    }
+
+    public List<ShopManagerDto> getShopManagers(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        List<ShopManagerDto> managers = new ArrayList<>();
+        for (Map.Entry<String, Role> entry : roles.entrySet()) {
+            Set<Permission> permissions = entry.getValue().getPermissions();
+            String role;
+            if(permissions.contains(Permission.FOUNDER)){
+                role = "Founder";
+            }else if(permissions.contains(Permission.OWNER)){
+                role = "Owner";
+            }else{
+                role = "Manager";
+            }
+            ShopManagerDto manager = new ShopManagerDto(entry.getKey(), role , permissions);
+            managers.add(manager);
+        }
+        return managers;
     }
 }

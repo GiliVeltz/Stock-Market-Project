@@ -1,52 +1,97 @@
 package UI.View;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabVariant;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.WebSocketClient;
+import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutionException;
+
+import com.vaadin.flow.component.html.Span;
+
 import UI.Presenter.UserMainPagePresenter;
+import Dtos.UserDto;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
+@CssImport("./styles/shared-styles.css")
 @PageTitle("User Main Page")
 @Route(value = "user")
-public class UserMainPageView extends BaseView{
+public class UserMainPageView extends BaseView {
 
     private UserMainPagePresenter presenter;
     private String _username;
     private Button _openShopButton;
-    private Button myMessages;
-
+    private VerticalLayout shopsLayout;
+    private VerticalLayout messagesLayout;
+    private Button saveButton; // Moved saveButton declaration to class level
+    private Button editButton;
+    public TextField usernameField = new TextField("Username");
+    public TextField passwordField = new TextField("Password");
+    public TextField emailField = new TextField("Email");
+    public TextField birthDateField = new TextField("Birth Date");
 
     public UserMainPageView() {
-        // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
-        // Create welcome message
-        H1 welcomeMessage = new H1("Welcome, " + _username + "!");
-
-        // Create the header component
+        H2 welcomeMessage = new H2("Welcome " + _username + "!");
         Header header = new LoggedInHeader("8080");
 
-        // Create buttons
-        Button profileButton = new Button("My Profile", e -> navigateToProfile());
-        Button shopsButton = new Button("View My Shops", e -> navigateToShops());
-        myMessages = new Button("View My Messages", e -> navigateToMessages());
-        // New button for opening a shop
-        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
-        _openShopButton.addClassName("pointer-cursor");
+        Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
+        Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
+        Tab messagesTab = new Tab(VaadinIcon.COMMENT.create(), new Span("My Messages"));
+
+        profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        messagesTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+
+        Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab);
+        tabs.addClassName("custom-tabs");
+
+        VerticalLayout profileLayout = new VerticalLayout();
+
+        shopsLayout = new VerticalLayout(); // Use class-level variable
+        UserShopsPageView userShopsPageView = new UserShopsPageView();
+        shopsLayout.add(userShopsPageView);
+
+        messagesLayout = new VerticalLayout();
+        UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
+        messagesLayout.add(userMessagesPageView);
+
+        FormLayout userInfoLayout = new FormLayout();
+
+        // Fetch user information from presenter
+        UserDto userDto = new UserDto();
+        presenter = new UserMainPagePresenter(this);
+        presenter.getUserInfo(); // Blocking call to get the result
+        // Handle the retrieved UserDto here
+        // Display user information in non-editable fields
+        usernameField.setReadOnly(true);
+        userInfoLayout.addFormItem(usernameField, "Username");
+
+        passwordField.setReadOnly(true);
+        userInfoLayout.addFormItem(passwordField, "Password");
+
+        emailField.setReadOnly(true);
+        userInfoLayout.addFormItem(emailField, "Email");
+
+        birthDateField.setReadOnly(true);
+        userInfoLayout.addFormItem(birthDateField, "Birth Date");
         // Initialize the cart image
         Image cartImage = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
         cartImage.setWidth("400px");
@@ -57,28 +102,112 @@ public class UserMainPageView extends BaseView{
         cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
         cartImageLayout.add(cartImage);
 
-        // Apply CSS class to buttons
-        profileButton.addClassName("same-size-button");
-        shopsButton.addClassName("same-size-button");
-        myMessages.addClassName("same-size-button");
+        // Initialize edit and save buttons
 
-        // Create vertical layout for buttons
-        VerticalLayout buttonLayout = new VerticalLayout(profileButton, shopsButton, _openShopButton,myMessages);
-        buttonLayout.setAlignItems(Alignment.END);
+        editButton = new Button("Edit Details", event -> {
+            // Switch to edit mode
+            passwordField.setReadOnly(false);
+            emailField.setReadOnly(false);
+            birthDateField.setReadOnly(false);
 
-        // Create a horizontal layout for the title to center it
+            saveButton.setVisible(true);
+            editButton.setVisible(false);
+        });
+
+        saveButton = new Button("Save", event -> {
+            // Save changes to presenter or backend
+            presenter.updateUserInfo(
+                    new UserDto(usernameField.getValue(), passwordField.getValue(), emailField.getValue(), null));
+
+            // Notify user of successful save
+            Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
+
+            // Switch back to view mode
+            usernameField.setReadOnly(true);
+            passwordField.setReadOnly(true);
+            emailField.setReadOnly(true);
+            birthDateField.setReadOnly(true);
+
+            // Hide the save button
+            saveButton.setVisible(false);
+            editButton.setVisible(true);
+        });
+        saveButton.setVisible(false); // Initially hide save button
+
+        HorizontalLayout editSaveButtonLayout = new HorizontalLayout(editButton, saveButton);
+        editSaveButtonLayout.setWidthFull();
+        editSaveButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+
+        VerticalLayout dialogLayout = new VerticalLayout(userInfoLayout, editSaveButtonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        profileLayout.add(dialogLayout);
+
+        tabs.addSelectedChangeListener(event -> {
+            boolean isProfileTabSelected = event.getSelectedTab() == profileTab;
+            boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
+            boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
+
+            profileLayout.setVisible(isProfileTabSelected);
+
+            if (isShopsTabSelected) {
+                shopsLayout.removeAll();
+                UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
+                shopsLayout.add(UpdateduserShopsPageView);
+            }
+            shopsLayout.setVisible(isShopsTabSelected);
+
+            if (isMessagesTabSelected) {
+                messagesLayout.removeAll();
+                UserMessagesPageView UpdateduserMessagesPageView = constructMessagesContent();
+                messagesLayout.add(UpdateduserMessagesPageView);
+            }
+            messagesLayout.setVisible(isMessagesTabSelected);
+            // messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
+            _openShopButton
+                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
+        });
+
+        tabs.setSelectedTab(profileTab);
+        profileLayout.setVisible(true);
+        shopsLayout.setVisible(false);
+        messagesLayout.setVisible(false);
+
         HorizontalLayout titleLayout = new HorizontalLayout();
-        titleLayout.setWidthFull(); // Make the layout take full width
-        titleLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        titleLayout.setWidthFull();
+        titleLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         titleLayout.add(welcomeMessage);
 
-        // Add components to the vertical layout
-        add(header, titleLayout, cartImageLayout, buttonLayout);
+        HorizontalLayout tabsLayout = new HorizontalLayout(tabs);
+        tabsLayout.setWidthFull();
+        tabsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        // Initialize presenter
-        presenter = new UserMainPagePresenter(this);
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        mainLayout.add(titleLayout, tabsLayout);
 
+        _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
+        _openShopButton.setWidth("120px");
 
+        // _myMessagesButton = new Button("My Messages", e -> {
+        // getUI().ifPresent(ui -> ui.navigate("user_messages"));
+        // });
+        // Add a click listener to the messagesTab
+        // Setup for messagesTab with a selected change listener
+
+        HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
+        openShopButtonLayout.setWidthFull();
+        openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
+
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
+    }
+
+    // Method to construct or reload the messages content
+    private UserMessagesPageView constructMessagesContent() { 
+        UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
+        // Example: Add components to layout, such as messages
+        return userMessagesPageView;
     }
 
     private Dialog createOpenNewShopDialog() {
@@ -120,7 +249,7 @@ public class UserMainPageView extends BaseView{
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
 
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
@@ -129,28 +258,4 @@ public class UserMainPageView extends BaseView{
 
         return dialog;
     }
-
-    private void navigateToMessages() {
-        myMessages.getStyle().remove("background-color");
-        getUI().ifPresent(ui -> ui.navigate("user_messages"));
-    }
-
-    private void navigateToShops() {
-        getUI().ifPresent(ui -> ui.navigate("user_shops"));
-    }
-
-    private void navigateToProfile() {
-        getUI().ifPresent(ui -> ui.navigate("profile"));
-    }
-
-    @Override
-    public void showSuccessMessage(String message) {
-        Notification.show(message);
-    }
-
-    @Override
-    public void showErrorMessage(String message) {
-        Notification.show(message);
-    }
-
 }
