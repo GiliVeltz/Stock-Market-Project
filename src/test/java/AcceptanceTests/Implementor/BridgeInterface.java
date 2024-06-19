@@ -51,6 +51,9 @@ public interface BridgeInterface {
     // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
+    boolean testSearchAndDisplayShopByIDAsGuest(String shopId, boolean shopContainsProducts);
+
+    @Test
     boolean testGetShopInfoAsGuest(String shopId);
 
     @Test
@@ -60,11 +63,8 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryAsGuest(Category category);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord);
+    boolean testGetProductInfoUsingKeywordsAsGuest(List<String> keyWords);
     
-    @Test
-    boolean testGetProductInfoUsingKeyWordsAsGuest(String keyWord1, String keyWord2);
-
     @Test
     boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId);
     
@@ -72,7 +72,7 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryInShopAsGuest(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsInShopAsGuest(String keyWord, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsGuest(List<String> keywords, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsGuest(String productId);
@@ -95,6 +95,9 @@ public interface BridgeInterface {
     // SHOPPING USER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test
+    boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts);
+
+    @Test
     boolean testGetShopInfoAsUser(String shopId);
     
     @Test
@@ -104,11 +107,8 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryAsUser(Category category);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord);
-    
-    @Test
-    boolean testGetProductInfoUsingKeyWordsAsUser(String keyWord1, String keyWord2);
-    
+    boolean testGetProductInfoUsingKeywordsAsUser(List<String> keywords);
+        
     @Test
     boolean testGetProductInfoUsingProductNameInShopAsUser(String productName, String shopId);
     
@@ -116,7 +116,7 @@ public interface BridgeInterface {
     boolean testGetProductInfoUsingProductCategoryInShopAsUser(Category category, String shopId);
     
     @Test
-    boolean testGetProductInfoUsingKeyWordsInShopAsUser(String keyWord1, String shopId);
+    boolean testGetProductInfoUsingKeywordsInShopAsUser(List<String> keywords, String shopId);
 
     @Test
     boolean testAddProductToShoppingCartAsUser(String productId, String shopId);

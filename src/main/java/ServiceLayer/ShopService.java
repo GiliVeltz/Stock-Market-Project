@@ -1123,27 +1123,16 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(token)) {
-                    String username = _tokenService.extractUsername(token);
-                    if (_userFacade.doesUserExist(username)) {
-                        String info = _shopFacade.getShopGeneralInfo(shopId);
-                        if (info != null && info.length() > 0) {
-                            response.setReturnValue(String.format(
-                                    "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
-                            logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
-                            return new ResponseEntity<>(response, HttpStatus.OK);
-                        } else {
-                            response.setReturnValue(
-                                    String.format("Shop general information for shop ID %d was not found", shopId));
-                            logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
-                            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-                        }
-                    } else {
-                        response.setErrorMessage(String.format("User name %s does not exist.", username));
-                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-                    }
+                String info = _shopFacade.getShopGeneralInfo(shopId);
+                if (info != null && info.length() > 0) {
+                    response.setReturnValue(String.format(
+                            "Shop general information: \n Shop ID: %d, \n General information: %s", shopId, info));
+                    logger.info(String.format("Shop general information for shop ID %d is displayed", shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setErrorMessage(String.format("User is not logged in."));
+                    response.setReturnValue(
+                            String.format("Shop general information for shop ID %d was not found", shopId));
+                    logger.info(String.format("Shop general information for shop ID %d was not found", shopId));
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
             } else {
@@ -1293,30 +1282,37 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (_shopFacade.isShopIdExist(shopId)) {
+                    //create a map of shopDTO, List<ProductDTO>s to return
                     Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                    //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    //get all products in the shop as "Product" objects 
                     List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                
                     if (products != null && !products.isEmpty()) {
+                        //convert the "Product" objects to "ProductDTO" objects
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product: products) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
+                        // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
                         response.setReturnValue(shopProductMapForResponse);
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
                         return new ResponseEntity<>(response, HttpStatus.OK);
                     } else {
-                        response.setReturnValue(
-                                String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
-                        logger.info(String.format("Shop with ID %s was found but it contains no products", shopId.toString()));
-                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                        // if no products in shop - returns null as the product list
+                        shopProductMapForResponse.put(shopDto, null);
+                        response.setReturnValue(shopProductMapForResponse);
+                        logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
+                        return new ResponseEntity<>(response, HttpStatus.OK);
                     }
                 }
                 else {
                     response.setReturnValue(
-                                String.format("Shop with ID %s doesn't exist", shopId.toString()));
-                    logger.info(String.format("Shop with ID %s doesn't exist", shopId.toString()));
+                            String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
+                    logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
             }
