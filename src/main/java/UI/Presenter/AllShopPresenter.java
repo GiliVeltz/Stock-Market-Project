@@ -1,22 +1,15 @@
 package UI.Presenter;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-
 import UI.Model.Response;
 import UI.Model.ShopDto;
 
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
@@ -32,6 +25,7 @@ public class AllShopPresenter {
         this.view = view;
     }
 
+    @SuppressWarnings("rawtypes")
     public void getAllShops(){
         RestTemplate restTemplate = new RestTemplate();
 

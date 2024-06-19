@@ -1,7 +1,5 @@
 package UI.Model;
 
-import javax.validation.constraints.NotBlank;
-
 public class SearchShopDto {
     private String shopName;
     private Integer shopId;

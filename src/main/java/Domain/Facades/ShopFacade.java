@@ -1,7 +1,6 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +22,6 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
-import Domain.User;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;

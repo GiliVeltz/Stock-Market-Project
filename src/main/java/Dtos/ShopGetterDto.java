@@ -3,19 +3,23 @@ package Dtos;
 import java.util.Map;
 
 import Domain.Shop;
-import Domain.Discounts.Discount;
-import Domain.Policies.ShopPolicy;
 
 public class ShopGetterDto {
     public int shopId;
     public String shopName;
+    @SuppressWarnings("unused")
     private String _shopFounder;
+    @SuppressWarnings("unused")
     private Map<Integer, DiscountDto> _discounts;
     public String bankDetails;
     public String shopAddress;
+    @SuppressWarnings("unused")
     private Double _shopRating;
+    @SuppressWarnings("unused")
     private Integer _shopRatersCounter;
+    @SuppressWarnings("unused")
     private ShopPolicyDto _shopPolicy;
+    @SuppressWarnings("unused")
     private boolean _isClosed;
 
     public ShopGetterDto(int shopId, String shopName, String _shopFounder, String bankDetails,
