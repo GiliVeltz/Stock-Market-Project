@@ -1554,4 +1554,27 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Receive the all shops information.
+     * @param token the users session token
+     * @return the shops information.
+     */
+    public ResponseEntity<Response> getAllShops(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                List<ShopDto> shopList = _shopFacade.getAllShopsDto();
+                response.setReturnValue(shopList);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shops info. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

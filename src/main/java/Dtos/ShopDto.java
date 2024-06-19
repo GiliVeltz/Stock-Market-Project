@@ -6,6 +6,9 @@ public class ShopDto {
     public String shopName;
     public String bankDetails;
     public String shopAddress;
+    public Double shopRating;
+    public Integer shopRatersCounter;
+    public boolean isShopClosed;
 
     public ShopDto(String shopName, String bankDetails, String shopAddress) {
         this.shopName = shopName;
@@ -17,5 +20,9 @@ public class ShopDto {
         this.shopName = shop.getShopName();
         this.bankDetails = shop.getBankDetails();
         this.shopAddress = shop.getShopAddress();
+        this.shopRating = shop.getShopRating();
+        this.shopRatersCounter = shop.getShopRatersCounter();
+        this.isShopClosed = shop.isShopClosed();
     }
+
 }
