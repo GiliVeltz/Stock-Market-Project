@@ -812,6 +812,14 @@ public class ShopFacade {
         return shops;
     }
 
+    public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        shop.addKeywordsToProduct(username, productId, keywords);
+    }
+
     // function to initilaize data for UI testing
     public void initUI() throws StockMarketException {
         // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
