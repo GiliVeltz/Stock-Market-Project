@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Domain.Rules.Rule;
+import Dtos.ShoppingBasketDto;
 
 /**
  * The base class for policies.
@@ -56,11 +57,6 @@ public abstract class Policy<T> {
                 return false;
         return true;
     }
-    
-    // Getters
-    public List<Rule<T>> getRules() {
-        return _rules;
-    }
 
     @Override
     public String toString() {
@@ -70,5 +66,19 @@ public abstract class Policy<T> {
             sb.append(rule.toString()).append(",\n ");
         sb.append('}');
         return sb.toString();
+    }
+    
+    // Getters
+    public List<Rule<T>> getRules() {
+        return _rules;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Rule<ShoppingBasketDto>> getRulesDto() {
+        List<Rule<ShoppingBasketDto>> _rules = new ArrayList<>();
+        for (Rule<T> rule : this._rules) {
+            _rules.add((Rule<ShoppingBasketDto>) rule);
+        }
+        return _rules;
     }
 }

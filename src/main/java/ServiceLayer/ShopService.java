@@ -22,7 +22,7 @@ import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
-import Dtos.ShopWithIdDto;
+import Dtos.ShopGetterDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -1487,11 +1487,11 @@ public class ShopService {
      * @param token the users session token
      * @return the shops in the system.
      */
-    public ResponseEntity<Response> getShopsEntity(String token) {
+    public ResponseEntity<Response> getShopsEntities(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                List<ShopWithIdDto> shops = _shopFacade.getShopsEntity();
+                List<ShopGetterDto> shops = _shopFacade.getShopsEntities();
                 response.setReturnValue(shops);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
