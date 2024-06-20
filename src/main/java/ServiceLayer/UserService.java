@@ -2,12 +2,9 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Websocket;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.vaadin.flow.component.notification.Notification;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -20,7 +17,6 @@ import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
-import Exceptions.UnauthorizedException;
 import Domain.Alerts.*;
 
 @Service

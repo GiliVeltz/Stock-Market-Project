@@ -1,19 +1,8 @@
 package UI.Presenter;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
 import UI.Message;
 import UI.WebSocketClient;
 import UI.View.UserMessagesPageView;
-import UI.View.UserShopsPageView;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vaadin.flow.component.UI;
 import java.util.List;
 
 public class UserMessagesPagePresenter {

@@ -2,8 +2,6 @@ package UI;
 
 import org.springframework.stereotype.Component;
 
-import UI.View.MessageListener;
-
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnClose;

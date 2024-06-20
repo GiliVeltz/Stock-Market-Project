@@ -9,11 +9,8 @@ import org.springframework.http.ResponseEntity;
 import UI.Model.Response; // Add this import statement
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.vaadin.flow.component.UI;
 
 import UI.Model.PurchaseCartDetailsDto;
@@ -27,6 +24,7 @@ public class ShoppingCartPagePresentor {
         this.view = view;
     }
 
+    @SuppressWarnings("rawtypes")
     public void viewCart(){
         RestTemplate restTemplate = new RestTemplate();
 
@@ -72,6 +70,7 @@ public class ShoppingCartPagePresentor {
                 });
     }
 
+    @SuppressWarnings("rawtypes")
     public void purchaseCart(List<Integer> selectedIndexes, String cardNumber, String address) {
         RestTemplate restTemplate = new RestTemplate();
         PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(selectedIndexes, cardNumber, address);

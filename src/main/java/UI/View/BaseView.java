@@ -2,6 +2,7 @@ package UI.View;
 
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import UI.Presenter.BasePresenter;
@@ -29,5 +30,10 @@ public abstract class BaseView extends VerticalLayout implements BeforeEnterObse
 
     public String getServerPort(){
         return _serverPort;
+    }
+
+    public boolean isGuest() {
+        String username = (String) UI.getCurrent().getSession().getAttribute("username");
+        return username == null;
     }
 }

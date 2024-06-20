@@ -12,7 +12,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -27,7 +26,7 @@ import UI.Presenter.ShoppingCartPagePresentor;
 @Route(value = "user_cart")
 public class ShoppingCartPageView extends BaseView {
     private ShoppingCartPagePresentor presenter;
-    private H1 _title;
+    //private H1 _title;
     private Grid<BasketDto> grid = new Grid<>(BasketDto.class);
     private Map<BasketDto, Boolean> selectedItems = new HashMap<>();
     private boolean isGuest;

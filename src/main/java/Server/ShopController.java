@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
+import Dtos.ProductDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
+import UI.Presenter.dtoWrapper;
 
 @RestController
 @RequestMapping(path = "/api/shop")
@@ -50,6 +52,12 @@ public class ShopController {
     @PostMapping("/reopenShop")
     public ResponseEntity<Response> reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
+    }
+
+    @PostMapping("/addProductToShop")
+    public ResponseEntity<Response> addProductToShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestBody ProductDto productDto) {
+        ResponseEntity<Response> resp =_shopService.addProductToShop(token, shopId, productDto);
+        return resp;
     }
 
     @GetMapping("/searchProductInShopByName")
@@ -120,6 +128,7 @@ public class ShopController {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/addShopManager")
     public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
                                                 @RequestBody Map<String, Object> request) {
@@ -128,7 +137,6 @@ public class ShopController {
         Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.addShopManager(token, shopId, newManagerUsername, permissions);
     }
-
 
     @PostMapping("/fireShopManager")
     public ResponseEntity<Response>fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
@@ -186,9 +194,9 @@ public class ShopController {
         return _shopService.getUserShopsIds(token);
     }
 
-    @GetMapping("/getShopsEntity")
-    public ResponseEntity<Response>getShopsEntity(@RequestHeader("Authorization") String token) {
-        return _shopService.getShopsEntity(token);
+    @GetMapping("/getShopsEntities")
+    public ResponseEntity<Response>getShopsEntities(@RequestHeader("Authorization") String token) {
+        return _shopService.getShopsEntities(token);
     }
   
     @GetMapping("/getShopManagerPermissions")
@@ -217,6 +225,12 @@ public class ShopController {
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopManagers(token, shopId);
     }
+
+    @GetMapping(value = "/getAllProductInShop", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response>getAllProductInShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getAllProductInShop(token, shopId);
+    }
+    
 
     @GetMapping("/getMySubordinates")
     public ResponseEntity<Response>getMySubordinates(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {

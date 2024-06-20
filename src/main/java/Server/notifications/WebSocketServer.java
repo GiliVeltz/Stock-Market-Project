@@ -1,6 +1,5 @@
 package Server.notifications;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -89,11 +88,6 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
-        // // TODO : remove this lines
-        // if (sessions.size() > 1) {
-        //     broadcastMessage("Hello all clients!");
-
-        // }
     }
 
     // check for any queued message and if exist send them to the client

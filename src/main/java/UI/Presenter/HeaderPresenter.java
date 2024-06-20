@@ -7,18 +7,29 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 
+import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
+import com.vaadin.flow.server.VaadinSession;
+
+import org.springframework.http.*;
+
+import Dtos.ProductDto;
+
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import UI.Model.ShopDto;
 import UI.Model.UserDto;
 import UI.View.Header;
+import UI.View.SearchShopResultsView;
 import UI.Model.Response;
-
+import UI.Model.SearchShopDto;
+// import ServiceLayer.Response;
 public class HeaderPresenter {
 
     private final String _serverPort;
@@ -29,6 +40,7 @@ public class HeaderPresenter {
         this._serverPort = serverPort;
     }
     
+    @SuppressWarnings("rawtypes")
     public void loginUser(String username, String password) {
         RestTemplate restTemplate = new RestTemplate();
     
@@ -77,7 +89,7 @@ public class HeaderPresenter {
                 });
     }
     
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("rawtypes")
     public void registerUser(String username, String email, String password, Date birDate) {
         RestTemplate restTemplate = new RestTemplate();
         UserDto userDto = new UserDto(username, email, password, birDate);
@@ -91,12 +103,14 @@ public class HeaderPresenter {
                         HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
     
                         try {
+                            @SuppressWarnings("rawtypes")
                             ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + _serverPort + "/api/user/register",
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);
     
+                            @SuppressWarnings("rawtypes")
                             Response responseBody = response.getBody();
                             if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
                                 view.showSuccessMessage("Registration successful, Please sign in");
@@ -115,6 +129,7 @@ public class HeaderPresenter {
                 });
     }
     
+    @SuppressWarnings("rawtypes")
     public void logoutUser() {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -161,13 +176,19 @@ public class HeaderPresenter {
                     }
                 });
     }
+
+    @SuppressWarnings("unused")
     public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
         RestTemplate restTemplate = new RestTemplate();
     }
 
-    public void searchShop(String shopName, String bankshopId) {
-        RestTemplate restTemplate = new RestTemplate();
+
+    @SuppressWarnings("unused")
+    public void searchShop(String shopName, String shopId) {
+
+                
     }
 
-    
+
 }
+
