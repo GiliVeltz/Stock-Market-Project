@@ -311,6 +311,7 @@ public class Shop {
         Role manager = new Role(newManagerUserName, _shopId, username, permissions);
 
         _userToRole.putIfAbsent(newManagerUserName, manager);
+        appointer.addAppointment(newManagerUserName);
         logger.log(Level.INFO, "Shop - AppointManager: " + username + " successfully appointed " + newManagerUserName
                 + " as a new manager with permissions: " + permissions + "in the shop with id " + _shopId);
     }
@@ -343,8 +344,10 @@ public class Shop {
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot appoint new owner.");
         // All constraints checked
+        Role appointer = _userToRole.get(username);
         Role owner = new Role(newOwnerUserName, _shopId, username, EnumSet.of(Permission.OWNER));
         _userToRole.putIfAbsent(newOwnerUserName, owner);
+        appointer.addAppointment(newOwnerUserName);
         logger.log(Level.INFO, "Shop - AppointOwner: " + username + " successfully appointed " + newOwnerUserName
                 + " as a new owner in the shop with id " + _shopId);
     }

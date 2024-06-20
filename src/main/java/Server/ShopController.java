@@ -217,4 +217,10 @@ public class ShopController {
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopManagers(token, shopId);
     }
+
+    @GetMapping("/getMySubordinates")
+    public ResponseEntity<Response>getMySubordinates(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getMySubordinates(token, shopId);
+    }
+
 }

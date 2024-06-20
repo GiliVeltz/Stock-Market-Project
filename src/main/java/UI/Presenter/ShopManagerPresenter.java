@@ -175,7 +175,7 @@ public class ShopManagerPresenter {
                                     callback.accept(managers);
                                 }else {
                                     view.showErrorMessage("Managers loading failed");
-                                    view.getUI().ifPresent(ui -> ui.navigate("user"));
+                                    //view.getUI().ifPresent(ui -> ui.navigate("user"));
                                 }
                             }
                             else {
@@ -186,7 +186,7 @@ public class ShopManagerPresenter {
                         }catch (Exception e) {
                             view.showErrorMessage("Failed to parse response");
                             e.printStackTrace();
-                            view.getUI().ifPresent(ui -> ui.navigate("user"));
+                            //view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
                     } else {
                         view.showErrorMessage("Authorization token not found. Please log in.");
@@ -195,8 +195,49 @@ public class ShopManagerPresenter {
     }
 
 
-    public void viewSubordinate() {
+    public void fetchMySubordinates(Consumer<List<ShopManagerDto>> callback) {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getMySubordinates?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        try{
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Subordinates loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShopManagerDto> managers = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopManagerDto.class));
+                                    callback.accept(managers);
+                                }else {
+                                    view.showErrorMessage("Subordinates loading failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Subordinates loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
     }
 
     public void viewShopRoles() {

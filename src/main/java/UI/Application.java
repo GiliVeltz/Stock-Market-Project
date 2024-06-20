@@ -26,6 +26,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * The entry point of the Spring Boot application.
@@ -48,9 +49,12 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
 
     public static void main(String[] args) {
         port = findAvailablePort();
-        System.setProperty("server.port", String.valueOf(port));
+        System.setProperty("server.port", "8081");
+        //System.setProperty("server.port", String.valueOf(port));
         // System.out.println("Server port: " + port);
-        SpringApplication.run(Application.class, args);
+        SpringApplication app = new SpringApplication(Application.class);
+        app.run(args);
+
     }
 
 
