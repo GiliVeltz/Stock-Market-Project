@@ -2,30 +2,31 @@ package UI.View;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.PathVariable;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
+import UI.Model.ShopManagerDto;
 import UI.Presenter.ShopManagerPresenter;
 
 
@@ -39,19 +40,22 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private int _shopId;
     private Dialog _appointManagerDialog;
     private Dialog _appointOwnerDialog;
+    private Dialog _viewRolesDialog;
+    private List<ShopManagerDto> _managers;
+    private Grid<ShopManagerDto> _viewRolesGrid;
     
     public ShopManagerView(){
 
         // Retrieve the username from the session
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
 
-        // Initialize presenter
-        presenter = new ShopManagerPresenter(this);
-        presenter.fetchManagerPermissions(_username);
-
         // Create the header component
         Header header = new BrowsePagesHeader("8080");
         add(header);
+        
+        // Initialize presenter
+        presenter = new ShopManagerPresenter(this);
+        presenter.fetchManagerPermissions(_username);
 
     }
 
@@ -66,14 +70,21 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         buttonsLayout.setAlignItems(Alignment.END);
 
         // Create buttons
-        Button addProductsbtn = new Button("Add Product", e -> presenter.viewProducts());
+        Button addProductsbtn = new Button("Add Product");
         Button addDiscountsBtn = new Button("Add Discount", e -> presenter.addDiscounts());
         Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
         Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
         Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
         Button viewSubordinateBtn = new Button("View Subordinates", e -> presenter.viewSubordinate());
-        Button viewShopRolesBtn = new Button("View Shop Roles", e -> presenter.viewShopRoles());
+        Button viewShopRolesBtn = new Button("View Shop Roles", e -> {
+            presenter.fetchShopManagers(managers -> {
+                setManagers(managers);
+                _viewRolesDialog = createViewRolesDialog();
+                _viewRolesDialog.open();
+            
+            });
+        });
         Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
         Button viewProductsbtn = new Button("View Products", e -> presenter.viewProducts());
 
@@ -115,6 +126,11 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             }
   
         }
+
+        // Create registration dialog
+        Dialog addProductDialog = createaddProductDialog();
+        addProductsbtn.addClickListener(event -> addProductDialog.open());
+
         buttonsLayout.add(appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn, addProductsbtn, viewProductsbtn, viewPurchasesBtn, addDiscountsBtn, changeProductPolicyBtn, changeShopPolicyBtn);
         add(_title, buttonsLayout);
 
@@ -236,6 +252,143 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         dialog.add(formLayout, submitButton, cancelButton);
 
         return dialog;
+    }
+
+    public Dialog createaddProductDialog()
+    {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add Product");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        TextField productNameField = new TextField("ProductName");
+        ComboBox<String> categoryField = new ComboBox<>("By Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
+        TextField priceField = new TextField("Price");
+        priceField.setPattern("[0-9]+(\\.[0-9]{1,2})?");
+        priceField.setErrorMessage("Please enter a valid price");
+
+        // Add form fields to form layout
+        formLayout.add(productNameField, categoryField, priceField);
+
+        // Create buttons
+        Button addButton = new Button("Add", event -> {
+            if (validateFields(productNameField, categoryField, priceField)) {
+                presenter.addNewProduct(productNameField.getValue(), categoryField.getValue(), Double.parseDouble(priceField.getValue()));
+                dialog.close();
+            } else {
+                Notification.show("Please fill in all fields correctly");
+            }
+        });
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        Button refreshButton = new Button("Refresh", event -> {
+            // Clear all form fields
+            productNameField.clear();
+            categoryField.clear();
+            priceField.clear();
+        });
+
+        // Add buttons to form layout
+        formLayout.add(addButton, refreshButton, cancelButton);
+
+        // Add form layout to dialog content
+        dialog.add(headline, formLayout);
+
+        return dialog;
+
+    }
+
+    // Validate form fields
+    private boolean validateFields(TextField productNameField, ComboBox<String> categoryField, TextField priceField) {
+        return !productNameField.isEmpty() && !categoryField.isEmpty() && !priceField.isEmpty();
+    }
+
+    // public Dialog createViewRolesDialog() {
+    //     // Create a dialog
+    //     Dialog dialog = new Dialog();
+
+    //      // Create a grid
+    //     _viewRolesGrid = new Grid<>(ShopManagerDto.class, false);
+    //     _viewRolesGrid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
+    //     _viewRolesGrid.addColumn(ShopManagerDto::getRole).setHeader("Role");
+    //     _viewRolesGrid.addColumn(manager -> String.join(", ", 
+    //             manager.getPermissions().stream()
+    //                 .map(p -> PermissionMapper.getPermissionName(p))
+    //                 .toArray(String[]::new)
+    //     )).setHeader("Permissions");
+
+
+    //     if(_managers != null){
+    //         // Set items to the grid
+    //         _viewRolesGrid.setItems(_managers);
+    //     }
+        
+    //     dialog.add(_viewRolesGrid);
+    //     dialog.setWidth("800px"); // Set the desired width
+    //     dialog.setHeight("400px"); // Set the desired height
+    //     return dialog;
+    // }
+
+    public Dialog createViewRolesDialog() {
+    // Create a dialog
+    Dialog dialog = new Dialog();
+
+    // Create a grid
+    _viewRolesGrid = new Grid<>(ShopManagerDto.class, false);
+    _viewRolesGrid.addColumn(ShopManagerDto::getUsername).setHeader("Username");
+    _viewRolesGrid.addColumn(ShopManagerDto::getRole).setHeader("Role");
+
+    // Add a column for expand/collapse toggle
+    _viewRolesGrid.addComponentColumn(shopManager -> {
+        Button toggleButton = new Button("Details");
+        toggleButton.addClickListener(e -> {
+            if (_viewRolesGrid.isDetailsVisible(shopManager)) {
+                _viewRolesGrid.setDetailsVisible(shopManager, false);
+                toggleButton.setText("Details");
+            } else {
+                _viewRolesGrid.setDetailsVisible(shopManager, true);
+                toggleButton.setText("Hide");
+            }
+        });
+        return toggleButton;
+    }).setHeader("Permissions");
+
+    // Set the details generator for expandable rows
+    _viewRolesGrid.setItemDetailsRenderer(new ComponentRenderer<>(shopManager -> {
+        VerticalLayout detailsLayout = new VerticalLayout();
+        shopManager.getPermissions().forEach(permission -> {
+            Span permissionSpan = new Span(PermissionMapper.getPermissionName(permission));
+            detailsLayout.add(permissionSpan);
+        });
+        return detailsLayout;
+    }));
+
+    // Set items to the grid if available
+    if (_managers != null) {
+        _viewRolesGrid.setItems(_managers);
+    }
+
+    dialog.add(_viewRolesGrid);
+    dialog.setWidth("900px"); // Set the desired width of the dialog
+    dialog.setHeight("500px"); // Set the desired height of the dialog
+
+    return dialog;
+}
+
+
+    public void openViewRolesDialog() {
+        _viewRolesDialog.open();
+    }
+
+    public void setManagers(List<ShopManagerDto> managers) {
+        _managers = managers;
     }
     
 }

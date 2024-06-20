@@ -60,6 +60,11 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
+    public boolean testSearchAndDisplayShopByNameAsGuest(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsGuest' in ProxyBridge class");
+    }
+
+    @Override
     public boolean testGetShopInfoAsGuest(String shopId) {
         throw new UnsupportedOperationException("Unimplemented method 'testGetShopInfoAsGuest' in ProxyBridge class");
     }
@@ -127,6 +132,11 @@ public class ProxyBridge implements BridgeInterface{
     @Override
     public boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts) {
         throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
+    }
+
+    @Override
+    public boolean testSearchAndDisplayShopByNameAsUser(String shopName, boolean shopContainsProducts) {
+        throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByNameAsUser' in ProxyBridge class");
     }
 
     @Override

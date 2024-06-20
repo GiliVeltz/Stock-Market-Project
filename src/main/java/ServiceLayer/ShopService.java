@@ -21,7 +21,8 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
-import Dtos.ShopWithIdDto;
+import Dtos.ShopManagerDto;
+import Dtos.ShopGetterDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -170,7 +171,7 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.addProductToShop(shopId, productDto, userName);
                     logger.info(String.format("New product %s :: added by: %s to Shop ID: %d",
-                            productDto._productName, userName, shopId));
+                            productDto.productName, userName, shopId));
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage(String.format("User %s does not have permissions", userName));
@@ -182,9 +183,9 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
-                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                    productDto.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             logger.log(Level.SEVERE, String.format("Failed to add product %s :: to shopID %d by user %s. Error: %s",
-                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                    productDto.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -204,7 +205,7 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.removeProductFromShop(shopId, productDto, userName);
                     logger.info(String.format("The product %s :: removed by: %s from Shop ID: %d",
-                            productDto._productName, userName, shopId));
+                            productDto.productName, userName, shopId));
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage(String.format("User %s does not have permissions", userName));
@@ -216,9 +217,9 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
-                    productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                    productDto.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             logger.log(Level.SEVERE, String.format("Failed to remove product %s :: from shopID %d by user %s. Error: %s",
-                productDto._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                productDto.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -239,7 +240,7 @@ public class ShopService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     _shopFacade.editProductInShop(shopId, productDtoOld, productDtoNew, userName);
                     logger.info(String.format("The product %s :: edited by: %s in Shop ID: %d",
-                            productDtoOld._productName, userName, shopId));
+                            productDtoOld.productName, userName, shopId));
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
                     response.setErrorMessage(String.format("User %s does not have permissions", userName));
@@ -251,9 +252,9 @@ public class ShopService {
 
         } catch (Exception e) {
             response.setErrorMessage(String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
-                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                productDtoOld.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             logger.log(Level.SEVERE, String.format("Failed to edit product %s :: from shopID %d by user %s. Error: %s",
-                productDtoOld._productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
+                productDtoOld.productName, shopId, _tokenService.extractUsername(token), e.getMessage()));
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -267,6 +268,7 @@ public class ShopService {
      * @param productName he name of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
+    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -311,6 +313,7 @@ public class ShopService {
      * @param productCategory The category of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
+    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -1288,26 +1291,22 @@ public class ShopService {
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
                     //get all products in the shop as "Product" objects 
                     List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
-                
+                    List<ProductDto> productDtoList = new ArrayList<>();
                     if (products != null && !products.isEmpty()) {
                         //convert the "Product" objects to "ProductDTO" objects
-                        List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product: products) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
                         // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
-                        response.setReturnValue(shopProductMapForResponse);
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
-                        return new ResponseEntity<>(response, HttpStatus.OK);
                     } else {
-                        // if no products in shop - returns null as the product list
-                        shopProductMapForResponse.put(shopDto, null);
-                        response.setReturnValue(shopProductMapForResponse);
+                        // if no products in shop - returns an empty ProductDTOs list                        
                         logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
-                        return new ResponseEntity<>(response, HttpStatus.OK);
                     }
+                    response.setReturnValue(shopProductMapForResponse);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
                 else {
                     response.setReturnValue(
@@ -1339,19 +1338,29 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                //create a map of shopDTO, List<ProductDTO>s to return
                 Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                //get all shop IDs with the given name
                 List<Integer> shopIds = _shopFacade.getShopIdsByName(shopName);
                 if (!shopIds.isEmpty() && shopIds != null) {
                     for (Integer shopId: shopIds) {
+                        //create a shopDTO for the shop
                         ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                        //get all products in the shop as "Product" objects 
                         List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
                         List<ProductDto> productDtoList = new ArrayList<>();
+                        //convert the "Product" objects to "ProductDTO" objects
                         if (products != null && !products.isEmpty()) {
                             for (Product product: products) {
                                 ProductDto productDto = new ProductDto(product);
                                 productDtoList.add(productDto);
                             }
                         }
+                        else {
+                            // if no products in shop - returns an empty ProductDTOs list                        
+                            logger.info(String.format("Shop with Name %s was found and returned but it contains no products", shopName));
+                        }
+                        // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
                     }
                     response.setReturnValue(shopProductMapForResponse);
@@ -1360,8 +1369,8 @@ public class ShopService {
                 }
                 else {
                     response.setReturnValue(
-                        String.format("Shops with name %s don't exist", shopName));
-                    logger.info(String.format("Shop with name %s don't exist", shopName));
+                        String.format("Shop with Name %s were not found - they don't exist", shopName));
+                    logger.info(String.format("Shop with Name %s were not found - they don't exist", shopName));
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
             }
@@ -1480,11 +1489,11 @@ public class ShopService {
      * @param token the users session token
      * @return the shops in the system.
      */
-    public ResponseEntity<Response> getShopsEntity(String token) {
+    public ResponseEntity<Response> getShopsEntities(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                List<ShopWithIdDto> shops = _shopFacade.getShopsEntity();
+                List<ShopGetterDto> shops = _shopFacade.getShopsEntities();
                 response.setReturnValue(shops);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
@@ -1550,6 +1559,89 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(
                     String.format("Failed to get shop info. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Receive the shop managers.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @return the shop managers.
+     */
+    public ResponseEntity<Response> getShopManagers(String token, Integer shopId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<ShopManagerDto> managers = _shopFacade.getShopManagers(username, shopId);
+                    response.setReturnValue(managers);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop managers. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }    
+
+    /**
+     * Receive the all shops information.
+     * @param token the users session token
+     * @return the shops information.
+     */
+    public ResponseEntity<Response> getAllShops(String token) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                List<ShopDto> shopList = _shopFacade.getAllShopsDto();
+                response.setReturnValue(shopList);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shops info. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+     /**
+     * Receive the all shops information.
+     * @param token the users session token
+     * @return the shops information.
+     */
+    public ResponseEntity<Response> getAllProductInShop(String token, Integer shopId) {
+        Response response = new Response();
+        try {
+
+            if (!_tokenService.validateToken(token)) 
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if(!_shopFacade.isShopIdExist(shopId))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+
+            List<ProductDto> productList = _shopFacade.getAllProductsDtoInShopByID(shopId);
+            response.setReturnValue(productList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get Product from Shop ID: %d . Error: %s", shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

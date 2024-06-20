@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import Domain.ExternalServices.ExternalService;
 import Exceptions.PaymentFailedException;
 
-// TODO: Implement the Adapter pattern
 public class AdapterPayment extends ExternalService {
 
     // private fields

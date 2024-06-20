@@ -7,3 +7,7 @@
   height: 50px; /* Set a fixed height */
   display: inline-block; /* Ensures the buttons respect the width and height */
 }
+
+.custom-tabs {
+  width: 100%; /* Adjust the width as needed */
+}

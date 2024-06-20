@@ -1,16 +1,11 @@
 package AcceptanceTests.ProjectTests;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
 import enums.Category;
@@ -27,12 +22,20 @@ public class ShoppingGuestAcceptanceTests {
         _bridge = bridge;
     }
 
-    // Test get search a shop and display its products as a Guest in the system.
+    // Test search a shop and display its products by shop ID as a Guest in the system.
     @Test
     public void testSearchAndDisplayShopByIDAsGuest() {
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsGuest("0", true) ); // success - exist shop, has products
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsGuest("0", false) ); // success - exist shop, no products
         assertFalse(_bridge.testSearchAndDisplayShopByIDAsGuest("1", false) ); // fail - non exist shop, no products
+    }
+
+    // Test search a shop and display its products by shop name as a Guest in the system.
+    @Test
+    public void testSearchAndDisplayShopByNameAsGuest() {
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", true) ); // success - exist shop, has products
+        assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", false) ); // success - exist shop, no products
+        assertFalse(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName2", false) ); // fail - no exist shop, no products
     }
 
     // Test get information about a shop as a guest in the system.
