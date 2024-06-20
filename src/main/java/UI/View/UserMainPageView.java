@@ -4,10 +4,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -19,9 +18,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutionException;
 
 import com.vaadin.flow.component.html.Span;
 
@@ -76,7 +72,7 @@ public class UserMainPageView extends BaseView {
         FormLayout userInfoLayout = new FormLayout();
 
         // Fetch user information from presenter
-        UserDto userDto = new UserDto();
+        //UserDto userDto = new UserDto();
         presenter = new UserMainPagePresenter(this);
         presenter.getUserInfo(); // Blocking call to get the result
         // Handle the retrieved UserDto here
@@ -92,6 +88,15 @@ public class UserMainPageView extends BaseView {
 
         birthDateField.setReadOnly(true);
         userInfoLayout.addFormItem(birthDateField, "Birth Date");
+        // Initialize the cart image
+        Image cartImage = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
+        cartImage.setWidth("400px");
+
+        // Create a horizontal layout for the cart image to center it
+        HorizontalLayout cartImageLayout = new HorizontalLayout();
+        cartImageLayout.setWidthFull(); // Make the layout take full width
+        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        cartImageLayout.add(cartImage);
 
         // Initialize edit and save buttons
 

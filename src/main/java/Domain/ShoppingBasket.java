@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import Server.notifications.WebSocketServer;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.

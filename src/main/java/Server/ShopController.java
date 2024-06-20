@@ -120,6 +120,7 @@ public class ShopController {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/addShopManager")
     public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
                                                 @RequestBody Map<String, Object> request) {
@@ -128,7 +129,6 @@ public class ShopController {
         Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.addShopManager(token, shopId, newManagerUsername, permissions);
     }
-
 
     @PostMapping("/fireShopManager")
     public ResponseEntity<Response>fireShopManager(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
@@ -186,9 +186,9 @@ public class ShopController {
         return _shopService.getUserShopsIds(token);
     }
 
-    @GetMapping("/getShopsEntity")
-    public ResponseEntity<Response>getShopsEntity(@RequestHeader("Authorization") String token) {
-        return _shopService.getShopsEntity(token);
+    @GetMapping("/getShopsEntities")
+    public ResponseEntity<Response>getShopsEntities(@RequestHeader("Authorization") String token) {
+        return _shopService.getShopsEntities(token);
     }
   
     @GetMapping("/getShopManagerPermissions")
@@ -217,4 +217,10 @@ public class ShopController {
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopManagers(token, shopId);
     }
+
+    @GetMapping(value = "/getAllProductInShop", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response>getAllProductInShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getAllProductInShop(token, shopId);
+    }
+    
 }
