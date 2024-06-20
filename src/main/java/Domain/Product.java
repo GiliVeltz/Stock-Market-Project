@@ -87,18 +87,6 @@ public class Product implements Cloneable {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + _productId +
-                ", name='" + _productName + '\'' +
-                ", category=" + _category +
-                ", price=" + _price +
-                ", keywords=" + _keywords +
-                ", rating=" + _productRating +
-                '}';
-    }
-
     public boolean isKeywordExist(String keyword) {
         return _keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
     }
@@ -122,11 +110,19 @@ public class Product implements Cloneable {
         _quantity = newQuantitiy;
     }
 
-    // Getters and Setters
-    
-    public Integer getProductQuantity() {
-        return _quantity;
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + _productId +
+                ", name='" + _productName + '\'' +
+                ", category=" + _category +
+                ", price=" + _price +
+                ", keywords=" + _keywords +
+                ", rating=" + _productRating +
+                '}';
     }
+
+    // Getters and Setters
 
     public String getProductPolicyInfo() {
         return _productPolicy.toString();
@@ -144,42 +140,95 @@ public class Product implements Cloneable {
         return _productName;
     }
 
-    public Category getCategory() {
-        return _category;
-    }
-
     public double getPrice() {
         return _price;
     }
 
-    public void addKeyword(String keyword) {
-        _keywords.add(keyword);
+    public Integer getProductQuantity() {
+        return _quantity;
+    }
+
+    public HashSet<String> getKeywords() {
+        return _keywords;
     }
 
     public Double getProductRating() {
         return _productRating;
     }
 
-    public ProductPolicy getProductPolicy(){
+    public Integer getProductRatersCounter() {
+        return _productRatersCounter;
+    }
+
+    public Category getCategory() {
+        return _category;
+    }
+
+    public ProductPolicy getProductPolicy() {
         return _productPolicy;
-    }
-
-    // set product name
-    public void setProductName(String productName) {
-        _productName = productName;
-    }
-
-    // set product category
-    public void setCategory(Category category) {
-        _category = category;
-    }
-
-    // set product price
-    public void setPrice(double price) {
-        _price = price;
     }
 
     public Map<String, String> getReviews() {
         return _reviews;
+    }
+
+    public void setProductId(Integer productId) {
+        this._productId = productId;
+    }
+
+    public void setProductName(String productName) {
+        this._productName = productName;
+    }
+
+    public void setPrice(double price) {
+        this._price = price;
+    }
+
+    public void setProductQuantity(Integer productQuantity) {
+        this._quantity = productQuantity;
+    }
+
+    public void setKeywords(HashSet<String> keywords) {
+        this._keywords = keywords;
+    }
+
+    public void setProductRating(Double productRating) {
+        this._productRating = productRating;
+    }
+
+    public void setProductRatersCounter(Integer productRatersCounter) {
+        this._productRatersCounter = productRatersCounter;
+    }
+
+    public void setCategory(Category category) {
+        this._category = category;
+    }
+
+    public void setProductPolicy(ProductPolicy productPolicy) {
+        this._productPolicy = productPolicy;
+    }
+
+    public void setReviews(Map<String, String> reviews) {
+        this._reviews = reviews;
+    }
+
+    public void setKeywords(String keyword) {
+        this._keywords.add(keyword);
+    }
+
+    public void removeKeywords(String keyword) {
+        this._keywords.remove(keyword);
+    }
+
+    public void setProductRating(double productRating) {
+        this._productRating = productRating;
+    }
+
+    public void setProductRatersCounter(int productRatersCounter) {
+        this._productRatersCounter = productRatersCounter;
+    }
+
+    public void addKeyword(String keyword) {
+        _keywords.add(keyword);
     }
 }

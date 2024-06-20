@@ -4,12 +4,16 @@ public class Response<T> {
     private String errorMessage;
     private T returnValue;
 
-    public Response(String errorMessage, T returnValue) {
-        this.errorMessage = errorMessage;
-        this.returnValue = returnValue;
+    // consructor.
+    public Response() {
     }
 
-    // Getters and setters
+    public Response(String errorMessage, T returnValue) {
+        this.errorMessage = errorMessage; // Use 'this' to refer to instance variables
+        this.returnValue = returnValue;   // Use 'this' to refer to instance variables
+    }
+
+    // Gettera and Setters
     public String getErrorMessage() {
         return errorMessage;
     }

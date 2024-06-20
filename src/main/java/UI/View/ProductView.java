@@ -69,12 +69,12 @@ public class ProductView extends BaseView{
     public void displayProductInfo(ProductDto product) {
         removeAll(); // Clear previous content
 
-        // Display product details
-        add(new H1("Product Details"));
-        add(new Span("Product Name: " + product.getProductName()));
-        add(new Span("Category: " + product.getCategory()));
-        add(new Span("Price: $" + product.getPrice()));
-        add(new Span("Quantity: " + product.getQuantity()));
+        // // Display product details
+        // add(new H1("Product Details"));
+        // add(new Span("Product Name: " + product.getProductName()));
+        // add(new Span("Category: " + product.getCategory()));
+        // add(new Span("Price: $" + product.getPrice()));
+        // add(new Span("Quantity: " + product.getQuantity()));
 
 
         //TODO: add review and rating

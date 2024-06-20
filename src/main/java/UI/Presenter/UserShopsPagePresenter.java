@@ -24,6 +24,7 @@ public class UserShopsPagePresenter {
         this.view = view;
     }
 
+    @SuppressWarnings("deprecation")
     public void fetchShops(String username) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -71,6 +72,7 @@ public class UserShopsPagePresenter {
                 });
     }
 
+    @SuppressWarnings("deprecation")
     public void fetchShopsNames(List<Integer> shops) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
