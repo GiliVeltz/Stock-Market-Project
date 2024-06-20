@@ -20,9 +20,12 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
 import UI.Model.Permission;
+import UI.Model.ProductDto;
 import UI.Model.Response;
+import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
+import enums.Category;
 
 public class ShopManagerPresenter {
     private final ShopManagerView view;
@@ -256,8 +259,60 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void addNewProduct(String productName, String category, double price)
+    public void addNewProduct(String productName, Category category, double price)
     {
+        RestTemplate restTemplate = new RestTemplate();
+        ProductDto productDto = new ProductDto(productName, category, price, 0);
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+
+                        // Create the request object
+                        dtoWrapper request = new dtoWrapper(view.getShopId(), productDto);
+
+                        // Use a strongly typed HttpEntity
+                        HttpEntity<dtoWrapper> requestEntity = new HttpEntity<>(request, headers);
+
+                        // Map<String, Object> requestBody = new HashMap<>();
+                        // requestBody.put("shopId", view.getShopId());
+                        // requestBody.put("productDto", productDto);
+                            
+                        // HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+                        try {
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addProductToShop",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                            );
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                JsonNode responseJson = objectMapper.readTree(response.getBody());
+
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    view.showSuccessMessage("Owner appointed successfully");
+                                } else {
+                                    view.showErrorMessage("Failed to appoint owner: " + responseJson.get("errorMessage").asText());
+                                }
+                            } else {
+                                view.showErrorMessage("Failed to appoint owner with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
 
     }
+    
 }
