@@ -281,7 +281,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button addButton = new Button("Add", event -> {
             if (validateFields(productNameField, categoryField, priceField)) {
                 // Convert category string to enum
-                Category category = EnumUtils.parseCategory(categoryField.getValue());
+                Category category = parseCategory(categoryField.getValue());
                 if (category == Category.DEFAULT_VAL) {
                     Notification.show("Invalid category");
                     return;
@@ -314,17 +314,26 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
     }
 
-    public class EnumUtils {
-
-        public static Category parseCategory(String categoryStr) {
-            try {
-                return Category.valueOf(categoryStr.toUpperCase());
-            } catch (IllegalArgumentException | NullPointerException ex) {
-                // Handle if categoryStr is null or doesn't match any enum constant
-                return Category.DEFAULT_VAL; // or throw exception or handle differently as needed
-            }
+    public static Category parseCategory(String categoryStr) {
+        try {
+            return Category.valueOf(categoryStr.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            // Handle if categoryStr is null or doesn't match any enum constant
+            return Category.DEFAULT_VAL; // or throw exception or handle differently as needed
         }
     }
+
+    // public class EnumUtils {
+
+    //     public static Category parseCategory(String categoryStr) {
+    //         try {
+    //             return Category.valueOf(categoryStr.toUpperCase());
+    //         } catch (IllegalArgumentException | NullPointerException ex) {
+    //             // Handle if categoryStr is null or doesn't match any enum constant
+    //             return Category.DEFAULT_VAL; // or throw exception or handle differently as needed
+    //         }
+    //     }
+    // }
 
     // Validate form fields
     private boolean validateFields(TextField productNameField, ComboBox<String> categoryField, TextField priceField) {

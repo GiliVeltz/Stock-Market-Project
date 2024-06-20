@@ -30,7 +30,7 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
 
     public static void main(String[] args) {
         port = findAvailablePort();
-        System.setProperty("server.port", String.valueOf(port));
+        System.setProperty("server.port", String.valueOf(50000));
         // System.out.println("Server port: " + port);
         SpringApplication.run(Application.class, args);
     }

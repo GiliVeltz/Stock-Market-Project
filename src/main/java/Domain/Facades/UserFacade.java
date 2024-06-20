@@ -32,7 +32,7 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
 
         // For testing UI
-        // initUI();
+        initUI();
     }
 
     // Public method to provide access to the _UserFacade
