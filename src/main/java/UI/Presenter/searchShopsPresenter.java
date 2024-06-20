@@ -12,6 +12,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 
@@ -28,51 +30,90 @@ public class searchShopsPresenter {
         this.view = view;
     }
 
-    public void searchShop(String shopName, String shopId) {
+    public void searchShopByID() {
         RestTemplate restTemplate = new RestTemplate();
-        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-                .then(String.class, token -> {
-                    if (token != null && !token.isEmpty()) {
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
-
-                        // Create URL with parameters
-                        String url = "http://localhost:" + view.getServerPort() + "/api/shop/searchAndDisplayShopByID?shopId=" + shopId;
-
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
-                        try {
-                            ResponseEntity<Response<Map<ShopDto, List<ProductDto>>>> response = restTemplate.exchange(
-                                url,
-                                HttpMethod.GET,
-                                requestEntity,
-                                new ParameterizedTypeReference<Response<Map<ShopDto, List<ProductDto>>>>() {}
-                            );
-                            
-                            Response<Map<ShopDto, List<ProductDto>>> responseBody = response.getBody();
-                            if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
-                                view.showSuccessMessage("The shop search succeeded");
-
-                                // Convert data to JSON
-                                String shopProductJson = new Gson().toJson(responseBody.getReturnValue());
-
-                                // Navigate to the new view with data as parameter NOT Working
-                                // UI.getCurrent().navigate(SearchShopResultsView.class, shopProductJson);
-                            } else {
-                                view.showErrorMessage("The shop search failed: " + responseBody.getErrorMessage());
-                            }
-                        } catch (HttpClientErrorException e) {
-                            ResponseHandler.handleResponse(e.getStatusCode());
-                        } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    } else {
-                        System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("The shop search failed");
-                    }
-                });
+    
+        // UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');").then(String.class, token -> {
+        //     if (token != null && !token.isEmpty()) {
+        //         System.out.println("Token: " + token);
+    
+        //         HttpHeaders headers = new HttpHeaders();
+        //         headers.add("Authorization", token);
+    
+        //         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        //         Integer shopId = (Integer) UI.getCurrent().getSession().getAttribute("shopId");
+        //         ResponseEntity<Response> response = restTemplate.exchange(
+        //                 "http://localhost:" + view.getServerPort()
+        //                         + "/api/shop/searchAndDisplayShopByID?shopId=" + shopId,
+        //                 HttpMethod.GET, requestEntity, Response.class);
+    
+        //         if (response.getStatusCode().is2xxSuccessful()) {
+        //             Response<Map<ShopDto, List<ProductDto>>> responseBody = response.getBody();
+        //             if (responseBody != null) {
+        //                 if (responseBody.getErrorMessage() == null) {
+        //                     Map<ShopDto, List<ProductDto>> shopMap = responseBody.getReturnValue();
+        //                     view.displaySearchResults(shopMap);
+        //                     view.showSuccessMessage("Products presented successfully");
+        //                 } else {
+        //                     view.showErrorMessage("Backend error: " + responseBody.getErrorMessage());
+        //                 }
+        //             } else {
+        //                 view.showErrorMessage("Empty response body received");
+        //             }
+        //         } else {
+        //             view.showErrorMessage("Failed to fetch data: " + response.getStatusCode().toString());
+        //         }
+        //     } else {
+        //         System.out.println("Token not found in local storage.");
+        //         view.showErrorMessage("Failed to present products");
+        //     }
+        // });
     }
+
+    public void searchShopByName(){
+        RestTemplate restTemplate = new RestTemplate();
+
+    //    UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+    //            .then(String.class, token -> {
+    //                if (token != null && !token.isEmpty()) {
+    //                    System.out.println("Token: " + token);
+
+    //                    HttpHeaders headers = new HttpHeaders();
+    //                    headers.add("Authorization", token);
+
+    //                    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+    //                    String shopName = (String) UI.getCurrent().getSession().getAttribute("shopName");
+    //                    ResponseEntity<Response> response = restTemplate.exchange(
+    //                            "http://localhost:" + view.getServerPort() + "/api/shop/searchAndDisplayShopByName?shopName=" + shopName,
+    //                            HttpMethod.GET,
+    //                            requestEntity,
+    //                            Response.class);
+
+    //                    if (response.getStatusCode().is2xxSuccessful()) {
+    //                        Response responseBody = response.getBody();
+
+    //                        if (responseBody.getErrorMessage() == null) {
+    //                            ObjectMapper objectMapper = new ObjectMapper();
+    //                            Response<Map <ShopDto, List<ProductDto>>> shopMap = objectMapper.convertValue(
+    //                                    responseBody.getReturnValue(),
+    //                                    TypeFactory.defaultInstance().constructMapType(Map.class, ShopDto.class, List.class));
+    //                            view.displaySearchResults(shopMap);
+    //                            view.showSuccessMessage("products present successfully");
+    //                        }
+    //                        else {
+    //                            view.showErrorMessage("Failed to parse JSON response");
+    //                        }                       
+    //                    } else {
+    //                        view.showErrorMessage("Failed to present products");
+    //                    }
+    //                } else {
+    //                    System.out.println("Token not found in local storage.");
+    //                    view.showErrorMessage("Failed to present products");
+    //                }
+    //            });
+
+   }
+
     
 
 }

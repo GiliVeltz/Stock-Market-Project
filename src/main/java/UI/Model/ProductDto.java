@@ -56,11 +56,11 @@ public class ProductDto {
         this.price = newPrice;
     }
 
-    // public Integer getProductQuantity() { // Update getter name
-    //     return this.productQuantity;
-    // }
+    public Integer getProductQuantity() { // Update getter name
+        return this.productQuantity;
+    }
 
-    // public void setProductQuantity(int newQuantity) { // Update setter name
-    //     this.productQuantity = newQuantity;
-    // }
+    public void setProductQuantity(int newQuantity) { // Update setter name
+        this.productQuantity = newQuantity;
+    }
 }

@@ -3,6 +3,9 @@ package UI.View;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
+
+import javax.persistence.criteria.CriteriaBuilder.In;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -519,15 +522,17 @@ public class Header extends HorizontalLayout {
         Button searchButton = new Button("Search", event -> {
             // Handle form submission
             String shopName = shopNameField.getValue();
-            String shopId = shopIdField.getValue();
+            String shopIdVal = shopIdField.getValue();
 
+            Integer shopId;
             // Convert empty values to null
             if (shopName.isEmpty()) {
-                shopName = null;
+                shopName = "";
             }
-            if (shopId.isEmpty()) {
-                shopId = null;
+            if (shopIdVal.isEmpty()) {
+                shopId = -1;
             }
+            else {shopId = Integer.parseInt(shopIdVal);}
 
             // Store search criteria in session
             VaadinSession.getCurrent().setAttribute("searchShopName", shopName);
