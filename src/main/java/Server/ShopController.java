@@ -55,10 +55,7 @@ public class ShopController {
     }
 
     @PostMapping("/addProductToShop")
-    public ResponseEntity<Response> addProductToShop( @RequestBody dtoWrapper request,
-            @RequestHeader(value = "Authorization") String token) {
-        Integer shopId = request.getShopId();
-        ProductDto productDto = request.getProductDto();
+    public ResponseEntity<Response> addProductToShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestBody ProductDto productDto) {
         ResponseEntity<Response> resp =_shopService.addProductToShop(token, shopId, productDto);
         return resp;
     }

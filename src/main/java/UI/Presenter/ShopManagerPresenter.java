@@ -262,19 +262,19 @@ public class ShopManagerPresenter {
     public void addNewProduct(String productName, Category category, double price)
     {
         RestTemplate restTemplate = new RestTemplate();
-        ProductDto productDto = new ProductDto(productName, category, price, 0);
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
+                        ProductDto productDto = new ProductDto(productName, category, price, 0);
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
                         headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
 
                         // Create the request object
-                        dtoWrapper request = new dtoWrapper(view.getShopId(), productDto);
+                        // dtoWrapper request = new dtoWrapper(view.getShopId(), productDto);
 
                         // Use a strongly typed HttpEntity
-                        HttpEntity<dtoWrapper> requestEntity = new HttpEntity<>(request, headers);
+                        HttpEntity<ProductDto> requestEntity = new HttpEntity<>(productDto, headers);
 
                         // Map<String, Object> requestBody = new HashMap<>();
                         // requestBody.put("shopId", view.getShopId());
@@ -284,7 +284,7 @@ public class ShopManagerPresenter {
 
                         try {
                             ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/addProductToShop",
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addProductToShop?shopId=" + view.getShopId(),
                                 HttpMethod.POST,
                                 requestEntity,
                                 String.class
