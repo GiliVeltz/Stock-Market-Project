@@ -312,7 +312,6 @@ public class ShopManagerPresenter {
                         view.showErrorMessage("Authorization token not found. Please log in.");
                     }
                 });
-
     }
-    
+   
 }
