@@ -8,15 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import UI.Model.ShopDto;
 import UI.Model.UserDto;
 import UI.View.Header;
+import UI.Model.ProductDto;
 import UI.Model.Response;
 
 public class HeaderPresenter {
@@ -161,9 +165,7 @@ public class HeaderPresenter {
                     }
                 });
     }
-    public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
-        RestTemplate restTemplate = new RestTemplate();
-    }
+
 
     public void searchShop(String shopName, String bankshopId) {
         RestTemplate restTemplate = new RestTemplate();

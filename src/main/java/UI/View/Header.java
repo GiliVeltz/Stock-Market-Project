@@ -27,19 +27,23 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Presenter.HeaderPresenter;
+import UI.Presenter.SearchPresenter;
 
 public class Header extends HorizontalLayout {
 
     private Button loginButton;
     private Button _registerButton;
     private final HeaderPresenter presenter;
+    private final SearchPresenter searchPresenter;
     private HorizontalLayout _leftButtonLayout;
+    private VerticalLayout searchResultsLayout;
     private Dialog logoutConfirmationDialog;
 
     public Header(String serverPort) {
 
-        // Initialize the presenter
+        // Initialize the presenters
         presenter = new HeaderPresenter(this, serverPort);
+        searchPresenter = new SearchPresenter(this, serverPort);
 
         // Create an Image component
         Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
@@ -56,9 +60,10 @@ public class Header extends HorizontalLayout {
         Button shoppingCartButton = new Button(image);
         // Button messagesButton = new Button("My Messages");
         Button messagesButton = new Button("My Messages", e -> navigateToMessages());
-
         Button allShopsButton = new Button("All Shops");
 
+        SearchResultsView searchResultsView = new SearchResultsView(searchPresenter);
+        searchPresenter.setSearchResultsView(searchResultsView);
 
         // Add cursor styling
         _registerButton.addClassName("pointer-cursor");
@@ -95,7 +100,11 @@ public class Header extends HorizontalLayout {
         // Create login dialog
         Dialog loginDialog = createLoginDialog();
 
+        // Create search products dialog
         Dialog searchProductsDialog = createSearchProductsDialog();
+        searchResultsLayout = new VerticalLayout(); // Use class-level variable
+        searchResultsLayout.add(searchResultsView); // Add the view to the layout
+
 
         // Create login dialog
         Dialog searchShopsDialog = createSearchShopsDialog();
@@ -358,13 +367,13 @@ public class Header extends HorizontalLayout {
         H2 headline = new H2("Search Product");
         headline.getStyle().set("margin", "0");
 
-        H5 comment = new H5("An empty search will return all products");
+        H5 comment = new H5("Please fill in one field to search for products");
 
         // Create form layout
         FormLayout formLayout = new FormLayout();
 
         // Create form fields
-        ComboBox<String> categoryField = new ComboBox<>("By Category");
+        ComboBox<String> categoryField = new ComboBox<>("Search By Category");
         categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
 
         // MultiSelectListBox to store and display keywords
@@ -372,7 +381,7 @@ public class Header extends HorizontalLayout {
         keyWordField.setHeight("100px");
         keyWordField.setWidth("150px");
 
-        TextField keywordInputField = new TextField("Key Words");
+        TextField keywordInputField = new TextField("Search By Keywords");
         Button addKeywordButton = new Button("Add Keyword", event -> {
             String keyword = keywordInputField.getValue().trim();
             if (!keyword.isEmpty() && !keyWordField.getSelectedItems().contains(keyword)) {
@@ -385,58 +394,58 @@ public class Header extends HorizontalLayout {
 
         keyWordField.getElement().setAttribute("style", "padding-bottom: 10px;");
 
-        // Create form fields
-        TextField minPriceField = new TextField("Minimum Price");
-        minPriceField.setPattern("[0-9]+");
-        minPriceField.setErrorMessage("Please enter a valid minimum price");
+        // // Create form fields
+        // TextField minPriceField = new TextField("Minimum Price");
+        // minPriceField.setPattern("[0-9]+");
+        // minPriceField.setErrorMessage("Please enter a valid minimum price");
 
-        TextField maxPriceField = new TextField("Maximum Price");
-        maxPriceField.setPattern("[0-9]+");
-        maxPriceField.setErrorMessage("Please enter a valid maximum price");
+        // TextField maxPriceField = new TextField("Maximum Price");
+        // maxPriceField.setPattern("[0-9]+");
+        // maxPriceField.setErrorMessage("Please enter a valid maximum price");
 
 
-        TextField productNameField = new TextField("By Product Name");
+        TextField productNameField = new TextField("Search By Product Name");
 
         // Add value change listeners to update field states
-         ValueChangeListener<ValueChangeEvent<?>> listener = event -> updateFieldStates(categoryField, keyWordField, keywordInputField, addKeywordButton, minPriceField, maxPriceField, productNameField);
+         ValueChangeListener<ValueChangeEvent<?>> listener = event -> updateFieldStates(categoryField, keyWordField, keywordInputField, addKeywordButton, productNameField);
 
         categoryField.addValueChangeListener(listener);
         keyWordField.addValueChangeListener(listener);
-        minPriceField.addValueChangeListener(listener);
-        maxPriceField.addValueChangeListener(listener);
+        //minPriceField.addValueChangeListener(listener);
+        //maxPriceField.addValueChangeListener(listener);
         productNameField.addValueChangeListener(listener);
 
 
         // Add fields to the form layout
-        formLayout.add(minPriceField, maxPriceField, categoryField, productNameField, keywordInputField, keyWordField, addKeywordButton);
+        formLayout.add(productNameField, categoryField, keywordInputField, keyWordField, addKeywordButton);
 
         // Create buttons
         Button searchButton = new Button("Search", event -> {
             // Handle form submission
             String category = categoryField.getValue();
-            Set<String> keyWords = new HashSet<>(keyWordField.getSelectedItems()); // Get selected keywords
-            String minPrice = minPriceField.getValue();
-            String maxPrice = maxPriceField.getValue();
+            Set<String> keywords = new HashSet<>(keyWordField.getSelectedItems()); // Get selected keywords
+            // String minPrice = minPriceField.getValue();
+            // String maxPrice = maxPriceField.getValue();
             String productName = productNameField.getValue();
 
             // Convert empty values to null
             if (category.isEmpty()) {
                 category = null;
             }
-            if (keyWords.isEmpty()) {
-                keyWords = null;
+            if (keywords.isEmpty()) {
+                keywords = null;
             }
-            if (minPrice.isEmpty()) {
-                minPrice = null;
-            }
-            if (maxPrice.isEmpty()) {
-                maxPrice = null;
-            }
+            // if (minPrice.isEmpty()) {
+            //     minPrice = null;
+            // }
+            // if (maxPrice.isEmpty()) {
+            //     maxPrice = null;
+            // }
             if (productName.isEmpty()) {
                 productName = null;
             }
 
-            presenter.SearchProducts(category, keyWords, minPrice, maxPrice, productName);
+            searchPresenter.searchProducts(productName, category, keywords);
 
             // Close the dialog after submission
             dialog.close();
@@ -448,7 +457,7 @@ public class Header extends HorizontalLayout {
         cancelButton.addClassName("pointer-cursor");
 
          // Create refresh button
-        Button refreshButton = new Button("Refresh", event -> resetFields(categoryField, keyWordField, keywordInputField, minPriceField, maxPriceField, productNameField));
+        Button refreshButton = new Button("Refresh", event -> resetFields(categoryField, keyWordField, keywordInputField, productNameField));
         refreshButton.addClassName("pointer-cursor");
 
         // Create button layout
@@ -465,27 +474,27 @@ public class Header extends HorizontalLayout {
     }
 
 
-    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
-        boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !minPriceField.isEmpty() || !maxPriceField.isEmpty() || !productNameField.isEmpty();
-        boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
+    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField productNameField) {
+        boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !productNameField.isEmpty();
+        // boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
 
         categoryField.setEnabled(!anyFieldFilled || !categoryField.isEmpty());
         keyWordField.setEnabled(!anyFieldFilled || !keyWordField.isEmpty());
         keywordInputField.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
         addKeywordButton.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
-        minPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
-        maxPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        // minPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
+        // maxPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
         productNameField.setEnabled(!anyFieldFilled || !productNameField.isEmpty());
     }
 
-    private void resetFields(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, TextField minPriceField, TextField maxPriceField, TextField productNameField) {
+    private void resetFields(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, TextField productNameField) {
         categoryField.clear();
         keyWordField.clear();
         keywordInputField.clear();
-        minPriceField.clear();
-        maxPriceField.clear();
+        // minPriceField.clear();
+        // maxPriceField.clear();
         productNameField.clear();
-        updateFieldStates(categoryField, keyWordField, keywordInputField, null, minPriceField, maxPriceField, productNameField);
+        updateFieldStates(categoryField, keyWordField, keywordInputField, null, productNameField);
     }
 
     public Dialog createSearchShopsDialog(){
@@ -568,4 +577,11 @@ public class Header extends HorizontalLayout {
         shopIdField.clear();
         updateFieldStates(shopNameField, shopIdField);
     }
+
+    public void setSearchResultsVisible(boolean visible) {
+        //add(searchResultsLayout); 
+        searchResultsLayout.setVisible(visible);
+    }
+
+
 }

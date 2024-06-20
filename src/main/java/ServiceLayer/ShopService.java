@@ -265,8 +265,8 @@ public class ShopService {
      * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
-     * @param productName he name of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @param productName The name of the product.
+     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
@@ -275,14 +275,15 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                    Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
                     response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
@@ -310,7 +311,7 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
@@ -319,14 +320,15 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                    Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
                     response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the category of %s were found in %s",
@@ -372,14 +374,15 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                    Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
                     response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
@@ -1325,7 +1328,7 @@ public class ShopService {
     }
 
 
-        /**
+    /**
      * searches products by their name.
      * 
      * @param token       The session token of the user performing the search.
@@ -1614,6 +1617,31 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(
                     String.format("Failed to get shops info. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Receive the shop ID.
+     * @param token the users session token
+     * @param shopName the shop name
+     * @return Integer - shopID.
+     */
+    public ResponseEntity<Response> getShopIdByName(String token, String shopName) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                Integer shopId = _shopFacade.getShopIdsByName(shopName).get(0);
+                response.setReturnValue(shopId);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop ID. Error: %s", e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
