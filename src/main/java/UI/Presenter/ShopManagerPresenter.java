@@ -354,5 +354,10 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    public void addNewProduct(String productName, String category, double price)
+    {
+
+    }
    
 }
