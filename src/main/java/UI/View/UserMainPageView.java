@@ -231,6 +231,11 @@ public class UserMainPageView extends BaseView {
             String shopAddress = shopAddressField.getValue();
 
             presenter.openNewShop(shopName, bankDetails, shopAddress);
+            shopsLayout.removeAll();
+            UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
+            shopsLayout.add(UpdateduserShopsPageView);
+
+
 
             // Close the dialog after submission
             dialog.close();
