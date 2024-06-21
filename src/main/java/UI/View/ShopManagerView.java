@@ -400,5 +400,61 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             toggleButton.setText("Details");
         }
     }
+
+    public Dialog createaddProductDialog()
+    {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add Product");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        TextField productNameField = new TextField("ProductName");
+        ComboBox<String> categoryField = new ComboBox<>("By Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
+        TextField priceField = new TextField("Price");
+        priceField.setPattern("[0-9]+(\\.[0-9]{1,2})?");
+        priceField.setErrorMessage("Please enter a valid price");
+
+        // Add form fields to form layout
+        formLayout.add(productNameField, categoryField, priceField);
+
+        // Create buttons
+        Button addButton = new Button("Add", event -> {
+            if (validateFields(productNameField, categoryField, priceField)) {
+                presenter.addNewProduct(productNameField.getValue(), categoryField.getValue(), Double.parseDouble(priceField.getValue()));
+                dialog.close();
+            } else {
+                Notification.show("Please fill in all fields correctly");
+            }
+        });
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        Button refreshButton = new Button("Refresh", event -> {
+            // Clear all form fields
+            productNameField.clear();
+            categoryField.clear();
+            priceField.clear();
+        });
+
+        // Add buttons to form layout
+        formLayout.add(addButton, refreshButton, cancelButton);
+
+        // Add form layout to dialog content
+        dialog.add(headline, formLayout);
+
+        return dialog;
+
+    }
+
+    // Validate form fields
+    private boolean validateFields(TextField productNameField, ComboBox<String> categoryField, TextField priceField) {
+        return !productNameField.isEmpty() && !categoryField.isEmpty() && !priceField.isEmpty();
+    }
     
 }
