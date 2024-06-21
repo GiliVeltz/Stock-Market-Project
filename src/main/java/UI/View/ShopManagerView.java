@@ -28,6 +28,7 @@ import UI.Model.Permission;
 import UI.Model.PermissionMapper;
 import UI.Model.ShopManagerDto;
 import UI.Presenter.ShopManagerPresenter;
+import enums.Category;
 
 
 @Route(value = "user_shops")
@@ -266,11 +267,11 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         headline.getStyle().set("margin", "0");
 
         // Create form fields
-        TextField productNameField = new TextField("ProductName");
-        ComboBox<String> categoryField = new ComboBox<>("By Category");
-        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
+        TextField productNameField = new TextField("Product Name");
+        ComboBox<String> categoryField = new ComboBox<>("Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
         TextField priceField = new TextField("Price");
-        priceField.setPattern("[0-9]+(\\.[0-9]{1,2})?");
+        priceField.setPattern("[0-9]+(\\.[0-9]{1,2})?"); // Allows whole numbers or decimals with up to 2 places
         priceField.setErrorMessage("Please enter a valid price");
 
         // Add form fields to form layout
@@ -279,7 +280,15 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         // Create buttons
         Button addButton = new Button("Add", event -> {
             if (validateFields(productNameField, categoryField, priceField)) {
-                presenter.addNewProduct(productNameField.getValue(), categoryField.getValue(), Double.parseDouble(priceField.getValue()));
+                // Convert category string to enum
+                Category category = EnumUtils.parseCategory(categoryField.getValue());
+                if (category == Category.DEFAULT_VAL) {
+                    Notification.show("Invalid category");
+                    return;
+                }
+
+                // Process the form data (e.g., save product)
+                presenter.addNewProduct(productNameField.getValue(), category, Double.parseDouble(priceField.getValue()));
                 dialog.close();
             } else {
                 Notification.show("Please fill in all fields correctly");
@@ -303,6 +312,18 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         return dialog;
 
+    }
+
+    public class EnumUtils {
+
+        public static Category parseCategory(String categoryStr) {
+            try {
+                return Category.valueOf(categoryStr.toUpperCase());
+            } catch (IllegalArgumentException | NullPointerException ex) {
+                // Handle if categoryStr is null or doesn't match any enum constant
+                return Category.DEFAULT_VAL; // or throw exception or handle differently as needed
+            }
+        }
     }
 
     // Validate form fields
