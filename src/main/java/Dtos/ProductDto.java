@@ -5,24 +5,23 @@ import enums.Category;
 
 public class ProductDto {
 
-    public String _productName;
-    public Category _category;
-    public double _price;
-    public int _productQuantity;
+    public String productName;
+    public Category category;
+    public double price;
+    public int productQuantity;
 
     // Constructor
     public ProductDto(String productName, Category category, double price, int productQuantity) {
-        this._productName = productName;
-        this._category = category;
-        this._price = price;
-        this._productQuantity = productQuantity;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productQuantity = productQuantity;
     }
 
     public ProductDto(Product product) {
-        this._productName = product.getProductName();
-        this._category = product.getCategory();
-        this._price = product.getPrice();
-        this._productQuantity = product.getProductQuantity();
+        this.productName = product.getProductName();
+        this.category = product.getCategory();
+        this.price = product.getPrice();
+        this.productQuantity = product.getProductQuantity();
     }
-
 }

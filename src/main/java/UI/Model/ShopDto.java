@@ -18,6 +18,8 @@ public class ShopDto {
 
     private boolean isShopClosed;
 
+    private Integer shopId;
+
     // Constructors, getters, and setters
 
     public ShopDto() {
@@ -32,7 +34,8 @@ public class ShopDto {
         this.isShopClosed = false;
     }
 
-    public ShopDto(String shopName, String bankDetails, String shopAddress, Double shopRating, Integer shopRatersCounter, boolean isShopClosed) {
+    public ShopDto(Integer shopId, String shopName ,String bankDetails, String shopAddress, Double shopRating, Integer shopRatersCounter, boolean isShopClosed) {
+        this.shopId = shopId;
         this.shopName = shopName;
         this.bankDetails = bankDetails;
         this.shopAddress = shopAddress;
@@ -78,6 +81,8 @@ public class ShopDto {
     public void setShopRatersCounter(Integer shopRatersCounter){
         this.shopRatersCounter = shopRatersCounter;
     }
+
+    public Integer getShopId() { return shopId;}
 
     public boolean getIsShopClosed() { return isShopClosed;}
 }

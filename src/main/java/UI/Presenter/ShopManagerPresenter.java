@@ -14,18 +14,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
-import UI.Model.BasketDto;
 import UI.Model.Permission;
+import UI.Model.ProductDto;
 import UI.Model.Response;
+import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
+import enums.Category;
 
 public class ShopManagerPresenter {
     private final ShopManagerView view;
@@ -34,6 +34,7 @@ public class ShopManagerPresenter {
         this.view = view;
     }
 
+    @SuppressWarnings("deprecation")
     public void fetchManagerPermissions(String username){
         // Fetch the permissions of the manager
         RestTemplate restTemplate = new RestTemplate();
@@ -93,6 +94,7 @@ public class ShopManagerPresenter {
         
     }
 
+    @SuppressWarnings("deprecation")
     public void appointManager(String newManagerUsername, Set<Permission> selectedPermissions) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -147,6 +149,7 @@ public class ShopManagerPresenter {
                 });
     }
 
+    @SuppressWarnings({ "rawtypes", "deprecation" })
     public void fetchShopManagers(Consumer<List<ShopManagerDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -207,6 +210,7 @@ public class ShopManagerPresenter {
 
     }
 
+    @SuppressWarnings("deprecation")
     public void appointOwner(String newOwnerUsername){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -254,4 +258,60 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    public void addNewProduct(String productName, Category category, double price)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        ProductDto productDto = new ProductDto(productName, category, price, 0);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+
+                        // Create the request object
+                        // dtoWrapper request = new dtoWrapper(view.getShopId(), productDto);
+
+                        // Use a strongly typed HttpEntity
+                        HttpEntity<ProductDto> requestEntity = new HttpEntity<>(productDto, headers);
+
+                        // Map<String, Object> requestBody = new HashMap<>();
+                        // requestBody.put("shopId", view.getShopId());
+                        // requestBody.put("productDto", productDto);
+                            
+                        // HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+                        try {
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addProductToShop?shopId=" + view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                            );
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                JsonNode responseJson = objectMapper.readTree(response.getBody());
+
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    view.showSuccessMessage("Owner appointed successfully");
+                                } else {
+                                    view.showErrorMessage("Failed to appoint owner: " + responseJson.get("errorMessage").asText());
+                                }
+                            } else {
+                                view.showErrorMessage("Failed to appoint owner with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+   
 }

@@ -1,15 +1,18 @@
 package ServiceLayer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 // Purpose: Response class for handling the response of the service layer.
-public class Response {
+@JsonInclude
+public class Response<T> {
     private String _errorMessage;
-    private Object _returnValue;
+    private T _returnValue;
 
     // consructor.
     public Response() {
     }
 
-    public Response(String errorMessage, Object returnValue) {
+    public Response(String errorMessage, T returnValue) {
         _errorMessage = errorMessage;
         _returnValue = returnValue;
     }
@@ -23,11 +26,11 @@ public class Response {
         _errorMessage = errorMessage;
     }
 
-    public Object getReturnValue() {
+    public T getReturnValue() {
         return _returnValue;
     }
 
-    public void setReturnValue(Object returnValue) {
+    public void setReturnValue(T returnValue) {
         _returnValue = returnValue;
     }
 }

@@ -16,11 +16,11 @@ import Domain.Alerts.CloseShopAlert;
 import Domain.Alerts.CredentialsModifyAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
-import Domain.Alerts.CloseShopAlert;
 import Domain.Discounts.Discount;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
 import Domain.Rules.RuleFactory;
+import Dtos.DiscountDto;
 import Dtos.ShopDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.DiscountExpiredException;
@@ -93,14 +93,6 @@ public class Shop {
 
     public Shop(int shopId, String shopName, String founderUsername, ShopDto shopDto) throws StockMarketException {
         this(shopId, shopName, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
-    }
-
-    public int getShopId() {
-        return _shopId;
-    }
-
-    public String getShopName() {
-        return _shopName;
     }
 
     public void closeShop() {
@@ -546,14 +538,6 @@ public class Shop {
         return sb.toString();
     }
 
-    public Double getShopRating() {
-        return _shopRating;
-    }
-
-    public Integer getShopRatersCounter() {
-        return _shopRatersCounter;
-    }
-
     public void addShopRating(Integer rating) throws StockMarketException {
         // limit the rating to 1-5
         if (rating < 1 || rating > 5) {
@@ -721,14 +705,6 @@ public class Shop {
         return _productMap.get(productId); // Get product by ID from the map
     }
 
-    public Map<Integer, Product> getShopProducts() {
-        return _productMap;
-    }
-
-    public List<ShopOrder> getShopOrderHistory() {
-        return _orderHistory;
-    }
-
     /**
      * Adds a discount to the shop.
      * 
@@ -792,18 +768,6 @@ public class Shop {
         _orderHistory.add(order); // Add order to the history
     }
 
-    @Override
-    public String toString() {
-        return "Shop{" +
-                "Shop ID=" + _shopId +
-                ", Shop Founder=" + _shopFounder +
-                ", Shop address=" + _shopAddress +
-                ", Shop rating=" + _shopRating +
-                ", Products= \n" + _productMap +
-                ", Order History= \n " + _orderHistory +
-                '}';
-    }
-
     public List<Product> getProductsByName(String productName) {
         List<Product> products = new ArrayList<>();
         for (Product product : _productMap.values()) {
@@ -844,21 +808,9 @@ public class Shop {
         return products;
     }
 
-    public List<ShopOrder> getPurchaseHistory() {
-        return this._orderHistory;
-    }
-
     public Boolean isOwnerOrFounderOwner(String userId) throws StockMarketException {
         Role role = getRole(userId);
         return isOwnerOrFounder(role);
-    }
-
-    public String getBankDetails() {
-        return _bankDetails;
-    }
-
-    public String getShopAddress() {
-        return _shopAddress;
     }
 
     public void addProductRating(Integer productId, Integer rating) throws StockMarketException {
@@ -916,10 +868,6 @@ public class Shop {
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
-    }
-
-    public String getFounderName() {
-        return _shopFounder;
     }
 
     /**
@@ -1038,14 +986,6 @@ public class Shop {
                 + " successfuly removed a rule from product policy of shop with id: " + _shopId);
     }
 
-    public String getShopPolicyInfo() {
-        return _shopPolicy.toString();
-    }
-
-    public ShopPolicy getShopPolicy() {
-        return _shopPolicy;
-    }
-
     public String getProductPolicyInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductPolicyInfo();
@@ -1077,11 +1017,6 @@ public class Shop {
         }
     }
 
-    public String getShopGeneralInfo() {
-        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress
-                + " | Shop Rating: " + _shopRating;
-    }
-
     public String getProductGeneralInfo(Integer productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductGeneralInfo();
@@ -1090,15 +1025,6 @@ public class Shop {
         }
     }
 
-    // return the anoumt of product
-    public Integer getAmoutOfProductInShop() {
-        return _productMap.size();
-    }
-
-    // get all discount in the shop
-    public Map<Integer, Discount> getDiscounts() {
-        return _discounts;
-    }
     /**
      * Notify owner of the shop that a purchase has been made.
      * @param buyingUser the buying user.   
@@ -1149,12 +1075,6 @@ public class Shop {
         }
         Alert alert = new CredentialsModifyAlert(fromUser, targetUser, newPermissions, shopId);
         _notificationHandler.sendMessage(targetUser, alert);
-    }
-    /**
-     * Get all the products in the shop.
-     */
-    public List<Product> getAllProductsList() {
-        return new ArrayList<>(_productMap.values());
     }
 
     // this function adds a new review to the product in the shop
@@ -1211,5 +1131,116 @@ public class Shop {
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addKeywordsToProduct: " + userName + " successfully added keywords to product "
                 + productId + " in the shop with id " + _shopId);
+    }
+    
+    /**
+     * Get all the products in the shop.
+     */
+    public List<Product> getAllProductsList() {
+        return new ArrayList<>(_productMap.values());
+    }
+
+    public String getShopGeneralInfo() {
+        return "Shop ID: " + _shopId + " | Shop Founder: " + _shopFounder + " | Shop Address: " + _shopAddress
+                + " | Shop Rating: " + _shopRating;
+    }
+
+    @Override
+    public String toString() {
+        return "Shop{" +
+                "Shop ID=" + _shopId +
+                ", Shop Founder=" + _shopFounder +
+                ", Shop address=" + _shopAddress +
+                ", Shop rating=" + _shopRating +
+                ", Products= \n" + _productMap +
+                ", Order History= \n " + _orderHistory +
+                '}';
+    }
+
+    public int getShopId() {
+        return _shopId;
+    }
+
+    public String getShopName() {
+        return _shopName;
+    }
+
+    public void setShopName(String shopName) {
+        _shopName = shopName;
+    }
+
+    public String getFounderName() {
+        return _shopFounder;
+    }
+
+    public void setShopFounder(String shopFounder) {
+        _shopFounder = shopFounder;
+    }
+
+    public Map<Integer, Product> getShopProducts() {
+        return _productMap;
+    }
+
+    public List<ShopOrder> getPurchaseHistory() {
+        return _orderHistory;
+    }
+
+    public String getBankDetails() {
+        return _bankDetails;
+    }
+
+    // return the anoumt of product
+    public Integer getAmoutOfProductInShop() {
+        return _productMap.size();
+    }
+
+    // get all discount in the shop
+    public Map<Integer, Discount> getDiscounts() {
+        return _discounts;
+    }
+
+    // get all discount in the shop in DiscountDto
+    public Map<Integer, DiscountDto> getDiscountDtos() {
+        Map<Integer, DiscountDto> discountDtos = new HashMap<>();
+        for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
+            discountDtos.put(entry.getKey(), new DiscountDto(entry.getValue()));
+        }
+        return discountDtos;
+    }
+
+    public void setBankDetails(String bankDetails) {
+        _bankDetails = bankDetails;
+    }
+
+    public String getShopAddress() {
+        return _shopAddress;
+    }
+
+    public void setShopAddress(String shopAddress) {
+        _shopAddress = shopAddress;
+    }
+
+    public Double getShopRating() {
+        return _shopRating;
+    }
+
+    public Integer getShopRatersCounter() {
+        return _shopRatersCounter;
+    }
+    
+    public Integer getNextDiscountId() {
+        return _nextDiscountId;
+    }
+
+    public String getShopPolicyInfo() {
+        return _shopPolicy.toString();
+    }
+
+    public ShopPolicy getShopPolicy() {
+        return _shopPolicy;
+    }
+
+    public void setShopPolicy(ShopPolicy shopPolicy) {
+        _shopPolicy = shopPolicy;
     }
 }

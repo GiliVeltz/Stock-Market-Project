@@ -1,9 +1,5 @@
 package UI.Presenter;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,11 +8,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 
 import UI.Model.Response;
-import UI.Model.ShopDto;
 import UI.Model.ProductDto;
 import UI.View.ProductView;
 
@@ -28,6 +22,7 @@ public class ProductPresenter {
         this.view = view;
     }
 
+    @SuppressWarnings("rawtypes")
     public void productInfo(String shopId, String productId) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
