@@ -583,5 +583,5 @@ public class Header extends HorizontalLayout {
         searchResultsLayout.setVisible(visible);
     }
 
-
+    
 }

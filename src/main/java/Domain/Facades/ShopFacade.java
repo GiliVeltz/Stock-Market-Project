@@ -802,7 +802,7 @@ public class ShopFacade {
         }
         return shopsDto;
     }
-
+    
     // This function is responsible for getting all the information about a shop
     public ShopDto getShopInfo(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
