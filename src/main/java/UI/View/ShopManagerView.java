@@ -58,10 +58,6 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Header header = new BrowsePagesHeader("8080");
         add(header);
         
-
-        // Create the header component
-        Header header = new BrowsePagesHeader("8080");
-        add(header);
         
         // Initialize presenter
         presenter = new ShopManagerPresenter(this);
