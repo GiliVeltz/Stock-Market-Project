@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * The entry point of the Spring Boot application.
@@ -30,9 +31,12 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
 
     public static void main(String[] args) {
         port = findAvailablePort();
-        System.setProperty("server.port", String.valueOf(port));
+        System.setProperty("server.port", "8081");
+        //System.setProperty("server.port", String.valueOf(port));
         // System.out.println("Server port: " + port);
-        SpringApplication.run(Application.class, args);
+        SpringApplication app = new SpringApplication(Application.class);
+        app.run(args);
+
     }
 
 

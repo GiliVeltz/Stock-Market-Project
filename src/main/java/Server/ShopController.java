@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
+import Dtos.ProductDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
+import UI.Presenter.dtoWrapper;
 
 @RestController
 @RequestMapping(path = "/api/shop")
@@ -50,6 +52,12 @@ public class ShopController {
     @PostMapping("/reopenShop")
     public ResponseEntity<Response> reopenShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.reOpenShop(token, shopId);
+    }
+
+    @PostMapping("/addProductToShop")
+    public ResponseEntity<Response> addProductToShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestBody ProductDto productDto) {
+        ResponseEntity<Response> resp =_shopService.addProductToShop(token, shopId, productDto);
+        return resp;
     }
 
     @GetMapping("/searchProductInShopByName")
@@ -223,4 +231,10 @@ public class ShopController {
         return _shopService.getAllProductInShop(token, shopId);
     }
     
+
+    @GetMapping("/getMySubordinates")
+    public ResponseEntity<Response>getMySubordinates(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getMySubordinates(token, shopId);
+    }
+
 }
