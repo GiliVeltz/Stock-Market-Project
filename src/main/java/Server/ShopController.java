@@ -63,7 +63,7 @@ public class ShopController {
         return resp;
     }
 
-    @GetMapping("/searchProductInShop")
+    @GetMapping("/searchProductsInShop")
     public ResponseEntity<Response> searchProductInShop(@RequestHeader("Authorization") String token,
             @RequestParam String shopName,
             @RequestParam String productName,

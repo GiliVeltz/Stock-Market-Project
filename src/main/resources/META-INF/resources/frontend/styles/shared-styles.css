@@ -11,3 +11,8 @@
 .custom-tabs {
   width: 100%; /* Adjust the width as needed */
 }
+
+.selected {
+  background-color: #007bff; /* Example selected color */
+  color: white;
+}

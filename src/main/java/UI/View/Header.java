@@ -1,24 +1,27 @@
 package UI.View;
 
+import java.nio.Buffer;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.nimbusds.jose.util.events.Event;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -30,14 +33,14 @@ import com.vaadin.flow.server.VaadinSession;
 import Dtos.ProductDto;
 import UI.Model.ShopDto;
 import UI.Presenter.HeaderPresenter;
-import UI.Presenter.SearchPresenter;
+import UI.Presenter.SearchProductsPresenter;
 
 public class Header extends HorizontalLayout {
 
     private Button loginButton;
     private Button _registerButton;
     private final HeaderPresenter presenter;
-    private final SearchPresenter searchPresenter;
+    private final SearchProductsPresenter searchPresenter;
     private HorizontalLayout _leftButtonLayout;
     private VerticalLayout searchResultsLayout;
     private Dialog logoutConfirmationDialog;
@@ -46,7 +49,7 @@ public class Header extends HorizontalLayout {
 
         // Initialize the presenters
         presenter = new HeaderPresenter(this, serverPort);
-        searchPresenter = new SearchPresenter(this, serverPort);
+        searchPresenter = new SearchProductsPresenter(this, serverPort);
 
         // Create an Image component
         Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
@@ -104,7 +107,7 @@ public class Header extends HorizontalLayout {
         Dialog loginDialog = createLoginDialog();
 
         // Create search products dialog
-        Dialog searchProductsDialog = createSearchProductsDialog();
+        Dialog searchProductsDialog = createSearchProductsDialogNew();
         searchResultsLayout = new VerticalLayout(); // Use class-level variable
         searchResultsLayout.add(searchResultsView); // Add the view to the layout
 
@@ -369,18 +372,20 @@ public class Header extends HorizontalLayout {
         // Create a headline
         H2 headline = new H2("Search Product");
         headline.getStyle().set("margin", "0");
+       
 
-        H5 comment = new H5("Please fill in one field to search for products");
+        // search criteria part of the form:
+        H5 searchComment = new H5("Please fill in one field to search for products");
 
         // Create form layout
-        FormLayout formLayout = new FormLayout();
+        FormLayout searchFormLayout = new FormLayout();
 
         // Create form fields
         ComboBox<String> categoryField = new ComboBox<>("Search By Category");
         categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery","Pharmacy");
 
-        // MultiSelectListBox to store and display keywords
-        MultiSelectListBox<String> keyWordField = new MultiSelectListBox<>();
+        // MultiSelectComboBox to store and display keywords
+        MultiSelectComboBox<String> keyWordField = new MultiSelectComboBox<>();
         keyWordField.setHeight("100px");
         keyWordField.setWidth("150px");
 
@@ -420,7 +425,7 @@ public class Header extends HorizontalLayout {
 
 
         // Add fields to the form layout
-        formLayout.add(productNameField, categoryField, keywordInputField, keyWordField, addKeywordButton);
+        searchFormLayout.add( productNameField, categoryField, keywordInputField, keyWordField, addKeywordButton);
 
         // Create buttons
         Button searchButton = new Button("Search", event -> {
@@ -448,7 +453,9 @@ public class Header extends HorizontalLayout {
                 productName = null;
             }
 
-            searchPresenter.searchProducts(productName, category, keywords);
+            // _username = (String) VaadinSession.getCurrent().getAttribute("username");
+            // getUI().ifPresent(ui -> ui.navigate("products_search_results"));
+            searchPresenter.searchProducts("temp",productName, category, keywords);
 
             // Close the dialog after submission
             dialog.close();
@@ -460,16 +467,17 @@ public class Header extends HorizontalLayout {
         cancelButton.addClassName("pointer-cursor");
 
          // Create refresh button
-        Button refreshButton = new Button("Refresh", event -> resetFields(categoryField, keyWordField, keywordInputField, productNameField));
+        Button refreshButton = new Button("Refresh", event -> resetSearchProductsFields(categoryField, keyWordField, keywordInputField, addKeywordButton, productNameField));
         refreshButton.addClassName("pointer-cursor");
 
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(searchButton, cancelButton, refreshButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
+        
 
         // Add form layout and button layout to the dialog
-        VerticalLayout dialogLayout = new VerticalLayout(headline, comment, formLayout, buttonLayout);
+        VerticalLayout dialogLayout = new VerticalLayout(headline, searchComment, searchFormLayout, buttonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);
 
@@ -477,27 +485,25 @@ public class Header extends HorizontalLayout {
     }
 
 
-    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField productNameField) {
-        boolean anyFieldFilled = !categoryField.isEmpty() || !keyWordField.isEmpty() || !productNameField.isEmpty();
-        // boolean priceFieldFilled = !minPriceField.isEmpty() || !maxPriceField.isEmpty();
+    private void updateFieldStates(ComboBox<String> categoryField, MultiSelectComboBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField productNameField) {
+        boolean anyFieldFilled = !categoryField.isEmpty() || !productNameField.isEmpty() || !keyWordField.isEmpty();
+        boolean keywordsFieldFilled = !keyWordField.isEmpty() || !keywordInputField.isEmpty();
 
         categoryField.setEnabled(!anyFieldFilled || !categoryField.isEmpty());
         keyWordField.setEnabled(!anyFieldFilled || !keyWordField.isEmpty());
-        keywordInputField.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
-        addKeywordButton.setEnabled(!anyFieldFilled || !keywordInputField.isEmpty());
+        keywordInputField.setEnabled(!anyFieldFilled || keywordsFieldFilled);
+        addKeywordButton.setEnabled(!anyFieldFilled || keywordsFieldFilled);
         // minPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
         // maxPriceField.setEnabled(!anyFieldFilled || priceFieldFilled);
         productNameField.setEnabled(!anyFieldFilled || !productNameField.isEmpty());
     }
 
-    private void resetFields(ComboBox<String> categoryField, MultiSelectListBox<String> keyWordField, TextField keywordInputField, TextField productNameField) {
+    private void resetSearchProductsFields(ComboBox<String> categoryField, MultiSelectComboBox<String> keyWordField, TextField keywordInputField, Button addKeywordButton, TextField productNameField) {
         categoryField.clear();
         keyWordField.clear();
         keywordInputField.clear();
-        // minPriceField.clear();
-        // maxPriceField.clear();
         productNameField.clear();
-        updateFieldStates(categoryField, keyWordField, keywordInputField, null, productNameField);
+        updateFieldStates(categoryField, keyWordField, keywordInputField, addKeywordButton, productNameField);
     }
 
     public Dialog createSearchShopsDialog(){
@@ -587,6 +593,198 @@ public class Header extends HorizontalLayout {
         //add(searchResultsLayout); 
         searchResultsLayout.setVisible(visible);
     }
+
+    private Dialog createSearchProductsDialogNew() {
+        Dialog dialog = new Dialog();
+
+        // Create a headline
+        H2 headline = new H2("Search Product");
+        headline.getStyle().set("margin", "0");
+
+        // Initial shop search method selection
+        H5 shopComment = new H5("Please choose your desired search method");
+
+        Button searchInASpecificShopButton = new Button("A specific Shop");
+        searchInASpecificShopButton.setWidth("200px");
+        searchInASpecificShopButton.addClassName("pointer-cursor");
+
+        Button searchInAllShopsButton = new Button("All Shops");
+        searchInAllShopsButton.setWidth("200px");
+        searchInAllShopsButton.addClassName("pointer-cursor");
+
+        HorizontalLayout initialButtonsLayout = new HorizontalLayout(searchInAllShopsButton, searchInASpecificShopButton);
+        VerticalLayout initialLayout = new VerticalLayout(shopComment);
+        initialLayout.add(initialButtonsLayout);
+        initialLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        initialLayout.setWidthFull();
+
+        // Create form layout for shop name entry
+        
+        FormLayout shopNameLayout = new FormLayout();
+        TextField shopNameField = new TextField("Shop Name:");
+        Button enterShopNameButton = new Button("Enter");
+        enterShopNameButton.addClassName("pointer-cursor");
+        shopNameLayout.setWidthFull();
+
+
+        shopNameLayout.add(shopNameField, enterShopNameButton);
+        shopNameLayout.setVisible(false); // Initially hidden
+
+        // Create a single-element array to store the shopName variable
+        final String[] shopName = {null};
+
+        // Create form layout for product search
+        VerticalLayout searchFormWrapperLayout = new VerticalLayout();
+        FormLayout searchFormLayout = new FormLayout();
+
+        ComboBox<String> categoryField = new ComboBox<>("Search By Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
+
+        MultiSelectComboBox<String> keywordsField = new MultiSelectComboBox<>();
+        keywordsField.setHeight("100px");
+        keywordsField.setWidth("150px");
+
+        HorizontalLayout keywordRow = new HorizontalLayout();
+        TextField keywordInputField = new TextField("Search By Keywords");
+        Set<String> allKeywords = new HashSet<>();
+        Set<String> selectedKeywords = new HashSet<>();
+        Button addKeywordButton = new Button("Add Keyword", event -> {
+            String keyword = keywordInputField.getValue().trim();
+            if (!keyword.isEmpty() && !allKeywords.contains(keyword)) {
+                allKeywords.add(keyword);
+                selectedKeywords.clear();
+                selectedKeywords.addAll(keywordsField.getSelectedItems());
+                keywordsField.setItems(allKeywords);
+                keywordsField.updateSelection(selectedKeywords, Collections.emptySet());
+                keywordInputField.clear();
+            }
+        });
+        addKeywordButton.addClassName("pointer-cursor");
+        keywordsField.getElement().setAttribute("style", "padding-bottom: 10px;");
+        keywordRow.add(keywordInputField, addKeywordButton);
+        //keywordRow.setWidth("500px");
+        keywordRow.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        //keywordRow.setAlignItems(FlexComponent.Alignment.CENTER);
+
+
+        TextField productNameField = new TextField("Search By Product Name");
+
+        ValueChangeListener<ValueChangeEvent<?>> listener = event -> updateFieldStates(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField);
+
+        categoryField.addValueChangeListener(listener);
+        keywordsField.addValueChangeListener(listener);
+        productNameField.addValueChangeListener(listener);
+
+        searchFormLayout.add(productNameField, categoryField, keywordRow, keywordsField);
+        //searchFormLayout.getElement().getStyle().set("align-items", "center");
+        searchFormLayout.getElement().getStyle().set("margin", "auto");
+        searchFormLayout.setMaxWidth("500px");
+        searchFormWrapperLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        searchFormWrapperLayout.add(searchFormLayout);
+        searchFormWrapperLayout.setVisible(false); // Initially hidden
+
+        // Create Buttons layout
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+
+        // Create buttons
+        Button searchButton = new Button("Search", event -> {
+            String category = categoryField.getValue();
+            Set<String> keywords = new LinkedHashSet<>(keywordsField.getSelectedItems());
+            String productName = productNameField.getValue();
+
+            if (category != null && category.isEmpty()) {
+                category = null;
+            }
+            if (keywords != null && keywords.isEmpty()) {
+                keywords = null;
+            }
+            if (productName != null && productName.isEmpty()) {
+                productName = null;
+            }
+
+            searchPresenter.searchProducts(shopName[0], productName, category, keywords);
+            dialog.close();
+            resetSearchProductsFields(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField);
+            resetSearchProductsShopsFields(searchInAllShopsButton, searchInASpecificShopButton, shopNameField, enterShopNameButton);
+            resetSearchProductFormLayout(initialLayout, shopNameLayout, searchFormWrapperLayout, buttonLayout);
+        });
+        searchButton.addClassName("pointer-cursor");
+
+
+        Button cancelButton = new Button("Cancel", event -> {
+            dialog.close();
+            resetSearchProductsFields(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField);
+            resetSearchProductsShopsFields(searchInAllShopsButton, searchInASpecificShopButton, shopNameField, enterShopNameButton);
+            resetSearchProductFormLayout(initialLayout, shopNameLayout, searchFormWrapperLayout, buttonLayout);
+        });
+        cancelButton.addClassName("pointer-cursor");
+
+        Button refreshButton = new Button("Refresh", event -> resetSearchProductsFields(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField));
+        refreshButton.addClassName("pointer-cursor");
+
+
+        buttonLayout.add(cancelButton, searchButton, refreshButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        buttonLayout.setVisible(false); // Initially hidden
+
+        VerticalLayout dialogLayout = new VerticalLayout(headline, initialLayout, shopNameLayout, searchFormWrapperLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialogLayout.setMaxWidth("500px");
+
+        dialog.add(dialogLayout);
+
+        
+        // Add button click listeners
+        searchInASpecificShopButton.addClickListener(event -> {
+            searchInASpecificShopButton.addClassName("selected");
+            searchInAllShopsButton.removeClassName("selected");
+            shopName[0] = null;
+            shopNameLayout.setVisible(true);
+            shopNameField.setReadOnly(false);
+            enterShopNameButton.addClassName("pointer-cursor");
+            enterShopNameButton.setEnabled(true);
+        });
+
+        searchInAllShopsButton.addClickListener(event -> {
+            shopName[0] = null;
+            searchInAllShopsButton.addClassName("selected");
+            searchInASpecificShopButton.removeClassName("selected");
+            shopNameLayout.setVisible(false);
+            searchFormWrapperLayout.setVisible(true);
+            buttonLayout.setVisible(true);
+        });
+
+        enterShopNameButton.addClickListener(event -> {
+            shopName[0] = shopNameField.getValue().trim();
+            if (!shopName[0].isEmpty()) {
+                shopNameField.setReadOnly(true);
+                searchFormWrapperLayout.setVisible(true);
+                buttonLayout.setVisible(true);
+            }
+        });
+
+        return dialog;
+    }
+
+    private void resetSearchProductsShopsFields(Button searchInAllShopsButton, Button searchInASpecificShopButton, TextField shopName, Button enterShopNameButton) {
+        searchInAllShopsButton.removeClassName("selected");
+        searchInASpecificShopButton.removeClassName("selected");
+        shopName.clear();
+        shopName.setReadOnly(false);
+        enterShopNameButton.setEnabled(true);       
+    }
+
+    private void resetSearchProductFormLayout(VerticalLayout initialLayout, FormLayout shopNameLayout, VerticalLayout searchFormWrapperLayout, HorizontalLayout buttonLayout) {
+        initialLayout.setVisible(true);
+        shopNameLayout.setVisible(false);
+        searchFormWrapperLayout.setVisible(false);
+        buttonLayout.setVisible(false);
+
+    }
+
+
+
 
     
 }

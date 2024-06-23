@@ -29,7 +29,6 @@ import java.util.Set;
 import UI.Model.UserDto;
 import UI.View.Header;
 import UI.View.SearchShopResultsView;
-import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.SearchShopDto;
 // import ServiceLayer.Response;
@@ -82,7 +81,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Login");
                             e.printStackTrace();
                         }
                     } else {
@@ -170,7 +169,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Logout");
                             e.printStackTrace();
                         }
                     } else {

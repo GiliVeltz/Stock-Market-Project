@@ -14,18 +14,17 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.ProductDto;
-import UI.Presenter.SearchPresenter;
+import UI.Presenter.SearchProductsPresenter;
 
 @PageTitle("Search Results Page")
+@Route(value = "products_search_results")
 public class SearchResultsView extends BaseView {
-    private SearchPresenter presenter;
+    private SearchProductsPresenter presenter;
     private boolean resultsVisible = false;  // Track if search results are visible
 
-    public SearchResultsView(SearchPresenter presenter) {
-        this.presenter = presenter;
-
+    public SearchResultsView(SearchProductsPresenter presenter) {
         // Initialize presenter
-        presenter = presenter;
+        this.presenter = presenter;
 
         // Add "Search Results" title
         H1 title = new H1("Search Results");
