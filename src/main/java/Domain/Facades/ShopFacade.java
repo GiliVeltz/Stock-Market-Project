@@ -916,4 +916,33 @@ public class ShopFacade {
         }
         return managers;
     }
+
+    public List<ShopManagerDto> getMySubordinates(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Role manager = shop.getRole(username);
+        Set<String> subordinates = manager.getAppointments();
+        List<ShopManagerDto> managers = new ArrayList<>();
+        for (Map.Entry<String, Role> entry : roles.entrySet()) {
+            if(subordinates.contains(entry.getKey())){
+                Set<Permission> permissions = entry.getValue().getPermissions();
+                String role;
+                if(permissions.contains(Permission.FOUNDER)){
+                    role = "Founder";
+                }else if(permissions.contains(Permission.OWNER)){
+                    role = "Owner";
+                }else{
+                    role = "Manager";
+                }
+                ShopManagerDto subordinate = new ShopManagerDto(entry.getKey(), role , permissions);
+                managers.add(subordinate);
+            }
+        }
+        return managers;
+    }
+
+    
 }

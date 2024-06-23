@@ -12,6 +12,9 @@ Link to exel Use-Cases: https://docs.google.com/spreadsheets/d/1-20lpZteCvqh29Lt
 
 execute the following command from the terminal to run the server: `mvn spring-boot:run`
 
+## How to run the application
+mvn spring-boot:run -P run-both
+
 ## Running the application
 
 The project is a standard Maven project. To run it from the command line,
