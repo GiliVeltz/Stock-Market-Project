@@ -417,8 +417,8 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
+                Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
@@ -427,17 +427,14 @@ public class ShopService {
                         }
                         productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setReturnValue(String.format("Products in the price range of %d - %d were not found in %s",
-                            minPrice, maxPrice, shopIDString));
                     logger.info(String.format("Products in the price range of %d - %d were not found in %s", minPrice,
                             maxPrice, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
