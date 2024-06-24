@@ -767,6 +767,23 @@ public class ShopFacade {
     }
 
     /**
+     * Returns all shopIds of shops that contain the input name.
+     * 
+     * @param shopName The name of the shop to search for.
+     * @return A list of the matching shopIds
+     */
+    public List<Integer> getShopIdsThatContainName(String shopName) {
+        shopName = shopName.toLowerCase();
+        List<Integer> shopIds = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().toLowerCase().contains(shopName)) {
+                shopIds.add(shop.getShopId());
+            }
+        }
+        return shopIds;
+    }
+
+    /**
      * Get all the shops that the user has a role in
      * 
      * @param username the user's username
