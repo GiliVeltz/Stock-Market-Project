@@ -22,7 +22,7 @@ public class CloseShopAlert implements Alert{
 
     @Override
     public void setMessage() {
-        this.message = "Hello: " + targetUser + "\nUser: " + this.removingManager + " has closed ths shop with id: " + this.shopId;
+        this.message = "New Notification: " + targetUser + "\nUser: " + this.removingManager + " has closed ths shop with id: " + this.shopId;
     }
     
 
