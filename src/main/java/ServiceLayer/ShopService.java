@@ -1275,9 +1275,9 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                //create a map of shopDTO, List<ProductDTO>s to return
+                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                 if (_shopFacade.isShopIdExist(shopId)) {
-                    //create a map of shopDTO, List<ProductDTO>s to return
-                    Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                     //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
                     //get all products in the shop as "Product" objects 
@@ -1289,22 +1289,20 @@ public class ShopService {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        // insert the shopDTO and the list of productDTOs to the map
-                        shopProductMapForResponse.put(shopDto, productDtoList);
+
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
                     } else {
                         // if no products in shop - returns an empty ProductDTOs list                        
                         logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
                     }
-                    response.setReturnValue(shopProductMapForResponse);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
+                    // insert the shopDTO and the list of productDTOs to the map
+                    shopProductMapForResponse.put(shopDto, productDtoList);
                 }
                 else {
-                    response.setReturnValue(
-                            String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                     logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(shopProductMapForResponse);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -1332,7 +1330,7 @@ public class ShopService {
                 //create a map of shopDTO, List<ProductDTO>s to return
                 Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                 //get all shop IDs with the given name
-                List<Integer> shopIds = _shopFacade.getShopIdsByName(shopName);
+                List<Integer> shopIds = _shopFacade.getShopIdsThatContainName(shopName);
                 if (!shopIds.isEmpty() && shopIds != null) {
                     for (Integer shopId: shopIds) {
                         //create a shopDTO for the shop
@@ -1354,16 +1352,13 @@ public class ShopService {
                         // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
                     }
-                    response.setReturnValue(shopProductMapForResponse);
                     logger.info(String.format("Shops with Name %s were found and all their products were returned", shopName));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
                 else {
-                    response.setReturnValue(
-                        String.format("Shop with Name %s were not found - they don't exist", shopName));
                     logger.info(String.format("Shop with Name %s were not found - they don't exist", shopName));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(shopProductMapForResponse);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
