@@ -436,7 +436,7 @@ public class Header extends HorizontalLayout {
         keywordRow.add(keywordInputField, addKeywordButton);
         //keywordRow.setWidth("500px");
         keywordRow.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        //keywordRow.setAlignItems(FlexComponent.Alignment.CENTER);
+        keywordRow.setVerticalComponentAlignment(FlexComponent.Alignment.END, keywordInputField, addKeywordButton);        
 
 
         TextField productNameField = new TextField("Search By Product Name");
