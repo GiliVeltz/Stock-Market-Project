@@ -3,15 +3,16 @@ package Domain.Facades;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.springframework.web.bind.annotation.RestController;
 
-import Domain.Order;
-import Domain.User;
 import Domain.Alerts.Alert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Order;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
+import Domain.User;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
@@ -31,7 +32,7 @@ public class UserFacade {
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
 
-        // For testing UI
+        //For testing UI
         //initUI();
     }
 

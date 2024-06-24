@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1406,8 +1407,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
             return false;
@@ -1473,8 +1475,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductCategoryAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingProductCategoryAsGuest message: search result is empty");
             return false;
@@ -1543,15 +1546,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingKeywordsAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingKeywordsAsGuest message: search result is empty");
             return false;
         }
         return true;
     }
-
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId) {
@@ -1606,11 +1609,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -1668,11 +1674,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -1733,11 +1742,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2554,8 +2566,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductNameAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingProductNameAsUser message: search result is empty");
             return false;
@@ -2624,8 +2637,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductCategoryAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingProductCategoryAsUser message: search result is empty");
             return false;
@@ -2697,8 +2711,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingKeywordsAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingKeywordsAsUser message: search result is empty");
             return false;
@@ -2764,11 +2779,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2831,11 +2849,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<Integer, List<ProductDto>> result = (Map<Integer, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2900,12 +2921,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
              System.out.println("testGetProductInfoUsingKeywordsInShopAsUser Error message: " + res1.getBody().getErrorMessage());
              return false;
          }
-         // check if the some products indeed returned
-         if (res1.getBody().getReturnValue().toString().contains("not found")) {
-             logger.info("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
-             System.out.println("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
-             return false;
-         }
+         // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
+                return false;
+            }
+        }
          return true;
     }
 

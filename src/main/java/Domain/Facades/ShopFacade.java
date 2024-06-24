@@ -45,7 +45,7 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // For testing UI
+        //For testing UI
         // try {
         //     initUI();
         // }
@@ -366,9 +366,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -410,10 +408,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
-                // If the shop has products in the requested category, add them to the map
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -442,9 +437,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -469,9 +462,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -818,7 +809,7 @@ public class ShopFacade {
         }
         return shopsDto;
     }
-
+    
     // This function is responsible for getting all the information about a shop
     public ShopDto getShopInfo(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
