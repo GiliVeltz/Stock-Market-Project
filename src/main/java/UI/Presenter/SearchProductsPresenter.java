@@ -3,6 +3,7 @@ package UI.Presenter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -28,6 +29,8 @@ import UI.Model.ShopDto;
 import UI.Model.UserDto;
 import UI.View.Header;
 import UI.Model.ProductDto;
+import UI.Model.ProductSearchDto;
+import UI.Model.SearchProductResponseDto;
 import UI.Model.Response;
 import UI.View.SearchResultsView;
 
@@ -46,50 +49,47 @@ public class SearchProductsPresenter {
         this.searchResultsView = searchResultsView;
     }
 
-    public void searchProducts(String shopName, String productName, String category, Set<String> keywords) {
+    @SuppressWarnings("deprecation")
+    public void searchProducts(String shopName, String productName, String category, List<String> keywords) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        HttpHeaders headers = new HttpHeaders(); 
+                        ProductSearchDto productSearchDto = new ProductSearchDto(shopName, productName, category, keywords);
+                        HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
-                        String baseUrl = "http://localhost:" + _serverPort + "/api/shop/searchProductsInShop";
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
 
-                        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                    .queryParam("shopName", shopName)
-                    .queryParam("productName", productName)
-                    .queryParam("category", category);
+                        String url = "http://localhost:" + _serverPort + "/api/shop/searchProductsInShop";
 
-                        // Add keywords as multiple query parameters
-                        if (keywords != null) {
-                            keywords.forEach(keyword -> builder.queryParam("keywords", keyword));
-                        }
-
-                        String url = builder.toUriString();
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<ProductSearchDto> requestEntity = new HttpEntity<>(productSearchDto, headers);
                         ObjectMapper objectMapper = new ObjectMapper();
 
                         try {
                             ResponseEntity<String> response = restTemplate.exchange(
                                 url,
-                                HttpMethod.GET,
+                                HttpMethod.POST,
                                 requestEntity,
                                 String.class);
 
                             String responseBody = response.getBody();
                             if (response.getStatusCode().is2xxSuccessful()) {
+                                // convert to ResponseDTO
+                                SearchProductResponseDto responseDto = objectMapper.readValue(responseBody, SearchProductResponseDto.class);
+                                Map<String, List<ProductDto>> shopNameToProducts = responseDto.getReturnValue();
                                 // Convert the JsonNode to the desired type
-                                Map<String, List<ProductDto>> shopNameToProducts = objectMapper.readValue(responseBody, new TypeReference<Map<String, List<ProductDto>>>() {});
+                                //Map<String, List<ProductDto>> shopNameToProducts = objectMapper.readValue(responseBody, new TypeReference<Map<String, List<ProductDto>>>() {});
                                 if (shopNameToProducts != null && !shopNameToProducts.isEmpty()) {
+                                    searchResultsView.displayResponseProducts(shopNameToProducts);
                                     // Process the map and update the UI
-                                    for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
-                                        String shopNameKey = entry.getKey();
-                                        List<ProductDto> products = entry.getValue();
-        
-                                        // Create UI elements for each shopId and its associated products
-                                        searchResultsView.createProductsInShopButtons(shopNameKey, products);
-                                    }
-                                    headerView.setSearchResultsVisible(true);
+                                    // for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
+                                    //     String shopNameKey = entry.getKey();
+                                    //     List<ProductDto> products = entry.getValue();
+    
+                                    //     // Create UI elements for each shopId and its associated products
+                                    //     searchResultsView.createProductsInShopButtons(shopNameKey, products);
+                                    // }
+                                    // headerView.setSearchResultsVisible(true);
                                 }
                                 else {
                                     searchResultsView.showErrorMessage("Searched products loading failed");

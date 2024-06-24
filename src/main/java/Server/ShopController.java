@@ -25,6 +25,7 @@ import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import enums.Category;
+import UI.Model.ProductSearchDto;
 import UI.Presenter.dtoWrapper;
 
 @RestController
@@ -63,15 +64,12 @@ public class ShopController {
         return resp;
     }
 
-    @GetMapping("/searchProductsInShop")
+    @PostMapping("/searchProductsInShop")
     public ResponseEntity<Response> searchProductInShop(@RequestHeader("Authorization") String token,
-            @RequestParam String shopName,
-            @RequestParam String productName,
-            @RequestParam String category,
-            @RequestParam Set<String> keywords) {
+            @RequestBody ProductSearchDto productSearchDto) {
         Integer shopId = null;
-        if (shopName != null && !shopName.isEmpty()) {
-            ResponseEntity<Response> resp1 = _shopService.getShopIdByName(token, shopName);
+        if (productSearchDto.getShopName() != null && !productSearchDto.getShopName().isEmpty()) {
+            ResponseEntity<Response> resp1 = _shopService.getShopIdByName(token, productSearchDto.getShopName());
             if (resp1.getStatusCode().is2xxSuccessful()) {
                 shopId = (Integer) resp1.getBody().getReturnValue();
             } else {
@@ -79,18 +77,18 @@ public class ShopController {
             }
         }
         // Search by name
-        if (productName != null && !productName.isEmpty()) {
-            return _shopService.searchProductInShopByName(token, shopId, productName);
+        if (productSearchDto.getProductName() != null && !productSearchDto.getProductName().isEmpty()) {
+            return _shopService.searchProductInShopByName(token, shopId, productSearchDto.getProductName());
         }
         // Search by category
         else
-        if (category != null && !category.isEmpty()) {
-            Category categoryEnum = Category.valueOf(category.toUpperCase(Locale.ROOT));
+        if (productSearchDto.getCategory() != null && !productSearchDto.getCategory().isEmpty()) {
+            Category categoryEnum = Category.valueOf(productSearchDto.getCategory().toUpperCase(Locale.ROOT));
             return _shopService.searchProductInShopByCategory(token, shopId, categoryEnum);
         }
         // Search by keywords
         else {
-            return _shopService.searchProductsInShopByKeywords(token, shopId, new ArrayList<>(keywords));
+            return _shopService.searchProductsInShopByKeywords(token, shopId, productSearchDto.getKeywords());
         }
     }
 

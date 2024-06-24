@@ -45,13 +45,13 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
+        //For testing UI
+        try {
+            initUI();
+        }
+        catch (StockMarketException e) {
+            e.printStackTrace();
+        }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -366,9 +366,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }

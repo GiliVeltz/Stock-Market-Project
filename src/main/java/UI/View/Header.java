@@ -2,11 +2,11 @@ package UI.View;
 
 import java.nio.Buffer;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.nimbusds.jose.util.events.Event;
@@ -461,7 +461,7 @@ public class Header extends HorizontalLayout {
         // Create buttons
         Button searchButton = new Button("Search", event -> {
             String category = categoryField.getValue();
-            Set<String> keywords = new LinkedHashSet<>(keywordsField.getSelectedItems());
+            List<String> keywords = new ArrayList<>(keywordsField.getSelectedItems());
             String productName = productNameField.getValue();
 
             if (category != null && category.isEmpty()) {
@@ -475,19 +475,19 @@ public class Header extends HorizontalLayout {
             }
 
             searchPresenter.searchProducts(shopName[0], productName, category, keywords);
-            dialog.close();
             resetSearchProductsFields(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField);
             resetSearchProductsShopsFields(searchInAllShopsButton, searchInASpecificShopButton, shopNameField, enterShopNameButton);
             resetSearchProductFormLayout(initialLayout, shopNameLayout, searchFormWrapperLayout, buttonLayout);
+            dialog.close();
         });
         searchButton.addClassName("pointer-cursor");
 
 
         Button cancelButton = new Button("Cancel", event -> {
-            dialog.close();
             resetSearchProductsFields(categoryField, keywordsField, keywordInputField, addKeywordButton, productNameField);
             resetSearchProductsShopsFields(searchInAllShopsButton, searchInASpecificShopButton, shopNameField, enterShopNameButton);
             resetSearchProductFormLayout(initialLayout, shopNameLayout, searchFormWrapperLayout, buttonLayout);
+            dialog.close();
         });
         cancelButton.addClassName("pointer-cursor");
 
