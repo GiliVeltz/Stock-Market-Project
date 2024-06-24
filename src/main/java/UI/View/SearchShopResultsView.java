@@ -12,13 +12,13 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.ProductDto;
 import UI.Model.ShopDto;
-import UI.Presenter.SearchShopsPresenter;
+import UI.Presenter.SearchShopPresenter;
 
 @PageTitle("Search Shops Page")
 @Route(value = "search shops")
 public class SearchShopResultsView extends BaseView{
 
-    private SearchShopsPresenter presenter;
+    private SearchShopPresenter presenter;
 
     private String shopName;
     private String shopId;
@@ -31,7 +31,7 @@ public class SearchShopResultsView extends BaseView{
         Header header = new BrowsePagesHeader("8080");
         add(header);
 
-        presenter = new SearchShopsPresenter(this);
+        presenter = new SearchShopPresenter(this);
         
         // Create a title for the page
         H1 headlineShops = new H1("Shops Results");

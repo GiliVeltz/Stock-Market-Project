@@ -20,11 +20,11 @@ import UI.Model.Response;
 import UI.Model.ShopDto;
 import UI.View.SearchShopResultsView;
 
-public class SearchShopsPresenter {
+public class SearchShopPresenter {
 
     private final SearchShopResultsView view;
 
-    public SearchShopsPresenter(SearchShopResultsView view) {
+    public SearchShopPresenter(SearchShopResultsView view) {
         this.view = view;
     }
 
