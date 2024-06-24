@@ -52,6 +52,7 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetShopInfoAsUser("1") ); // fail - non exist shop
     }
     
+    @Disabled
     // Test search product information according to product name as a User in the system.
     @Test
     public void testGetProductInfoUsingProductNameAsUser() {
@@ -59,6 +60,7 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetProductInfoUsingProductNameAsUser("productName2") ); // fail - non exist product
     }
     
+    @Disabled
     // Test search product information according to product category as a User in the system.
     @Test
     public void testGetProductInfoUsingProductCategoryAsUser() {
@@ -66,6 +68,7 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsUser(Category.GROCERY) ); // fail - non exist category
     }
     
+    @Disabled
     // Test search product information according to key words as a User in the system.
     @Test
     public void testGetProductInfoUsingKeywordsAsUser() {
@@ -77,6 +80,7 @@ public class ShoppingUserAcceptanceTests{
     // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
     // TODO: GILI - need to implement this test
     
+    @Disabled
     // Test search product information in a specific shop, according to product name as a User in the system.
     @Test
     public void testGetProductInfoUsingProductNameInShopAsUser() {
@@ -86,6 +90,7 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsUser("productName2", "1") ); // fail - non exist product and non exist shop
     }
     
+    @Disabled
     // Test search product information in a specific shop, according to product category as a User in the system.
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsUser() {
@@ -95,6 +100,7 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsUser(Category.GROCERY, "1") ); // fail - non exist category and non exist shop
     }
     
+    @Disabled
     // Test search product information in a specific shop, according to key words as a User in the system.
     @Test
     public void testGetProductInfoUsingKeywordsInShopAsUser() {

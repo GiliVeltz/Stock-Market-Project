@@ -1552,7 +1552,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return true;
     }
 
-
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId) {
         // Arrange

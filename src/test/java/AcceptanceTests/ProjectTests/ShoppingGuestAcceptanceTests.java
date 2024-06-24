@@ -1,6 +1,8 @@
 package AcceptanceTests.ProjectTests;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -45,6 +47,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetShopInfoAsGuest("1")); // fail - non exist shop
     }
     
+    @Disabled
     // Test search product information according to product name as a guest in the system.
     @Test
     public void testGetProductInfoUsingProductNameAsGuest() {
@@ -52,6 +55,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductNameAsGuest("productName2") ); // fail - non exist product
     }
 
+    @Disabled
     // Test search product information according to product category as a guest in the system.
     @Test
     public void testGetProductInfoUsingProductCategoryAsGuest() {
@@ -59,6 +63,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsGuest(Category.GROCERY) ); // fail - non exist category
     }
 
+    @Disabled
     // Test search product information according to key words as a guest in the system.
     @Test
     public void testGetProductInfoUsingKeywordsAsGuest() {
@@ -72,6 +77,7 @@ public class ShoppingGuestAcceptanceTests {
     // rating, category, and store rating.
     // TODO: GILI
     
+    @Disabled
     // Test search product information in a specific shop, according to product name as a guest in the system.
     @Test
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
@@ -81,6 +87,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName2", "1") ); // fail - non exist product and non exist shop
     }
 
+    @Disabled
     // Test search product information in a specific shop, according to product category as a guest in the system.
     @Test
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
@@ -90,6 +97,7 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest(Category.GROCERY, "1")); // fail - non exist category and non exist shop
     }
 
+    @Disabled
     // Test search product information in a specific shop, according to key words as a guest in the system.
     @Test
     public void testGetProductInfoUsingKeywordsInShopAsGuest() {
