@@ -20,7 +20,7 @@ public class FireManagerAlert implements Alert {
     }
     @Override
     public void setMessage() {
-        this.message = "Hello: " + userName + ", User: " + this.ManagerName + " has fired you as a manager in shop " + this.shopId;
+        this.message = "New Notification: " + userName + "\nUser: " + this.ManagerName + " has fired you as a manager in shop " + this.shopId;
     }
     @Override
     public String getFromUser() {

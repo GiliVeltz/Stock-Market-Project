@@ -22,7 +22,7 @@ public class ReOpenShopAlert implements Alert {
 
     @Override
     public void setMessage() {
-        this.message = "Hello: " + targetUser + "\nUser: " + this.openManager + " has reopened the shop with id: "
+        this.message = "New Notification: " + targetUser + "\nUser: " + this.openManager + " has reopened the shop with id: "
                 + this.shopId;
     }
 

@@ -22,7 +22,7 @@ public class AppointedOwnerAlert implements Alert {
 
     @Override
     public void setMessage() {
-        this.message = "Hello : " + userName + "\nUser: " + this.ManagerName + " has appointed you as an owner in shop "
+        this.message = "New Notification: " + userName + "\nUser: " + this.ManagerName + " has appointed you as an owner in shop "
                 + this.shopId;
     }
 
