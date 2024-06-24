@@ -7,46 +7,29 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.server.VaadinSession;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-
-import java.util.List;
-import java.util.Map;
-
-import UI.Model.ShopDto;
-import UI.Model.UserDto;
 import UI.View.Header;
 import UI.Model.ProductDto;
 import UI.Model.ProductSearchDto;
 import UI.Model.SearchProductResponseDto;
-import UI.Model.Response;
-import UI.View.SearchResultsView;
+import UI.View.SearchProductsResultsView;
 
 public class SearchProductsPresenter {
 
     private final String _serverPort;
     private final Header headerView;
-    private SearchResultsView searchResultsView;
+    private SearchProductsResultsView searchProductsResultsView;
     
     public SearchProductsPresenter(Header headerView, String serverPort) {
         this.headerView = headerView;
         this._serverPort = serverPort;
     }
 
-    public void setSearchResultsView(SearchResultsView searchResultsView) {
-        this.searchResultsView = searchResultsView;
+    public void setSearchProductsResultsView(SearchProductsResultsView searchProductsResultsView) {
+        this.searchProductsResultsView = searchProductsResultsView;
     }
 
     @SuppressWarnings("deprecation")
@@ -77,23 +60,13 @@ public class SearchProductsPresenter {
                                 // convert to ResponseDTO
                                 SearchProductResponseDto responseDto = objectMapper.readValue(responseBody, SearchProductResponseDto.class);
                                 Map<String, List<ProductDto>> shopNameToProducts = responseDto.getReturnValue();
-                                // Convert the JsonNode to the desired type
-                                //Map<String, List<ProductDto>> shopNameToProducts = objectMapper.readValue(responseBody, new TypeReference<Map<String, List<ProductDto>>>() {});
-                                if (shopNameToProducts != null && !shopNameToProducts.isEmpty()) {
-                                    searchResultsView.displayResponseProducts(shopNameToProducts);
-                                    // Process the map and update the UI
-                                    // for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
-                                    //     String shopNameKey = entry.getKey();
-                                    //     List<ProductDto> products = entry.getValue();
-    
-                                    //     // Create UI elements for each shopId and its associated products
-                                    //     searchResultsView.createProductsInShopButtons(shopNameKey, products);
-                                    // }
-                                    // headerView.setSearchResultsVisible(true);
+        
+                                if (shopNameToProducts != null) {
+                                    searchProductsResultsView.displayResponseProducts(shopNameToProducts);
                                 }
                                 else {
-                                    searchResultsView.showErrorMessage("Searched products loading failed");
-                                    searchResultsView.getUI().ifPresent(ui -> ui.navigate("user"));
+                                    searchProductsResultsView.showErrorMessage("Searched products loading failed");
+                                    searchProductsResultsView.getUI().ifPresent(ui -> ui.navigate("user"));
                                 }
                             }   
                             else {

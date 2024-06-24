@@ -68,8 +68,8 @@ public class Header extends HorizontalLayout {
         Button messagesButton = new Button("My Messages", e -> navigateToMessages());
         Button allShopsButton = new Button("All Shops");
 
-        SearchResultsView searchResultsView = new SearchResultsView(searchPresenter);
-        searchPresenter.setSearchResultsView(searchResultsView);
+        SearchProductsResultsView searchProductsResultsView = new SearchProductsResultsView(searchPresenter);
+        searchPresenter.setSearchProductsResultsView(searchProductsResultsView);
 
         // Add cursor styling
         _registerButton.addClassName("pointer-cursor");
@@ -109,7 +109,7 @@ public class Header extends HorizontalLayout {
         // Create search products dialog
         Dialog searchProductsDialog = createSearchProductsDialog();
         searchResultsLayout = new VerticalLayout(); // Use class-level variable
-        searchResultsLayout.add(searchResultsView); // Add the view to the layout
+        searchResultsLayout.add(searchProductsResultsView); // Add the view to the layout
 
 
         // Create login dialog

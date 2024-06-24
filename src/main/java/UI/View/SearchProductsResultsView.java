@@ -5,39 +5,31 @@ import java.util.List;
 import java.util.Map;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
-
 import UI.Model.ProductDto;
-import UI.Model.ShopDto;
 import UI.Presenter.SearchProductsPresenter;
 
 @PageTitle("Search Results Page")
 @Route(value = "products_search_results")
-public class SearchResultsView extends BaseView {
-    private SearchProductsPresenter presenter;
+public class SearchProductsResultsView extends BaseView {
+    //private SearchProductsPresenter presenter;
     Dialog resultsDialog;
-    private boolean resultsVisible = false;  // Track if search results are visible
-    private List<VerticalLayout> shopLayoutsList;
+    private final List<VerticalLayout> shopLayoutsList;
 
-    public SearchResultsView(SearchProductsPresenter presenter) {
+    public SearchProductsResultsView(SearchProductsPresenter presenter) {
         // Initialize presenter
-        this.presenter = presenter;
+        //this.presenter = presenter;
         this.shopLayoutsList = new ArrayList<>();
         resultsDialog = new Dialog();
     }
@@ -52,6 +44,10 @@ public class SearchResultsView extends BaseView {
         H2 headline = new H2("Search Results");
         headline.getStyle().set("margin", "0");
         dialogContent.add(headline);
+
+        if (shopNameToProducts.isEmpty()) {
+            createNoResultsLayout("All Shops");
+        }
 
         for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
             if (entry.getValue().isEmpty()) {
@@ -101,17 +97,6 @@ public class SearchResultsView extends BaseView {
             productButton.addClassName("product-button");
             productButton.addClassName("pointer-cursor");
             rowLayout.add(productButton);
-
-        //     String shopName = shop.getShopName();
-        //     Button shopButton = new Button(shopName);
-        //     // Button shopButton = new Button(shopName, e -> navigateToShopPage(shopId));
-
-        //    // Increase the button size and add tooltip data attribute
-        //    shopButton.getElement().getStyle().set("width", "200px").set("height", "100px");
-
-        //     // Add click listener to show popup dialog
-        //     shopButton.addClickListener(e -> showShopDetailsDialog(shop));
-
             if ((count + 1) % maxButtonsPerRow == 0 || count == productsList.size() - 1) {
                 gridLayout.add(rowLayout);
                 rowLayout = new HorizontalLayout();
@@ -135,10 +120,11 @@ public class SearchResultsView extends BaseView {
         shopNameLabel.addClassName("shop-name-label");
         gridLayout.add(shopNameLabel);
 
-        H5 noResultsLabel = new H5("No results found");
+        H5 noResultsLabel = new H5("No results were found");
         gridLayout.add(noResultsLabel);
 
         // Add the grid layout to the main layout
+        gridLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         shopLayoutsList.add(gridLayout);
     }
 
@@ -148,13 +134,8 @@ public class SearchResultsView extends BaseView {
         Button productButton = new Button(product.getProductName());  // Display product name
         productButton.addClassName("product-button");
 
-        // Set tooltip with product details (e.g., category and price)
-        //productButton.getElement().setAttribute("title", "Category: " + product.getCategory() + ", Price: $" + product.getPrice());
-
         productButton.addClickListener(event -> {
             showProductDialog(product);  // Open a dialog with product details
-            // Handle click event (e.g., navigate to product details)
-            //navigateToProductDetails(product.getProductName());  // Assuming getId() retrieves the product ID
         });
 
         return productButton;
@@ -214,7 +195,5 @@ public class SearchResultsView extends BaseView {
         resultsDialog.removeAll();
         removeAll();  // Clear all components from the view
     }
-
-
 }
 
