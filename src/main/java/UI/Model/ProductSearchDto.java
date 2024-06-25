@@ -1,6 +1,7 @@
 package UI.Model;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,14 +12,14 @@ import enums.Category;
 @JsonIgnoreProperties(ignoreUnknown = true)
 
 public class ProductSearchDto {
-    @NotBlank(message = "Shop name is required (or null)")
-    private String shopName;
+    @NotBlank(message = "Shop id is required (or null)")
+    private Integer shopId;
 
     @NotBlank(message = "Product name is required (or null)")
     private String productName;
     
     @NotBlank(message = "Category is required (or null)")
-    private String category;
+    private Category category;
 
     @NotBlank(message = "Keywords are required (or null)")
     private List<String> keywords;
@@ -26,21 +27,26 @@ public class ProductSearchDto {
     // Constructor
     public ProductSearchDto(){}
 
-    public ProductSearchDto(String shopName, String productName, String category, List<String> keywords) {
-        this.shopName = shopName;
+    public ProductSearchDto(Integer shopId, String productName, String category, List<String> keywords) {
+        this.shopId = shopId;
         this.productName = productName;
-        this.category = category;
+        if (category == null || category.isEmpty()) {
+            this.category = null;
+        }
+        else {
+         this.category = Category.valueOf(category.toUpperCase(Locale.ROOT));
+        }
         this.keywords = keywords;
     }
 
     // Getters and setters
 
-    public String getShopName() {
-        return shopName;
+    public Integer getShopId() {
+        return shopId;
     }
 
-    public void setShopName(String newShopName) {
-        this.shopName = newShopName;
+    public void setShopId(Integer newShopId) {
+        this.shopId = newShopId;
     }
 
     public String getProductName() {
@@ -51,11 +57,11 @@ public class ProductSearchDto {
         this.productName = newProductName;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String newCategory) {
+    public void setCategory(Category newCategory) {
         this.category = newCategory;
     }
 

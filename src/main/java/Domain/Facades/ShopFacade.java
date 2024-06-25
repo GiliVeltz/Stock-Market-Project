@@ -46,12 +46,12 @@ public class ShopFacade {
         _userFacade = UserFacade.getUserFacade();
 
         //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
+        try {
+            initUI();
+        }
+        catch (StockMarketException e) {
+            e.printStackTrace();
+        }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
