@@ -23,7 +23,7 @@ public class PurchaseFromShopAlert implements Alert {
     }
     @Override
     public void setMessage() {
-        this.message = "Hello : " + targetUser + "\nUser : " + this.fromUser + " has purchased the following products from shop: " + this.shopId + " with the following product ids: " + this.productIdList;
+        this.message = "New Notification: " + targetUser + "\nUser : " + this.fromUser + " has purchased the following products from shop: " + this.shopId + " with the following product ids: " + this.productIdList;
     }
     @Override
     public String getFromUser() {

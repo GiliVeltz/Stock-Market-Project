@@ -21,8 +21,8 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
-import Dtos.ShopManagerDto;
 import Dtos.ShopGetterDto;
+import Dtos.ShopManagerDto;
 import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
@@ -265,8 +265,8 @@ public class ShopService {
      * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
-     * @param productName he name of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @param productName The name of the product.
+     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
     @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
@@ -275,25 +275,23 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
-                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setReturnValue(
-                            String.format("Products named %s were not found in %s", productName, shopIDString));
                     logger.info(String.format("Products named %s were not found in %s", productName, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -311,7 +309,7 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
     @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
@@ -320,27 +318,25 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
-                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the category of %s were found in %s",
                             productCategory.toString(), shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setReturnValue(String.format("Products in the category of %s were not found in %s",
-                            productCategory.toString(), shopIDString));
                     logger.info(String.format("Products in the category of %s were not found in %s",
                             productCategory.toString(), shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -373,27 +369,25 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopName = _shopFacade.getShopName(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopName, productDtoList);
                     }
-                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
                             shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setReturnValue(String.format("Products taged by the keywords: %s were not found in %s",
-                            keywordsString, shopIDString));
                     logger.info(String.format("Products taged by the keywords: %s were not found in %s", keywordsString,
                             shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -423,8 +417,8 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
+                Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
-                    Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
@@ -433,17 +427,14 @@ public class ShopService {
                         }
                         productDtosPerShop.put(entry.getKey(), productDtoList);
                     }
-                    response.setReturnValue(productDtosPerShop);
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setReturnValue(String.format("Products in the price range of %d - %d were not found in %s",
-                            minPrice, maxPrice, shopIDString));
                     logger.info(String.format("Products in the price range of %d - %d were not found in %s", minPrice,
                             maxPrice, shopIDString));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -1284,9 +1275,9 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
+                //create a map of shopDTO, List<ProductDTO>s to return
+                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                 if (_shopFacade.isShopIdExist(shopId)) {
-                    //create a map of shopDTO, List<ProductDTO>s to return
-                    Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                     //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
                     //get all products in the shop as "Product" objects 
@@ -1298,22 +1289,20 @@ public class ShopService {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        // insert the shopDTO and the list of productDTOs to the map
-                        shopProductMapForResponse.put(shopDto, productDtoList);
+
                         logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
                     } else {
                         // if no products in shop - returns an empty ProductDTOs list                        
                         logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
                     }
-                    response.setReturnValue(shopProductMapForResponse);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
+                    // insert the shopDTO and the list of productDTOs to the map
+                    shopProductMapForResponse.put(shopDto, productDtoList);
                 }
                 else {
-                    response.setReturnValue(
-                            String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                     logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(shopProductMapForResponse);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -1327,7 +1316,7 @@ public class ShopService {
     }
 
 
-        /**
+    /**
      * searches products by their name.
      * 
      * @param token       The session token of the user performing the search.
@@ -1341,7 +1330,7 @@ public class ShopService {
                 //create a map of shopDTO, List<ProductDTO>s to return
                 Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
                 //get all shop IDs with the given name
-                List<Integer> shopIds = _shopFacade.getShopIdsByName(shopName);
+                List<Integer> shopIds = _shopFacade.getShopIdsThatContainName(shopName);
                 if (!shopIds.isEmpty() && shopIds != null) {
                     for (Integer shopId: shopIds) {
                         //create a shopDTO for the shop
@@ -1363,16 +1352,13 @@ public class ShopService {
                         // insert the shopDTO and the list of productDTOs to the map
                         shopProductMapForResponse.put(shopDto, productDtoList);
                     }
-                    response.setReturnValue(shopProductMapForResponse);
                     logger.info(String.format("Shops with Name %s were found and all their products were returned", shopName));
-                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
                 else {
-                    response.setReturnValue(
-                        String.format("Shop with Name %s were not found - they don't exist", shopName));
                     logger.info(String.format("Shop with Name %s were not found - they don't exist", shopName));
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
+                response.setReturnValue(shopProductMapForResponse);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -1620,6 +1606,66 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    /**
+     * Receive the shop ID.
+     * @param token the users session token
+     * @param shopName the shop name
+     * @return Integer - shopID.
+     */
+    public ResponseEntity<Response> getShopIdByName(String token, String shopName) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                Integer shopId = _shopFacade.getShopIdsByName(shopName).get(0);
+                response.setReturnValue(shopId);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop ID. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Receive the manager subordinates.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @return the shop manager subordinates.
+     */
+    public ResponseEntity<Response> getMySubordinates(String token, Integer shopId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<ShopManagerDto> managers = _shopFacade.getMySubordinates(username, shopId);
+                    response.setReturnValue(managers);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop manager subordinates. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    } 
 
      /**
      * Receive the all shops information.

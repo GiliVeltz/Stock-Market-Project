@@ -27,7 +27,7 @@ public class CredentialsModifyAlert implements Alert {
     }
 
     public void setMessage() {
-        this.message = "hello: " + targetUser + "\nUser " + fromUser + " modified yours credentials from the shop: " + shopId +" The new credentials are: " + permissionsList;
+        this.message = "New Notification: " + targetUser + "\nUser " + fromUser + " modified yours credentials from the shop: " + shopId +" The new credentials are: " + permissionsList;
     }
 
     public boolean isEmpty() {

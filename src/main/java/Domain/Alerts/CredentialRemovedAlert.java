@@ -26,7 +26,7 @@ public class CredentialRemovedAlert implements Alert {
     }
 
     public void setMessage() {
-        this.message = "User " + fromUser + " removed you the next credentials: " + permissionsList;
+        this.message = "New Notification: User " + fromUser + " removed you from the next credentials: " + permissionsList;
     }
 
     public boolean isEmpty() {

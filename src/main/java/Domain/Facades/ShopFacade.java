@@ -366,9 +366,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -410,10 +408,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
-                // If the shop has products in the requested category, add them to the map
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -442,9 +437,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -469,9 +462,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -776,6 +767,23 @@ public class ShopFacade {
     }
 
     /**
+     * Returns all shopIds of shops that contain the input name.
+     * 
+     * @param shopName The name of the shop to search for.
+     * @return A list of the matching shopIds
+     */
+    public List<Integer> getShopIdsThatContainName(String shopName) {
+        shopName = shopName.toLowerCase();
+        List<Integer> shopIds = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().toLowerCase().contains(shopName)) {
+                shopIds.add(shop.getShopId());
+            }
+        }
+        return shopIds;
+    }
+
+    /**
      * Get all the shops that the user has a role in
      * 
      * @param username the user's username
@@ -818,7 +826,7 @@ public class ShopFacade {
         }
         return shopsDto;
     }
-
+    
     // This function is responsible for getting all the information about a shop
     public ShopDto getShopInfo(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
@@ -916,4 +924,33 @@ public class ShopFacade {
         }
         return managers;
     }
+
+    public List<ShopManagerDto> getMySubordinates(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Role manager = shop.getRole(username);
+        Set<String> subordinates = manager.getAppointments();
+        List<ShopManagerDto> managers = new ArrayList<>();
+        for (Map.Entry<String, Role> entry : roles.entrySet()) {
+            if(subordinates.contains(entry.getKey())){
+                Set<Permission> permissions = entry.getValue().getPermissions();
+                String role;
+                if(permissions.contains(Permission.FOUNDER)){
+                    role = "Founder";
+                }else if(permissions.contains(Permission.OWNER)){
+                    role = "Owner";
+                }else{
+                    role = "Manager";
+                }
+                ShopManagerDto subordinate = new ShopManagerDto(entry.getKey(), role , permissions);
+                managers.add(subordinate);
+            }
+        }
+        return managers;
+    }
+
+    
 }

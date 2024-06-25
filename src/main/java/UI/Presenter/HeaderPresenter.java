@@ -9,6 +9,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
@@ -79,7 +81,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Login");
                             e.printStackTrace();
                         }
                     } else {
@@ -167,7 +169,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Logout");
                             e.printStackTrace();
                         }
                     } else {
@@ -177,10 +179,6 @@ public class HeaderPresenter {
                 });
     }
 
-    @SuppressWarnings("unused")
-    public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
-        RestTemplate restTemplate = new RestTemplate();
-    }
 
 
     @SuppressWarnings("unused")
