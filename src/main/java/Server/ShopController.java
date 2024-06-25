@@ -1,6 +1,5 @@
 package Server;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -24,9 +23,8 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
-import enums.Category;
 import UI.Model.ProductSearchDto;
-import UI.Presenter.dtoWrapper;
+import enums.Category;
 
 @RestController
 @RequestMapping(path = "/api/shop")

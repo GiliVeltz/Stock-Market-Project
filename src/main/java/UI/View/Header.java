@@ -1,21 +1,19 @@
 package UI.View;
 
-import java.nio.Buffer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.nimbusds.jose.util.events.Event;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
@@ -28,10 +26,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.server.VaadinSession;
 
-import Dtos.ProductDto;
-import UI.Model.ShopDto;
 import UI.Presenter.HeaderPresenter;
 import UI.Presenter.SearchProductsPresenter;
 import UI.Presenter.SearchShopPresenter;
