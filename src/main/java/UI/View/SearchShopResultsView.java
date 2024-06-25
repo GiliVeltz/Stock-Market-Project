@@ -10,7 +10,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.Model.ProductDto;
 import UI.Model.ShopDto;
 import UI.Presenter.SearchShopPresenter;
 
@@ -30,6 +29,8 @@ public class SearchShopResultsView extends BaseView{
         // Create the header component
         Header header = new BrowsePagesHeader("8080");
         add(header);
+
+        //presenter = new searchShopsPresenter(this);
         
         // Create a title for the page
         H1 headlineShops = new H1("Shops Results");

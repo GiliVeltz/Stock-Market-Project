@@ -1,8 +1,5 @@
 package UI.Presenter;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,15 +7,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
-
+import java.util.List;
+import java.util.Map;
+import UI.View.Header;
 import UI.Model.ProductDto;
 import UI.Model.ProductSearchDto;
-import UI.Model.Response;
 import UI.Model.SearchProductResponseDto;
-import UI.View.Header;
 import UI.View.SearchProductsResultsView;
 
 public class SearchProductsPresenter {
@@ -146,3 +142,4 @@ public class SearchProductsPresenter {
 
 
 }
+

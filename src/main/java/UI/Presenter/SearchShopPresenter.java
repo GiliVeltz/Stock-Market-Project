@@ -19,7 +19,6 @@ import Dtos.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDto;
 import UI.View.Header;
-import UI.View.SearchProductsResultsView;
 import UI.View.SearchShopResultsView;
 
 public class SearchShopPresenter {
