@@ -30,8 +30,6 @@ public class SearchShopResultsView extends BaseView{
         // Create the header component
         Header header = new BrowsePagesHeader("8080");
         add(header);
-
-        presenter = new SearchShopPresenter(this);
         
         // Create a title for the page
         H1 headlineShops = new H1("Shops Results");
