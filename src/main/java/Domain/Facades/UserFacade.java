@@ -13,6 +13,7 @@ import Domain.Order;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.UserRepositoryInterface;
 import Domain.User;
+import Dtos.OrderDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
@@ -33,7 +34,7 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
 
         // For testing UI
-        // initUI();
+        initUI();
     }
 
     // Public method to provide access to the _UserFacade
@@ -185,6 +186,16 @@ public class UserFacade {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public List<OrderDto> viewOrderHistory(String username) throws StockMarketException {
+        User user = getUserByUsername(username);
+        List<Order> orders = user.getPurchaseHistory();
+        List<OrderDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            orderDtos.add(new OrderDto(order));
+        }
+        return orderDtos;
     }
 
     // function to initilaize data for UI testing

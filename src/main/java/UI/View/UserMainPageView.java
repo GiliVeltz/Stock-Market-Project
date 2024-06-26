@@ -213,7 +213,7 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
     }
 
     // Method to construct or reload the messages content
@@ -251,8 +251,6 @@ public class UserMainPageView extends BaseView {
             shopsLayout.removeAll();
             UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
             shopsLayout.add(UpdateduserShopsPageView);
-
-
 
             // Close the dialog after submission
             dialog.close();
