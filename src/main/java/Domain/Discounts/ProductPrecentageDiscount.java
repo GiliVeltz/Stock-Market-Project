@@ -1,19 +1,19 @@
 package Domain.Discounts;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.SortedMap;
 
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class PrecentageDiscount extends BaseDiscount {
+public class ProductPrecentageDiscount extends BaseDiscount {
     private double _precentage;
     private int _productId;
 
     /**
      * Represents a percentage discount for a specific product.
      */
-    public PrecentageDiscount(java.util.Date expirationDate, double precentage, int productId) {
+    public ProductPrecentageDiscount(Date expirationDate, double precentage, int productId) {
         super(expirationDate);
         if (precentage < 0 || precentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
@@ -23,7 +23,7 @@ public class PrecentageDiscount extends BaseDiscount {
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
-    public PrecentageDiscount(BasicDiscountDto dto) {
+    public ProductPrecentageDiscount(BasicDiscountDto dto) {
         this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
     }
 

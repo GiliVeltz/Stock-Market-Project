@@ -6,14 +6,14 @@ import java.util.SortedMap;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class FixedDiscount extends BaseDiscount {
+public class ProductFixedDiscount extends BaseDiscount {
     private double _discountTotal;
     private int _productId;
 
     /**
      * Represents a fixed discount for a specific product.
      */
-    public FixedDiscount(Date expirationDate, double discountTotal, int productId) {
+    public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId) {
         super(expirationDate);
         _discountTotal = discountTotal;
         _productId = productId;
@@ -21,7 +21,7 @@ public class FixedDiscount extends BaseDiscount {
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
-    public FixedDiscount(BasicDiscountDto dto) {
+    public ProductFixedDiscount(BasicDiscountDto dto) {
         this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
     }
 

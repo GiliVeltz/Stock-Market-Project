@@ -31,7 +31,7 @@ public class ConditionalDiscount extends Discount {
     }
 
     public ConditionalDiscount(ConditionalDiscountDto dto) {
-        this(dto.mustHaveProducts, dto.isPrecentage ? new PrecentageDiscount(dto) : new FixedDiscount(dto));
+        this(dto.mustHaveProducts, dto.isPrecentage ? new ProductPrecentageDiscount(dto) : new ProductFixedDiscount(dto));
     }
 
     /**
