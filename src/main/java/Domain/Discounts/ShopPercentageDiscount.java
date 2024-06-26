@@ -1,27 +1,29 @@
 package Domain.Discounts;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class ShopPrecentageDiscount extends BaseDiscount {
-    private double _precentage;
+public class ShopPercentageDiscount extends BaseDiscount {
+    private double _percentage;
 
     /**
      * Represents a percentage discount for the whole shop.
      */
-    public ShopPrecentageDiscount(Date expirationDate, double precentage) {
+    public ShopPercentageDiscount(Date expirationDate, double percentage) {
         super(expirationDate);
-        if (precentage < 0 || precentage > 100)
+        if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
-        _precentage = precentage;
+        _percentage = percentage;
 
         _rule = (basket) -> true;
     }
 
-    public ShopPrecentageDiscount(BasicDiscountDto dto) {
+    public ShopPercentageDiscount(BasicDiscountDto dto) {
         this(new Date(dto.expirationDate.getTime()), dto.discountAmount);
     }
 
@@ -32,8 +34,7 @@ public class ShopPrecentageDiscount extends BaseDiscount {
 
     /**
      * Applies the percentage discount to the products in the shopping basket.
-     * The price and amount of the product are updated based on the discount in the
-     * productToPriceToAmount mapping.
+     * The price and amount of the product are updated based on the discount.
      *
      * @param basket The shopping basket to apply the discount to.
      */
@@ -42,21 +43,13 @@ public class ShopPrecentageDiscount extends BaseDiscount {
         if (!_rule.predicate(basket))
             return;
         for (int product_id : basket.getProductIdList()) {
+            SortedMap<Double, Integer> newpriceToAmount = new TreeMap<>();
             SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(product_id);
-            for (double price : priceToAmount.keySet()) {
-                int amount = priceToAmount.get(price);
-            // calculate discount, and amount of the product at the discounted price
-            double discount = price * _precentage / 100;
-            int postAmount = priceToAmount.getOrDefault(price - discount, 0);
-
-            // update the price to amount mapping
-            priceToAmount.put(price - discount, postAmount + 1);
-            priceToAmount.put(price, amount - 1);
-            if (amount == 1)
-                priceToAmount.remove(price);
+            for (Map.Entry<Double, Integer> entry : priceToAmount.entrySet()) {
+                double new_price = entry.getKey() * _percentage / 100;
+                newpriceToAmount.put(new_price, entry.getValue());
+            }
+            basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
-        
-
-        
     }
 }

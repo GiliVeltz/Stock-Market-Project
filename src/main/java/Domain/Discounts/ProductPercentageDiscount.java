@@ -6,24 +6,24 @@ import java.util.SortedMap;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class ProductPrecentageDiscount extends BaseDiscount {
-    private double _precentage;
+public class ProductPercentageDiscount extends BaseDiscount {
+    private double _percentage;
     private int _productId;
 
     /**
      * Represents a percentage discount for a specific product.
      */
-    public ProductPrecentageDiscount(Date expirationDate, double precentage, int productId) {
+    public ProductPercentageDiscount(Date expirationDate, double percentage, int productId) {
         super(expirationDate);
-        if (precentage < 0 || precentage > 100)
+        if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
-        _precentage = precentage;
+        _percentage = percentage;
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
-    public ProductPrecentageDiscount(BasicDiscountDto dto) {
+    public ProductPercentageDiscount(BasicDiscountDto dto) {
         this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
     }
 
@@ -53,7 +53,7 @@ public class ProductPrecentageDiscount extends BaseDiscount {
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
-        double discount = price * _precentage / 100;
+        double discount = price * _percentage / 100;
         int postAmount = priceToAmount.getOrDefault(price - discount, 0);
 
         // update the price to amount mapping

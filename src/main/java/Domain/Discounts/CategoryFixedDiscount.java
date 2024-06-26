@@ -5,26 +5,36 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import Domain.Product;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
+import Exceptions.StockMarketException;
 
-public class ShopFixedDiscount extends BaseDiscount {
+public class CategoryFixedDiscount extends BaseDiscount {
     private double _discountTotal;
+    private String _category;
 
     /**
-     * Represents a fixed discount for the whole shop.
+     * Represents a fixed discount for the a specific category.
      */
-    public ShopFixedDiscount(Date expirationDate, double discountTotal) {
+    public CategoryFixedDiscount(Date expirationDate, double discountTotal, String category) {
         super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
             _discountTotal = discountTotal;
-
-        _rule = (basket) -> true;
+        _category = category;
+        _rule = (basket) -> {
+            try {
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().toString().equals(_category));
+            } catch (StockMarketException e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
     }
 
-    public ShopFixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount);
+    public CategoryFixedDiscount(BasicDiscountDto dto) {
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category);
     }
 
     @Override
@@ -33,16 +43,21 @@ public class ShopFixedDiscount extends BaseDiscount {
     }
 
     /**
-     * Applies the fixed discount to the products in the shopping basket.
+     * Applies the fixed discount to the products of the specific in the shopping basket.
      * The price and amount of the product are updated based on the discount.
      *
      * @param basket The shopping basket to apply the discount to.
+     * @throws StockMarketException 
      */
     @Override
-    protected void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (!_rule.predicate(basket))
             return;
-        for (int product_id : basket.getProductIdList()) {
+        for (Product product : basket.getProductsList()) {
+            if(!product.getCategory().toString().equals(_category)){
+                continue;
+            }
+            int product_id = product.getProductId();
             SortedMap<Double, Integer> newpriceToAmount = new TreeMap<>();
             SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(product_id);
             for (Map.Entry<Double, Integer> entry : priceToAmount.entrySet()) {
@@ -53,4 +68,3 @@ public class ShopFixedDiscount extends BaseDiscount {
         }
     }
 }
-

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPrecentageDiscount;
+import Domain.Discounts.ProductPercentageDiscount;
 import Domain.Product;
 import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
@@ -294,7 +294,7 @@ public class ShopFacade {
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (discountDto.isPrecentage)
-            discount = new ProductPrecentageDiscount(discountDto);
+            discount = new ProductPercentageDiscount(discountDto);
         else
             discount = new ProductFixedDiscount(discountDto);
         return shop.addDiscount(discount);

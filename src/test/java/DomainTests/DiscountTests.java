@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import Domain.ShoppingBasket;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPrecentageDiscount;
+import Domain.Discounts.ProductPercentageDiscount;
 
 public class DiscountTests {
     /***************** Precentage Discount Tests *****************/
@@ -33,7 +33,7 @@ public class DiscountTests {
     @Test
     public void testApplyPrecentageDiscountLogic_whenProductNotInBasket_thenNoDiscountApplied() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(0);
 
         // Act
@@ -48,7 +48,7 @@ public class DiscountTests {
     @Test
     public void testApplyPrecentageDiscountLogic_whenProductInBasket_thenPriceAndAmountUpdated() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(1);
         SortedMap<Double, Integer> priceToAmount = new TreeMap<>();
         priceToAmount.put(10.0, 1); // price, amount
@@ -68,7 +68,7 @@ public class DiscountTests {
     @Test
     public void testApplyPrecentageDiscountLogic_whenMultipleProductsInBasket_thenDiscountAppliedToMostExpensive() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(2);
         SortedMap<Double, Integer> priceToAmount = new TreeMap<>();
         priceToAmount.put(10.0, 1); // price, amount
@@ -89,7 +89,7 @@ public class DiscountTests {
     @Test
     public void testApplyPrecentageDiscountLogic_whenDifferentProductInBasket_thenNoDiscountApplied() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(0);
         when(_basketMock.getProductCount(2)).thenReturn(1);
         SortedMap<Double, Integer> priceToAmount = new TreeMap<>();
@@ -108,7 +108,7 @@ public class DiscountTests {
     @Test
     public void testApplyPrecentageDiscountLogic_whenMultipleProductsInBasket_thenDiscountAppliedToCorrectProduct() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(1);
         when(_basketMock.getProductCount(2)).thenReturn(1);
         SortedMap<Double, Integer> priceToAmount1 = new TreeMap<>();
@@ -235,7 +235,7 @@ public class DiscountTests {
     @Test
     public void testApplyConditionalDiscountLogic_whenConditionNotMet_thenNoDiscountApplied() {
         // Arrange
-        ProductPrecentageDiscount discount = new ProductPrecentageDiscount(getFutureDate(), 10, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(getFutureDate(), 10, 1);
         when(_basketMock.getProductCount(1)).thenReturn(0);
 
         // Act
@@ -255,7 +255,7 @@ public class DiscountTests {
         when(_basketMock.getProductPriceToAmount(1)).thenReturn(priceToAmount);
         when(_basketMock.getProductCount(1)).thenReturn(1);
         when(_basketMock.getProductCount(2)).thenReturn(1);
-        ProductPrecentageDiscount baseDiscount = new ProductPrecentageDiscount(getFutureDate(), 10.0, 1);
+        ProductPercentageDiscount baseDiscount = new ProductPercentageDiscount(getFutureDate(), 10.0, 1);
         // must have product 2 for a 10% discount on product 1
         ConditionalDiscount discount = new ConditionalDiscount(List.of(2), baseDiscount);
 
@@ -281,7 +281,7 @@ public class DiscountTests {
         when(_basketMock.getProductPriceToAmount(2)).thenReturn(priceToAmount2);
         when(_basketMock.getProductCount(1)).thenReturn(1);
         when(_basketMock.getProductCount(2)).thenReturn(1);
-        ProductPrecentageDiscount baseDiscount = new ProductPrecentageDiscount(getFutureDate(), 10.0, 1);
+        ProductPercentageDiscount baseDiscount = new ProductPercentageDiscount(getFutureDate(), 10.0, 1);
         // must have product 2 for a 10% discount on product 1
         ConditionalDiscount discount = new ConditionalDiscount(List.of(2), baseDiscount);
 

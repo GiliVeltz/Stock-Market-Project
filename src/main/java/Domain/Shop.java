@@ -182,6 +182,7 @@ public class Shop {
         return true;
     }
 
+    //TODO: Fix the getParticipatingProduct issue.
     public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
         // check if the product exists
         if (!_productMap.containsKey(productId)) {
