@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.charts.model.Dial;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -27,6 +28,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
+import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
 import UI.Presenter.ShopManagerPresenter;
 import enums.Category;
@@ -44,10 +46,13 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _appointOwnerDialog;
     private Dialog _viewRolesDialog;
     private Dialog _viewSubordinatesDialog;
+    private Dialog _viewDiscountsDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
+    private List<ShopDiscountDto> _discounts;
     private Grid<ShopManagerDto> _viewRolesGrid;
     private Grid<ShopManagerDto> _viewSubordinatesGrid;
+    private Grid<ShopDiscountDto> _viewDiscountsGrid;
     
     public ShopManagerView(){
 
@@ -77,7 +82,13 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         // Create buttons
         Button addProductsbtn = new Button("Add Product");
-        Button addDiscountsBtn = new Button("Add Discount", e -> presenter.addDiscounts());
+        Button addDiscountsBtn = new Button("View Discounts", e -> {
+            presenter.fetchShopDiscounts(discounts -> {
+            _discounts = discounts;
+            _viewDiscountsDialog = createViewDiscountsDialog();
+            _viewDiscountsDialog.open();
+            });
+        });
         Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
         Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
@@ -474,6 +485,38 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             // Handle if categoryStr is null or doesn't match any enum constant
             return Category.DEFAULT_VAL; // or throw exception or handle differently as needed
         }
+    }
+
+    public Dialog createViewDiscountsDialog(){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Shop Discounts");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create a grid
+        _viewDiscountsGrid = new Grid<>(ShopDiscountDto.class, false);
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getType).setHeader("Type");
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getDiscount).setHeader("Discount");
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getParticipants).setHeader("Participants");
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getExpirationDate).setHeader("Expiration Date");
+
+
+        // Set items to the grid if available
+        if (_discounts != null) {
+            _viewDiscountsGrid.setItems(_discounts);
+        }
+
+        content.add(_viewDiscountsGrid);
+        dialog.add(content);
+        dialog.setWidth("900px"); // Set the desired width of the dialog
+        dialog.setHeight("500px"); // Set the desired height of the dialog
+
+        return dialog;
     }
     
 

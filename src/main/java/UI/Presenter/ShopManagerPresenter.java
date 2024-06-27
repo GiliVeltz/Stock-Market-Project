@@ -22,6 +22,7 @@ import com.vaadin.flow.component.UI;
 import UI.Model.Permission;
 import UI.Model.ProductDto;
 import UI.Model.Response;
+import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
@@ -358,6 +359,51 @@ public class ShopManagerPresenter {
     public void addNewProduct(String productName, String category, double price)
     {
 
+    }
+
+    public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopDiscounts?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        try{
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discounts loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShopDiscountDto> discounts = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopDiscountDto.class));
+                                    callback.accept(discounts);
+                                }else {
+                                    view.showErrorMessage("Discounts loading failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discounts loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
     }
    
 }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.ConditionalDiscount;
+import Domain.Discounts.Discount;
 import Domain.Discounts.FixedDiscount;
 import Domain.Discounts.PrecentageDiscount;
 import Domain.Product;
@@ -951,6 +952,24 @@ public class ShopFacade {
         }
         return managers;
     }
+
+    public List<BasicDiscountDto> getShopDiscounts(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<Integer, Discount> discounts = shop.getDiscounts();
+        List<BasicDiscountDto> discounts_list = new ArrayList<>();
+        for (Map.Entry<Integer, Discount> entry : discounts.entrySet()) {
+                Discount discount = entry.getValue();
+                BasicDiscountDto discountDto = new BasicDiscount(discount.)
+                discounts_list.add(new BasicDiscountDto(discount));
+                //TODO: APPLY VISITOR PATTERN?
+            }
+        }
+    }
+
+    
 
     
 }

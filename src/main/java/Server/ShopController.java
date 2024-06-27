@@ -269,4 +269,9 @@ public class ShopController {
         return _shopService.getMySubordinates(token, shopId);
     }
 
+    @GetMapping("/getShopDiscounts")
+    public ResponseEntity<Response>getShopDiscounts(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopDiscounts(token, shopId);
+    }
+
 }
