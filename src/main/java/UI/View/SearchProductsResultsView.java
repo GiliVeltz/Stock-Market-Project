@@ -17,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import UI.Model.ProductDto;
 import UI.Presenter.SearchProductsPresenter;
 
@@ -34,6 +35,38 @@ public class SearchProductsResultsView extends BaseView {
         resultsDialog = new Dialog();
     }
 
+    public void displayResponseShopNotFound (String shopName) {
+        clearSearchResults();  // Clear previous search results
+
+        // create vertical Layout for the search results
+        VerticalLayout dialogContent = new VerticalLayout();
+
+        // Add "Search Results" title
+        H2 headline = new H2("Search Results");
+        headline.getStyle().set("margin", "0");
+        dialogContent.add(headline);
+
+        createNoResultsLayout(false, shopName);
+
+        // Add the shop layouts to the main layout
+        for (VerticalLayout shopLayout : shopLayoutsList) {
+            dialogContent.add(shopLayout);
+        }
+         // Add close button
+         Button closeButton = new Button("Close");
+         closeButton.addClickListener(event -> {
+             // Handle close button click
+             clearSearchResults();
+             resultsDialog.close();
+         });
+         closeButton.addClassName("pointer-cursor");
+         dialogContent.add(closeButton);
+
+         dialogContent.setAlignItems(FlexComponent.Alignment.CENTER);
+         resultsDialog.add(dialogContent);
+         resultsDialog.open();
+    }
+
     public void displayResponseProducts (Map<String, List<ProductDto>> shopNameToProducts) {
         clearSearchResults();  // Clear previous search results
 
@@ -46,12 +79,12 @@ public class SearchProductsResultsView extends BaseView {
         dialogContent.add(headline);
 
         if (shopNameToProducts.isEmpty()) {
-            createNoResultsLayout("All Shops");
+            createNoResultsLayout(true, "All Shops");
         }
 
         for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
             if (entry.getValue().isEmpty()) {
-                createNoResultsLayout(entry.getKey());
+                createNoResultsLayout(true, entry.getKey());
             } else {
                 createShopLayout(entry.getKey(), entry.getValue());
             }
@@ -110,7 +143,7 @@ public class SearchProductsResultsView extends BaseView {
         shopLayoutsList.add(gridLayout);
     }
 
-    private void createNoResultsLayout(String shopName) {
+    private void createNoResultsLayout(Boolean isExist, String shopName) {
         // Create a vertical layout for the grid
         VerticalLayout gridLayout = new VerticalLayout();
         gridLayout.setAlignItems(Alignment.START);
@@ -120,7 +153,12 @@ public class SearchProductsResultsView extends BaseView {
         shopNameLabel.addClassName("shop-name-label");
         gridLayout.add(shopNameLabel);
 
-        H5 noResultsLabel = new H5("No results were found");
+        H5 noResultsLabel = new H5();
+        if (isExist) {
+            noResultsLabel.add("No results were found.");
+        } else {
+            noResultsLabel.add("Shop with the given name does not exist, please try again.");
+        }
         gridLayout.add(noResultsLabel);
 
         // Add the grid layout to the main layout
@@ -147,7 +185,7 @@ public class SearchProductsResultsView extends BaseView {
         dialog.setModal(true); // Make the dialog modal (blocks interaction with other UI elements)
         // Set the dialog content
         VerticalLayout dialogContent = new VerticalLayout();
-        String productName = product.getProductName().substring(0, 1).toUpperCase() + product.getProductName().substring(1);;
+        String productName = product.getProductName().substring(0, 1).toUpperCase() + product.getProductName().substring(1);
         dialogContent.add(new H3(productName));
         dialogContent.add(new Div());
         dialogContent.add(new Span("Category: " + product.getCategory()));

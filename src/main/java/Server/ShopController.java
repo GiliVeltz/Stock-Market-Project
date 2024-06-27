@@ -60,34 +60,6 @@ public class ShopController {
         return resp;
     }
 
-    // @PostMapping("/searchProductsInShop")
-    // public ResponseEntity<Response> searchProductInShop(@RequestHeader("Authorization") String token,
-    //         @RequestBody ProductSearchDto productSearchDto) {
-    //     Integer shopId = null;
-    //     if (productSearchDto.getShopName() != null && !productSearchDto.getShopName().isEmpty()) {
-    //         ResponseEntity<Response> resp1 = _shopService.getShopIdByName(token, productSearchDto.getShopName());
-    //         if (resp1.getStatusCode().is2xxSuccessful()) {
-    //             shopId = (Integer) resp1.getBody().getReturnValue();
-    //         } else {
-    //             return resp1;
-    //         }
-    //     }
-    //     // Search by name
-    //     if (productSearchDto.getProductName() != null && !productSearchDto.getProductName().isEmpty()) {
-    //         return _shopService.searchProductInShopByName(token, shopId, productSearchDto.getProductName());
-    //     }
-    //     // Search by category
-    //     else
-    //     if (productSearchDto.getCategory() != null && !productSearchDto.getCategory().isEmpty()) {
-    //         Category categoryEnum = Category.valueOf(productSearchDto.getCategory().toUpperCase(Locale.ROOT));
-    //         return _shopService.searchProductInShopByCategory(token, shopId, categoryEnum);
-    //     }
-    //     // Search by keywords
-    //     else {
-    //         return _shopService.searchProductsInShopByKeywords(token, shopId, productSearchDto.getKeywords());
-    //     }
-    // }
-
     @PostMapping("/searchProductsInShopByName")
     public ResponseEntity<Response> searchProductInShopByName(@RequestHeader("Authorization") String token,
     @RequestBody ProductSearchDto productSearchDto) {
@@ -107,7 +79,7 @@ public class ShopController {
     }
 
     @PostMapping("/getShopIdByName")
-    public ResponseEntity<Response> getShopIdByName(@RequestHeader("Authorization") String token, @RequestParam String shopName) {
+    public ResponseEntity<Response> getShopIdByName(@RequestHeader("Authorization") String token, @RequestBody String shopName) {
         return _shopService.getShopIdByName(token, shopName);
     }
 
