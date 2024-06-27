@@ -49,7 +49,7 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        //For testing UI
+        // // For testing UI
         // try {
         //     initUI();
         // }

@@ -29,7 +29,7 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
 
-        // For testing UI
+        // // For testing UI
         // try {
         //     initUI();
         // }
