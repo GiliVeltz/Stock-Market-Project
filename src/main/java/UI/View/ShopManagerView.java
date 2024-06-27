@@ -390,6 +390,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
+    public Dialog createViewDiscountsDialog(){
+        return null;
+    }
+
 
     public void openViewRolesDialog() {
         _viewRolesDialog.open();
