@@ -10,6 +10,4 @@ public enum Category {
     GROCERY,
     PHARMACY,
     // Add more categories as needed
-
-    DEFAULT_VAL //should be last!
 }

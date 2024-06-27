@@ -3,6 +3,7 @@ package Domain.Discounts;
 import java.util.List;
 
 import Domain.ShoppingBasket;
+import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Exceptions.StockMarketException;
 
@@ -54,6 +55,12 @@ public class ConditionalDiscount extends Discount {
     protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (_rule.predicate(basket))
             _discount.applyDiscount(basket);
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDto'");
     }
 
 }

@@ -1,5 +1,8 @@
 package UI.View;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +12,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.model.Dial;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,13 +22,18 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin.Horizontal;
 
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
@@ -47,7 +56,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _viewRolesDialog;
     private Dialog _viewSubordinatesDialog;
     private Dialog _viewDiscountsDialog;
-    private Dialog _viewDiscountsDialog;
+    private Dialog _addDiscountDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
@@ -396,11 +405,6 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
-    public Dialog createViewDiscountsDialog(){
-        return null;
-    }
-
-
     public void openViewRolesDialog() {
         _viewRolesDialog.open();
     }
@@ -518,11 +522,126 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         content.add(_viewDiscountsGrid);
         dialog.add(content);
+        Button addDiscountButton = new Button("Add Discount", e -> {
+            _addDiscountDialog.open();
+        });
         dialog.setWidth("900px"); // Set the desired width of the dialog
         dialog.setHeight("500px"); // Set the desired height of the dialog
 
+        _addDiscountDialog = createAddDiscountDialog();
+        
         return dialog;
     }
+
+    public Dialog createAddDiscountDialog(){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add New Discount");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        // Type choose
+        Select<String> selectDiscountType = new Select<>();
+        selectDiscountType.setLabel("Discount Type");
+        selectDiscountType.setItems("Product Discount", "Shop Discount", "Category Discount");
+        selectDiscountType.setValue("ProductDiscount");
+        
+        // Method choose
+        Select<String> selectDiscountMethod = new Select<>();
+        selectDiscountMethod.setLabel("Discount Method");
+        selectDiscountMethod.setItems("Fixed", "Percentage");
+        selectDiscountMethod.setValue("Fixed");
+
+        TextField discountValue = new TextField("Discount Value");
+        DatePicker expirationDate = new DatePicker("Expiration Date");
+
+        // Additional fields
+        TextField productIdField = new TextField("Product ID");
+        ComboBox<String> categoryField = new ComboBox<>("Category");
+        List<String> categories = Arrays.stream(Category.values())
+                                        .map(Enum::name)
+                                        .collect(Collectors.toList());
+        categoryField.setItems(categories); 
+
+        // Add fields to the form layout
+        formLayout.add(selectDiscountType, selectDiscountMethod, expirationDate);
+
+        // Listener to handle showing/hiding additional fields based on discount type
+        selectDiscountType.addValueChangeListener(event -> {
+            String selectedType = event.getValue();
+            if ("Product Discount".equals(selectedType)) {
+                if (!formLayout.getChildren().collect(Collectors.toList()).contains(productIdField)) {
+                    formLayout.add(productIdField);
+                }
+                formLayout.remove(categoryField);
+            } else if ("Category Discount".equals(selectedType)) {
+                if (!formLayout.getChildren().collect(Collectors.toList()).contains(categoryField)) {
+                    formLayout.add(categoryField);
+                }
+                formLayout.remove(productIdField);
+            } else {
+                formLayout.remove(productIdField, categoryField);
+            }
+        });
+
+        // Create buttons
+        Button submitButton = new Button("Submit", event -> {
+            // Handle form submission
+            String discountType = selectDiscountType.getValue();
+            String discountMethod = selectDiscountMethod.getValue();
+            
+            Date birthday = convertToDate(expirationDate.getValue()); // Convert LocalDate to Date
+
+            // Validate fields (add your validation logic here)
+
+            presenter.registerUser(username, email, password, birthday);
+
+            // Close the dialog after submission
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
+        dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                usernameField.clear();
+                emailField.clear();
+                passwordField.clear();
+                birthdayPicker.clear();
+            }
+        });
+
+        return dialog;  
+    }
+    
+            // Method to convert LocalDate to Date
+    private Date convertToDate(LocalDate localDate) {
+        return java.sql.Date.valueOf(localDate);
+    }
+}
+     
     
 
   

@@ -977,15 +977,10 @@ public class ShopFacade {
         Map<Integer, Discount> discounts = shop.getDiscounts();
         List<BasicDiscountDto> discounts_list = new ArrayList<>();
         for (Map.Entry<Integer, Discount> entry : discounts.entrySet()) {
-                Discount discount = entry.getValue();
-                BasicDiscountDto discountDto = new BasicDiscount(discount.)
-                discounts_list.add(new BasicDiscountDto(discount));
-                //TODO: APPLY VISITOR PATTERN?
-            }
+            Discount discount = entry.getValue();
+            BasicDiscountDto discountDto = discount.getDto();
+            discounts_list.add(discountDto);
         }
+        return discounts_list;
     }
-
-    
-
-    
 }

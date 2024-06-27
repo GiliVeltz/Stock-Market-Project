@@ -9,15 +9,16 @@ import Domain.Product;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
+import enums.Category;
 
 public class CategoryFixedDiscount extends BaseDiscount {
     private double _discountTotal;
-    private String _category;
+    private Category _category;
 
     /**
      * Represents a fixed discount for the a specific category.
      */
-    public CategoryFixedDiscount(Date expirationDate, double discountTotal, String category) {
+    public CategoryFixedDiscount(Date expirationDate, double discountTotal, Category category) {
         super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
@@ -31,7 +32,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
                 return false;
             }
         };
-        _specialRule = (product) -> product.getCategory().toString().equals(_category);
+        _specialRule = (product) -> product.getCategory().equals(_category);
     }
 
     public CategoryFixedDiscount(BasicDiscountDto dto) {
@@ -55,7 +56,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
         if (!_rule.predicate(basket))
             return;
         for (Product product : basket.getProductsList()) {
-            if(!product.getCategory().toString().equals(_category)){
+            if(!product.getCategory().equals(_category)){
                 continue;
             }
             int product_id = product.getProductId();
@@ -67,5 +68,10 @@ public class CategoryFixedDiscount extends BaseDiscount {
             }
             basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), _category);
     }
 }

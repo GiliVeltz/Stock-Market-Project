@@ -53,5 +53,10 @@ public class ShopFixedDiscount extends BaseDiscount {
             basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
     }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), null);
+    }
 }
 

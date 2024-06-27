@@ -54,4 +54,9 @@ public class ShopPercentageDiscount extends BaseDiscount {
             basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
     }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), null);
+    }
 }

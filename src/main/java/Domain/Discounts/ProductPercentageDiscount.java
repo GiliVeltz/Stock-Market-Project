@@ -62,4 +62,9 @@ public class ProductPercentageDiscount extends BaseDiscount {
         if (amount == 1)
             priceToAmount.remove(price);
     }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(_productId, true, _percentage, getExpirationDate(), null);
+    }
 }
