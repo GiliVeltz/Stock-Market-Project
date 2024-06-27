@@ -1618,9 +1618,15 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                Integer shopId = _shopFacade.getShopIdsByName(shopName).get(0);
-                response.setReturnValue(shopId);
-                return new ResponseEntity<>(response, HttpStatus.OK);
+                List<Integer> shopId = _shopFacade.getShopIdsByName(shopName);
+                if (!shopId.isEmpty()) {
+                    response.setReturnValue(shopId.get(0));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }
+                else {
+                    response.setErrorMessage(String.format("Shop name %s does not exist.", shopName));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }

@@ -247,6 +247,11 @@ public class ShoppingBasket implements Cloneable {
         return _productToPriceToAmount.get(productId);
     }
 
+    public void setProductPriceToAmount(SortedMap<Double, Integer> map, Integer productId) {
+        _productToPriceToAmount.remove(productId);
+        _productToPriceToAmount.put(productId, map);
+    }
+
     @Override
     public String toString() {
         return "ShoppingBasket{" +

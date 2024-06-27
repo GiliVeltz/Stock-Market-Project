@@ -32,8 +32,8 @@ public class UserFacade {
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
 
-        //For testing UI
-        //initUI();
+        // //For testing UI
+        // initUI();
     }
 
     // Public method to provide access to the _UserFacade

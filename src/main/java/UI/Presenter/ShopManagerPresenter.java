@@ -23,6 +23,7 @@ import UI.Model.Permission;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
+import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
@@ -360,6 +361,7 @@ public class ShopManagerPresenter {
     {
 
     }
+
 
     public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
         RestTemplate restTemplate = new RestTemplate();

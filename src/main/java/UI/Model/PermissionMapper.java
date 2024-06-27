@@ -24,8 +24,7 @@ public class PermissionMapper {
         permissionNames.put(Permission.APPOINT_MANAGER, "Appoint Manager");
         permissionNames.put(Permission.REMOVE_OWNER, "Remove Owner");
         permissionNames.put(Permission.REMOVE_MANAGER, "Remove Manager");
-        permissionNames.put(Permission.ADD_PERMISSION, "Add Permission");
-        permissionNames.put(Permission.REMOVE_PERMISSION, "Remove Permission");
+        permissionNames.put(Permission.CHANGE_PERMISSION, "Change Permission");
         permissionNames.put(Permission.GET_ROLES_INFO, "Get Roles Info");
         permissionNames.put(Permission.GET_CLIENT_REQUEST, "Get Client Request");
         permissionNames.put(Permission.RESPONSE_TO_CLIENT_REQUEST, "Response to Client Request");

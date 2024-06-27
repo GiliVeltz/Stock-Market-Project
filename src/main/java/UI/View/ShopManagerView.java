@@ -47,6 +47,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _viewRolesDialog;
     private Dialog _viewSubordinatesDialog;
     private Dialog _viewDiscountsDialog;
+    private Dialog _viewDiscountsDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
@@ -393,6 +394,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         dialog.setHeight("500px"); // Set the desired height of the dialog
 
         return dialog;
+    }
+
+    public Dialog createViewDiscountsDialog(){
+        return null;
     }
 
 
