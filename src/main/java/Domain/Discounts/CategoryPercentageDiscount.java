@@ -31,6 +31,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
                 return false;
             }
         };
+        _specialRule = (product) -> product.getCategory().toString().equals(_category);
     }
 
     public CategoryPercentageDiscount(BasicDiscountDto dto) {

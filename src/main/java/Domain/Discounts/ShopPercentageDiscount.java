@@ -21,6 +21,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
         _percentage = percentage;
 
         _rule = (basket) -> true;
+        _specialRule = (product) -> true;
     }
 
     public ShopPercentageDiscount(BasicDiscountDto dto) {
@@ -31,6 +32,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
     public int getParticipatingProduct() {
         return -1;
     }
+
 
     /**
      * Applies the percentage discount to the products in the shopping basket.

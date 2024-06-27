@@ -21,6 +21,7 @@ public class ShopFixedDiscount extends BaseDiscount {
             _discountTotal = discountTotal;
 
         _rule = (basket) -> true;
+        _specialRule = (product) -> true;
     }
 
     public ShopFixedDiscount(BasicDiscountDto dto) {

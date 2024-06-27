@@ -9,9 +9,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import Domain.Discounts.BaseDiscount;
+import Domain.Discounts.CategoryFixedDiscount;
+import Domain.Discounts.CategoryPercentageDiscount;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.ProductFixedDiscount;
 import Domain.Discounts.ProductPercentageDiscount;
+import Domain.Discounts.ShopFixedDiscount;
+import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Product;
 import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
@@ -276,7 +280,7 @@ public class ShopFacade {
     }
 
     /**
-     * Adds a basic discount to the shop.
+     * Adds a basic discount to a shop. Can be Product, Shop or Category discount.
      *
      * @param shopId      the ID of the shop
      * @param username    the username of the user adding the discount
@@ -293,10 +297,22 @@ public class ShopFacade {
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
-        if (discountDto.isPrecentage)
-            discount = new ProductPercentageDiscount(discountDto);
-        else
-            discount = new ProductFixedDiscount(discountDto);
+        if (discountDto.isPrecentage){
+            if(discountDto.category != null)
+                discount = new CategoryPercentageDiscount(discountDto);
+            else if(discountDto.productId == -1)
+                    discount = new ShopPercentageDiscount(discountDto);
+            else
+                discount = new ProductPercentageDiscount(discountDto);
+        }
+        else{
+            if(discountDto.category != null)
+                discount = new CategoryFixedDiscount(discountDto);
+            else if(discountDto.productId == -1)
+                    discount = new ShopFixedDiscount(discountDto);
+            else
+                discount = new ProductFixedDiscount(discountDto);
+        }
         return shop.addDiscount(discount);
     }
 

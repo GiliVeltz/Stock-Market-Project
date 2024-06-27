@@ -31,6 +31,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
                 return false;
             }
         };
+        _specialRule = (product) -> product.getCategory().toString().equals(_category);
     }
 
     public CategoryFixedDiscount(BasicDiscountDto dto) {

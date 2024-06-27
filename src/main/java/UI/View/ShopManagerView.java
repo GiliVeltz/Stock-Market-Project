@@ -44,6 +44,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _appointOwnerDialog;
     private Dialog _viewRolesDialog;
     private Dialog _viewSubordinatesDialog;
+    private Dialog _viewDiscountsDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private Grid<ShopManagerDto> _viewRolesGrid;
@@ -77,7 +78,12 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         // Create buttons
         Button addProductsbtn = new Button("Add Product");
-        Button addDiscountsBtn = new Button("Add Discount", e -> presenter.addDiscounts());
+        Button addDiscountsBtn = new Button("View Discounts", e -> {
+            presenter.fetchShopDiscounts(discounts -> {
+            _viewDiscountsDialog = createViewDiscountsDialog();
+            _viewDiscountsDialog.open();
+            });
+        });
         Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
         Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
         Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
