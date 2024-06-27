@@ -1,5 +1,7 @@
 package UI.Presenter;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -85,11 +87,10 @@ public void getUserInfo() {
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 UserDto userDto = objectMapper.convertValue(responseBody.getReturnValue(), UserDto.class);
                                 view.usernameField.setValue(userDto.getUsername());
-                                view.passwordField.setValue(userDto.getPassword());
                                 view.emailField.setValue(userDto.getEmail());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                view.birthDateField.setValue(dateFormat.format(userDto.getBirthDate()));
-
+                                view.birthDateField.setValue(userDto.getBirthDate().toInstant()
+                                      .atZone(ZoneId.systemDefault())
+                                      .toLocalDate());
                                 view.showSuccessMessage("Fetch user details succeed");
                             } else {
                                 view.showErrorMessage("Fetch user details failed: " + responseBody.getErrorMessage());
