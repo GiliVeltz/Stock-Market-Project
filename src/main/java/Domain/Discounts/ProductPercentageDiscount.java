@@ -6,22 +6,24 @@ import java.util.SortedMap;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class FixedDiscount extends BaseDiscount {
-    private double _discountTotal;
+public class ProductPercentageDiscount extends BaseDiscount {
+    private double _percentage;
     private int _productId;
 
     /**
-     * Represents a fixed discount for a specific product.
+     * Represents a percentage discount for a specific product.
      */
-    public FixedDiscount(Date expirationDate, double discountTotal, int productId) {
+    public ProductPercentageDiscount(Date expirationDate, double percentage, int productId) {
         super(expirationDate);
-        _discountTotal = discountTotal;
+        if (percentage < 0 || percentage > 100)
+            throw new IllegalArgumentException("Precentage must be between 0 and 100");
+        _percentage = percentage;
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
-    public FixedDiscount(BasicDiscountDto dto) {
+    public ProductPercentageDiscount(BasicDiscountDto dto) {
         this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
     }
 
@@ -31,7 +33,7 @@ public class FixedDiscount extends BaseDiscount {
     }
 
     /**
-     * Applies the fixed discount to the products in the shopping basket.
+     * Applies the percentage discount to the products in the shopping basket.
      * If the product is not in the basket, the discount is not applied.
      * The discount is applied to the most expensive product in the basket.
      * The price and amount of the product are updated based on the discount in the
@@ -51,11 +53,11 @@ public class FixedDiscount extends BaseDiscount {
         int amount = priceToAmount.get(price);
 
         // calculate discount, and amount of the product at the discounted price
-        double postPrice = Math.max(price - _discountTotal, 0.0);
-        int postAmount = priceToAmount.getOrDefault(postPrice, 0);
+        double discount = price * _percentage / 100;
+        int postAmount = priceToAmount.getOrDefault(price - discount, 0);
 
         // update the price to amount mapping
-        priceToAmount.put(postPrice, postAmount + 1);
+        priceToAmount.put(price - discount, postAmount + 1);
         priceToAmount.put(price, amount - 1);
         if (amount == 1)
             priceToAmount.remove(price);
