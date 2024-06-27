@@ -29,13 +29,13 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
 
-        // For testing UI
-        try {
-            initUI();
-        }
-        catch (StockMarketException e) {
-            e.printStackTrace();
-        }
+        // // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     // only for tests!
