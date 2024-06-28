@@ -1232,7 +1232,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
            return false;
        }
         // check if search didnt find any shops
-        Map<ShopDto, List<ProductDto>> result = (Map<ShopDto, List<ProductDto>>) res1.getBody().getReturnValue();
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
         if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
             System.out.println("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
@@ -1300,7 +1300,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             return false;
         }
         // check if search didnt find any shops
-        Map<ShopDto, List<ProductDto>> result = (Map<ShopDto, List<ProductDto>>) res1.getBody().getReturnValue();
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
         if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByNameAsGuest message: search result is empty");
             System.out.println("testSearchAndDisplayShopByNameAsGuest message: search result is empty");
@@ -2383,7 +2383,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             return false;
         }
         // check if search didnt find any shops
-        Map<ShopDto, List<ProductDto>> result = (Map<ShopDto, List<ProductDto>>) res1.getBody().getReturnValue();
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
         if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByIDAsUser message: search result is empty");
             System.out.println("testSearchAndDisplayShopByIDAsUser message: search result is empty");
@@ -2455,7 +2455,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             return false;
         }
         // check if search didnt find any shops
-        Map<ShopDto, List<ProductDto>> result = (Map<ShopDto, List<ProductDto>>) res1.getBody().getReturnValue();
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
         if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByIDAsUser message: search result is empty");
             System.out.println("testSearchAndDisplayShopByIDAsUser message: search result is empty");
