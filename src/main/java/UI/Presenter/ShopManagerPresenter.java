@@ -1,5 +1,6 @@
 package UI.Presenter;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,9 @@ import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.UserDto;
 import UI.View.ShopManagerView;
-import enums.Category;
+import UI.Model.Category;
 
 public class ShopManagerPresenter {
     private final ShopManagerView view;
@@ -395,6 +397,49 @@ public class ShopManagerPresenter {
                             }
                             else {
                                 view.showErrorMessage("Discounts loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+
+    public void addDiscount(String discounType, boolean isPercentage, Double discountValue, Date expirationDate,
+    Integer productId, Category category, Consumer<Boolean> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        ShopDiscountDto discountDto = new ShopDiscountDto(productId, isPercentage, discountValue, expirationDate, category); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        HttpEntity<ShopDiscountDto> requestEntity = new HttpEntity<>(discountDto, headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addShopDiscount?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        try{
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discount added loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    callback.accept(true);
+                                }else {
+                                    callback.accept(false);
+                                    view.showErrorMessage("Discount adding failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discounts adding failed with status code: " + response.getStatusCodeValue());
                             }
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());

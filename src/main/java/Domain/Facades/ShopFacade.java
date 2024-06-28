@@ -983,4 +983,39 @@ public class ShopFacade {
         }
         return discounts_list;
     }
+
+    /**
+     * add a new discount to the shop
+     * @param discountDto the discount to add
+     * @param shopId the shop
+     * @throws StockMarketException
+     */
+    public void addShopDiscount(BasicDiscountDto discountDto, Integer shopId) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException("Shop " + shopId + " does not exist");
+        }
+        // create proper discount
+        if(discountDto.isPrecentage){
+            if(discountDto.category != null){
+                shop.addDiscount(new CategoryPercentageDiscount(discountDto));
+            }else{
+                if(discountDto.productId == -1){
+                    shop.addDiscount(new ShopPercentageDiscount(discountDto));
+                }else{
+                    shop.addDiscount(new ProductPercentageDiscount(discountDto));
+                }
+            }
+        }else{
+            if(discountDto.category != null){
+                shop.addDiscount(new CategoryFixedDiscount(discountDto));
+            }else{
+                if(discountDto.productId == -1){
+                    shop.addDiscount(new ShopFixedDiscount(discountDto));
+                }else{
+                    shop.addDiscount(new ProductFixedDiscount(discountDto));
+                }
+            }
+        }
+    }
 }

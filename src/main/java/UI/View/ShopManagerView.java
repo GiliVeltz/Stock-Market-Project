@@ -26,6 +26,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -40,7 +42,7 @@ import UI.Model.PermissionMapper;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
 import UI.Presenter.ShopManagerPresenter;
-import enums.Category;
+import UI.Model.Category;
 
 
 @Route(value = "user_shops")
@@ -555,12 +557,16 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         selectDiscountMethod.setLabel("Discount Method");
         selectDiscountMethod.setItems("Fixed", "Percentage");
         selectDiscountMethod.setValue("Fixed");
-
-        TextField discountValue = new TextField("Discount Value");
+        
+        NumberField discountValue = new NumberField("Discount Value");
+        discountValue.setErrorMessage("Please enter a valid value for the discount");
+        discountValue.setRequired(true);
         DatePicker expirationDate = new DatePicker("Expiration Date");
+        expirationDate.setRequired(true);
 
         // Additional fields
-        TextField productIdField = new TextField("Product ID");
+        IntegerField productIdField = new IntegerField("Product ID");
+        productIdField.setErrorMessage("Please enter a valid price");
         ComboBox<String> categoryField = new ComboBox<>("Category");
         List<String> categories = Arrays.stream(Category.values())
                                         .map(Enum::name)
@@ -575,11 +581,13 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             String selectedType = event.getValue();
             if ("Product Discount".equals(selectedType)) {
                 if (!formLayout.getChildren().collect(Collectors.toList()).contains(productIdField)) {
+                    productIdField.clear();
                     formLayout.add(productIdField);
                 }
                 formLayout.remove(categoryField);
             } else if ("Category Discount".equals(selectedType)) {
                 if (!formLayout.getChildren().collect(Collectors.toList()).contains(categoryField)) {
+                    categoryField.clear();
                     formLayout.add(categoryField);
                 }
                 formLayout.remove(productIdField);
@@ -592,16 +600,37 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button submitButton = new Button("Submit", event -> {
             // Handle form submission
             String discountType = selectDiscountType.getValue();
-            String discountMethod = selectDiscountMethod.getValue();
+            boolean isPercentage = selectDiscountMethod.getValue().equals("Percentage");
+            Double value = discountValue.getValue();
             
-            Date birthday = convertToDate(expirationDate.getValue()); // Convert LocalDate to Date
+            Date expiration = convertToDate(expirationDate.getValue()); // Convert LocalDate to Date
 
             // Validate fields (add your validation logic here)
+            if(isPercentage && value < 0 || value > 100){
+                Notification.show("Please enter a valid percentage value");
+                return;
+            }
 
-            presenter.registerUser(username, email, password, birthday);
+            if(!isPercentage && value < 0){
+                Notification.show("Please enter a valid discount value");
+                return;
+            }
 
-            // Close the dialog after submission
-            dialog.close();
+            Category category = selectDiscountType.getValue().equals("Category Discount") ? Category.valueOf(categoryField.getValue()) : null;
+            int product = selectDiscountType.getValue().equals("Product Discount") ? productIdField.getValue() : -1;
+
+            presenter.addDiscount(discountType, isPercentage, value, expiration, product, category, isSuccess ->{
+                if(isSuccess) {
+                    presenter.fetchShopDiscounts(discounts -> {
+                        _discounts = discounts;
+                        _viewDiscountsDialog.close();
+                        dialog.close();
+                        _viewDiscountsDialog.open();
+                    });
+                }else{
+                    dialog.close();
+                }
+            }); 
         });
 
         submitButton.addClassName("pointer-cursor");
@@ -626,10 +655,12 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         // Add listener to clear fields when dialog is opened
         dialog.addOpenedChangeListener(event -> {
             if (dialog.isOpened()) {
-                usernameField.clear();
-                emailField.clear();
-                passwordField.clear();
-                birthdayPicker.clear();
+                selectDiscountType.clear();;
+                selectDiscountMethod.clear();
+                discountValue.clear();
+                productIdField.clear();
+                categoryField.clear();
+                expirationDate.clear();
             }
         });
 
@@ -640,10 +671,4 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Date convertToDate(LocalDate localDate) {
         return java.sql.Date.valueOf(localDate);
     }
-}
-     
-    
-
-  
-    
 }

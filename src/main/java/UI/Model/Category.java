@@ -9,5 +9,6 @@ public enum Category {
     SPORTS,
     GROCERY,
     PHARMACY,
+    DEFAULT_VAL
     // Add more categories as needed
 }

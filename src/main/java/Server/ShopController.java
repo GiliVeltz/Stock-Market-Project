@@ -20,6 +20,7 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
+import Dtos.UserDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import UI.Model.ProductSearchDto;
@@ -241,5 +242,14 @@ public class ShopController {
     public ResponseEntity<Response>getShopDiscounts(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getShopDiscounts(token, shopId);
     }
+
+     @PostMapping("/addShopDiscount")
+    public ResponseEntity<Response> addShopDiscount(
+            @RequestBody BasicDiscountDto discountDto,
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam Integer shopId) {
+        return _shopService.addShopDiscount(token, discountDto, shopId);
+    }
+    
 
 }
