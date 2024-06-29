@@ -21,7 +21,7 @@ import com.vaadin.flow.router.Route;
 import UI.Model.ProductDto;
 import UI.Presenter.SearchProductsPresenter;
 
-@PageTitle("Search Results Page")
+@PageTitle("Search Products Results Page")
 @Route(value = "products_search_results")
 public class SearchProductsResultsView extends BaseView {
     //private SearchProductsPresenter presenter;

@@ -216,6 +216,11 @@ public class ShopController {
         return _shopService.searchAndDisplayShopByID(token, shopId);
     }
 
+    @GetMapping("/searchAndDisplayShopByName")
+    public ResponseEntity<Response> searchAndDisplayShopByName(@RequestHeader("Authorization") String token, @RequestParam String shopName) {
+        return _shopService.searchAndDisplayShopByName(token, shopName);
+    }
+
     @GetMapping(value = "/getAllShops", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response>getAllShops(@RequestHeader("Authorization") String token) {
         return _shopService.getAllShops(token);
