@@ -15,6 +15,7 @@ import Dtos.ExternalServiceDto;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class SystemService {
     private ExternalServiceHandler _externalServiceHandler;

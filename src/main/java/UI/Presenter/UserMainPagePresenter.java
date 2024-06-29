@@ -100,7 +100,9 @@ public void getUserInfo() {
                     } catch (HttpClientErrorException e) {
                         view.showErrorMessage("HTTP error: " + e.getStatusCode());
                     } catch (Exception e) {
-                        view.showErrorMessage("Failed to parse response: " + e.getMessage());
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                         e.printStackTrace();
                     }
                 } else {
@@ -137,7 +139,9 @@ public void getUserInfo() {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage(e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {

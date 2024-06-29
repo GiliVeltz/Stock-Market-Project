@@ -27,6 +27,7 @@ import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class ShopService {
     private ShopFacade _shopFacade;
@@ -268,7 +269,6 @@ public class ShopService {
      * @param productName The name of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -311,7 +311,6 @@ public class ShopService {
      * @param productCategory The category of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -1276,32 +1275,33 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 //create a map of shopDTO, List<ProductDTO>s to return
-                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                List<ShopDto> shopDtosListForResponse = new ArrayList<>();
                 if (_shopFacade.isShopIdExist(shopId)) {
                     //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    shopDto.setShopId(shopId);
                     //get all products in the shop as "Product" objects 
-                    List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
-                    List<ProductDto> productDtoList = new ArrayList<>();
-                    if (products != null && !products.isEmpty()) {
-                        //convert the "Product" objects to "ProductDTO" objects
-                        for (Product product: products) {
-                            ProductDto productDto = new ProductDto(product);
-                            productDtoList.add(productDto);
-                        }
+                    // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                    // List<ProductDto> productDtoList = new ArrayList<>();
+                    // if (products != null && !products.isEmpty()) {
+                    //     //convert the "Product" objects to "ProductDTO" objects
+                    //     for (Product product: products) {
+                    //         ProductDto productDto = new ProductDto(product);
+                    //         productDtoList.add(productDto);
+                    //     }
 
-                        logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
-                    } else {
-                        // if no products in shop - returns an empty ProductDTOs list                        
-                        logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
-                    }
+                    //     logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
+                    // } else {
+                    //     // if no products in shop - returns an empty ProductDTOs list                        
+                    //     logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
+                    // }
                     // insert the shopDTO and the list of productDTOs to the map
-                    shopProductMapForResponse.put(shopDto, productDtoList);
+                    shopDtosListForResponse.add(shopDto);
                 }
                 else {
                     logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                 }
-                response.setReturnValue(shopProductMapForResponse);
+                response.setReturnValue(shopDtosListForResponse);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
@@ -1327,37 +1327,38 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                //create a map of shopDTO, List<ProductDTO>s to return
-                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                //create a list of ShopDtos to return
+                List<ShopDto> shopDtosListForResponse = new ArrayList<>();
                 //get all shop IDs with the given name
                 List<Integer> shopIds = _shopFacade.getShopIdsThatContainName(shopName);
                 if (!shopIds.isEmpty() && shopIds != null) {
                     for (Integer shopId: shopIds) {
                         //create a shopDTO for the shop
                         ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
-                        //get all products in the shop as "Product" objects 
-                        List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
-                        List<ProductDto> productDtoList = new ArrayList<>();
-                        //convert the "Product" objects to "ProductDTO" objects
-                        if (products != null && !products.isEmpty()) {
-                            for (Product product: products) {
-                                ProductDto productDto = new ProductDto(product);
-                                productDtoList.add(productDto);
-                            }
-                        }
-                        else {
-                            // if no products in shop - returns an empty ProductDTOs list                        
-                            logger.info(String.format("Shop with Name %s was found and returned but it contains no products", shopName));
-                        }
+                        shopDto.setShopId(shopId);
+                        // //get all products in the shop as "Product" objects 
+                        // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                        // List<ProductDto> productDtoList = new ArrayList<>();
+                        // //convert the "Product" objects to "ProductDTO" objects
+                        // if (products != null && !products.isEmpty()) {
+                        //     for (Product product: products) {
+                        //         ProductDto productDto = new ProductDto(product);
+                        //         productDtoList.add(productDto);
+                        //     }
+                        // }
+                        // else {
+                        //     // if no products in shop - returns an empty ProductDTOs list                        
+                        //     logger.info(String.format("Shop with Name %s was found and returned but it contains no products", shopName));
+                        // }
                         // insert the shopDTO and the list of productDTOs to the map
-                        shopProductMapForResponse.put(shopDto, productDtoList);
+                        shopDtosListForResponse.add(shopDto);
                     }
                     logger.info(String.format("Shops with Name %s were found and all their products were returned", shopName));
                 }
                 else {
                     logger.info(String.format("Shop with Name %s were not found - they don't exist", shopName));
                 }
-                response.setReturnValue(shopProductMapForResponse);
+                response.setReturnValue(shopDtosListForResponse);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
