@@ -195,9 +195,13 @@ public class Shop {
         for (Map.Entry<Integer, Discount> entry : _discounts.entrySet()) {
             if (new Date().after(entry.getValue().getExpirationDate())) {
                 removeDiscount(entry.getKey());
-            } else if (entry.getValue().getParticipatingProduct() == productId) {
-                productDiscounts.put(entry.getKey(), entry.getValue());
-            }
+            } else{
+                int participating_product_id = entry.getValue().getParticipatingProduct();
+                Product product = _productMap.get(productId);
+                if (productId == participating_product_id || (participating_product_id == -1 && entry.getValue().specialPredicate(product))) {
+                    productDiscounts.put(entry.getKey(), entry.getValue());
+                }
+            } 
         }
         return productDiscounts;
     }
@@ -371,7 +375,7 @@ public class Shop {
             throw new ShopException("User " + userRole + " doesn't have a role in this shop with id " + _shopId);
         }
         if (!checkAtLeastOnePermission(username,
-                EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.ADD_PERMISSION))) {
+                EnumSet.of(Permission.FOUNDER, Permission.OWNER, Permission.CHANGE_PERMISSION))) {
             logger.log(Level.SEVERE, "Shop - modifyPermissions: user " + username
                     + " doesn't have permission to modify permissions to other roles in shop with id " + _shopId);
             throw new PermissionException("User " + username

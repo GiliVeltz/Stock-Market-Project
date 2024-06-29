@@ -678,7 +678,8 @@ public class ShopFacadeTests {
                 productCategory);
 
         // Assert - Verify that the products are retrieved from the specific shop
-        assertEquals(0, productsByShop.size());
+        assertEquals(1, productsByShop.size());
+        assertEquals(0, productsByShop.get(shopId).size());
     }
 
 

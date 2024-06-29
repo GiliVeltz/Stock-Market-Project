@@ -87,7 +87,7 @@ public class RoleTests {
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
-        permissions.add(Permission.ADD_PERMISSION);
+        permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
         try {
@@ -159,7 +159,7 @@ public class RoleTests {
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
-        permissions.add(Permission.ADD_PERMISSION);
+        permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
         try {
@@ -240,7 +240,7 @@ public class RoleTests {
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
-        permissions.add(Permission.ADD_PERMISSION);
+        permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
         try {
@@ -267,7 +267,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_PERMISSION);
+        permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
         try {
@@ -336,7 +336,7 @@ public class RoleTests {
         Set<Permission> newPermissions = new HashSet<Permission>();
         newPermissions.add(Permission.ADD_PRODUCT);
         newPermissions.add(Permission.ADD_DISCOUNT_POLICY);
-        newPermissions.add(Permission.ADD_PERMISSION);
+        newPermissions.add(Permission.CHANGE_PERMISSION);
 
         User user2 = new User("appointedBy", "password", "email", new Date());
 

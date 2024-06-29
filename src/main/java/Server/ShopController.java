@@ -60,36 +60,36 @@ public class ShopController {
         return resp;
     }
 
-    @GetMapping("/searchProductInShopByName")
+    @PostMapping("/searchProductsInShopByName")
     public ResponseEntity<Response> searchProductInShopByName(@RequestHeader("Authorization") String token,
-            @RequestParam(required = false) Integer shopId,
-            @RequestParam String query) {
-        return _shopService.searchProductInShopByName(token, shopId, query);
+    @RequestBody ProductSearchDto productSearchDto) {
+        return _shopService.searchProductInShopByName(token, productSearchDto.getShopId(),  productSearchDto.getProductName());
     }
 
-    // TODO: uncomment this after merging Or's changes (category enum)
-    // @GetMapping("/searchProductInShopByCategory")
-    // public ResponseEntity<Response> searchByCategory(@RequestHeader("Authorization") String
-    // token,
-    // @RequestParam(required = false) Integer shopId,
-    // @RequestParam Category category) {
-    // return _shopService.searchProductInShopByCategory(token, shopId, category);
-    // }
+    @PostMapping("/searchProductsInShopByCategory")
+    public ResponseEntity<Response> searchByCategory(@RequestHeader("Authorization") String token,
+    @RequestBody ProductSearchDto productSearchDto) {
+    return _shopService.searchProductInShopByCategory(token, productSearchDto.getShopId(), productSearchDto.getCategory());
+    }
 
-    @GetMapping("/searchProductsInShopByKeywords")
+    @PostMapping("/searchProductsInShopByKeywords")
     public ResponseEntity<Response> searchProducstInShopByKeywords(@RequestHeader("Authorization") String token,
-            @RequestParam(required = false) Integer shopId,
-            @RequestParam List<String> keywords) {
-        return _shopService.searchProductsInShopByKeywords(token, shopId, keywords);
+    @RequestBody ProductSearchDto productSearchDto) {
+        return _shopService.searchProductsInShopByKeywords(token, productSearchDto.getShopId(), productSearchDto.getKeywords());
     }
 
-    @GetMapping("/searchProductsInShopByPriceRange")
-    public ResponseEntity<Response> searchProductsInShopByPriceRange(@RequestHeader("Authorization") String token,
-            @RequestParam(required = false) Integer shopId,
-            @RequestParam Double minPrice,
-            @RequestParam Double maxPrice) {
-        return _shopService.searchProductsInShopByPriceRange(token, shopId, minPrice, maxPrice);
+    @PostMapping("/getShopIdByName")
+    public ResponseEntity<Response> getShopIdByName(@RequestHeader("Authorization") String token, @RequestBody String shopName) {
+        return _shopService.getShopIdByName(token, shopName);
     }
+
+    // @GetMapping("/searchProductsInShopByPriceRange")
+    // public ResponseEntity<Response> searchProductsInShopByPriceRange(@RequestHeader("Authorization") String token,
+    //         @RequestParam(required = false) Integer shopId,
+    //         @RequestParam Double minPrice,
+    //         @RequestParam Double maxPrice) {
+    //     return _shopService.searchProductsInShopByPriceRange(token, shopId, minPrice, maxPrice);
+    // }
 
     @GetMapping("/getShopPurchaseHistory")
     public ResponseEntity<Response> getShopPurchaseHistory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
@@ -213,6 +213,11 @@ public class ShopController {
     @GetMapping("/searchAndDisplayShopByID")
     public ResponseEntity<Response> searchAndDisplayShopByID(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.searchAndDisplayShopByID(token, shopId);
+    }
+
+    @GetMapping("/searchAndDisplayShopByName")
+    public ResponseEntity<Response> searchAndDisplayShopByName(@RequestHeader("Authorization") String token, @RequestParam String shopName) {
+        return _shopService.searchAndDisplayShopByName(token, shopName);
     }
 
     @GetMapping(value = "/getAllShops", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import UI.Model.ShopDto;
 import UI.Presenter.AllShopPresenter;
@@ -106,14 +107,17 @@ public class AllShopView extends BaseView {
         dialogContent.add(new Paragraph("Raters Count: " + shop.getShopRatersCounter()));
         dialogContent.add(new Paragraph("Shop Status: " + (shop.getIsShopClosed() ? "Closed" : "Open")));
 
-
+        VerticalLayout dialogButtons = new VerticalLayout();
         Button closeButton = new Button("Close", event -> dialog.close());
         Button shopPageButton = new Button("Shop Page", event -> {
             dialog.close();
             navigateToShopPage(shopId, shop.getShopName());
         });
 
-        dialogContent.add(shopPageButton,closeButton);
+        dialogButtons.add(closeButton, shopPageButton);
+        dialogButtons.setAlignItems(Alignment.CENTER);
+
+        dialogContent.add(dialogButtons);
 
         dialog.add(dialogContent);
         dialog.open();

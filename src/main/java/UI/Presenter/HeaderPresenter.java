@@ -66,7 +66,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Login");
                             e.printStackTrace();
                         }
                     } else {
@@ -152,7 +152,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage("Failed to parse response for Logout");
                             e.printStackTrace();
                         }
                     } else {
@@ -162,10 +162,6 @@ public class HeaderPresenter {
                 });
     }
 
-    @SuppressWarnings("unused")
-    public void SearchProducts(String category, Set<String> keyWord, String minPrice, String maxPrice, String productName){
-        RestTemplate restTemplate = new RestTemplate();
-    }
 
 
     public void searchShop(String shopName, String shopId) {

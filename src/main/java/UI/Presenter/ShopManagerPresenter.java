@@ -355,5 +355,9 @@ public class ShopManagerPresenter {
     {
 
     }
+
+    public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
+
+    }
    
 }
