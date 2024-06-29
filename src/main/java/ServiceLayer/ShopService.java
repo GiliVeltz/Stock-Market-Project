@@ -1280,6 +1280,7 @@ public class ShopService {
                 if (_shopFacade.isShopIdExist(shopId)) {
                     //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    shopDto.setShopId(shopId);
                     //get all products in the shop as "Product" objects 
                     // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
                     // List<ProductDto> productDtoList = new ArrayList<>();
@@ -1335,6 +1336,7 @@ public class ShopService {
                     for (Integer shopId: shopIds) {
                         //create a shopDTO for the shop
                         ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                        shopDto.setShopId(shopId);
                         // //get all products in the shop as "Product" objects 
                         // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
                         // List<ProductDto> productDtoList = new ArrayList<>();
