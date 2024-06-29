@@ -27,6 +27,7 @@ import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class ShopService {
     private ShopFacade _shopFacade;
@@ -268,7 +269,6 @@ public class ShopService {
      * @param productName The name of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -311,7 +311,6 @@ public class ShopService {
      * @param productCategory The category of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());

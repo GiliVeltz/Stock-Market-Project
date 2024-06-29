@@ -16,15 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import Dtos.BasicDiscountDto;
-import Dtos.ConditionalDiscountDto;
-import Dtos.ProductDto;
-import Dtos.ShopDto;
+import Dtos.*;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import UI.Model.ProductSearchDto;
 
 @RestController
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @RequestMapping(path = "/api/shop")
 public class ShopController {
     private final ShopService _shopService;
@@ -128,7 +126,6 @@ public class ShopController {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/addShopManager")
     public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
                                                 @RequestBody Map<String, Object> request) {
