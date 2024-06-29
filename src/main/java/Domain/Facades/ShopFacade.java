@@ -50,13 +50,13 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
+        // For testing UI
+        try {
+            initUI();
+        }
+        catch (StockMarketException e) {
+            e.printStackTrace();
+        }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -1003,6 +1003,10 @@ public class ShopFacade {
                 if(discountDto.productId == -1){
                     shop.addDiscount(new ShopPercentageDiscount(discountDto));
                 }else{
+                    //check if product with this id exists.
+                    if(!shop.isProductExist(discountDto.productId)){
+                        throw new StockMarketException("Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
+                    }
                     shop.addDiscount(new ProductPercentageDiscount(discountDto));
                 }
             }
@@ -1013,6 +1017,10 @@ public class ShopFacade {
                 if(discountDto.productId == -1){
                     shop.addDiscount(new ShopFixedDiscount(discountDto));
                 }else{
+                    //check if product with this id exists.
+                    if(!shop.isProductExist(discountDto.productId)){
+                        throw new StockMarketException("Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
+                    }
                     shop.addDiscount(new ProductFixedDiscount(discountDto));
                 }
             }

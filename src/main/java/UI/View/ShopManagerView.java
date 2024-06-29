@@ -514,7 +514,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getType).setHeader("Type");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getDiscount).setHeader("Discount");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getParticipants).setHeader("Participants");
-        _viewDiscountsGrid.addColumn(ShopDiscountDto::getExpirationDate).setHeader("Expiration Date");
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getFormattedDate).setHeader("Expiration Date");
 
 
         // Set items to the grid if available
@@ -523,14 +523,16 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         }
 
         content.add(_viewDiscountsGrid);
-        dialog.add(content);
+        
         Button addDiscountButton = new Button("Add Discount", e -> {
             _addDiscountDialog.open();
         });
         dialog.setWidth("900px"); // Set the desired width of the dialog
-        dialog.setHeight("500px"); // Set the desired height of the dialog
+        dialog.setHeight("700px"); // Set the desired height of the dialog
 
         _addDiscountDialog = createAddDiscountDialog();
+        content.add(addDiscountButton);
+        dialog.add(content);
         
         return dialog;
     }
@@ -574,7 +576,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         categoryField.setItems(categories); 
 
         // Add fields to the form layout
-        formLayout.add(selectDiscountType, selectDiscountMethod, expirationDate);
+        formLayout.add(selectDiscountType, selectDiscountMethod, discountValue, expirationDate);
 
         // Listener to handle showing/hiding additional fields based on discount type
         selectDiscountType.addValueChangeListener(event -> {
@@ -625,6 +627,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                         _discounts = discounts;
                         _viewDiscountsDialog.close();
                         dialog.close();
+                        _viewDiscountsDialog = createViewDiscountsDialog();
                         _viewDiscountsDialog.open();
                     });
                 }else{

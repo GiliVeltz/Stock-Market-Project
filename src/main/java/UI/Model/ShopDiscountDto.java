@@ -1,4 +1,5 @@
 package UI.Model;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ShopDiscountDto {
@@ -37,6 +38,11 @@ public class ShopDiscountDto {
 
     public Date getExpirationDate() {
         return expirationDate;
+    }
+
+    public String getFormattedDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(expirationDate);
     }
 
     public Category getCategory() {

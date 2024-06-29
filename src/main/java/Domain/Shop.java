@@ -833,7 +833,7 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws StockMarketException {
+    public Boolean isProductExist(Integer productId) throws StockMarketException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
                     "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",

@@ -26,7 +26,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
         _category = category;
         _rule = (basket) -> {
             try {
-                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().toString().equals(_category));
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
             } catch (StockMarketException e) {
                 e.printStackTrace();
                 return false;

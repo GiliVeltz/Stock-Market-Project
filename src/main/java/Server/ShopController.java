@@ -243,7 +243,7 @@ public class ShopController {
         return _shopService.getShopDiscounts(token, shopId);
     }
 
-     @PostMapping("/addShopDiscount")
+    @PostMapping("/addShopDiscount")
     public ResponseEntity<Response> addShopDiscount(
             @RequestBody BasicDiscountDto discountDto,
             @RequestHeader(value = "Authorization") String token,

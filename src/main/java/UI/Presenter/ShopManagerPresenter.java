@@ -375,13 +375,14 @@ public class ShopManagerPresenter {
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopDiscounts?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Discounts loaded successfully");
@@ -420,14 +421,14 @@ public class ShopManagerPresenter {
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
                         HttpEntity<ShopDiscountDto> requestEntity = new HttpEntity<>(discountDto, headers);
-
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/addShopDiscount?shopId="+view.getShopId(),
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Discount added loaded successfully");
@@ -445,6 +446,7 @@ public class ShopManagerPresenter {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
                             view.showErrorMessage("Failed to parse response");
+                            callback.accept(false);
                             e.printStackTrace();
                         }
                     } else {
