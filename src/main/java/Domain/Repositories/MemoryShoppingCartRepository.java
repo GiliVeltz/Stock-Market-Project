@@ -5,7 +5,7 @@ import java.util.Map;
 
 import Domain.ShoppingCart;
 
-public class MemoryShoppingCartRepository implements ShoppingCartRepositoryInterface {
+public class MemoryShoppingCartRepository implements InterfaceShoppingCartRepository {
     Map<String, ShoppingCart> _shoppingCarts;
     private int _orderIdCounter;
 

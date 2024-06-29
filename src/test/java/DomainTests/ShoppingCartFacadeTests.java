@@ -6,7 +6,7 @@ import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
-import Domain.Repositories.ShoppingCartRepositoryInterface;
+import Domain.Repositories.InterfaceShoppingCartRepository;
 import Exceptions.StockMarketException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class ShoppingCartFacadeTests {
     private PasswordEncoderUtil _passwordEncoderMock;
     
     @Mock
-    private ShoppingCartRepositoryInterface _cartsRepoMock;
+    private InterfaceShoppingCartRepository _cartsRepoMock;
 
     @Mock
     private ShopFacade _shopFacadeMock;

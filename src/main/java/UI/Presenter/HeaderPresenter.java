@@ -6,14 +6,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.util.Date;
-import java.util.Set;
-
 import UI.Model.UserDto;
 import UI.View.Header;
 import UI.Model.Response;

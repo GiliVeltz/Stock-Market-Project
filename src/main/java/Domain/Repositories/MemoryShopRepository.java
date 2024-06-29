@@ -7,7 +7,7 @@ import java.util.Map;
 
 import Domain.Shop;
 
-public class MemoryShopRepository implements ShopRepositoryInterface {
+public class MemoryShopRepository implements InterfaceShopRepository {
     private Map<Integer, Shop> _shops;
     private int _shopIdCounter;
     private int _productIdCounter;
