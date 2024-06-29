@@ -61,13 +61,13 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
+        // For testing UI
+        try {
+            initUI();
+        }
+        catch (StockMarketException e) {
+            e.printStackTrace();
+        }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
@@ -794,20 +794,20 @@ public class ShopFacade {
         shop.addKeywordsToProduct(username, productId, keywords);
     }
 
-    // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
-    //     // _shopRepository.addShop(shop);
-    //     // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
-    //     // product.updateProductQuantity(10);
-    //     // shop.addProductToShop("Tal", product);
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
 
-    //     openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
-    //     openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
-    //     addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
-    // }
+        openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
+    }
 
     // this function is responsible for getting all the shop managers
     @Transactional
