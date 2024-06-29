@@ -141,7 +141,9 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -292,7 +294,9 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -337,17 +341,19 @@ public class ShopManagerPresenter {
                                 JsonNode responseJson = objectMapper.readTree(response.getBody());
 
                                 if (responseJson.get("errorMessage").isNull()) {
-                                    view.showSuccessMessage("Owner appointed successfully");
+                                    view.showSuccessMessage("Product added to shop successfully");
                                 } else {
-                                    view.showErrorMessage("Failed to appoint owner: " + responseJson.get("errorMessage").asText());
+                                    view.showErrorMessage("Failed to add product to shop: " + responseJson.get("errorMessage").asText());
                                 }
                             } else {
-                                view.showErrorMessage("Failed to appoint owner with status code: " + response.getStatusCodeValue());
+                                view.showErrorMessage("Failed to add product to shop with status code: " + response.getStatusCodeValue());
                             }
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {

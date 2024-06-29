@@ -100,9 +100,10 @@ public class SearchProductsPresenter {
                             if (e.getMessage().contains("not exist")) {
                                 searchProductsResultsView.displayResponseShopNotFound(shopName);
                             }
-                        }
-                        catch (Exception e) {
-                            headerView.showErrorMessage("Failed to parse response");
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                             headerView.getUI().ifPresent(ui -> ui.navigate("user"));
                         }

@@ -92,7 +92,9 @@ public class SearchShopPresenter {
                                 searchShopsResultsView.displayResponseShopNotFound(shopId, shopName);
                             }
                         } catch (Exception e) {
-                            headerView.showErrorMessage("Failed to parse response: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
