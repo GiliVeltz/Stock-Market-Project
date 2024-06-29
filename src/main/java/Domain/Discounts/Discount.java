@@ -12,9 +12,11 @@ public abstract class Discount {
     protected Rule<ShoppingBasket> _rule;
     protected Rule<Product> _specialRule;
     private Date _expirationDate;
+    private int _id;
 
-    public Discount(Date expirationDate) {
+    public Discount(Date expirationDate, int id) {
         _expirationDate = expirationDate;
+        _id = id;
     }
 
     public void applyDiscount(ShoppingBasket basket) throws StockMarketException {
@@ -27,6 +29,14 @@ public abstract class Discount {
 
     public Date getExpirationDate() {
         return _expirationDate;
+    }
+
+    public int getId() {
+        return _id;
+    }
+
+    public int setId(int id){
+        return _id = id;
     }
 
     // A special predicate to handle the shop and category discounts

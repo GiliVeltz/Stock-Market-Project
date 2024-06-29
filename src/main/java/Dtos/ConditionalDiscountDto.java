@@ -9,8 +9,8 @@ public class ConditionalDiscountDto extends BasicDiscountDto {
     public List<Integer> mustHaveProducts;
 
     public ConditionalDiscountDto(int productId, boolean isPrecentage, double discountAmount, Date expirationDate, Category category,
-            List<Integer> mustHaveProducts) {
-        super(productId, isPrecentage, discountAmount, expirationDate, category);
+            List<Integer> mustHaveProducts, int id) {
+        super(productId, isPrecentage, discountAmount, expirationDate, category, id);
         this.mustHaveProducts = mustHaveProducts;
     }
 }

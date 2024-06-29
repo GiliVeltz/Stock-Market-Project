@@ -250,6 +250,15 @@ public class ShopController {
             @RequestParam Integer shopId) {
         return _shopService.addShopDiscount(token, discountDto, shopId);
     }
+
+    @PostMapping("/deleteShopDiscount")
+    public ResponseEntity<Response> deleteShopDiscount(
+            @RequestBody BasicDiscountDto discountDto,
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam Integer shopId) {
+        return _shopService.deleteShopDiscount(token, discountDto, shopId);
+    }
+    
     
 
 }

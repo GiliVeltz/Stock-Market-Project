@@ -30,6 +30,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -511,11 +512,46 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         // Create a grid
         _viewDiscountsGrid = new Grid<>(ShopDiscountDto.class, false);
+        _viewDiscountsGrid.addColumn(ShopDiscountDto::getId).setHeader("ID");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getType).setHeader("Type");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getDiscount).setHeader("Discount");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getParticipants).setHeader("Participants");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getFormattedDate).setHeader("Expiration Date");
+        
+        //_viewDiscountsGrid.sort(_viewDiscountsGrid.getColumnByKey("ID"), SortDirection.ASCENDING);
+        _viewDiscountsGrid.addItemClickListener(event -> {
+            ShopDiscountDto selectedItem = event.getItem();
+            Dialog confirmationDialog = new Dialog();
+            Span confirmationText = new Span("Are you sure you want to delete this discount?");
+            
+            // Create Yes and No buttons
+            Button yesButton = new Button("Yes", e -> {
+                // Handle the deletion here
+                presenter.deleteDiscount(selectedItem, isSuccess ->{
+                    if(isSuccess) {
+                        presenter.fetchShopDiscounts(discounts -> {
+                            _discounts = discounts;
+                            _viewDiscountsDialog.close();
+                            confirmationDialog.close();
+                            _viewDiscountsDialog = createViewDiscountsDialog();
+                            _viewDiscountsDialog.open();
+                        });
+                    }else{
+                        confirmationDialog.close();
+                    }
+                });
+            });
+            
+            Button noButton = new Button("No", e -> confirmationDialog.close());
 
+            // Add the buttons to a HorizontalLayout
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, noButton);
+            
+            // Create a layout for the dialog
+            VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
+            confirmationDialog.add(dialogLayout);
+            confirmationDialog.open();
+        });
 
         // Set items to the grid if available
         if (_discounts != null) {

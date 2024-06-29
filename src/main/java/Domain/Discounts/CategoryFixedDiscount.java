@@ -18,8 +18,8 @@ public class CategoryFixedDiscount extends BaseDiscount {
     /**
      * Represents a fixed discount for the a specific category.
      */
-    public CategoryFixedDiscount(Date expirationDate, double discountTotal, Category category) {
-        super(expirationDate);
+    public CategoryFixedDiscount(Date expirationDate, double discountTotal, Category category, int id) {
+        super(expirationDate, id);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
             _discountTotal = discountTotal;
@@ -36,7 +36,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
     }
 
     public CategoryFixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category, dto.id);
     }
 
     @Override
@@ -72,6 +72,6 @@ public class CategoryFixedDiscount extends BaseDiscount {
 
     @Override
     public BasicDiscountDto getDto() {
-        return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), _category);
+        return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), _category, getId());
     }
 }

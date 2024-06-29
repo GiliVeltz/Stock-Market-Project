@@ -412,9 +412,9 @@ public class ShopManagerPresenter {
     }
 
     public void addDiscount(String discounType, boolean isPercentage, Double discountValue, Date expirationDate,
-    Integer productId, Category category, Consumer<Boolean> callback){
+        Integer productId, Category category, Consumer<Boolean> callback){
         RestTemplate restTemplate = new RestTemplate();
-        ShopDiscountDto discountDto = new ShopDiscountDto(productId, isPercentage, discountValue, expirationDate, category); 
+        ShopDiscountDto discountDto = new ShopDiscountDto(productId, isPercentage, discountValue, expirationDate, category, -1); 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
@@ -454,5 +454,48 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    public void deleteDiscount(ShopDiscountDto discountDto, Consumer<Boolean> callback){
+        RestTemplate restTemplate = new RestTemplate(); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        HttpEntity<ShopDiscountDto> requestEntity = new HttpEntity<>(discountDto, headers);
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/deleteShopDiscount?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discount deleted successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    callback.accept(true);
+                                }else {
+                                    callback.accept(false);
+                                    view.showErrorMessage("Discount deletion failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discount deletion failed with status code: " + response.getStatusCodeValue());
+                            }
+                        }catch (HttpClientErrorException e) {
+                            ResponseHandler.handleResponse(e.getStatusCode());
+                        }catch (Exception e) {
+                            view.showErrorMessage("Failed to parse response");
+                            callback.accept(false);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+    
    
 }

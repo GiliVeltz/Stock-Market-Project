@@ -18,8 +18,8 @@ public class CategoryPercentageDiscount extends BaseDiscount {
     /**
      * Represents a percentage discount for the a specific category.
      */
-    public CategoryPercentageDiscount(Date expirationDate, double percentage, Category category) {
-        super(expirationDate);
+    public CategoryPercentageDiscount(Date expirationDate, double percentage, Category category, int id) {
+        super(expirationDate, id);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
@@ -36,7 +36,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
     }
 
     public CategoryPercentageDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category, dto.id);
     }
 
     @Override
@@ -71,6 +71,6 @@ public class CategoryPercentageDiscount extends BaseDiscount {
 
     @Override
     public BasicDiscountDto getDto() {
-        return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), _category);
+        return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), _category, getId());
     }
 }

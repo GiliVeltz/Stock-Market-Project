@@ -8,6 +8,7 @@ public class ShopDiscountDto {
     public double discountAmount;
     public Date expirationDate;
     public Category category;
+    public int id;
 
     public ShopDiscountDto(){
         this.productId = -1;
@@ -15,13 +16,15 @@ public class ShopDiscountDto {
         this.discountAmount = 0;
         this.expirationDate = null;
         this.category = null;
+        this.id = -1;
     }
-    public ShopDiscountDto(int productId, boolean isPrecentage, double discountAmount, Date expirationDate, Category category) {
+    public ShopDiscountDto(int productId, boolean isPrecentage, double discountAmount, Date expirationDate, Category category, int id) {
         this.productId = productId;
         this.isPrecentage = isPrecentage;
         this.discountAmount = discountAmount;
         this.expirationDate = expirationDate;
         this.category = category;
+        this.id = -1;
     }
 
     public int getProductId() {
@@ -73,5 +76,9 @@ public class ShopDiscountDto {
             return "All products";
         }
         return "Product ID: "+productId;
+    }
+
+    public int getId() {
+        return id;
     }
 }

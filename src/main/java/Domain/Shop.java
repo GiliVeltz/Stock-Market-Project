@@ -735,6 +735,7 @@ public class Shop {
 
         int discountId = _nextDiscountId++;
         _discounts.put(discountId, discount);
+        discount.setId(discountId);
         return discountId;
     }
 

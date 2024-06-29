@@ -1026,4 +1026,18 @@ public class ShopFacade {
             }
         }
     }
+
+    /**
+     * Delete a discount from the shop
+     * @param discountDto the discount to delete
+     * @param shopId the shop
+     * @throws StockMarketException
+     */
+    public void deleteShopDiscount(BasicDiscountDto discountDto, Integer shopId) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException("Shop " + shopId + " does not exist");
+        }
+        shop.removeDiscount(discountDto.id);
+    }
 }
