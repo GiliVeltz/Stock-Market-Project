@@ -1,7 +1,6 @@
 package UI.Model;
 
 import java.util.List;
-import java.util.Map;
 
 public class SearchShopResponseDto {
     private String errorMessage;

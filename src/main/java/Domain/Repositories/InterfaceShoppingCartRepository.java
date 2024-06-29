@@ -2,7 +2,7 @@ package Domain.Repositories;
 
 import Domain.ShoppingCart;
 
-public interface ShoppingCartRepositoryInterface {
+public interface InterfaceShoppingCartRepository {
     void addCartForUser(String username, ShoppingCart cart); 
 
     ShoppingCart getCartByUsername(String username);

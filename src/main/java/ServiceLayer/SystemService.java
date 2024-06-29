@@ -3,9 +3,12 @@ package ServiceLayer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import Domain.Alerts.Alert;
 import Domain.Alerts.GeneralAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
@@ -25,6 +28,7 @@ public class SystemService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
+    @Autowired
     public SystemService(ExternalServiceHandler externalServiceHandler,
             TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _externalServiceHandler = externalServiceHandler;
@@ -49,6 +53,7 @@ public class SystemService {
      * @param password the user password
      * @return a response indicating the success or failure of opening the system
      */
+    @Transactional
     public ResponseEntity<Response> openSystem(String token) {
         Response response = new Response();
         try {
@@ -115,6 +120,7 @@ public class SystemService {
      * @return Response object containing the generated guest token if successful,
      *         or an error message if there is a failure.
      */
+    @Transactional
     public ResponseEntity<Response> requestToEnterSystem() {
         Response response = new Response();
         try {
@@ -140,6 +146,7 @@ public class SystemService {
      * @param token The session token for the guest.
      * @return Response object indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> leaveSystem(String token) {
         Response response = new Response();
         try {
@@ -163,6 +170,7 @@ public class SystemService {
     }
 
      // add external service to the system
+    @Transactional
      public ResponseEntity<Response> addExternalService(String token, ExternalServiceDto externalServiceDto) {
         Response response = new Response();
         try {
@@ -213,6 +221,7 @@ public class SystemService {
     }
 
     // change external service name
+    @Transactional
     public ResponseEntity<Response> changeExternalServiceName(String token, ExternalServiceDto externalServiceDto, String newServiceName) {
         Response response = new Response();
         try {
@@ -268,6 +277,7 @@ public class SystemService {
     }
 
     // change external service information person name
+    @Transactional
     public ResponseEntity<Response> changeExternalServiceInformationPersonName(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonName){
         Response response = new Response();
         try {
@@ -323,6 +333,7 @@ public class SystemService {
     }
 
     // change external service information person phone
+    @Transactional
     public ResponseEntity<Response> changeExternalServiceInformationPersonPhone(String token, ExternalServiceDto externalServiceDto, String newServiceInformationPersonPhone){
         Response response = new Response();
         try {
@@ -378,42 +389,48 @@ public class SystemService {
     }
 
     // send alert notification to targetUser with message
-    public Response sendAlertNotification(String token, String targetUser, String message) {
+    @Transactional
+    public ResponseEntity<Response> sendAlertNotification(String token, String targetUser, String message) {
         Response response = new Response();
         try {
             // check validation of token
             if (!_tokenService.validateToken(token)) {
-                throw new Exception("Invalid session token.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             // check if user is logged in
             if (!_tokenService.isUserAndLoggedIn(token)) {
                 response.setErrorMessage("User is not logged in");
                 logger.log(Level.SEVERE, "User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
             if (!isSystemOpen()) {
                 response.setErrorMessage("System is not open");
                 logger.log(Level.SEVERE, "System is not open");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check validation of the arguments
             if(targetUser == null || targetUser.length() == 0 || message == null || message.length() == 0){
                 response.setErrorMessage("One or more of the arguments are null");
                 logger.log(Level.SEVERE, "One or more of the arguments are null");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             String fromUser = _tokenService.extractUsername(token);
             Alert generalAlert = new GeneralAlert(fromUser,targetUser, message);
             if(_userFacade.notifyUser(targetUser, generalAlert)){
                 logger.info("Alert notification sent to user: " + targetUser + " by admin: " + fromUser);
                 response.setReturnValue("Alert notification sent successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
              else {
                 response.setErrorMessage("Failed to send alert notification");
                 logger.log(Level.SEVERE, "Failed to send alert notification");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to send alert notification: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to send alert notification: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 }

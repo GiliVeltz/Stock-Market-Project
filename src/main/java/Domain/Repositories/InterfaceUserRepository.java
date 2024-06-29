@@ -4,7 +4,7 @@ import java.util.List;
 
 import Domain.User;
 
-public interface UserRepositoryInterface {
+public interface InterfaceUserRepository {
     boolean doesUserExist(String username);
 
     User getUserByUsername(String username);
