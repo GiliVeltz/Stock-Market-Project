@@ -25,6 +25,7 @@ import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 
 @RestController
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @RequestMapping(path = "/api/shop")
 public class ShopController {
     private final ShopService _shopService;
@@ -128,7 +129,6 @@ public class ShopController {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/addShopManager")
     public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
                                                 @RequestBody Map<String, Object> request) {

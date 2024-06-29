@@ -14,9 +14,9 @@ import com.vaadin.flow.component.UI;
 
 import UI.Model.ProductDto;
 import UI.Model.Response;
-import UI.Model.ShopDto;
 import UI.View.ShopView;
 
+@SuppressWarnings({"rawtypes"})
 public class ShopViewPresenter {
 
     ShopView _view;

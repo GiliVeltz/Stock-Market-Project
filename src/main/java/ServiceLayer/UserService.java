@@ -19,6 +19,7 @@ import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import Domain.Alerts.*;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class UserService {
     private UserFacade _userFacade;
@@ -47,25 +48,30 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
-                    throw new Exception("Username or password is empty.");
+                    response.setErrorMessage("Username or password is empty.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     User user = _userFacade.getUserByUsername(userName);
-                    System.out.println("user"+user.getUserName()+"password"+user.getPassword());
+                    if (user.isLoggedIn()){
+                        response.setErrorMessage("User is already logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
+                    user.logIn();
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    //update the new token for the user
+                    // update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
-             
-                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
-                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-                    Alert alert  = new GeneralAlert("system Administrator", userName, "and welcome to out website! Enjoy your first time in the system!");
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
                     
+                    Alert alert = new GeneralAlert("system Administrator", userName,
+                            "hello new logged in user! Welcome to the system!");
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
+
                     logger.info("User " + userName + " Logged In Succesfully");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
+                    response.setErrorMessage("User Name Is Not Registered Or Password Is Incorrect.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -83,15 +89,22 @@ public class UserService {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
+                    User user = _userFacade.getUserByUsername(userName);
+                    if (!user.isLoggedIn()){
+                        response.setErrorMessage("User " + userName + " is not logged in!");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
+                    user.logOut();
                     String newToken = _tokenService.generateGuestToken();
                     String id = _tokenService.extractGuestId(newToken);
                     _userFacade.addNewGuest(id);
                     _shoppingCartFacade.addCartForGuest(id);
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
-                    //close this session
+                    // close this session
                     WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
-                    Alert alert = new GeneralAlert("system Administrator", userName, "New Notification: Hello there again! Great to see you one more time in our website!");
+                    Alert alert = new GeneralAlert("system Administrator", userName,
+                    "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
@@ -126,7 +139,6 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
@@ -183,7 +195,6 @@ public class UserService {
      * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
-     * @throws Exception If the session token is invalid.
      */
     public ResponseEntity<Response> getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
@@ -299,7 +310,8 @@ public class UserService {
         }
     }
 
-    // this function is responsible for getting the shopping cart of a user: returns a list of products in the cart.
+    // this function is responsible for getting the shopping cart of a user: returns
+    // a list of products in the cart.
     public ResponseEntity<Response> getShoppingCart(String token) {
         Response response = new Response();
         try {
@@ -321,9 +333,9 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     // this function is responsible for changing the email of a user.
-    public ResponseEntity<Response> changeEmail(String username, String email){
+    public ResponseEntity<Response> changeEmail(String username, String email) {
         Response response = new Response();
         try {
             _userFacade.changeEmail(username, email);
@@ -335,8 +347,9 @@ public class UserService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // this function is responsible for write a review for a product that bought by the user (only after the purchase, and logged in user)
-    public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review){
+    // this function is responsible for write a review for a product that bought by
+    // the user (only after the purchase, and logged in user)
+    public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -409,7 +422,8 @@ public class UserService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     response.setReturnValue(_shoppingCartFacade.viewShoppingCart(token, username));
                 } else {
-                    response.setReturnValue(_shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
+                    response.setReturnValue(
+                            _shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

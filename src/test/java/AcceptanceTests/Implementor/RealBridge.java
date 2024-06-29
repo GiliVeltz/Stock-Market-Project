@@ -44,6 +44,7 @@ import enums.Category;
 // A real conection to the system.
 // The code is tested on the real information on te system.
 @ExtendWith(SpringExtension.class)
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @SpringBootTest
 public class RealBridge implements BridgeInterface, ParameterResolver {
 
@@ -3095,38 +3096,49 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testLogoutToTheSystem(String username) {
-
-        if(username.equals("fail")){
-            return false;
-        }
-
-        // Arrange
         MockitoAnnotations.openMocks(this);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
 
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        when(_tokenServiceMock.generateGuestToken()).thenReturn(_tokenService.generateGuestToken());
-        when(_passwordEncoderMock.encodePassword("password")).thenReturn("password");
-
-        // create a user in the system
-        User user = new User("Bob", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
-            {
-                add(user);
-            }
-        }, new ArrayList<>());
+        _shoppingCartFacade.addCartForGuest(username);
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+
+        UserDto userDto = new UserDto("Bob", "password", "email@email.com", new Date());
+
+        // register the user
+        ResponseEntity<Response> res1 = _userServiceUnderTest.register(token, userDto);
 
         // login the user
-        _userServiceUnderTest.logIn(token, username, "password");
+        ResponseEntity<Response> res2 = _userServiceUnderTest.logIn(token, username,"password");
 
         // Act
-        ResponseEntity<Response> res = _userServiceUnderTest.logOut(token);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.logOut(token);
 
         // Assert
-        logger.info("testLogoutToTheSystem Error message: " + res.getBody().getErrorMessage());
-        return res.getBody().getErrorMessage() == null;
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -3447,7 +3459,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 "Unimplemented method 'TestUserReportSystemManagerOnBreakingIntegrityRules'");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean TestUserViewHistoryPurchaseList(String username, String password) {
         // Arrange

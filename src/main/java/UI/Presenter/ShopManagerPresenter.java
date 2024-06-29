@@ -23,11 +23,11 @@ import UI.Model.Permission;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
-import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
 import enums.Category;
 
+@SuppressWarnings({"rawtypes" , "deprecation"})
 public class ShopManagerPresenter {
     private final ShopManagerView view;
 
@@ -35,7 +35,6 @@ public class ShopManagerPresenter {
         this.view = view;
     }
 
-    @SuppressWarnings("deprecation")
     public void fetchManagerPermissions(String username){
         // Fetch the permissions of the manager
         RestTemplate restTemplate = new RestTemplate();
@@ -95,7 +94,6 @@ public class ShopManagerPresenter {
         
     }
 
-    @SuppressWarnings("deprecation")
     public void appointManager(String newManagerUsername, Set<Permission> selectedPermissions) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -152,7 +150,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    @SuppressWarnings({ "rawtypes", "deprecation" })
     public void fetchShopManagers(Consumer<List<ShopManagerDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -254,7 +251,6 @@ public class ShopManagerPresenter {
 
     }
 
-    @SuppressWarnings("deprecation")
     public void appointOwner(String newOwnerUsername){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
