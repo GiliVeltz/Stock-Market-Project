@@ -7,6 +7,9 @@ import java.util.Map;
 
 import Domain.User;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class MemoryUserRepository implements InterfaceUserRepository {
     private Map<String, User> _registeredUsers;
 

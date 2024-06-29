@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.CategoryFixedDiscount;
@@ -44,7 +43,6 @@ import enums.Category;
 import enums.Permission;
 
 @Service
-@RestController
 public class ShopFacade {
     private static ShopFacade _shopFacade;
 
