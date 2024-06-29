@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
@@ -27,8 +26,6 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
 
-import Dtos.ProductDto;
-import UI.Model.ShopDto;
 import UI.Presenter.HeaderPresenter;
 
 public class Header extends HorizontalLayout {

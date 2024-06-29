@@ -16,8 +16,7 @@ public class User {
     private Date _birthDate;
     private List<Order> _purchaseHistory;
     private boolean _isLoggedIn;
-    // private static final Logger logger =
-    // Logger.getLogger(UserFacade.class.getName());
+    // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     public User(String username, String password, String email, Date birthDate) {
         _username = username;

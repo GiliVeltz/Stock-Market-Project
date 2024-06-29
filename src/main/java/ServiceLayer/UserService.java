@@ -19,6 +19,7 @@ import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import Domain.Alerts.*;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class UserService {
     private UserFacade _userFacade;
@@ -47,12 +48,15 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
-                    throw new Exception("Username or password is empty.");
+                    response.setErrorMessage("Username or password is empty.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     User user = _userFacade.getUserByUsername(userName);
-                    if (user.isLoggedIn())
-                        throw new Exception("User is already logged in");
+                    if (user.isLoggedIn()){
+                        response.setErrorMessage("User is already logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
                     user.logIn();
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
                     // update the new token for the user
@@ -70,7 +74,8 @@ public class UserService {
                     logger.info("User " + userName + " Logged In Succesfully");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
+                    response.setErrorMessage("User Name Is Not Registered Or Password Is Incorrect.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -89,8 +94,10 @@ public class UserService {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
                     User user = _userFacade.getUserByUsername(userName);
-                    if (!user.isLoggedIn())
-                        throw new Exception("User " + userName + " is not logged in!");
+                    if (!user.isLoggedIn()){
+                        response.setErrorMessage("User " + userName + " is not logged in!");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
                     user.logOut();
                     String newToken = _tokenService.generateGuestToken();
                     String id = _tokenService.extractGuestId(newToken);
@@ -192,7 +199,6 @@ public class UserService {
      * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
-     * @throws Exception If the session token is invalid.
      */
     public ResponseEntity<Response> getUserPurchaseHistory(String token, String username) {
         Response response = new Response();

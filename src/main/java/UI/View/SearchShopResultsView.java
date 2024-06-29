@@ -10,7 +10,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
-import UI.Model.ProductDto;
 import UI.Model.ShopDto;
 import UI.Presenter.searchShopsPresenter;
 
