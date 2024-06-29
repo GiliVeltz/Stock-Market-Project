@@ -23,11 +23,11 @@ import UI.Model.Permission;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
-import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
 import UI.View.ShopManagerView;
 import enums.Category;
 
+@SuppressWarnings({"rawtypes" , "deprecation"})
 public class ShopManagerPresenter {
     private final ShopManagerView view;
 
@@ -35,7 +35,6 @@ public class ShopManagerPresenter {
         this.view = view;
     }
 
-    @SuppressWarnings("deprecation")
     public void fetchManagerPermissions(String username){
         // Fetch the permissions of the manager
         RestTemplate restTemplate = new RestTemplate();
@@ -95,7 +94,6 @@ public class ShopManagerPresenter {
         
     }
 
-    @SuppressWarnings("deprecation")
     public void appointManager(String newManagerUsername, Set<Permission> selectedPermissions) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -141,7 +139,9 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -150,7 +150,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    @SuppressWarnings({ "rawtypes", "deprecation" })
     public void fetchShopManagers(Consumer<List<ShopManagerDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -252,7 +251,6 @@ public class ShopManagerPresenter {
 
     }
 
-    @SuppressWarnings("deprecation")
     public void appointOwner(String newOwnerUsername){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -292,7 +290,9 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -337,17 +337,19 @@ public class ShopManagerPresenter {
                                 JsonNode responseJson = objectMapper.readTree(response.getBody());
 
                                 if (responseJson.get("errorMessage").isNull()) {
-                                    view.showSuccessMessage("Owner appointed successfully");
+                                    view.showSuccessMessage("Product added to shop successfully");
                                 } else {
-                                    view.showErrorMessage("Failed to appoint owner: " + responseJson.get("errorMessage").asText());
+                                    view.showErrorMessage("Failed to add product to shop: " + responseJson.get("errorMessage").asText());
                                 }
                             } else {
-                                view.showErrorMessage("Failed to appoint owner with status code: " + response.getStatusCodeValue());
+                                view.showErrorMessage("Failed to add product to shop with status code: " + response.getStatusCodeValue());
                             }
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class Header extends HorizontalLayout {
     private Button _registerButton;
     private final HeaderPresenter presenter;
     private final SearchProductsPresenter searchProductsPresenter;
-    private final SearchShopPresenter SearchShopPresenter;
+    private final SearchShopPresenter searchShopPresenter;
     private HorizontalLayout _leftButtonLayout;
     private VerticalLayout searchResultsLayout;
     private Dialog logoutConfirmationDialog;
@@ -47,7 +48,7 @@ public class Header extends HorizontalLayout {
         // Initialize the presenters
         presenter = new HeaderPresenter(this, serverPort);
         searchProductsPresenter = new SearchProductsPresenter(this, serverPort);
-        SearchShopPresenter = new SearchShopPresenter(this, serverPort);
+        searchShopPresenter = new SearchShopPresenter(this, serverPort);
 
         // Create an Image component
         Image image = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCartSmallIcon.jpg", "Shopping Cart");
@@ -68,6 +69,9 @@ public class Header extends HorizontalLayout {
 
         SearchProductsResultsView searchProductsResultsView = new SearchProductsResultsView(searchProductsPresenter);
         searchProductsPresenter.setSearchProductsResultsView(searchProductsResultsView);
+
+        SearchShopResultsView searchShopResultsView = new SearchShopResultsView();
+        searchShopPresenter.setSearchShopsResultsView(searchShopResultsView);
 
         // Add cursor styling
         _registerButton.addClassName("pointer-cursor");
@@ -106,9 +110,6 @@ public class Header extends HorizontalLayout {
 
         // Create search products dialog
         Dialog searchProductsDialog = createSearchProductsDialog();
-        searchResultsLayout = new VerticalLayout(); // Use class-level variable
-        searchResultsLayout.add(searchProductsResultsView); // Add the view to the layout
-
 
         // Create login dialog
         Dialog searchShopsDialog = createSearchShopsDialog();
@@ -586,10 +587,6 @@ public class Header extends HorizontalLayout {
         shopIdField.setPattern("[0-9]+");
         shopIdField.setErrorMessage("Please enter a valid shop ID");
 
-        // Add value change listeners to ensure only one filter is active
-        shopNameField.addValueChangeListener(event -> updateFieldsStates(shopNameField, shopIdField));
-        shopIdField.addValueChangeListener(event -> updateFieldsStates(shopNameField, shopIdField));
-
         // Add fields to the form layout
         formLayout.add(shopNameField, shopIdField);
 
@@ -597,37 +594,43 @@ public class Header extends HorizontalLayout {
         HorizontalLayout buttonLayout = new HorizontalLayout();
 
         // Create buttons
-        Button searchButton = new Button("Search", event -> {
+        Button searchButton = new Button("Search");
+        searchButton.addClickListener(event -> {
             // Handle form submission
             String shopName = shopNameField.getValue();
             String shopId = shopIdField.getValue();
 
             // Convert empty values to null
             if (shopName.isEmpty()) {
-                shopName = null;
+                searchShopPresenter.searchShop(Integer.parseInt(shopId), null);
             }
-            if (shopId.isEmpty()) {
-                shopId = null;
+            else if (shopId.isEmpty()) {
+                searchShopPresenter.searchShop(null, shopName);
             }
 
             // // Store search criteria in session
             // VaadinSession.getCurrent().setAttribute("searchShopName", shopName);
             // VaadinSession.getCurrent().setAttribute("searchShopId", shopId);
 
-            // Navigate to search results view
-            getUI().ifPresent(ui -> ui.navigate("search shops"));
+            // searchShopPresenter.searchShop(Integer.parseInt(shopId), shopName);
+            resetSearchShopFields(shopNameField, shopIdField, searchButton);
             dialog.close();
         });
 
         searchButton.addClassName("pointer-cursor");
+        searchButton.setEnabled(false);
+
+        // Add value change listeners to ensure only one filter is active
+        shopNameField.addValueChangeListener(event -> updateFieldsStates(shopNameField, shopIdField, searchButton));
+        shopIdField.addValueChangeListener(event -> updateFieldsStates(shopNameField, shopIdField, searchButton));
 
         Button cancelButton = new Button("Cancel", event -> {
-            resetSearchShopFields(shopNameField, shopIdField);
+            resetSearchShopFields(shopNameField, shopIdField, searchButton);
             dialog.close();
         });
         cancelButton.addClassName("pointer-cursor");
 
-        Button refreshButton = new Button("Refresh", event -> resetSearchShopFields(shopNameField, shopIdField));
+        Button refreshButton = new Button("Refresh", event -> resetSearchShopFields(shopNameField, shopIdField, searchButton));
         refreshButton.addClassName("pointer-cursor");
 
 
@@ -643,17 +646,19 @@ public class Header extends HorizontalLayout {
         return dialog;
     }
 
-    private void updateFieldsStates(TextField shopNameField, TextField shopIdField) {
+    private void updateFieldsStates(TextField shopNameField, TextField shopIdField, Button searchButton) {
         boolean isShopNameFilled = !shopNameField.isEmpty();
         boolean isShopIdFilled = !shopIdField.isEmpty();
         shopNameField.setEnabled(!isShopIdFilled);
         shopIdField.setEnabled(!isShopNameFilled);
+        searchButton.setEnabled(isShopNameFilled || isShopIdFilled);
     }
 
-    private void resetSearchShopFields(TextField shopNameField, TextField shopIdField) {
+    private void resetSearchShopFields(TextField shopNameField, TextField shopIdField, Button searchButton) {
         shopNameField.clear();
         shopIdField.clear();
-        updateFieldsStates(shopNameField, shopIdField);
+        searchButton.setEnabled(false);
+        updateFieldsStates(shopNameField, shopIdField, searchButton);
     }
 
     public void setSearchResultsVisible(boolean visible) {

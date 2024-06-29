@@ -15,8 +15,8 @@ public class User {
     private String _email;
     private Date _birthDate;
     private List<Order> _purchaseHistory;
-    // private static final Logger logger =
-    // Logger.getLogger(UserFacade.class.getName());
+    private boolean _isLoggedIn;
+    // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     public User(String username, String password, String email, Date birthDate) {
         _username = username;
@@ -25,6 +25,7 @@ public class User {
         _email = email;
         _birthDate = birthDate;
         _purchaseHistory = new ArrayList<Order>();
+        _isLoggedIn = false;
     }
 
     public User(UserDto userDto) {
@@ -110,7 +111,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-       _password = password;
+        _password = password;
     }
 
     public Date getBirthDate() {
@@ -128,5 +129,17 @@ public class User {
 
     public void setIsSystemAdmin(boolean b) {
         _isAdmin = true;
+    }
+
+    public boolean isLoggedIn() {
+        return _isLoggedIn;
+    }
+
+    public void logIn() {
+        _isLoggedIn = true;
+    }
+
+    public void logOut() {
+        _isLoggedIn = false;
     }
 }
