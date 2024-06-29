@@ -13,13 +13,16 @@ import javax.websocket.WebSocketContainer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @ClientEndpoint
 public class WebSocketClient {
 
     private Session session;
-    private static final List<Message> messages = new ArrayList<>();
+    // private static final List<Message> messages = new ArrayList<>();
+    private static ConcurrentHashMap<String, List<Message>> userMessages = new ConcurrentHashMap<>();
+
     // private static List<MessageListener> listeners = new ArrayList<>();
 
 
@@ -52,19 +55,25 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(String message) {
-        synchronized (messages) {
+        synchronized (userMessages) {
             Message newMessage = new Message(message);
-            messages.add(0,newMessage);
+            String targetUser = newMessage.getTargetUser();
+            if(userMessages.get(targetUser) == null) {
+                userMessages.put(targetUser, new ArrayList<>());
+            }
+            userMessages.get(targetUser).add(0,newMessage);
         }
         // Optionally, notify the UI to update if you have a direct reference or a way
         // notifyListeners(message);
         System.out.println("Received from server: " + message);
     }
 
-    public static List<Message> getMessages() {
-        synchronized (messages) {
-            return new ArrayList<>(messages); // Return a copy to avoid concurrency issues
+    public static List<Message> getMessages(String targetUser) {
+        List<Message> messages = new ArrayList<>();
+        if(userMessages.get(targetUser) != null) {
+            messages = userMessages.get(targetUser);
         }
+        return messages;
     }
 
     /**

@@ -10,6 +10,7 @@ public class GeneralAlert implements Alert{
         this.fromUser = fromUser;
         this.targetUser = targetUser;   
         this.message = message;
+        setMessage();
      
     }
     @Override
@@ -18,6 +19,7 @@ public class GeneralAlert implements Alert{
     }
     @Override
     public void setMessage() {
+        this.message = "New Notification: " + targetUser + "\n" + this.message;
         
     }
     public void setMessage(String message){
