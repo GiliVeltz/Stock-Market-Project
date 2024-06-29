@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import Dtos.*;
+import Dtos.BasicDiscountDto;
+import Dtos.ConditionalDiscountDto;
+import Dtos.ProductDto;
+import Dtos.ProductSearchDto;
+import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
-import UI.Model.ProductSearchDto;
 
 @RestController
 @SuppressWarnings({"rawtypes" , "unchecked"})
