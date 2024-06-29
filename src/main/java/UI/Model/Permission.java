@@ -37,8 +37,7 @@ public enum Permission {
     REMOVE_MANAGER, //8
 
     //PERMISSION MANAGEMENT
-    ADD_PERMISSION, //7
-    REMOVE_PERMISSION, //7
+    CHANGE_PERMISSION, //7
 
     //GENERAL
     GET_ROLES_INFO, //11

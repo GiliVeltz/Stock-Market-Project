@@ -25,7 +25,7 @@ public class AppointedManagerAlert implements Alert{
     }
     @Override
     public void setMessage() {
-        this.message = "Hello : " + targetUser + "\nUser : " + this.fromUser + " has appointed you as a manager in shop " + this.shopId + " with the following permissions: " + this.permissions;
+        this.message = "New Notification: " + targetUser + "\nUser : " + this.fromUser + " has appointed you as a manager in shop " + this.shopId + " with the following permissions: " + this.permissions;
     }
     @Override
     public String getFromUser() {

@@ -9,9 +9,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import Domain.Discounts.BaseDiscount;
+import Domain.Discounts.CategoryFixedDiscount;
+import Domain.Discounts.CategoryPercentageDiscount;
 import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.FixedDiscount;
-import Domain.Discounts.PrecentageDiscount;
+import Domain.Discounts.ProductFixedDiscount;
+import Domain.Discounts.ProductPercentageDiscount;
+import Domain.Discounts.ShopFixedDiscount;
+import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Product;
 import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
@@ -45,7 +49,7 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // For testing UI
+        // // For testing UI
         // try {
         //     initUI();
         // }
@@ -276,7 +280,7 @@ public class ShopFacade {
     }
 
     /**
-     * Adds a basic discount to the shop.
+     * Adds a basic discount to a shop. Can be Product, Shop or Category discount.
      *
      * @param shopId      the ID of the shop
      * @param username    the username of the user adding the discount
@@ -293,10 +297,22 @@ public class ShopFacade {
         if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
-        if (discountDto.isPrecentage)
-            discount = new PrecentageDiscount(discountDto);
-        else
-            discount = new FixedDiscount(discountDto);
+        if (discountDto.isPrecentage){
+            if(discountDto.category != null)
+                discount = new CategoryPercentageDiscount(discountDto);
+            else if(discountDto.productId == -1)
+                    discount = new ShopPercentageDiscount(discountDto);
+            else
+                discount = new ProductPercentageDiscount(discountDto);
+        }
+        else{
+            if(discountDto.category != null)
+                discount = new CategoryFixedDiscount(discountDto);
+            else if(discountDto.productId == -1)
+                    discount = new ShopFixedDiscount(discountDto);
+            else
+                discount = new ProductFixedDiscount(discountDto);
+        }
         return shop.addDiscount(discount);
     }
 
@@ -366,9 +382,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByName(productName);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -410,10 +424,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByCategory(productCategory);
-                // If the shop has products in the requested category, add them to the map
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -442,9 +453,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByKeywords(keywords);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -469,9 +478,7 @@ public class ShopFacade {
             if (isShopIdExist(shopId)) {
                 Shop shop = getShopByShopId(shopId);
                 List<Product> products = shop.getProductsByPriceRange(minPrice, maxPrice);
-                if (!products.isEmpty()) {
-                    productsByShop.put(shop.getShopId(), products);
-                }
+                productsByShop.put(shop.getShopId(), products);
             } else {
                 throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
             }
@@ -776,6 +783,23 @@ public class ShopFacade {
     }
 
     /**
+     * Returns all shopIds of shops that contain the input name.
+     * 
+     * @param shopName The name of the shop to search for.
+     * @return A list of the matching shopIds
+     */
+    public List<Integer> getShopIdsThatContainName(String shopName) {
+        shopName = shopName.toLowerCase();
+        List<Integer> shopIds = new ArrayList<>();
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().toLowerCase().contains(shopName)) {
+                shopIds.add(shop.getShopId());
+            }
+        }
+        return shopIds;
+    }
+
+    /**
      * Get all the shops that the user has a role in
      * 
      * @param username the user's username
@@ -818,7 +842,7 @@ public class ShopFacade {
         }
         return shopsDto;
     }
-
+    
     // This function is responsible for getting all the information about a shop
     public ShopDto getShopInfo(Integer shopId) {
         Shop shop = getShopByShopId(shopId);

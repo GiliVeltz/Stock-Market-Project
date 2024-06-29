@@ -22,7 +22,7 @@ public class UserMessagesPageView extends VerticalLayout{
     private UserMessagesPagePresenter presenter;
     // private JTextArea messagesTextArea;
 
-    @SuppressWarnings("unused")
+    // @SuppressWarnings("unused")
     private String _username;
 
     public UserMessagesPageView() {
@@ -41,7 +41,7 @@ public class UserMessagesPageView extends VerticalLayout{
         title.getStyle().set("margin", "20px 0");
         add(title);
        
-        presenter.fetchMessages();
+        presenter.fetchMessages(_username);
 
     }
      public void createMessageTextArea(List<Message> messages) {

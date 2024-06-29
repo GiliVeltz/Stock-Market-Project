@@ -11,3 +11,13 @@
 .custom-tabs {
   width: 100%; /* Adjust the width as needed */
 }
+
+.selected {
+  background-color: #007bff; /* Example selected color */
+  color: white;
+}
+
+.light-component-container {
+  background-color: #fbfbfb; /* Replace with your preferred color */
+  padding: 10px; /* Optional: Add padding for better visual separation */
+}

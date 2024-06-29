@@ -6,6 +6,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ private static void unauthorizedHandler() {
         // Add messages to separate lines
         Div messageDiv = new Div();
         messageDiv.add(message1, new Html("<br>"), message2);
+        messageDiv.getStyle().set("text-align", "center");
         dialog.add(messageDiv);
 
         // Add "Got It" button
@@ -50,6 +52,7 @@ private static void unauthorizedHandler() {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSpacing(true);
         verticalLayout.add(messageDiv, okButton);
+        verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
 
         dialog.add(verticalLayout);
 

@@ -3,13 +3,13 @@ package Domain.Alerts;
 public class FireManagerAlert implements Alert {
 
     private String ManagerName;
-    private String userName;
+    private String targetUser;
     private int shopId;
     private String message;
 
     public FireManagerAlert(String manager, String username,int shopId){
         this.ManagerName = manager;
-        this.userName = username;
+        this.targetUser = username;
         this.shopId = shopId;
         this.message = "";
         setMessage();
@@ -20,7 +20,7 @@ public class FireManagerAlert implements Alert {
     }
     @Override
     public void setMessage() {
-        this.message = "Hello: " + userName + ", User: " + this.ManagerName + " has fired you as a manager in shop " + this.shopId;
+        this.message = "New Notification: " + targetUser + "\nUser: " + this.ManagerName + " has fired you as a manager in shop " + this.shopId;
     }
     @Override
     public String getFromUser() {
@@ -37,7 +37,7 @@ public class FireManagerAlert implements Alert {
 
     @Override
     public String getTargetUser() {
-       return this.userName;
+       return this.targetUser;
     }
     
     
