@@ -187,14 +187,18 @@ public class UserFacade {
         }
     }
 
-    // function to initilaize data for UI testing
-    public void initUI() {
-        _userRepository.addUser(new User("tal", 
-                this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
-        _userRepository.addUser(new User("vladik", 
-                this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
-        _userRepository.addUser(new User("v", 
-                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-    }
+    // // function to initilaize data for UI testing
+    // public void initUI() {
+    //     _userRepository.addUser(new User("tal", 
+    //             this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("vladik", 
+    //             this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("v", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("test", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("metar", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    // }
 
 }

@@ -62,9 +62,10 @@ public class UserService {
                     // update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
-                    
-                    Alert alert = new GeneralAlert("system Administrator", userName,
-                            "hello new logged in user! Welcome to the system!");
+             
+                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
 
                     logger.info("User " + userName + " Logged In Succesfully");
