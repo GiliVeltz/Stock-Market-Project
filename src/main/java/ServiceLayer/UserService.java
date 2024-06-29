@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
+import jakarta.transaction.Transactional;
 import Domain.Alerts.*;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
@@ -28,6 +30,7 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
+    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
         _userFacade = userFacade;
@@ -43,6 +46,7 @@ public class UserService {
 
     // this function is responsible for logging in a user to the system by checking
     // the credentials and generating a token for the user
+    @Transactional
     public ResponseEntity<Response> logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
@@ -62,9 +66,10 @@ public class UserService {
                     // update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
-                    
-                    Alert alert = new GeneralAlert("system Administrator", userName,
-                            "hello new logged in user! Welcome to the system!");
+             
+                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
 
                     logger.info("User " + userName + " Logged In Succesfully");
@@ -83,6 +88,8 @@ public class UserService {
         }
     }
 
+    // this function is responsible for logging out a user from the system
+    @Transactional
     public ResponseEntity<Response> logOut(String token) {
         Response response = new Response();
         try {
@@ -122,6 +129,7 @@ public class UserService {
     }
 
     // this function is responsible for registering a new user to the system
+    @Transactional
     public ResponseEntity<Response> register(String token, UserDto userDto) {
         Response response = new Response();
         try {
@@ -143,6 +151,7 @@ public class UserService {
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
+    @Transactional
     public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
         Response response = new Response();
         try {
@@ -169,6 +178,7 @@ public class UserService {
     }
 
     // this function is responsible for checking if a user is a system admin
+    @Transactional
     public ResponseEntity<Response> isSystemAdmin(String userId) {
         Response response = new Response();
         try {
@@ -196,6 +206,7 @@ public class UserService {
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
      */
+    @Transactional
     public ResponseEntity<Response> getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
         try {
@@ -236,6 +247,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the purchase history of a user.
+    @Transactional
     public ResponseEntity<Response> getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
@@ -263,6 +275,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the purchase history of a shop.
+    @Transactional
     public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -286,6 +299,7 @@ public class UserService {
     }
 
     // this function is responsible for removing a product from the shopping cart.
+    @Transactional
     public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -312,6 +326,7 @@ public class UserService {
 
     // this function is responsible for getting the shopping cart of a user: returns
     // a list of products in the cart.
+    @Transactional
     public ResponseEntity<Response> getShoppingCart(String token) {
         Response response = new Response();
         try {
@@ -335,6 +350,7 @@ public class UserService {
     }
 
     // this function is responsible for changing the email of a user.
+    @Transactional
     public ResponseEntity<Response> changeEmail(String username, String email) {
         Response response = new Response();
         try {
@@ -349,6 +365,7 @@ public class UserService {
 
     // this function is responsible for write a review for a product that bought by
     // the user (only after the purchase, and logged in user)
+    @Transactional
     public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review) {
         Response response = new Response();
         try {
@@ -372,6 +389,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the user personal details.
+    @Transactional
     public ResponseEntity<Response> getUserDetails(String token) {
         Response response = new Response();
         try {
@@ -394,6 +412,7 @@ public class UserService {
     }
 
     // this function is responsible for setting the user personal details.
+    @Transactional
     public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
         Response response = new Response();
         try {
@@ -415,6 +434,8 @@ public class UserService {
         }
     }
 
+    // this function is responsible for getting the user shopping cart.
+    @Transactional
     public ResponseEntity<Response> viewShoppingCart(String token, String username) {
         Response response = new Response();
         try {

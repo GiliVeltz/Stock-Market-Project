@@ -7,7 +7,7 @@ import java.util.Map;
 
 import Domain.User;
 
-public class MemoryUserRepository implements UserRepositoryInterface {
+public class MemoryUserRepository implements InterfaceUserRepository {
     private Map<String, User> _registeredUsers;
 
     public MemoryUserRepository(List<User> registeredUsers) {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import Domain.Shop;
 
-public interface ShopRepositoryInterface {
+public interface InterfaceShopRepository {
     boolean doesShopExist(int shopID);
 
     Shop getShopByID(int shopID);
