@@ -1,13 +1,17 @@
 package UI.View;
-
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -17,13 +21,15 @@ import UI.Presenter.UserMessagesPagePresenter;
 
 @PageTitle("User Messages Page")
 @Route(value = "user_messages")
-public class UserMessagesPageView extends VerticalLayout{
+public class UserMessagesPageView extends VerticalLayout {
 
     private UserMessagesPagePresenter presenter;
-    // private JTextArea messagesTextArea;
-
-    @SuppressWarnings("unused")
     private String _username;
+    private VerticalLayout messagesLayout;
+    private ProgressBar loadingIndicator;
+    private List<Message> allMessages;
+    // private List<Message> unreadMessages;
+    // private List<Message> currentMessages;
 
     public UserMessagesPageView() {
         // Retrieve the username from the session
@@ -31,75 +37,214 @@ public class UserMessagesPageView extends VerticalLayout{
 
         // Initialize presenter
         presenter = new UserMessagesPagePresenter(this);
-       
 
         // Create the header component
-        // Header header = new BrowsePagesHeader("8080");
-        // add(header);
-
         H1 title = new H1("My Messages");
-        title.getStyle().set("margin", "20px 0");
+        title.addClassName("title");
         add(title);
-       
-        presenter.fetchMessages();
 
+        // Add filter options
+        HorizontalLayout filterOptions = new HorizontalLayout();
+        filterOptions.addClassName("filter-options");
+
+        Button showAllButton = new Button("Show All");
+        showAllButton.addClassName("filter-button");
+        showAllButton.addClickListener(e -> showAllMessages());
+        filterOptions.add(showAllButton);
+
+        Button showUnreadButton = new Button("Show Unread");
+        showUnreadButton.addClassName("filter-button");
+        showUnreadButton.addClickListener(e -> showUnreadMessages());
+        filterOptions.add(showUnreadButton);
+
+        add(filterOptions);
+
+        // Add loading indicator
+        loadingIndicator = new ProgressBar();
+        loadingIndicator.setIndeterminate(true);
+        loadingIndicator.addClassName("loading-indicator");
+        add(loadingIndicator);
+
+        // Initialize messages layout
+        messagesLayout = new VerticalLayout();
+        messagesLayout.addClassName("messages-layout");
+        add(messagesLayout);
+
+        // Fetch all messages initially
+        presenter.fetchMessages(_username);
     }
-     public void createMessageTextArea(List<Message> messages) {
-        if (messages.isEmpty()) {
+
+    private void showAllMessages() {
+        messagesLayout.removeAll(); // Clear existing messages
+        
+        // Check if allMessages is empty (this could happen if showUnreadMessages() was called and no unread messages were found)
+        if (allMessages.isEmpty()) {
             Paragraph noMessagesParagraph = new Paragraph("No messages found");
-            noMessagesParagraph.getStyle().set("color", "red");
-            this.add(noMessagesParagraph);
+            noMessagesParagraph.addClassName("no-messages");
+            messagesLayout.add(noMessagesParagraph);
             return;
         }
+        
+        createMessageTextArea(allMessages); // Display all messages
+    }
 
-        // Create a vertical layout for the messages
-        VerticalLayout messagesLayout = new VerticalLayout();
-        messagesLayout.setPadding(true);
-        messagesLayout.setSpacing(true);
+    
 
+    private void showUnreadMessages() {
+        messagesLayout.removeAll();
+        // copy the all messages to current messages
+        List<Message> currentMessages = new ArrayList<>(allMessages);
+        List<Message> unreadMessages = currentMessages.stream()
+                .filter(message -> !message.isRead())
+                .collect(Collectors.toList());
+        createUnreadMessageTextArea(unreadMessages);
+    }
+
+    public void createMessageTextArea(List<Message> messages) {
+        loadingIndicator.setVisible(false); // Hide loading indicator
+        allMessages = messages; // Store all messages for filtering
+    
+        if (messages.isEmpty()) {
+            Paragraph noMessagesParagraph = new Paragraph("No messages found");
+            noMessagesParagraph.addClassName("no-messages");
+            messagesLayout.add(noMessagesParagraph);
+            return;
+        }
+    
         // Define a date-time formatter
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    
         for (Message message : messages) {
             // Create the message layout
             HorizontalLayout messageLayout = new HorizontalLayout();
-            messageLayout.setWidthFull();
-            messageLayout.getStyle().set("border", "1px solid #ccc");
-            messageLayout.getStyle().set("border-radius", "5px");
-            messageLayout.getStyle().set("background-color", "#f0f0f0");
-            messageLayout.getStyle().set("padding", "10px");
-            messageLayout.getStyle().set("margin-bottom", "10px");
-
+            messageLayout.addClassName("message-layout");
+            if (!message.isRead()) {
+                messageLayout.addClassName("unread-message");
+            }
+    
             // Create the message text area
-            TextArea messageTextArea = new TextArea();
-            messageTextArea.setValue(message.getMessage());
-            messageTextArea.setReadOnly(true);
-            messageTextArea.setWidth("80%");
-            messageTextArea.getStyle().set("background-color", "transparent");
-            messageTextArea.getStyle().set("border", "none");
-            messageTextArea.getStyle().set("resize", "none");
-            messageTextArea.getStyle().set("padding", "0");
-            messageTextArea.getStyle().set("margin", "0");
-
+            Span messageTextArea = new Span();
+            messageTextArea.addClassName("message-text-area");
+            messageTextArea.setText(truncateMessage(message.getMessage()));
+    
             // Create the timestamp paragraph
             Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
-            timestampParagraph.getStyle().set("margin", "0");
-            timestampParagraph.getStyle().set("color", "gray");
-            timestampParagraph.getStyle().set("font-size", "smaller");
-            timestampParagraph.getStyle().set("align-self", "center");
-            timestampParagraph.getStyle().set("margin-left", "auto");
-
+            timestampParagraph.addClassName("timestamp");
+    
+            // Create the read/unread toggle button
+            Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
+            toggleReadButton.addClickListener(e -> {
+                message.setRead(!message.isRead());
+                presenter.updateMessageStatus(message); // Assume this method updates the message status in the backend
+                refreshMessages(); // Refresh messages to reflect changes
+            });
+            toggleReadButton.addClassName("toggle-read-button");
+    
+            // Check if the message needs a "Read More" link
+            if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
+                Span readMoreSpan = new Span(" Read More");
+                readMoreSpan.addClassName("read-more-link");
+                readMoreSpan.getElement().getStyle().set("color", "blue").set("cursor", "pointer");
+    
+                readMoreSpan.addClickListener(e -> {
+                    Dialog dialog = new Dialog();
+                    dialog.setWidth("400px");
+                    dialog.setHeight("300px");
+    
+                    Span fullMessageSpan = new Span(message.getMessage());
+                    fullMessageSpan.addClassName("full-message-span");
+    
+                    dialog.add(fullMessageSpan);
+                    dialog.open();
+                });
+    
+                messageTextArea.add(readMoreSpan);
+            }
+    
             // Add components to the message layout
-            messageLayout.add(messageTextArea, timestampParagraph);
-
+            messageLayout.add(messageTextArea, timestampParagraph, toggleReadButton);
+    
             // Add each message layout to the vertical layout
             messagesLayout.add(messageLayout);
         }
-
-        this.add(messagesLayout);
     }
 
-  
 
+    public void createUnreadMessageTextArea(List<Message> messages) {
+        loadingIndicator.setVisible(false); // Hide loading indicator
+        // allMessages = messages; // Store all messages for filtering
+    
+        if (messages.isEmpty()) {
+            Paragraph noMessagesParagraph = new Paragraph("No unread messages found");
+            noMessagesParagraph.addClassName("no-messages");
+            messagesLayout.add(noMessagesParagraph);
+            return;
+        }
+    
+        // Define a date-time formatter
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    
+        for (Message message : messages) {
+            // Create the message layout
+            HorizontalLayout messageLayout = new HorizontalLayout();
+            messageLayout.addClassName("message-layout");
+            if (!message.isRead()) {
+                messageLayout.addClassName("unread-message");
+            }
+    
+            // Create the message text area
+            Span messageTextArea = new Span();
+            messageTextArea.addClassName("message-text-area");
+            messageTextArea.setText(truncateMessage(message.getMessage()));
+    
+            // Create the timestamp paragraph
+            Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
+            timestampParagraph.addClassName("timestamp");
+    
+            // Create the read/unread toggle button
+            Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
+            toggleReadButton.addClickListener(e -> {
+                message.setRead(!message.isRead());
+                presenter.updateMessageStatus(message); // Assume this method updates the message status in the backend
+                refreshMessages(); // Refresh messages to reflect changes
+            });
+            toggleReadButton.addClassName("toggle-read-button");
+    
+            // Check if the message needs a "Read More" link
+            if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
+                Span readMoreSpan = new Span(" Read More");
+                readMoreSpan.addClassName("read-more-link");
+                readMoreSpan.getElement().getStyle().set("color", "blue").set("cursor", "pointer");
+    
+                readMoreSpan.addClickListener(e -> {
+                    Dialog dialog = new Dialog();
+                    dialog.setWidth("400px");
+                    dialog.setHeight("300px");
+    
+                    Span fullMessageSpan = new Span(message.getMessage());
+                    fullMessageSpan.addClassName("full-message-span");
+    
+                    dialog.add(fullMessageSpan);
+                    dialog.open();
+                });
+    
+                messageTextArea.add(readMoreSpan);
+            }
+    
+            // Add components to the message layout
+            messageLayout.add(messageTextArea, timestampParagraph, toggleReadButton);
+    
+            // Add each message layout to the vertical layout
+            messagesLayout.add(messageLayout);
+        }
+    }
 
+    private String truncateMessage(String message) {
+        return message.length() > 200 ? message.substring(0, 200) + "..." : message;
+    }
+
+    private void refreshMessages() {
+        messagesLayout.removeAll();
+        presenter.fetchMessages(_username);
+    }
 }

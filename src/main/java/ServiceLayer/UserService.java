@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,10 @@ import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
+import jakarta.transaction.Transactional;
 import Domain.Alerts.*;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class UserService {
     private UserFacade _userFacade;
@@ -27,6 +30,7 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
+    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
         _userFacade = userFacade;
@@ -42,31 +46,37 @@ public class UserService {
 
     // this function is responsible for logging in a user to the system by checking
     // the credentials and generating a token for the user
+    @Transactional
     public ResponseEntity<Response> logIn(String token, String userName, String password) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
-                    throw new Exception("Username or password is empty.");
+                    response.setErrorMessage("Username or password is empty.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
                 if (_userFacade.AreCredentialsCorrect(userName, password)) {
                     User user = _userFacade.getUserByUsername(userName);
-                    System.out.println("user"+user.getUserName()+"password"+user.getPassword());
+                    if (user.isLoggedIn()){
+                        response.setErrorMessage("User is already logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
+                    user.logIn();
                     _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    //update the new token for the user
+                    // update the new token for the user
                     String newToken = _tokenService.generateUserToken(userName);
                     response.setReturnValue(newToken);
              
                     WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
                     // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-
-                    Alert alert = new GeneralAlert("system Administrator", userName, "hello new logged in user! Welcome to the system!");
+                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
-                    
+
                     logger.info("User " + userName + " Logged In Succesfully");
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    throw new Exception("User Name Is Not Registered Or Password Is Incorrect");
+                    response.setErrorMessage("User Name Is Not Registered Or Password Is Incorrect.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -78,21 +88,30 @@ public class UserService {
         }
     }
 
+    // this function is responsible for logging out a user from the system
+    @Transactional
     public ResponseEntity<Response> logOut(String token) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(userName)) {
+                    User user = _userFacade.getUserByUsername(userName);
+                    if (!user.isLoggedIn()){
+                        response.setErrorMessage("User " + userName + " is not logged in!");
+                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    }
+                    user.logOut();
                     String newToken = _tokenService.generateGuestToken();
                     String id = _tokenService.extractGuestId(newToken);
                     _userFacade.addNewGuest(id);
                     _shoppingCartFacade.addCartForGuest(id);
                     logger.info("User successfully logged out: " + userName);
                     response.setReturnValue(newToken);
-                    //close this session
+                    // close this session
                     WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
-                    Alert alert = new GeneralAlert("system Administrator", userName, "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                    Alert alert = new GeneralAlert("system Administrator", userName,
+                    "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
@@ -110,6 +129,7 @@ public class UserService {
     }
 
     // this function is responsible for registering a new user to the system
+    @Transactional
     public ResponseEntity<Response> register(String token, UserDto userDto) {
         Response response = new Response();
         try {
@@ -128,10 +148,10 @@ public class UserService {
         }
     }
 
-
     // this function is responsible for purchasing the cart of a user or a guest
     // by checking the token and the user type and then calling the purchaseCart
     // function
+    @Transactional
     public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
         Response response = new Response();
         try {
@@ -158,6 +178,7 @@ public class UserService {
     }
 
     // this function is responsible for checking if a user is a system admin
+    @Transactional
     public ResponseEntity<Response> isSystemAdmin(String userId) {
         Response response = new Response();
         try {
@@ -184,8 +205,8 @@ public class UserService {
      * @param username The ID of the user whose purchase history is to be retrieved.
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<Order>
-     * @throws Exception If the session token is invalid.
      */
+    @Transactional
     public ResponseEntity<Response> getUserPurchaseHistory(String token, String username) {
         Response response = new Response();
         try {
@@ -226,6 +247,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the purchase history of a user.
+    @Transactional
     public ResponseEntity<Response> getPersonalPurchaseHistory(String token) {
         Response response = new Response();
         try {
@@ -253,6 +275,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the purchase history of a shop.
+    @Transactional
     public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -276,6 +299,7 @@ public class UserService {
     }
 
     // this function is responsible for removing a product from the shopping cart.
+    @Transactional
     public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID) {
         Response response = new Response();
         try {
@@ -300,7 +324,9 @@ public class UserService {
         }
     }
 
-    // this function is responsible for getting the shopping cart of a user: returns a list of products in the cart.
+    // this function is responsible for getting the shopping cart of a user: returns
+    // a list of products in the cart.
+    @Transactional
     public ResponseEntity<Response> getShoppingCart(String token) {
         Response response = new Response();
         try {
@@ -322,9 +348,10 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     // this function is responsible for changing the email of a user.
-    public ResponseEntity<Response> changeEmail(String username, String email){
+    @Transactional
+    public ResponseEntity<Response> changeEmail(String username, String email) {
         Response response = new Response();
         try {
             _userFacade.changeEmail(username, email);
@@ -336,8 +363,10 @@ public class UserService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // this function is responsible for write a review for a product that bought by the user (only after the purchase, and logged in user)
-    public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review){
+    // this function is responsible for write a review for a product that bought by
+    // the user (only after the purchase, and logged in user)
+    @Transactional
+    public ResponseEntity<Response> writeReview(String token, int productID, int shopID, String review) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -360,6 +389,7 @@ public class UserService {
     }
 
     // this function is responsible for getting the user personal details.
+    @Transactional
     public ResponseEntity<Response> getUserDetails(String token) {
         Response response = new Response();
         try {
@@ -382,6 +412,7 @@ public class UserService {
     }
 
     // this function is responsible for setting the user personal details.
+    @Transactional
     public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
         Response response = new Response();
         try {
@@ -403,6 +434,8 @@ public class UserService {
         }
     }
 
+    // this function is responsible for getting the user shopping cart.
+    @Transactional
     public ResponseEntity<Response> viewShoppingCart(String token, String username) {
         Response response = new Response();
         try {
@@ -410,7 +443,8 @@ public class UserService {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     response.setReturnValue(_shoppingCartFacade.viewShoppingCart(token, username));
                 } else {
-                    response.setReturnValue(_shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
+                    response.setReturnValue(
+                            _shoppingCartFacade.viewShoppingCart(_tokenService.extractGuestId(token), null));
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

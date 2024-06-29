@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,7 @@ import enums.Category;
 // A real conection to the system.
 // The code is tested on the real information on te system.
 @ExtendWith(SpringExtension.class)
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @SpringBootTest
 public class RealBridge implements BridgeInterface, ParameterResolver {
 
@@ -1230,13 +1232,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
            System.out.println("testSearchAndDisplayShopByIDAsGuest Error message: " + res1.getBody().getErrorMessage());
            return false;
        }
-       // check if the some products indeed returned
-       if (res1.getBody().getReturnValue().toString().contains("not found")) {
-           logger.info("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
-           System.out.println("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
-           return false;
-       }
-       return true;
+        // check if search didnt find any shops
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
+            logger.info("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
+            System.out.println("testSearchAndDisplayShopByIDAsGuest message: search result is empty");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -1297,8 +1300,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testSearchAndDisplayShopByNameAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any shops
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByNameAsGuest message: search result is empty");
             System.out.println("testSearchAndDisplayShopByNameAsGuest message: search result is empty");
             return false;
@@ -1406,8 +1410,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingProductNameAsGuest message: search result is empty");
             return false;
@@ -1473,8 +1478,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductCategoryAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingProductCategoryAsGuest message: search result is empty");
             return false;
@@ -1543,15 +1549,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingKeywordsAsGuest message: search result is empty");
             System.out.println("testGetProductInfoUsingKeywordsAsGuest message: search result is empty");
             return false;
         }
         return true;
     }
-
 
     @Override
     public boolean testGetProductInfoUsingProductNameInShopAsGuest(String productName, String shopId) {
@@ -1606,11 +1612,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductNameInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -1668,11 +1677,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductCategoryInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -1733,11 +1745,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
-            System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
+                System.out.println("testGetProductInfoUsingKeywordsInShopAsGuest message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2368,8 +2383,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testSearchAndDisplayShopByIDAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any shops
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testSearchAndDisplayShopByIDAsUser message: search result is empty");
             System.out.println("testSearchAndDisplayShopByIDAsUser message: search result is empty");
             return false;
@@ -2439,10 +2455,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testSearchAndDisplayShopByNameAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testSearchAndDisplayShopByNameAsUser message: search result is empty");
-            System.out.println("testSearchAndDisplayShopByNameAsUser message: search result is empty");
+        // check if search didnt find any shops
+        List<ShopDto> result = (List<ShopDto>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
+            logger.info("testSearchAndDisplayShopByIDAsUser message: search result is empty");
+            System.out.println("testSearchAndDisplayShopByIDAsUser message: search result is empty");
             return false;
         }
         return true;  
@@ -2554,8 +2571,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductNameAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingProductNameAsUser message: search result is empty");
             return false;
@@ -2624,8 +2642,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingProductCategoryAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingProductCategoryAsUser message: search result is empty");
             return false;
@@ -2697,8 +2716,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingKeywordsAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
+        // check if search didnt find any products in All shops
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        if (result == null || result.isEmpty()) {
             logger.info("testGetProductInfoUsingKeywordsAsUser message: search result is empty");
             System.out.println("testGetProductInfoUsingKeywordsAsUser message: search result is empty");
             return false;
@@ -2764,11 +2784,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductNameInShopAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductNameInShopAsUser message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2831,11 +2854,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-        // check if the some products indeed returned
-        if (res1.getBody().getReturnValue().toString().contains("not found")) {
-            logger.info("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
-            System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
-            return false;
+        // check if search didnt find any products in a specific shop
+        Map<Integer, List<ProductDto>> result = (Map<Integer, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingProductCategoryInShopAsUser message: search result is empty");
+                return false;
+            }
         }
         return true;
     }
@@ -2900,12 +2926,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
              System.out.println("testGetProductInfoUsingKeywordsInShopAsUser Error message: " + res1.getBody().getErrorMessage());
              return false;
          }
-         // check if the some products indeed returned
-         if (res1.getBody().getReturnValue().toString().contains("not found")) {
-             logger.info("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
-             System.out.println("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
-             return false;
-         }
+         // check if search didnt find any products in a specific shop
+        Map<String, List<ProductDto>> result = (Map<String, List<ProductDto>>) res1.getBody().getReturnValue();
+        for (List<ProductDto> productsList : result.values()) {
+            if (productsList.isEmpty()) {
+                logger.info("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
+                System.out.println("testGetProductInfoUsingKeywordsInShopAsUser message: search result is empty");
+                return false;
+            }
+        }
          return true;
     }
 
@@ -3067,38 +3096,49 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Override
     public boolean testLogoutToTheSystem(String username) {
-
-        if(username.equals("fail")){
-            return false;
-        }
-
-        // Arrange
         MockitoAnnotations.openMocks(this);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
 
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        when(_tokenServiceMock.generateGuestToken()).thenReturn(_tokenService.generateGuestToken());
-        when(_passwordEncoderMock.encodePassword("password")).thenReturn("password");
-
-        // create a user in the system
-        User user = new User("Bob", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
-            {
-                add(user);
-            }
-        }, new ArrayList<>());
+        _shoppingCartFacade.addCartForGuest(username);
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+
+        UserDto userDto = new UserDto("Bob", "password", "email@email.com", new Date());
+
+        // register the user
+        ResponseEntity<Response> res1 = _userServiceUnderTest.register(token, userDto);
 
         // login the user
-        _userServiceUnderTest.logIn(token, username, "password");
+        ResponseEntity<Response> res2 = _userServiceUnderTest.logIn(token, username,"password");
 
         // Act
-        ResponseEntity<Response> res = _userServiceUnderTest.logOut(token);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.logOut(token);
 
         // Assert
-        logger.info("testLogoutToTheSystem Error message: " + res.getBody().getErrorMessage());
-        return res.getBody().getErrorMessage() == null;
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("testLogoutToTheSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -3419,7 +3459,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 "Unimplemented method 'TestUserReportSystemManagerOnBreakingIntegrityRules'");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean TestUserViewHistoryPurchaseList(String username, String password) {
         // Arrange
