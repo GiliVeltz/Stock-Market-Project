@@ -133,7 +133,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
             String targetUsername = parts[0];
-            String msg = "New notification :" + targetUsername + parts[1];
+            String msg = parts[1];
 
             // Send message to the target client
             WebSocketSession targetSession = sessions.get(targetUsername);

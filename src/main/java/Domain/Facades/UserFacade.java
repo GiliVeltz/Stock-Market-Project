@@ -1,7 +1,6 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
 
         // //For testing UI
-        initUI();
+        // initUI();
     }
 
     @Autowired
@@ -221,20 +220,18 @@ public class UserFacade {
         }
     }
 
-    // function to initilaize data for UI testing
-    public void initUI() {
-        _userRepository.addUser(new User("tal", 
-                this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
-        _userRepository.addUser(new User("vladik", 
-                this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
-        _userRepository.addUser(new User("v", 
-                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-        _userRepository.addUser(new User("test", 
-                this._passwordEncoder.encodePassword("123456"), "test@gmail.com", new Date()));
-        _userRepository.addUser(new User("metar", 
-                this._passwordEncoder.encodePassword("123456"), "metar@gmail.com", new Date()));
-        _userRepository.addUser(new User("admin", 
-                this._passwordEncoder.encodePassword("123456"), "admin@gmail.com", new Date()));
-    }
+    // // function to initilaize data for UI testing
+    // public void initUI() {
+    //     _userRepository.addUser(new User("tal", 
+    //             this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("vladik", 
+    //             this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("v", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("test", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("metar", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    // }
 
 }

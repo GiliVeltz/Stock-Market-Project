@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ClientEndpoint
 public class WebSocketClient {
 
-    private static Session session;
+    private Session session;
     // private static final List<Message> messages = new ArrayList<>();
     private static ConcurrentHashMap<String, List<Message>> userMessages = new ConcurrentHashMap<>();
 
@@ -28,7 +28,7 @@ public class WebSocketClient {
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("Connected to server start");
-        WebSocketClient.session = session;
+        this.session = session;
         System.out.println("Connected to server end");
 
     }
@@ -43,7 +43,7 @@ public class WebSocketClient {
     @OnClose
     public void onClose() {
         System.out.println("Disconnected from server");
-        WebSocketClient.session = null;
+        this.session = null;
     }
 
     /**
@@ -84,13 +84,12 @@ public class WebSocketClient {
      *
      * @param message The message to be sent to the server.
      */
-    public static void sendMessage(String message) {
+    public void sendMessage(String message) {
         if (session != null && session.isOpen()) {
             session.getAsyncRemote().sendText(message);
         }
     }
 
-   
     /**
      * closes the session
      * 
