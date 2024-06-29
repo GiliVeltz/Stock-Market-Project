@@ -33,7 +33,7 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
 
         // //For testing UI
-        // initUI();
+        initUI();
     }
 
     // Public method to provide access to the _UserFacade
@@ -194,6 +194,10 @@ public class UserFacade {
         _userRepository.addUser(new User("vladik", 
                 this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
         _userRepository.addUser(new User("v", 
+                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+        _userRepository.addUser(new User("test", 
+                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+        _userRepository.addUser(new User("metar", 
                 this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
     }
 

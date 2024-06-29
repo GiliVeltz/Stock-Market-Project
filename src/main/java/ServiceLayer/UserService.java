@@ -59,7 +59,7 @@ public class UserService {
              
                     WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
                     // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-                    Alert alert  = new GeneralAlert("system Administrator", userName, "and welcome to out website! Enjoy your first time in the system!");
+                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
                     NotificationHandler.getInstance().sendMessage(userName, alert);
                     
                     logger.info("User " + userName + " Logged In Succesfully");

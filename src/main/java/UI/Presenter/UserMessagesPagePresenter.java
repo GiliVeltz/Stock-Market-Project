@@ -20,10 +20,11 @@ public class UserMessagesPagePresenter {
         //create a TextArea for each message
         
             view.createMessageTextArea(messages);
-        
-    
-    
 
+    }
+
+    public void updateMessageStatus(Message message) {
+       WebSocketClient.updateMessageStatus(message);
     }
     
 }
