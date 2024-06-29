@@ -7,6 +7,9 @@ import java.util.Map;
 
 import Domain.Shop;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class MemoryShopRepository implements InterfaceShopRepository {
     private Map<Integer, Shop> _shops;
     private int _shopIdCounter;
