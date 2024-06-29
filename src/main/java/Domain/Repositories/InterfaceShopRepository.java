@@ -2,8 +2,11 @@ package Domain.Repositories;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import Domain.Shop;
 
+@Repository
 public interface InterfaceShopRepository {
     boolean doesShopExist(int shopID);
 
