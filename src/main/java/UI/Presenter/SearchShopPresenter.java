@@ -1,9 +1,6 @@
 package UI.Presenter;
 
 import java.util.List;
-import java.util.Map;
-
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,14 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 
-import Dtos.ProductDto;
-import UI.Model.Response;
-import UI.Model.SearchProductResponseDto;
 import UI.Model.SearchShopResponseDto;
 import UI.Model.ShopDto;
 import UI.View.Header;
@@ -92,7 +84,9 @@ public class SearchShopPresenter {
                                 searchShopsResultsView.displayResponseShopNotFound(shopId, shopName);
                             }
                         } catch (Exception e) {
-                            headerView.showErrorMessage("Failed to parse response: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {

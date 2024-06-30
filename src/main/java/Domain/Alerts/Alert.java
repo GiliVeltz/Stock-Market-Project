@@ -1,5 +1,9 @@
 package Domain.Alerts;
+
+import org.springframework.stereotype.Component;
+
 // Purpose: Interface for the Alert class.
+@Component
 public interface Alert {
 
     public String getMessage();
