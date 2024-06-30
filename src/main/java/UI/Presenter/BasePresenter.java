@@ -21,6 +21,7 @@ public class BasePresenter {
 
     public BasePresenter() {
         this.webSocketClient = new WebSocketClient();
+        addJavaScriptToHandleUnloadEvent();
     }
 
     // For the first time client enter the system [[If client has nothing in localStorage => It's first time]]
@@ -33,6 +34,15 @@ public class BasePresenter {
                 fetchAndStoreToken();
             }
         });
+    }
+
+    private void addJavaScriptToHandleUnloadEvent() {
+        // String serverUrl = "http://localhost:" + SERVER_PORT + "/api/system/leaveSystem";
+        UI.getCurrent().getPage().executeJs(
+            "window.addEventListener('unload', function(event) { " +
+            "    fetch('http://localhost:8080/api/system/leaveSystem', { method: 'POST' }); " +
+            "});"
+        );
     }
 
     private void fetchAndStoreToken() {
