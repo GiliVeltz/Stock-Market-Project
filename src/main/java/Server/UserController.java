@@ -53,6 +53,13 @@ public class UserController {
         return _userService.viewShoppingCart(token, username);
     }
 
+    @GetMapping("/viewOrderHistory")
+    public ResponseEntity<Response> viewOrderHistory(
+            @RequestParam String username,
+            @RequestHeader(value = "Authorization") String token) {
+        return _userService.viewOrderHistory(token, username);
+    }
+
     @PostMapping("/purchaseCart")
     public ResponseEntity<Response> purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {

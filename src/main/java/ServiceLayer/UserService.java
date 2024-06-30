@@ -456,4 +456,20 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Response> viewOrderHistory(String token, String username) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token) && _tokenService.isUserAndLoggedIn(token)) {
+                response.setReturnValue(_userFacade.viewOrderHistory(username));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to view order history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to view order history: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

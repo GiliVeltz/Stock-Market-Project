@@ -83,4 +83,8 @@ public class Order {
             calcTotalAmount();
         return _totalOrderAmount; 
     }
+
+    public Map<Integer, ShoppingBasket> getShoppingBasketMap() {
+        return _shoppingBasketMap;
+    }
 }

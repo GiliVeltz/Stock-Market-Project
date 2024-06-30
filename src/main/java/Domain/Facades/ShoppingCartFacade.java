@@ -32,7 +32,7 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
 
-        // // // For testing UI
+        // For testing UI
         // try {
         //     initUI();
         // }
@@ -45,6 +45,14 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepo = cartsRepo;
         _guestsCarts = new HashMap<>();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     // Public method to provide access to the _shoppingCartFacade
@@ -260,12 +268,12 @@ public class ShoppingCartFacade {
     }
 
     // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     ShoppingCart cartUI = new ShoppingCart();
-    //     _cartsRepo.addCartForUser("tal", cartUI);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 1, 1);
-    //     addProductToUserCart("tal", 2, 1);    
-    // }
+    public void initUI() throws StockMarketException {
+        ShoppingCart cartUI = new ShoppingCart();
+        _cartsRepo.addCartForUser("tal", cartUI);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 1, 1);
+        addProductToUserCart("tal", 2, 1);    
+    }
 }
