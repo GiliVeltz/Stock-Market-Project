@@ -22,7 +22,7 @@ import Domain.Rules.Rule;
 import Domain.Rules.RuleFactory;
 import Dtos.DiscountDto;
 import Dtos.ShopDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;

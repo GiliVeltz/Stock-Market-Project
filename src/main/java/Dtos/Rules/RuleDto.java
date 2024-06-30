@@ -1,4 +1,4 @@
-package Dtos;
+package Dtos.Rules;
 
 public class RuleDto {
 }

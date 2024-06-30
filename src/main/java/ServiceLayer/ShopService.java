@@ -25,7 +25,7 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
