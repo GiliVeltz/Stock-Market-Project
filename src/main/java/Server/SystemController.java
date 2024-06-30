@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ServiceLayer.*;
 
 @RestController
+@SuppressWarnings({"rawtypes"})
 @RequestMapping(path = "/api/system")
 public class SystemController {
     private final SystemService _systemService;

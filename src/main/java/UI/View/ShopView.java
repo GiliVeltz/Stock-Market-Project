@@ -2,7 +2,6 @@ package UI.View;
 
 import java.util.List;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
@@ -15,9 +14,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.ProductDto;
-import UI.Model.ShopDto;
-import UI.Presenter.AllShopPresenter;
-import UI.Presenter.ShopManagerPresenter;
 import UI.Presenter.ShopViewPresenter;
 
 @Route(value = "shop_page")

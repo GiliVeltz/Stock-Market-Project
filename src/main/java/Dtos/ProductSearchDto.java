@@ -1,27 +1,17 @@
-package UI.Model;
+package Dtos;
 
 import java.util.List;
 import java.util.Locale;
 
-import javax.validation.constraints.NotBlank;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import enums.Category;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-
 public class ProductSearchDto {
-    @NotBlank(message = "Shop id is required (or null)")
     private Integer shopId;
 
-    @NotBlank(message = "Product name is required (or null)")
     private String productName;
     
-    @NotBlank(message = "Category is required (or null)")
     private Category category;
 
-    @NotBlank(message = "Keywords are required (or null)")
     private List<String> keywords;
 
     // Constructor

@@ -16,6 +16,7 @@ import ServiceLayer.*;
 
 // Purpose: This class is mapping the user requests to the service layer functions.
 @RestController
+@SuppressWarnings("rawtypes")
 @RequestMapping(path = "/api/user")
 public class UserController {
     private final UserService _userService;

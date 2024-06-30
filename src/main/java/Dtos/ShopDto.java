@@ -19,6 +19,10 @@ public class ShopDto {
         this.shopAddress = shopAddress;
     }
 
+    public void setShopId(Integer shopId) {
+        this.shopId = shopId;
+    }
+
     public ShopDto (Shop shop) {
         this.shopId = shop.getShopId();
         this.shopName = shop.getShopName();
