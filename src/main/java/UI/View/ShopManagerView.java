@@ -518,7 +518,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getParticipants).setHeader("Participants");
         _viewDiscountsGrid.addColumn(ShopDiscountDto::getFormattedDate).setHeader("Expiration Date");
         
-        //_viewDiscountsGrid.sort(_viewDiscountsGrid.getColumnByKey("ID"), SortDirection.ASCENDING);
+        
         _viewDiscountsGrid.addItemClickListener(event -> {
             ShopDiscountDto selectedItem = event.getItem();
             Dialog confirmationDialog = new Dialog();
@@ -545,7 +545,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             Button noButton = new Button("No", e -> confirmationDialog.close());
 
             // Add the buttons to a HorizontalLayout
-            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, noButton);
+            Span spacer = new Span();
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
+            buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
+            buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
             
             // Create a layout for the dialog
             VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
