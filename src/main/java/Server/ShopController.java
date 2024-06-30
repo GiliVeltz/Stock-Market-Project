@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
+import Dtos.ProductSearchDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
-import UI.Model.ProductSearchDto;
 
 @RestController
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @RequestMapping(path = "/api/shop")
 public class ShopController {
     private final ShopService _shopService;
@@ -129,7 +130,6 @@ public class ShopController {
         return _shopService.addShopOwner(token, shopId, newOwnerUsername);
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/addShopManager")
     public ResponseEntity<Response> addShopManager(@RequestHeader("Authorization") String token,
                                                 @RequestBody Map<String, Object> request) {
@@ -215,6 +215,11 @@ public class ShopController {
     @GetMapping("/searchAndDisplayShopByID")
     public ResponseEntity<Response> searchAndDisplayShopByID(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.searchAndDisplayShopByID(token, shopId);
+    }
+
+    @GetMapping("/searchAndDisplayShopByName")
+    public ResponseEntity<Response> searchAndDisplayShopByName(@RequestHeader("Authorization") String token, @RequestParam String shopName) {
+        return _shopService.searchAndDisplayShopByName(token, shopName);
     }
 
     @GetMapping(value = "/getAllShops", produces = MediaType.APPLICATION_JSON_VALUE)

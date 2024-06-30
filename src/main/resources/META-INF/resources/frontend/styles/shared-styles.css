@@ -21,3 +21,121 @@
   background-color: #fbfbfb; /* Replace with your preferred color */
   padding: 10px; /* Optional: Add padding for better visual separation */
 }
+
+/* General page styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+/* Title styling */
+.title {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 2em;
+  color: #333;
+}
+
+/* Loading indicator styling */
+.loading-indicator {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Messages layout styling */
+.messages-layout {
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: auto;
+  max-height: 600px; /* Adjust max height as needed */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* No messages paragraph styling */
+.no-messages {
+  color: red;
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 20px;
+}
+
+.message-layout {
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px; 
+  margin-bottom: 10px; 
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s ease;
+}
+
+.message-layout:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Read message styling */
+.message-layout.read-message {
+  border: 1px solid #ccc;
+  background-color: #fefefe;
+}
+
+/* Unread message styling */
+.message-layout.unread-message {
+  border: 1px solid red; /* Border color for unread messages */
+  background-color: #fefefe;
+}
+
+/* Message text area styling */
+.message-text-area {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  resize: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1em;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Read more link styling */
+.read-more-link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Timestamp paragraph styling */
+.timestamp {
+  margin: 0;
+  color: gray;
+  font-size: smaller;
+  margin-top: 10px;
+  text-align: right;
+}
+
+/* Toggle read button styling */
+.toggle-read-button {
+  margin-left: 10px;
+  font-size: 0.8em; /* Adjust size as needed */
+}
+
+/* Unread message styling */
+.unread-message {
+  font-weight: bold;
+  color: red; /* Adjust color as needed */
+}
+.filter-options {
+  margin-bottom: 10px; /* Add some margin for spacing */
+}
+
+.filter-button {
+  margin-right: 10px; /* Add margin between filter buttons */
+}

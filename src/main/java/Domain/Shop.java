@@ -36,6 +36,8 @@ import Server.notifications.NotificationHandler;
 import enums.Category;
 import enums.Permission;
 
+///
+
 //TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
 public class Shop {

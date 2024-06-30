@@ -7,30 +7,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.gson.Gson;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
-import com.vaadin.flow.server.VaadinSession;
-
-import org.springframework.http.*;
-
-import Dtos.ProductDto;
-
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import UI.Model.UserDto;
 import UI.View.Header;
-import UI.View.SearchShopResultsView;
 import UI.Model.Response;
-import UI.Model.SearchShopDto;
 // import ServiceLayer.Response;
 public class HeaderPresenter {
 
@@ -105,14 +88,12 @@ public class HeaderPresenter {
                         HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
     
                         try {
-                            @SuppressWarnings("rawtypes")
                             ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + _serverPort + "/api/user/register",
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);
     
-                            @SuppressWarnings("rawtypes")
                             Response responseBody = response.getBody();
                             if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
                                 view.showSuccessMessage("Registration successful, Please sign in");
@@ -122,7 +103,9 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage(e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -181,7 +164,6 @@ public class HeaderPresenter {
 
 
 
-    @SuppressWarnings("unused")
     public void searchShop(String shopName, String shopId) {
 
                 

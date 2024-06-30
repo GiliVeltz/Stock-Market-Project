@@ -9,9 +9,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
@@ -27,28 +29,21 @@ import Dtos.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
+@SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class ShopService {
     private ShopFacade _shopFacade;
     private TokenService _tokenService;
     private UserFacade _userFacade;
-    // private AlertService _alertService;
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
+    @Autowired
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
-        // _shopFacade = ShopFacade.getShopFacade();
         _shopFacade = shopFacade;
         _tokenService = tokenService;
         _userFacade = userFacade;
     }
-    // @Autowired
-    // public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade, AlertService alertService) {
-    //     _shopFacade = shopFacade;
-    //     _tokenService = tokenService;
-    //     _userFacade = userFacade;
-    //     _alertService = alertService;
-    // }
 
   
     public ShopService() {
@@ -65,6 +60,7 @@ public class ShopService {
      * @param shopAddress The address of the shop.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> openNewShop(String token, ShopDto shopDto) {
         Response response = new Response();
         try {
@@ -97,6 +93,7 @@ public class ShopService {
      * @param shopId The ID of the existing shop to be closed.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> closeShop(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -129,6 +126,7 @@ public class ShopService {
      * @param shopId The ID of the existing shop to be reopen.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> reOpenShop(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -163,6 +161,7 @@ public class ShopService {
      * @param productDto The product to be added to the shop.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> addProductToShop(String token, Integer shopId, ProductDto productDto) {
         Response response = new Response();
         try {
@@ -197,6 +196,7 @@ public class ShopService {
      * @param productDto The product to be removed from the shop.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> removeProductFromShop(String token, Integer shopId, ProductDto productDto) {
         Response response = new Response();
         try {
@@ -232,6 +232,7 @@ public class ShopService {
      * @param productDtoNew The product to be edit in the shop - the new vars of the product.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> editProductInShop(String token, Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew) {
         Response response = new Response();
         try {
@@ -268,7 +269,7 @@ public class ShopService {
      * @param productName The name of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
+    @Transactional
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -311,7 +312,7 @@ public class ShopService {
      * @param productCategory The category of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
      */
-    @SuppressWarnings("unchecked")
+    @Transactional
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -357,6 +358,7 @@ public class ShopService {
      * @param keywords The list of keywords.
      * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
+    @Transactional
     public ResponseEntity<Response> searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
         Response response = new Response();
         // Setting strings of shop ID and keywords for logging
@@ -410,6 +412,7 @@ public class ShopService {
      * @param maxPrice The maximum price of the product.
      * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
      */
+    @Transactional
     public ResponseEntity<Response> searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -453,6 +456,7 @@ public class ShopService {
      * @param userId
      * @return
      */
+    @Transactional
     public ResponseEntity<Response> isShopOwner(Integer shopId, String userId) {
         Response response = new Response();
         try {
@@ -479,6 +483,7 @@ public class ShopService {
      * @return A Response object containing the purchase history if successful, or
      *         an error message if not. () List<shopOrder>)
      */
+    @Transactional
     public ResponseEntity<Response> getShopPurchaseHistory(String token, Integer shopId) {
         Response response = new Response();
 
@@ -534,6 +539,7 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> addShopBasicDiscount(String token, int shopId, BasicDiscountDto basicDiscountDto) {
         Response response = new Response();
         try {
@@ -597,6 +603,7 @@ public class ShopService {
      * @return A response indicating the success (discount id) or failure (error
      *         message) of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> addShopConditionalDiscount(String token, int shopId,
             ConditionalDiscountDto conditionalDiscountDto) {
         Response response = new Response();
@@ -653,6 +660,7 @@ public class ShopService {
      * @param discountId The ID of the discount to be removed.
      * @return A response indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> removeDiscount(String token, int shopId, int discountId) {
         Response response = new Response();
         try {
@@ -694,6 +702,7 @@ public class ShopService {
      * @param productAmount The new quantity amount of the product.
      * @return A Response object indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> updateProductQuantity(String token, Integer shopId, Integer productId, Integer productAmount) {
         Response response = new Response();
         try {
@@ -732,6 +741,7 @@ public class ShopService {
      *                         shop.
      * @return A Response object indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> addShopOwner(String token, Integer shopId, String newOwnerUsername) {
         Response response = new Response();
         try {
@@ -782,6 +792,7 @@ public class ShopService {
      * @param permissions        The permissions granted to the new manager.
      * @return A Response object indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> addShopManager(String token, Integer shopId, String newManagerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
@@ -828,6 +839,7 @@ public class ShopService {
      * @return A Response object indicating the success and the set of usernames
      *         fired or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> fireShopManager(String token, Integer shopId, String managerUsername) {
         Response response = new Response();
         try {
@@ -869,6 +881,7 @@ public class ShopService {
      * @return A Response object indicating the success and the set of usernames
      *         resigned or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> resignFromRole(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -914,6 +927,7 @@ public class ShopService {
      * @param permissions     The new set of permissions for the manager.
      * @return A Response object indicating the success or failure of the operation.
      */
+    @Transactional
     public ResponseEntity<Response> modifyManagerPermissions(String token, Integer shopId, String managerUsername, Set<String> permissions) {
         Response response = new Response();
         try {
@@ -954,6 +968,7 @@ public class ShopService {
      * @param shopId The ID of the desired shop.
      * @return A response containing the shop policy information.
      */
+    @Transactional
     public ResponseEntity<Response> displayShopPolicyInfo(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -990,6 +1005,7 @@ public class ShopService {
      * @param productId The ID of the product.
      * @return A response containing the product policy information.
      */
+    @Transactional
     public ResponseEntity<Response> displayProductPolicyInfo(String token, Integer shopId, Integer productId) {
         // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
@@ -1033,6 +1049,7 @@ public class ShopService {
      * @param shopId The ID of the desired shop.
      * @return A response containing the shop discounts information.
      */
+    @Transactional
     public ResponseEntity<Response> displayShopDiscountsInfo(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -1070,6 +1087,7 @@ public class ShopService {
      * @param productId The ID of the product.
      * @return A response containing the product discounts information.
      */
+    @Transactional
     public ResponseEntity<Response> displayProductDiscountsInfo(String token, Integer shopId, Integer productId) {
         // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
@@ -1113,6 +1131,7 @@ public class ShopService {
      * @param shopId The ID of the desired shop.
      * @return A response containing the shop General information.
      */
+    @Transactional
     public ResponseEntity<Response> displayShopGeneralInfo(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -1149,6 +1168,7 @@ public class ShopService {
      * @param productId The ID of the product.
      * @return A response containing the product general information.
      */
+    @Transactional
     public ResponseEntity<Response> displayProductGeneralInfo(String token, Integer shopId, Integer productId) {
         // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
@@ -1194,6 +1214,7 @@ public class ShopService {
      * @param rating
      * @return
      */
+    @Transactional
     public ResponseEntity<Response> addProductRating(String token, Integer shopId, Integer productId, Integer rating) {
         Response response = new Response();
         try {
@@ -1233,6 +1254,7 @@ public class ShopService {
      * @param rating
      * @return
      */
+    @Transactional
     public ResponseEntity<Response> addShopRating(String token, Integer shopId, Integer rating) {
         Response response = new Response();
         try {
@@ -1271,37 +1293,39 @@ public class ShopService {
      * @param shopId      The ID of the shop to search 
      * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
      */
+    @Transactional
     public ResponseEntity<Response> searchAndDisplayShopByID(String token, Integer shopId) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 //create a map of shopDTO, List<ProductDTO>s to return
-                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                List<ShopDto> shopDtosListForResponse = new ArrayList<>();
                 if (_shopFacade.isShopIdExist(shopId)) {
                     //create a shopDTO for the shop
                     ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
+                    shopDto.setShopId(shopId);
                     //get all products in the shop as "Product" objects 
-                    List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
-                    List<ProductDto> productDtoList = new ArrayList<>();
-                    if (products != null && !products.isEmpty()) {
-                        //convert the "Product" objects to "ProductDTO" objects
-                        for (Product product: products) {
-                            ProductDto productDto = new ProductDto(product);
-                            productDtoList.add(productDto);
-                        }
+                    // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                    // List<ProductDto> productDtoList = new ArrayList<>();
+                    // if (products != null && !products.isEmpty()) {
+                    //     //convert the "Product" objects to "ProductDTO" objects
+                    //     for (Product product: products) {
+                    //         ProductDto productDto = new ProductDto(product);
+                    //         productDtoList.add(productDto);
+                    //     }
 
-                        logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
-                    } else {
-                        // if no products in shop - returns an empty ProductDTOs list                        
-                        logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
-                    }
+                    //     logger.info(String.format("Shop with ID %s was found and all it's products were returned", shopId.toString()));
+                    // } else {
+                    //     // if no products in shop - returns an empty ProductDTOs list                        
+                    //     logger.info(String.format("Shop with ID %s was found and returned but it contains no products", shopId.toString()));
+                    // }
                     // insert the shopDTO and the list of productDTOs to the map
-                    shopProductMapForResponse.put(shopDto, productDtoList);
+                    shopDtosListForResponse.add(shopDto);
                 }
                 else {
                     logger.info(String.format("Shop with ID %s was not found - it doesn't exist", shopId.toString()));
                 }
-                response.setReturnValue(shopProductMapForResponse);
+                response.setReturnValue(shopDtosListForResponse);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
@@ -1323,41 +1347,43 @@ public class ShopService {
      * @param shopName      The Name of the shop to search 
      * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
      */
+    @Transactional
     public ResponseEntity<Response> searchAndDisplayShopByName(String token, String shopName) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                //create a map of shopDTO, List<ProductDTO>s to return
-                Map <ShopDto, List<ProductDto>> shopProductMapForResponse = new HashMap<>();
+                //create a list of ShopDtos to return
+                List<ShopDto> shopDtosListForResponse = new ArrayList<>();
                 //get all shop IDs with the given name
                 List<Integer> shopIds = _shopFacade.getShopIdsThatContainName(shopName);
                 if (!shopIds.isEmpty() && shopIds != null) {
                     for (Integer shopId: shopIds) {
                         //create a shopDTO for the shop
                         ShopDto shopDto = new ShopDto(_shopFacade.getShopName(shopId), _shopFacade.getShopBankDetails(shopId), _shopFacade.getShopAddress(shopId));
-                        //get all products in the shop as "Product" objects 
-                        List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
-                        List<ProductDto> productDtoList = new ArrayList<>();
-                        //convert the "Product" objects to "ProductDTO" objects
-                        if (products != null && !products.isEmpty()) {
-                            for (Product product: products) {
-                                ProductDto productDto = new ProductDto(product);
-                                productDtoList.add(productDto);
-                            }
-                        }
-                        else {
-                            // if no products in shop - returns an empty ProductDTOs list                        
-                            logger.info(String.format("Shop with Name %s was found and returned but it contains no products", shopName));
-                        }
+                        shopDto.setShopId(shopId);
+                        // //get all products in the shop as "Product" objects 
+                        // List<Product> products = _shopFacade.getAllProductsInShopByID(shopId);
+                        // List<ProductDto> productDtoList = new ArrayList<>();
+                        // //convert the "Product" objects to "ProductDTO" objects
+                        // if (products != null && !products.isEmpty()) {
+                        //     for (Product product: products) {
+                        //         ProductDto productDto = new ProductDto(product);
+                        //         productDtoList.add(productDto);
+                        //     }
+                        // }
+                        // else {
+                        //     // if no products in shop - returns an empty ProductDTOs list                        
+                        //     logger.info(String.format("Shop with Name %s was found and returned but it contains no products", shopName));
+                        // }
                         // insert the shopDTO and the list of productDTOs to the map
-                        shopProductMapForResponse.put(shopDto, productDtoList);
+                        shopDtosListForResponse.add(shopDto);
                     }
                     logger.info(String.format("Shops with Name %s were found and all their products were returned", shopName));
                 }
                 else {
                     logger.info(String.format("Shop with Name %s were not found - they don't exist", shopName));
                 }
-                response.setReturnValue(shopProductMapForResponse);
+                response.setReturnValue(shopDtosListForResponse);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else {
@@ -1376,6 +1402,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops which the user has roles in.
      */
+    @Transactional
     public ResponseEntity<Response> getUserShopsIds(String token) {
         Response response = new Response();
         try {
@@ -1411,6 +1438,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops which the user has roles in.
      */
+    @Transactional
     public ResponseEntity<Response> changeShopPolicy(String token, int shopId, List<ShoppingBasketRuleDto> shopRules) {
         Response response = new Response();
         try {
@@ -1441,6 +1469,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops which the user has roles in.
      */
+    @Transactional
     public ResponseEntity<Response> getShopManagerPermissions(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -1475,6 +1504,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops in the system.
      */
+    @Transactional
     public ResponseEntity<Response> getShopsEntities(String token) {
         Response response = new Response();
         try {
@@ -1497,6 +1527,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops names which the user has roles in.
      */
+    @Transactional
     public ResponseEntity<Response> getUserShopsNames(String token) {
         Response response = new Response();
         try {
@@ -1532,6 +1563,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shop information.
      */
+    @Transactional
     public ResponseEntity<Response> getShopInfo(String token, Integer shopId) {
         Response response = new Response();
         try {
@@ -1556,6 +1588,7 @@ public class ShopService {
      * @param shopId the shop id
      * @return the shop managers.
      */
+    @Transactional
     public ResponseEntity<Response> getShopManagers(String token, Integer shopId){
         Response response = new Response();
         try {
@@ -1589,6 +1622,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops information.
      */
+    @Transactional
     public ResponseEntity<Response> getAllShops(String token) {
         Response response = new Response();
         try {
@@ -1607,13 +1641,13 @@ public class ShopService {
         }
     }
 
-
     /**
      * Receive the shop ID.
      * @param token the users session token
      * @param shopName the shop name
      * @return Integer - shopID.
      */
+    @Transactional
     public ResponseEntity<Response> getShopIdByName(String token, String shopName) {
         Response response = new Response();
         try {
@@ -1638,13 +1672,13 @@ public class ShopService {
         }
     }
 
-
     /**
      * Receive the manager subordinates.
      * @param token the users session token
      * @param shopId the shop id
      * @return the shop manager subordinates.
      */
+    @Transactional
     public ResponseEntity<Response> getMySubordinates(String token, Integer shopId){
         Response response = new Response();
         try {
@@ -1678,6 +1712,7 @@ public class ShopService {
      * @param token the users session token
      * @return the shops information.
      */
+    @Transactional
     public ResponseEntity<Response> getAllProductInShop(String token, Integer shopId) {
         Response response = new Response();
         try {

@@ -1,9 +1,6 @@
 package UI.Presenter;
 
 import java.util.List;
-import java.util.Map;
-
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,12 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.nimbusds.jose.shaded.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 
-import Dtos.ProductDto;
-import UI.Model.Response;
+import UI.Model.SearchShopResponseDto;
 import UI.Model.ShopDto;
 import UI.View.Header;
 import UI.View.SearchShopResultsView;
@@ -37,43 +32,61 @@ public class SearchShopPresenter {
     }
 
 
-    public void searchShop(String shopName, String shopId) {
+    @SuppressWarnings("deprecation")
+    public void searchShop(Integer shopId, String shopName) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
-
-                        // Create URL with parameters
-                        String url = "http://localhost:" + _serverPort + "/api/shop/searchAndDisplayShopByID?shopId=" + shopId;
+                        String url = "";
+                        if (shopId != null) {
+                            url = "http://localhost:" + _serverPort + "/api/shop/searchAndDisplayShopByID?shopId=" + shopId;
+                        }
+                        if (shopName != null && !shopName.isEmpty()) {
+                            url = "http://localhost:" + _serverPort + "/api/shop/searchAndDisplayShopByName?shopName=" + shopName;
+                        }
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        ObjectMapper objectMapper = new ObjectMapper();
 
                         try {
-                            ResponseEntity<Response<Map<ShopDto, List<ProductDto>>>> response = restTemplate.exchange(
+                            ResponseEntity<String> response = restTemplate.exchange(
                                 url,
                                 HttpMethod.GET,
                                 requestEntity,
-                                new ParameterizedTypeReference<Response<Map<ShopDto, List<ProductDto>>>>() {}
-                            );
+                                String.class);
                             
-                            Response<Map<ShopDto, List<ProductDto>>> responseBody = response.getBody();
-                            if (response.getStatusCode().is2xxSuccessful() && responseBody.getErrorMessage() == null) {
-                                headerView.showSuccessMessage("The shop search succeeded");
-
-                                // Convert data to JSON
-                                String shopProductJson = new Gson().toJson(responseBody.getReturnValue());
-
-                                // Navigate to the new view with data as parameter NOT Working
-                                // UI.getCurrent().navigate(SearchShopResultsView.class, shopProductJson);
-                            } else {
-                                headerView.showErrorMessage("The shop search failed: " + responseBody.getErrorMessage());
-                            }
+                            String responseBody = response.getBody();
+                                if (response.getStatusCode().is2xxSuccessful()) {
+                                    // convert to ResponseDTO
+                                    SearchShopResponseDto responseDto = objectMapper.readValue(responseBody, SearchShopResponseDto.class);
+                                    List<ShopDto> shopDtosList = responseDto.getReturnValue();
+            
+                                    if (shopDtosList == null) {
+                                        searchShopsResultsView.showErrorMessage("Searched shops loading failed");
+                                        searchShopsResultsView.getUI().ifPresent(ui -> ui.navigate("user"));
+                                    }
+                                    else if (shopDtosList.isEmpty()) {
+                                        searchShopsResultsView.displayResponseShopNotFound(shopId, shopName);
+                                    } 
+                                    else {
+                                        searchShopsResultsView.displayResponseShops(shopDtosList);
+                                    }
+                                }   
+                                else {
+                                    headerView.showErrorMessage("Search Results loading failed with status code: " + response.getStatusCodeValue());
+                                }
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
+                            if (e.getMessage().contains("not exist")) {
+                                searchShopsResultsView.displayResponseShopNotFound(shopId, shopName);
+                            }
                         } catch (Exception e) {
-                            headerView.showErrorMessage("Failed to parse response: " + e.getMessage());
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
