@@ -32,13 +32,13 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
 
-        // // // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
+        // // For testing UI
+        try {
+            initUI();
+        }
+        catch (StockMarketException e) {
+            e.printStackTrace();
+        }
     }
 
     @Autowired
@@ -259,13 +259,13 @@ public class ShoppingCartFacade {
         _guestsCarts.put(guestID, cart);
     }
 
-    // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     ShoppingCart cartUI = new ShoppingCart();
-    //     _cartsRepo.addCartForUser("tal", cartUI);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 1, 1);
-    //     addProductToUserCart("tal", 2, 1);    
-    // }
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        ShoppingCart cartUI = new ShoppingCart();
+        _cartsRepo.addCartForUser("tal", cartUI);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 0, 0);
+        addProductToUserCart("tal", 1, 1);
+        addProductToUserCart("tal", 2, 1);    
+    }
 }
