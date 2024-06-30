@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class ConditionRuleDto implements GenericRuleDto {
+public class ConditionRuleDto implements ShoppingBasketRuleDto, UserRuleDto {
     public RuleDto conditionRule;
     public RuleDto thenRule;
 
