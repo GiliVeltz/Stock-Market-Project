@@ -33,12 +33,12 @@ public class ShoppingCartFacade {
         _cartsRepo = new MemoryShoppingCartRepository();
 
         // For testing UI
-        try {
-            initUI();
-        }
-        catch (StockMarketException e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     @Autowired
