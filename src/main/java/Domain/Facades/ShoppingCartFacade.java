@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 import Domain.Order;
 import Domain.ShoppingBasket;
@@ -23,7 +22,6 @@ import Exceptions.StockMarketException;
 import jakarta.transaction.Transactional;
 
 @Service
-@RestController
 public class ShoppingCartFacade {
     private static ShoppingCartFacade _shoppingCartFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
@@ -34,7 +32,7 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
         _cartsRepo = new MemoryShoppingCartRepository();
 
-        // // // For testing UI
+        // For testing UI
         // try {
         //     initUI();
         // }

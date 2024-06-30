@@ -1733,4 +1733,108 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Receive the shop discounts.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @return the shop discounts.
+     */
+    @Transactional
+    public ResponseEntity<Response> getShopDiscounts(String token, Integer shopId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<BasicDiscountDto> discounts = _shopFacade.getShopDiscounts(username, shopId);
+                    response.setReturnValue(discounts);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get shop discounts. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Add discount to the shop.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @return success/fail response
+     */
+    @Transactional
+    public ResponseEntity<Response> addShopDiscount(String token, BasicDiscountDto discountDto, Integer shopId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    _shopFacade.addShopDiscount(discountDto, shopId);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to add shop discount. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Delete discount from the shop.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @return success/fail response
+     */
+    @Transactional
+    public ResponseEntity<Response> deleteShopDiscount(String token, BasicDiscountDto discountDto, Integer shopId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    _shopFacade.deleteShopDiscount(discountDto, shopId);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to delete shop discount. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

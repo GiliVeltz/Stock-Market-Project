@@ -5,6 +5,9 @@ import java.util.Map;
 
 import Domain.ShoppingCart;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class MemoryShoppingCartRepository implements InterfaceShoppingCartRepository {
     Map<String, ShoppingCart> _shoppingCarts;
     private int _orderIdCounter;

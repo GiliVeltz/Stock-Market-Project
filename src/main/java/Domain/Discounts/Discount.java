@@ -1,20 +1,22 @@
 package Domain.Discounts;
 
 import java.util.Date;
-
-import Domain.Product;
 import Domain.ShoppingBasket;
 import Domain.Rules.Rule;
+import Dtos.BasicDiscountDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.StockMarketException;
+import Domain.Product;
 
 public abstract class Discount {
     protected Rule<ShoppingBasket> _rule;
     protected Rule<Product> _specialRule;
     private Date _expirationDate;
+    private int _id;
 
-    public Discount(Date expirationDate) {
+    public Discount(Date expirationDate, int id) {
         _expirationDate = expirationDate;
+        _id = id;
     }
 
     public void applyDiscount(ShoppingBasket basket) throws StockMarketException {
@@ -29,10 +31,13 @@ public abstract class Discount {
         return _expirationDate;
     }
 
-    public abstract int getParticipatingProduct();
+    public int getId() {
+        return _id;
+    }
 
-
-    protected abstract void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException;
+    public int setId(int id){
+        return _id = id;
+    }
 
     // A special predicate to handle the shop and category discounts
     public boolean specialPredicate(Product prodcut){
@@ -41,4 +46,10 @@ public abstract class Discount {
         }
         return false;
     }
+
+    public abstract int getParticipatingProduct();
+    
+    public abstract BasicDiscountDto getDto();
+
+    protected abstract void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException;
 }

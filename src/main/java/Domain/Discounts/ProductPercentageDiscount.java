@@ -13,8 +13,8 @@ public class ProductPercentageDiscount extends BaseDiscount {
     /**
      * Represents a percentage discount for a specific product.
      */
-    public ProductPercentageDiscount(Date expirationDate, double percentage, int productId) {
-        super(expirationDate);
+    public ProductPercentageDiscount(Date expirationDate, double percentage, int productId, int id) {
+        super(expirationDate, id);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
@@ -24,7 +24,7 @@ public class ProductPercentageDiscount extends BaseDiscount {
     }
 
     public ProductPercentageDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId, dto.id);
     }
 
     @Override
@@ -61,5 +61,10 @@ public class ProductPercentageDiscount extends BaseDiscount {
         priceToAmount.put(price, amount - 1);
         if (amount == 1)
             priceToAmount.remove(price);
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(_productId, true, _percentage, getExpirationDate(), null, getId());
     }
 }

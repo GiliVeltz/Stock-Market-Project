@@ -1,5 +1,6 @@
 package UI.Presenter;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,9 @@ import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.UserDto;
 import UI.View.ShopManagerView;
-import enums.Category;
+import UI.Model.Category;
 
 @SuppressWarnings({"rawtypes" , "deprecation"})
 public class ShopManagerPresenter {
@@ -363,8 +365,144 @@ public class ShopManagerPresenter {
 
     }
 
-    public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
 
+    public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopDiscounts?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discounts loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShopDiscountDto> discounts = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShopDiscountDto.class));
+                                    callback.accept(discounts);
+                                }else {
+                                    view.showErrorMessage("Discounts loading failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discounts loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to load discounts: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
     }
+
+    public void addDiscount(String discounType, boolean isPercentage, Double discountValue, Date expirationDate,
+        Integer productId, Category category, Consumer<Boolean> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        ShopDiscountDto discountDto = new ShopDiscountDto(productId, isPercentage, discountValue, expirationDate, category, -1); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        HttpEntity<ShopDiscountDto> requestEntity = new HttpEntity<>(discountDto, headers);
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/addShopDiscount?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discount added loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    callback.accept(true);
+                                }else {
+                                    callback.accept(false);
+                                    view.showErrorMessage("Discount adding failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discounts adding failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to add discount: " + e.getMessage().substring(startIndex, endIndex));
+                            callback.accept(false);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+
+    public void deleteDiscount(ShopDiscountDto discountDto, Consumer<Boolean> callback){
+        RestTemplate restTemplate = new RestTemplate(); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        HttpEntity<ShopDiscountDto> requestEntity = new HttpEntity<>(discountDto, headers);
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/deleteShopDiscount?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Discount deleted successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    callback.accept(true);
+                                }else {
+                                    callback.accept(false);
+                                    view.showErrorMessage("Discount deletion failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Discount deletion failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to delete discount: " + e.getMessage().substring(startIndex, endIndex));
+                            callback.accept(false);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+    
    
 }
