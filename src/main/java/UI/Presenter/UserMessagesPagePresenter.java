@@ -13,19 +13,18 @@ public class UserMessagesPagePresenter {
         this.view = view;
     }
 
-    public void fetchMessages() {
+    public void fetchMessages(String username) {
 
-     
- 
-        List<Message> messages = WebSocketClient.getMessages();
+        List<Message> messages = WebSocketClient.getMessages(username);
         // Assuming messagesTextArea is a JTextArea or similar
         //create a TextArea for each message
         
             view.createMessageTextArea(messages);
-        
-    
-    
 
+    }
+
+    public void updateMessageStatus(Message message) {
+       WebSocketClient.updateMessageStatus(message);
     }
     
 }

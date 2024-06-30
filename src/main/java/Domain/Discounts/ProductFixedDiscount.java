@@ -6,23 +6,23 @@ import java.util.SortedMap;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
-public class FixedDiscount extends BaseDiscount {
+public class ProductFixedDiscount extends BaseDiscount {
     private double _discountTotal;
     private int _productId;
 
     /**
      * Represents a fixed discount for a specific product.
      */
-    public FixedDiscount(Date expirationDate, double discountTotal, int productId) {
-        super(expirationDate);
+    public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId, int id) {
+        super(expirationDate, id);
         _discountTotal = discountTotal;
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
     }
 
-    public FixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
+    public ProductFixedDiscount(BasicDiscountDto dto) {
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId, dto.id);
     }
 
     @Override
@@ -59,5 +59,10 @@ public class FixedDiscount extends BaseDiscount {
         priceToAmount.put(price, amount - 1);
         if (amount == 1)
             priceToAmount.remove(price);
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(_productId, false, _discountTotal, getExpirationDate(), null, getId());
     }
 }
