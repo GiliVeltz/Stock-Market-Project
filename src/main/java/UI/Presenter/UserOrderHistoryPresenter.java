@@ -38,9 +38,10 @@ public class UserOrderHistoryPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         String username = (String) UI.getCurrent().getSession().getAttribute("username");
-                        
+
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username=" + username,
+                                "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
+                                        + username,
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
@@ -52,13 +53,13 @@ public class UserOrderHistoryPresenter {
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 List<OrderDto> orderDtoList = objectMapper.convertValue(
                                         responseBody.getReturnValue(),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class, OrderDto.class));
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                OrderDto.class));
                                 view.showOrders(orderDtoList);
                                 view.showSuccessMessage("Orders Showed successfully");
+                            } else {
+                                view.showErrorMessage(responseBody.getErrorMessage());
                             }
-                            else {
-                                view.showErrorMessage("Failed to parse JSON response");
-                            }                       
                         } else {
                             view.showErrorMessage("Failed to show Orders");
                         }
