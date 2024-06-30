@@ -1,6 +1,7 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import Domain.Order;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Domain.User;
+import Dtos.OrderDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;
@@ -35,7 +37,7 @@ public class UserFacade {
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
 
-        // //For testing UI
+        // // //For testing UI
         // initUI();
     }
 
@@ -45,6 +47,9 @@ public class UserFacade {
         _guestIds = new ArrayList<>();
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
+
+        // // //For testing UI
+        // initUI();
     }
 
     // Public method to provide access to the _UserFacade
@@ -246,18 +251,28 @@ public class UserFacade {
         }
     }
 
+    public List<OrderDto> viewOrderHistory(String username) throws StockMarketException {
+        User user = getUserByUsername(username);
+        List<Order> orders = user.getPurchaseHistory();
+        List<OrderDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            orderDtos.add(new OrderDto(order));
+        }
+        return orderDtos;
+    }
+
     // // function to initilaize data for UI testing
-    // public void initUI() {
-    //     _userRepository.addUser(new User("tal", 
-    //             this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
-    //     _userRepository.addUser(new User("vladik", 
-    //             this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
-    //     _userRepository.addUser(new User("v", 
-    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-    //     _userRepository.addUser(new User("test", 
-    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-    //     _userRepository.addUser(new User("metar", 
-    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-    // }
+    public void initUI() {
+        _userRepository.addUser(new User("tal", 
+                this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
+        _userRepository.addUser(new User("vladik", 
+                this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
+        _userRepository.addUser(new User("v", 
+                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+        _userRepository.addUser(new User("test", 
+                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+        _userRepository.addUser(new User("metar", 
+                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    }
 
 }

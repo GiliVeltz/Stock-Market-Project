@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import enums.Category;
+import UI.Model.Category;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDto {

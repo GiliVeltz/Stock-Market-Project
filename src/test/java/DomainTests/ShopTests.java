@@ -1194,7 +1194,7 @@ public class ShopTests {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2025, Calendar.OCTOBER, 10);
         Date date = calendar.getTime();
-        ProductPercentageDiscount discount = new ProductPercentageDiscount(date, 0.2, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(date, 0.2, 1, 1);
         shop.addDiscount(discount);
 
         // Act
@@ -1240,7 +1240,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         @SuppressWarnings("deprecation")
-        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
@@ -1258,7 +1258,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         @SuppressWarnings("deprecation")
-        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.ADD_DISCOUNT_POLICY);
@@ -1291,7 +1291,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         @SuppressWarnings("deprecation")
-        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
@@ -1310,7 +1310,7 @@ public class ShopTests {
         // Arrange
         String username = "user1";
         @SuppressWarnings("deprecation")
-        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1);
+        ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
         permissions.add(Permission.REMOVE_DISCOUNT_METHOD);

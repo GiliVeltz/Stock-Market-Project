@@ -14,8 +14,8 @@ public class ShopPercentageDiscount extends BaseDiscount {
     /**
      * Represents a percentage discount for the whole shop.
      */
-    public ShopPercentageDiscount(Date expirationDate, double percentage) {
-        super(expirationDate);
+    public ShopPercentageDiscount(Date expirationDate, double percentage, int id) {
+        super(expirationDate, id);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
@@ -25,7 +25,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
     }
 
     public ShopPercentageDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.id);
     }
 
     @Override
@@ -53,5 +53,10 @@ public class ShopPercentageDiscount extends BaseDiscount {
             }
             basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), null, getId());
     }
 }

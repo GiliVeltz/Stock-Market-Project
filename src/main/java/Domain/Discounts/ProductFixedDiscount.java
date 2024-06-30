@@ -13,8 +13,8 @@ public class ProductFixedDiscount extends BaseDiscount {
     /**
      * Represents a fixed discount for a specific product.
      */
-    public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId) {
-        super(expirationDate);
+    public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId, int id) {
+        super(expirationDate, id);
         _discountTotal = discountTotal;
         _productId = productId;
 
@@ -22,7 +22,7 @@ public class ProductFixedDiscount extends BaseDiscount {
     }
 
     public ProductFixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.productId, dto.id);
     }
 
     @Override
@@ -59,5 +59,10 @@ public class ProductFixedDiscount extends BaseDiscount {
         priceToAmount.put(price, amount - 1);
         if (amount == 1)
             priceToAmount.remove(price);
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(_productId, false, _discountTotal, getExpirationDate(), null, getId());
     }
 }
