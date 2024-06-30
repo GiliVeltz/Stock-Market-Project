@@ -268,12 +268,12 @@ public class ShoppingCartFacade {
     }
 
     // // function to initilaize data for UI testing
-    public void initUI() throws StockMarketException {
-        ShoppingCart cartUI = new ShoppingCart();
-        _cartsRepo.addCartForUser("tal", cartUI);
-        addProductToUserCart("tal", 0, 0);
-        addProductToUserCart("tal", 0, 0);
-        addProductToUserCart("tal", 1, 1);
-        addProductToUserCart("tal", 2, 1);    
-    }
+    // public void initUI() throws StockMarketException {
+    //     ShoppingCart cartUI = new ShoppingCart();
+    //     _cartsRepo.addCartForUser("tal", cartUI);
+    //     addProductToUserCart("tal", 0, 0);
+    //     addProductToUserCart("tal", 0, 0);
+    //     addProductToUserCart("tal", 1, 1);
+    //     addProductToUserCart("tal", 2, 1);    
+    // }
 }

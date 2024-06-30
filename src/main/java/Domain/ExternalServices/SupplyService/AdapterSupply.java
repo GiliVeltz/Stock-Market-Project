@@ -18,7 +18,7 @@ public class AdapterSupply extends ExternalService {
         _supplyService = new ProxySupply();
     }
 
-    public static AdapterSupply getAdapterPayment() {
+    public static AdapterSupply getAdapterSupply() {
         if(_AdapterSupply == null)
         _AdapterSupply = new AdapterSupply(-1, "SupplyService", "Tal", "123456789");
         return _AdapterSupply;

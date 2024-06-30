@@ -38,13 +38,11 @@ public class ShopService {
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
-    @Autowired
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
         _shopFacade = shopFacade;
         _tokenService = tokenService;
         _userFacade = userFacade;
     }
-
   
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
