@@ -90,7 +90,6 @@ public class WebSocketClient {
         }
     }
 
-   
     /**
      * closes the session
      * 
@@ -136,7 +135,7 @@ public class WebSocketClient {
         }
     }
 
-    public static void updateMessageStatus(Message message) {
+    public static void updateMessageStsatus(Message message) {
         String targetUser = message.getTargetUser();
         List<Message> messages = userMessages.get(targetUser);
         if (messages != null) {

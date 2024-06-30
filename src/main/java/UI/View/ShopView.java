@@ -133,20 +133,23 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
 
     private void openComplainDialog() {
         Dialog complainDialog = new Dialog();
-        complainDialog.setWidth("400px");
-        complainDialog.setHeight("300px");
-
+        complainDialog.setWidth("500px"); // Increased width
+        complainDialog.setHeight("400px"); // Increased height
+    
         FormLayout formLayout = new FormLayout();
-
+    
         // Create the dropdown for complaint reasons
         Select<String> reasonSelect = new Select<>();
         reasonSelect.setLabel("Select the reason from the list below");
         reasonSelect.setItems("No longer needed", "Item doesn't match the description",
                 "Item defective or doesn't work", "Damaged", "Items are missing", "Expiry date issues");
         reasonSelect.setPlaceholder("Please select");
-
+        reasonSelect.setWidthFull(); // Make the select component full width
+    
         TextArea complaintField = new TextArea("Complaint details");
-
+        complaintField.setWidthFull(); // Make the text area full width
+        complaintField.setHeight("150px"); // Set height for the text area
+    
         Button submitButton = new Button("Submit", event -> {
             // Implement logic to handle the complaint submission (e.g., send to the server)
             String selectedReason = reasonSelect.getValue();
@@ -154,16 +157,18 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
             // Add your logic here to handle the complaint
             Notification.show("Complaint submitted: " + selectedReason);
             complainDialog.close();
-             String username = (String) UI.getCurrent().getSession().getAttribute("username");
-            String message = "admin: Complaint submitted: from user :"+ username + "\nreason: " + selectedReason + "\ndetails:" + complaintDetails; 
+            String username = (String) UI.getCurrent().getSession().getAttribute("username");
+            String message = "admin: Complaint submitted: from user :"+ username + ".\n" + "reason: " + selectedReason + ".\n" +"details:" + complaintDetails; 
             _presenter.openComplain(message);
-            
         });
-
+    
         formLayout.addFormItem(reasonSelect, "Reason");
         formLayout.addFormItem(complaintField, "Complaint details");
         formLayout.add(submitButton);
-
+    
+        // Make the form layout full width to fit the dialog
+        formLayout.setWidthFull();
+    
         complainDialog.add(formLayout);
         complainDialog.open();
     }

@@ -24,7 +24,7 @@ public class UserMessagesPagePresenter {
     }
 
     public void updateMessageStatus(Message message) {
-       WebSocketClient.updateMessageStatus(message);
+       WebSocketClient.updateMessageStsatus(message);
     }
     
 }
