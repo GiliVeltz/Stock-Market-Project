@@ -400,10 +400,12 @@ public class ShopManagerPresenter {
                             else {
                                 view.showErrorMessage("Discounts loading failed with status code: " + response.getStatusCodeValue());
                             }
-                        }catch (HttpClientErrorException e) {
-                            ResponseHandler.handleResponse(e.getStatusCode());
-                        }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to load discounts: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -443,10 +445,12 @@ public class ShopManagerPresenter {
                             else {
                                 view.showErrorMessage("Discounts adding failed with status code: " + response.getStatusCodeValue());
                             }
-                        }catch (HttpClientErrorException e) {
-                            ResponseHandler.handleResponse(e.getStatusCode());
-                        }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to add discount: " + e.getMessage().substring(startIndex, endIndex));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -485,10 +489,12 @@ public class ShopManagerPresenter {
                             else {
                                 view.showErrorMessage("Discount deletion failed with status code: " + response.getStatusCodeValue());
                             }
-                        }catch (HttpClientErrorException e) {
-                            ResponseHandler.handleResponse(e.getStatusCode());
-                        }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to delete discount: " + e.getMessage().substring(startIndex, endIndex));
                             callback.accept(false);
                             e.printStackTrace();
                         }

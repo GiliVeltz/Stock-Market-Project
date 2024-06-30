@@ -1740,6 +1740,7 @@ public class ShopService {
      * @param shopId the shop id
      * @return the shop discounts.
      */
+    @Transactional
     public ResponseEntity<Response> getShopDiscounts(String token, Integer shopId){
         Response response = new Response();
         try {
@@ -1774,6 +1775,7 @@ public class ShopService {
      * @param shopId the shop id
      * @return success/fail response
      */
+    @Transactional
     public ResponseEntity<Response> addShopDiscount(String token, BasicDiscountDto discountDto, Integer shopId){
         Response response = new Response();
         try {
@@ -1807,6 +1809,7 @@ public class ShopService {
      * @param shopId the shop id
      * @return success/fail response
      */
+    @Transactional
     public ResponseEntity<Response> deleteShopDiscount(String token, BasicDiscountDto discountDto, Integer shopId){
         Response response = new Response();
         try {
