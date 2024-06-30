@@ -503,6 +503,69 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    public void updatePermissions(String managerUserName, Set<Permission> permissions, Consumer<Boolean> callback) {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+
+                        // Convert permissions to a set of strings
+                        Set<String> permissionsList = permissions.stream()
+                                .map(Enum::name)
+                                .collect(Collectors.toSet());
+
+                        // Create request body with permissions
+                        Map<String, Object> requestBody = new HashMap<>();
+                        requestBody.put("shopId", view.getShopId());
+                        requestBody.put("managerUsername", managerUserName);
+                        requestBody.put("permissions", permissionsList);
+
+                        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+                        try {
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/updatePermissions",
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                            );
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                JsonNode responseJson = objectMapper.readTree(response.getBody());
+
+                                if (responseJson.get("errorMessage").isNull()) {
+                                    view.showSuccessMessage("Manager permissions changed successfully");
+                                    callback.accept(true);
+                                } else {
+                                    view.showErrorMessage("Failed to change manager permissions: " + responseJson.get("errorMessage").asText());
+                                    callback.accept(false);
+                                }
+                            } else {
+                                view.showErrorMessage("Failed to change manager permissions with status code: " + response.getStatusCodeValue());
+                                callback.accept(false);
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                            callback.accept(false);
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to change manager permissions: " + e.getMessage().substring(startIndex, endIndex));
+                            callback.accept(false);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                        callback.accept(false);
+                    }
+                });
+    }
+    
     
    
 }
