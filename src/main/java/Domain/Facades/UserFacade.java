@@ -34,7 +34,7 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
 
         // //For testing UI
-        // initUI();
+        //initUI();
     }
 
     @Autowired

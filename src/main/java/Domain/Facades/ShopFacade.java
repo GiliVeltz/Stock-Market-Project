@@ -16,6 +16,7 @@ import Domain.Discounts.BaseDiscount;
 import Domain.Discounts.CategoryFixedDiscount;
 import Domain.Discounts.CategoryPercentageDiscount;
 import Domain.Discounts.ConditionalDiscount;
+import Domain.Discounts.Discount;
 import Domain.Discounts.ProductFixedDiscount;
 import Domain.Discounts.ProductPercentageDiscount;
 import Domain.Discounts.ShopFixedDiscount;
@@ -59,7 +60,7 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // // For testing UI
+        // For testing UI
         // try {
         //     initUI();
         // }
@@ -859,5 +860,77 @@ public class ShopFacade {
             }
         }
         return managers;
+    }
+
+    public List<BasicDiscountDto> getShopDiscounts(String username, int shopId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<Integer, Discount> discounts = shop.getDiscounts();
+        List<BasicDiscountDto> discounts_list = new ArrayList<>();
+        for (Map.Entry<Integer, Discount> entry : discounts.entrySet()) {
+            Discount discount = entry.getValue();
+            BasicDiscountDto discountDto = discount.getDto();
+            discounts_list.add(discountDto);
+        }
+        return discounts_list;
+    }
+
+    /**
+     * add a new discount to the shop
+     * @param discountDto the discount to add
+     * @param shopId the shop
+     * @throws StockMarketException
+     */
+    public void addShopDiscount(BasicDiscountDto discountDto, Integer shopId) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException("Shop " + shopId + " does not exist");
+        }
+        // create proper discount
+        if(discountDto.isPrecentage){
+            if(discountDto.category != null){
+                shop.addDiscount(new CategoryPercentageDiscount(discountDto));
+            }else{
+                if(discountDto.productId == -1){
+                    shop.addDiscount(new ShopPercentageDiscount(discountDto));
+                }else{
+                    //check if product with this id exists.
+                    if(!shop.isProductExist(discountDto.productId)){
+                        throw new StockMarketException("Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
+                    }
+                    shop.addDiscount(new ProductPercentageDiscount(discountDto));
+                }
+            }
+        }else{
+            if(discountDto.category != null){
+                shop.addDiscount(new CategoryFixedDiscount(discountDto));
+            }else{
+                if(discountDto.productId == -1){
+                    shop.addDiscount(new ShopFixedDiscount(discountDto));
+                }else{
+                    //check if product with this id exists.
+                    if(!shop.isProductExist(discountDto.productId)){
+                        throw new StockMarketException("Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
+                    }
+                    shop.addDiscount(new ProductFixedDiscount(discountDto));
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete a discount from the shop
+     * @param discountDto the discount to delete
+     * @param shopId the shop
+     * @throws StockMarketException
+     */
+    public void deleteShopDiscount(BasicDiscountDto discountDto, Integer shopId) throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException("Shop " + shopId + " does not exist");
+        }
+        shop.removeDiscount(discountDto.id);
     }
 }
