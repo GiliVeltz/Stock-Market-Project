@@ -1,20 +1,20 @@
-add_admin#admin@email.com#adminPassword#u1_Admin#2022-05-04
+add_admin#u1_Admin#adminPassword#admin@email.com#2022-05-04
 
-register#u2@email.com#u2Password#u2#2021-05-04
-register#u3@email.com#u3Password#u3#2020-05-04
-register#u4@email.com#u4Password#u4#2019-05-04
-register#u5@email.com#u5Password#u5#2018-05-04
-register#u6@email.com#u6Password#u6#2017-05-04
+register#u2#u2Password#u2@email.com#2021-05-04
+register#u3#u3Password#u3@email.com#2020-05-04
+register#u4#u4Password#u4@email.com#2019-05-04
+register#u5#u5Password#u5@email.com#2018-05-04
+register#u6#u6Password#u6@email.com#2017-05-04
 
-login#u2@email.com#u2Password
+logIn#u2#u2Password
 
-open_shop#u2#16
+open_shop#u2#s1#bank_details#shop_address
 
 add_product_to_shop#u2#s1#Bamba#30#20
 
 appoint_shop_manager#u2#s1#u3
 
-appoing_shop_owner#u2#s1#u4
-appoing_shop_owner#u2#s1#u5
+appoint_shop_owner#u2#s1#u4
+appoint_shop_owner#u2#s1#u5
 
-logout#u2
+logOut#u2

@@ -55,9 +55,9 @@ public class ShopFacade {
         _userFacade = UserFacade.getUserFacade();
     }
 
-        public ShopFacade() {
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
+    public ShopFacade() {
+    _shopRepository = new MemoryShopRepository(new ArrayList<>());
+    _userFacade = UserFacade.getUserFacade();
 
         // // For testing UI
         // try {

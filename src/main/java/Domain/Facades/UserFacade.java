@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,30 @@ public class UserFacade {
             _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
+    }
+
+    // logIn function
+    public void logIn(String userName, String password) throws StockMarketException{
+        if (!AreCredentialsCorrect(userName, password)){
+            throw new StockMarketException("User Name Is Not Registered Or Password Is Incorrect.");
+        }
+        
+        User user = getUserByUsername(userName);
+        if (user.isLoggedIn()){
+                throw new StockMarketException("User is already logged in.");
+        }
+        
+        user.logIn();
+    }
+
+    // logOut function
+    public void logOut(String userName) throws StockMarketException{
+        User user = getUserByUsername(userName);
+        if (!user.isLoggedIn()){
+                throw new StockMarketException("User is not logged in.");
+        }
+        
+        user.logOut();
     }
 
     // function to check if a user exists in the system
