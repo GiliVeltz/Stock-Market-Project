@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class AndRuleDto extends RuleDto {
+public class AndRuleDto implements GenericRuleDto {
     public RuleDto rule1;
     public RuleDto rule2;
 

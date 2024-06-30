@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class MinAgeRuleDto extends UserRuleDto {
+public class MinAgeRuleDto implements UserRuleDto {
     public int minAge;
 
     public MinAgeRuleDto(int minAge) {

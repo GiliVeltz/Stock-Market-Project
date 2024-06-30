@@ -1,5 +1,5 @@
 package Dtos.Rules;
 
-public class UserRuleDto extends RuleDto {
+public interface UserRuleDto extends RuleDto {
     
 }

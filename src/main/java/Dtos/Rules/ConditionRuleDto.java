@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class ConditionRuleDto extends RuleDto {
+public class ConditionRuleDto implements GenericRuleDto {
     public RuleDto conditionRule;
     public RuleDto thenRule;
 

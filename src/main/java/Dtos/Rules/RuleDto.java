@@ -1,4 +1,4 @@
 package Dtos.Rules;
 
-public class RuleDto {
+public interface RuleDto {
 }
