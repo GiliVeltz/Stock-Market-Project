@@ -30,12 +30,14 @@ import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
+import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Server.Controllers.UserController;
 import Server.notifications.NotificationHandler;
 import ServiceLayer.UserService;
+import enums.Category;
 
 @Service
 public class MarketSystem {
@@ -331,6 +333,9 @@ public class MarketSystem {
         }
         
         else if (instruction.equals("add_product_to_shop")){
+            ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
         }
         
         else if (instruction.equals("appoint_shop_owner")){

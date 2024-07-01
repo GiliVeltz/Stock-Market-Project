@@ -961,5 +961,15 @@ public class ShopFacade {
         shop.modifyPermissions(username, managerUsername, permissionsSet);
     }
 
+    // this function returns the shop id by its name and founder
+    public int getShopIdByShopNameAndFounder(String founder, String shopName) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName) && shop.getFounderName().equals(founder)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
 
 }
