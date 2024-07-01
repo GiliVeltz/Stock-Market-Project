@@ -42,21 +42,30 @@ import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import enums.Permission;
-
 @Service
 public class ShopFacade {
     private static ShopFacade _shopFacade;
+
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
-    // for tests
-    public ShopFacade(UserFacade userFacade){
-        _userFacade = userFacade;
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
+    @Autowired
+    public ShopFacade(InterfaceShopRepository shopRepository) {
+        _shopRepository = shopRepository;
+        _userFacade = UserFacade.getUserFacade();
+
+        //For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
+        _userFacade = UserFacade.getUserFacade();
 
         //For testing UI
         // try {

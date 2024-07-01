@@ -41,7 +41,6 @@ public class UserFacade {
         // initUI();
     }
 
-    @Autowired
     public UserFacade(InterfaceUserRepository userRepository) {
         _userRepository = userRepository;
         _guestIds = new ArrayList<>();

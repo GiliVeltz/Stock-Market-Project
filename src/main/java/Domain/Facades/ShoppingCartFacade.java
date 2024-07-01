@@ -41,7 +41,6 @@ public class ShoppingCartFacade {
         // }
     }
 
-    @Autowired
     public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepo = cartsRepo;
         _guestsCarts = new HashMap<>();
