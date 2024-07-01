@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.Scanner;
 import java.util.Set;
@@ -29,6 +33,9 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
+import Server.Controllers.UserController;
+import Server.notifications.NotificationHandler;
+import ServiceLayer.UserService;
 import enums.Category;
 
 @Service
