@@ -339,15 +339,22 @@ public class MarketSystem {
         }
         
         else if (instruction.equals("appoint_shop_owner")){
+            
         }
 
         else if (instruction.equals("appoint_shop_manager")){
         }
 
         else if (instruction.equals("close_shop")){
+            //close_shop#user_name#shop_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.closeShop(shopId, instruction_params[2]);
         }
 
-        else if (instruction.equals("open_close_shop")){
+        else if (instruction.equals("reopen_shop")){
+            //reopen_shop#user_name#shop_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.reOpenShop(shopId, instruction_params[2]);
         }
         
         else{
