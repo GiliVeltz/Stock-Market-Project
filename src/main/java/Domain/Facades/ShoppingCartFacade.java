@@ -41,7 +41,6 @@ public class ShoppingCartFacade {
         // }
     }
 
-    @Autowired
     public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepo = cartsRepo;
         _guestsCarts = new HashMap<>();
@@ -61,6 +60,11 @@ public class ShoppingCartFacade {
             _shoppingCartFacade = new ShoppingCartFacade();
         }
         return _shoppingCartFacade;
+    }
+
+    // set shopping cart repository to be used in real system
+    public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
+        _cartsRepo = cartsRepo;
     }
 
     // Add a cart for a guest by token.

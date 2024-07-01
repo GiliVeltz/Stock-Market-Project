@@ -576,7 +576,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -654,7 +654,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -730,7 +730,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -807,7 +807,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("shopOwnerUserName", shopDto);
@@ -867,7 +867,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("shopOwnerUserName", shopDto);
@@ -925,7 +925,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("shopOwner", shopDto);
@@ -994,7 +994,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             }
         }, new ArrayList<>());
 
-        _shopFacade = new ShopFacade(_userFacade);
+        _shopFacade = new ShopFacade();
 
         try {
             _shopFacade.openNewShop("shopOwner", shopDto);
