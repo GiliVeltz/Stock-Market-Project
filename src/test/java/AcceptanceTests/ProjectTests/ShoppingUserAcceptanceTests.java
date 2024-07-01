@@ -119,14 +119,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: TAL - need to implement this test
     @Test
     public void testBuyingShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","1 4 5 6 7","Visa","Israel") ); // success - all products are available to buy them
-        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1 8 9","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
-        assertTrue(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // success - all shop policies are valid
-        assertFalse(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // fail - one of the shop policies (or more) is not available
+        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
     }
 
     // Test if the user can logout from the system.

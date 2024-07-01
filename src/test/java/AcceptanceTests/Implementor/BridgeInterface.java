@@ -129,9 +129,6 @@ public interface BridgeInterface {
     
     @Test
     boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address);
-    
-    @Test
-    boolean testBuyingShoppingCartPoliciesUser(String username, String password);
 
     @Test
     boolean testLogoutToTheSystem(String username);

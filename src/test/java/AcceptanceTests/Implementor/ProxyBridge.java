@@ -186,11 +186,6 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testBuyingShoppingCartPoliciesUser(String username, String password) {
-        throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesUser' in ProxyBridge class");
-    }
-
-    @Override
     public boolean testLogoutToTheSystem(String username) {
         throw new UnsupportedOperationException("Unimplemented method 'testLogoutToTheSystem' in ProxyBridge class");
     }

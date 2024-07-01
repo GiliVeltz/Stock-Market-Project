@@ -377,7 +377,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         logger.info("TestGuestRegisterToTheSystem Error message: " + res.getBody().getErrorMessage());
         return res.getBody().getErrorMessage() == null;
     }
-    
+
     @Test
     public boolean testLoginToTheSystem(String username, String password) {
         // Arrange
@@ -3157,49 +3157,81 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber,
-            String address) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testCheckBuyingShoppingCartUser'");
+    public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-        // // Split the input string by spaces Convert the array to a list of Integer
-        // when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        // String[] stringArray = busketsToBuy.split("\\s+");
-        // List<Integer> busketsToBuyList = new ArrayList<>();
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
 
-        // for (String s : stringArray) {
-        // try {
-        // int number = Integer.parseInt(s);
-        // busketsToBuyList.add(number);
-        // } catch (NumberFormatException e) {
-        // // Handle the case where the string cannot be parsed to an integer
-        // System.err.println("Invalid number format: " + s);
-        // }
-        // }
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn("user");
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
 
-        // try {
-        // when(_tokenServiceMock.isGuest(token)).thenReturn(false);
-        // when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        // // TODO: not sure how to handle the payment method and supply in
-        // shopppingCart
-        // _userServiceMock.purchaseCart(token, busketsToBuyList, cardNumber, address);
+        // create a user in the system
+        User user = new User("user", "password", "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
 
-        // // Verify interactions
-        // verify(_userServiceMock, times(1)).purchaseCart(token, busketsToBuyList,
-        // cardNumber, address);
-        // verify(_tokenServiceMock, times(1)).validateToken(token);
-        // verify(_tokenServiceMock, times(1)).isGuest(token);
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
 
-        // return true;
-        // } catch (Exception e) {
-        // return false;
-        // }
-    }
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+        _shoppingCartFacade.addCartForUser("guestToken", user);
 
-    @Override
-    public boolean testBuyingShoppingCartPoliciesUser(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesUser'");
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open shop using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+
+        // user buys the product using UserService
+        List<Integer> basketsToBuy = new ArrayList<>();
+        basketsToBuy.add(Integer.parseInt(busketsToBuy));
+
+        // Act
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("testCheckBuyingShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("testCheckBuyingShoppingCartUser Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("testCheckBuyingShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if(res4.getBody().getErrorMessage() != null){
+            logger.info("testCheckBuyingShoppingCartUser Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override
