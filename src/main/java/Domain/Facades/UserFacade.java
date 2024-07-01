@@ -60,6 +60,11 @@ public class UserFacade {
         return _UserFacade;
     }
 
+    // set the user repository to be used real time
+    public void setUserRepository(InterfaceUserRepository userRepository) {
+        _userRepository = userRepository;
+    }
+
     // logIn function
     public void logIn(String userName, String password) throws StockMarketException{
         if (!AreCredentialsCorrect(userName, password)){

@@ -63,6 +63,11 @@ public class ShoppingCartFacade {
         return _shoppingCartFacade;
     }
 
+    // set shopping cart repository to be used in real system
+    public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
+        _cartsRepo = cartsRepo;
+    }
+
     // Add a cart for a guest by token.
     @Transactional
     public void addCartForGuest(String guestID) {

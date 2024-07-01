@@ -49,20 +49,6 @@ public class ShopFacade {
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
-    @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository, UserFacade userFacade) {
-        _shopRepository = shopRepository;
-        _userFacade = userFacade;
-
-        //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
     // for tests
     public ShopFacade(UserFacade userFacade){
         _userFacade = userFacade;
@@ -92,6 +78,11 @@ public class ShopFacade {
             _shopFacade = new ShopFacade();
         }
         return _shopFacade;
+    }
+
+    // set shop repository to be used in real system
+    public void setShopRepository(InterfaceShopRepository shopRepository) {
+        _shopRepository = shopRepository;
     }
 
     public Shop getShopByShopId(int shopId) {

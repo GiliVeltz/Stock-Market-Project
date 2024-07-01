@@ -88,7 +88,6 @@ public class MarketSystem {
         return supply_adapter;
     }
 
-
     /**
      * reading the data from the configuration file.
      * @param config_path the path of the configuration file.
@@ -233,9 +232,13 @@ public class MarketSystem {
         }
         else if (config.equals(("database:real_init"))){
             // HibernateUtils.set_demo_use();
+            // TODO: change to real time system repository
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
+            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
+            shopFacade.setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
+            userFacade.setUserRepository(userRepository);
             
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
             init_data_to_market(instructions_config_path);
