@@ -1,21 +1,43 @@
+
 package Domain;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-//import java.util.logging.Logger;
+import javax.persistence.*;
 
 import Dtos.UserDto;
 
+@Entity
+@Table(name = "User")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "password", nullable = false)
     private String _password;
+
+    @Column(name = "username", unique = true, nullable = false)
     private String _username;
+
+    @Column(name = "isAdmin", nullable = false)
     private boolean _isAdmin;
+
+    @Column(name = "email", unique = true, nullable = false)
     private String _email;
+
+    @Column(name = "birthDate", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date _birthDate;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> _purchaseHistory;
+
+    @Column(name = "isLoggedIn", nullable = false)
     private boolean _isLoggedIn;
+
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     public User(String username, String password, String email, Date birthDate) {
