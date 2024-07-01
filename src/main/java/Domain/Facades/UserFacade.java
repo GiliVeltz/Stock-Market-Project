@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,30 @@ public class UserFacade {
             _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
+    }
+
+    // logIn function
+    public void logIn(String userName, String password) throws StockMarketException{
+        if (!AreCredentialsCorrect(userName, password)){
+            throw new StockMarketException("User Name Is Not Registered Or Password Is Incorrect.");
+        }
+        
+        User user = getUserByUsername(userName);
+        if (user.isLoggedIn()){
+                throw new StockMarketException("User is already logged in.");
+        }
+        
+        user.logIn();
+    }
+
+    // logOut function
+    public void logOut(String userName) throws StockMarketException{
+        User user = getUserByUsername(userName);
+        if (!user.isLoggedIn()){
+                throw new StockMarketException("User is not logged in.");
+        }
+        
+        user.logOut();
     }
 
     // function to check if a user exists in the system
@@ -192,25 +218,17 @@ public class UserFacade {
         if (userDto.email == null || userDto.email.isEmpty()) {
             throw new StockMarketException("new Email is empty.");
         }
-        if (userDto.password == null || userDto.password.isEmpty() || userDto.password.length() < 5) {
-            throw new StockMarketException("new Password is empty, or too short.");
-        }
         if (!_EmailValidator.isValidEmail(userDto.email)) {
             throw new StockMarketException("new Email is not valid.");
         }
-        String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
-        userDto.password = encodedPass;
-
         User user = getUserByUsername(username);
 
-        if (!doesUserExist(userDto.username)) {
+        if (user == null) {
             throw new StockMarketException("Username already exists.");
         } else {
             user.setEmail(userDto.email);
-            user.setPassword(userDto.password);
             user.setBirthDate(userDto.birthDate);
         }
-
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 
@@ -235,18 +253,18 @@ public class UserFacade {
         return orderDtos;
     }
 
-    // // function to initilaize data for UI testing
-    public void initUI() {
-        _userRepository.addUser(new User("tal", 
-                this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
-        _userRepository.addUser(new User("vladik", 
-                this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
-        _userRepository.addUser(new User("v", 
-                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-        _userRepository.addUser(new User("test", 
-                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-        _userRepository.addUser(new User("metar", 
-                this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
-    }
+    // // // function to initilaize data for UI testing
+    // public void initUI() {
+    //     _userRepository.addUser(new User("tal", 
+    //             this._passwordEncoder.encodePassword("taltul"), "tal@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("vladik", 
+    //             this._passwordEncoder.encodePassword("123456"), "vladik@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("v", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("test", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    //     _userRepository.addUser(new User("metar", 
+    //             this._passwordEncoder.encodePassword("123456"), "v@gmail.com", new Date()));
+    // }
 
 }
