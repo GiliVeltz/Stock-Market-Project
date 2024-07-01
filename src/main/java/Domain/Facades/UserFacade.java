@@ -31,6 +31,16 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
+    public UserFacade() {
+        _userRepository = new MemoryUserRepository(new ArrayList<>());
+        _guestIds = new ArrayList<>();
+        _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // // //For testing UI
+        // initUI();
+    }
+
     public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
