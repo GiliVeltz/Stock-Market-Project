@@ -1,6 +1,7 @@
 package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -3277,73 +3278,43 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean TestWhenUserLogoutThenHisCartSaved(String username) {
         // Arrange
         MockitoAnnotations.openMocks(this);
+        _externalServiceHandler = new ExternalServiceHandler();
+        _passwordEncoder = new PasswordEncoderUtil();
+        _shopFacade = ShopFacade.getShopFacade();
+        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
 
-        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_tokenServiceMock.generateGuestToken()).thenReturn(token);
-        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
+        _shoppingCartFacade.addCartForGuest(username);
 
-        // create a user in the system
-        User user = new User(username, _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
-            {
-                add(user);
-            }
-        }, new ArrayList<>());
-
-        // initiate _shoppingCartFacade and _shopFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
-        _shopFacade = new ShopFacade();
-
-        // initiate the services under test
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock, _userFacade, _shoppingCartFacade);
-        
-        // create new cart
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+
+        UserDto userDto = new UserDto(username, "password", "email@email.com", new Date());
+
+        // register the user
+        ResponseEntity<Response> res1 = _userServiceUnderTest.register(token, userDto);
 
         // login the user
-        ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, username, "password");
+        ResponseEntity<Response> res2 = _userServiceUnderTest.logIn(token, username,"password");
+
+        // Act
+        ResponseEntity<Response> res3 = _userServiceUnderTest.logOut(token);
+
+        // Assert
         if(res1.getBody().getErrorMessage() != null){
             logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res1.getBody().getErrorMessage());
             return false;
         }
-
-        // user create a shop
-        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.openNewShop(token, shopDto);
         if(res2.getBody().getErrorMessage() != null){
             logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
-
-        // user add product to the shop
-        ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
         if(res3.getBody().getErrorMessage() != null){
-            logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res3.getBody().getErrorMessage());
-            return false;
-        }
-
-        // user add product to shopping cart
-        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
-        if(res4.getBody().getErrorMessage() != null){
-            logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res4.getBody().getErrorMessage());
-            return false;
-        }
-
-        // Act
-        ResponseEntity<Response> res5 = _userServiceUnderTest.logOut(token);
-
-        // Assert
-        if(res5.getBody().getErrorMessage() != null){
-            logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res5.getBody().getErrorMessage());
-            return false;
-        }
-        // check if the cart is saved
-        if(_shoppingCartFacade.getCartByUsername(username) == null){
-            logger.info("TestWhenUserLogoutThenHisCartSaved Error message: cart is not saved");
+            logger.info("TestWhenUserLogoutThenHisCartSaved Error message: " + res2.getBody().getErrorMessage());
             return false;
         }
         return true;

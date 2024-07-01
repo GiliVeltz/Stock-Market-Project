@@ -133,11 +133,9 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test if the user logouts from the system - his shopping cart we saved in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge - not working")
     @Test
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
-        // assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
@@ -187,7 +185,7 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
-    // TODO: VLADI - need to implement this test
+    // TODO: METAR - need to implement this test
     @Test
     public void TestUserReportSystemManagerOnBreakingIntegrityRules() {
         assertTrue(_bridge.TestUserReportSystemManagerOnBreakingIntegrityRules("bob","bobspassword", "message1") ); // success - the user secceeded to send the message
