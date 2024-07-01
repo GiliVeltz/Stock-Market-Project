@@ -48,8 +48,6 @@ public class ShopOwnerAcceptanceTests {
     }
     
     // Test that shop owner can edit the shop policies.
-    // TODO: implement in ShopService
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
     @Test
     public void testShopOwnerChangeShopPolicies() {
         assertTrue(_bridge.testShopOwnerChangeShopPolicies("shopOwner", "0", "new shop policy") ); // success
