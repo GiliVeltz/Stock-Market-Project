@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class OrRuleDto implements GenericRuleDto, ShoppingBasketRuleDto, UserRuleDto {
+public class OrRuleDto implements GenericRuleDto {
     public RuleDto rule1;
     public RuleDto rule2;
 

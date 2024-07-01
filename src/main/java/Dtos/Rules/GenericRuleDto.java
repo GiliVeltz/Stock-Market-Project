@@ -1,5 +1,5 @@
 package Dtos.Rules;
 
-public interface GenericRuleDto {
+public interface GenericRuleDto extends ShoppingBasketRuleDto, UserRuleDto {
     
 }

@@ -1,6 +1,6 @@
 package Dtos.Rules;
 
-public class TimeRangeInMonthRuleDto implements GenericRuleDto, ShoppingBasketRuleDto, UserRuleDto {
+public class TimeRangeInMonthRuleDto implements GenericRuleDto {
     public int startDay;
     public int endDay;
 
