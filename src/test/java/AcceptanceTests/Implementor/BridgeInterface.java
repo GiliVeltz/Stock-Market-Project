@@ -89,9 +89,6 @@ public interface BridgeInterface {
     @Test
     boolean testCheckAllOrNothingBuyingShoppingCartGuestThreading(String test, List<Integer> basketsToBuy, String cardNumber, String address);
     
-    @Test
-    boolean testBuyingShoppingCartPoliciesGuest();
-
     // SHOPPING USER TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Test

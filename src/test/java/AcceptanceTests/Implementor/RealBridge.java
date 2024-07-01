@@ -1,8 +1,6 @@
 package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -2417,12 +2415,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         boolean task2Result = (results.get(1).getBody().getErrorMessage() == null);
 
         return (task1Result && !task2Result) || (!task1Result && task2Result);
-    }
-
-    @Override
-    public boolean testBuyingShoppingCartPoliciesGuest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesGuest'");
     }
 
 
