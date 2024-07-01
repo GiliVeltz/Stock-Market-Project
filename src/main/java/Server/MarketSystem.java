@@ -325,6 +325,10 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("add_product_to_cart")){
+            //add_product_to_cart#user_name#product_name#shop_name
+            int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+            int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+            shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId);
         }
 
         else if (instruction.equals("buy_cart")){
@@ -340,6 +344,9 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("rate_shop")){
+            //rate_shop#user_name#shop_name#rating
+            int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+            shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
         }
         
         else if (instruction.equals("add_product_to_shop")){

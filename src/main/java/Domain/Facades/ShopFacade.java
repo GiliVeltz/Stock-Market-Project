@@ -971,5 +971,28 @@ public class ShopFacade {
         return -1;
     }
 
+    // shop names are unique, so we can get the shop id by its name
+    public int getShopIdByShopName(String string) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(string)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // this function returns the product id by its name and shop id
+    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            for (Product product : shop.getAllProductsList()) {
+                if (product.getProductName().equals(string)) {
+                    return product.getProductId();
+                }
+            }
+        }
+        return -1;
+    }
+
 
 }
