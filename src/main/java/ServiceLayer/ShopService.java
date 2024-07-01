@@ -25,7 +25,8 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -1457,6 +1458,31 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(
                     String.format("Failed to change shop policy for shop ID %d. Error: %s", shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Response> changeProductPolicy(String token, int shopId, int productId, List<UserRuleDto> productRules) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    _shopFacade.changeProductPolicy(username, shopId, productId, productRules);
+                    response.setReturnValue(true);
+                    logger.info(String.format("Product policy for product ID %d in shop ID %d was changed", productId, shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to change product policy for product ID %d in shop ID %d. Error: %s", productId, shopId, e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

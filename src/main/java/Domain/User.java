@@ -1,6 +1,8 @@
 
 package Domain;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -163,5 +165,16 @@ public class User {
 
     public void logOut() {
         _isLoggedIn = false;
+    }
+
+    public int getAge() {
+        // Convert _birthDate to LocalDate
+        LocalDate birthDateLocal = _birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        
+        // Get the current date
+        LocalDate currentDate = LocalDate.now();
+        
+        // Calculate the difference in years
+        return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
     }
 }
