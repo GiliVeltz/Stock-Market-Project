@@ -25,7 +25,8 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -38,13 +39,11 @@ public class ShopService {
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
-    @Autowired
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
         _shopFacade = shopFacade;
         _tokenService = tokenService;
         _userFacade = userFacade;
     }
-
   
     public ShopService() {
         _shopFacade = ShopFacade.getShopFacade();
@@ -1464,6 +1463,31 @@ public class ShopService {
         }
     }
 
+    public ResponseEntity<Response> changeProductPolicy(String token, int shopId, int productId, List<UserRuleDto> productRules) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    _shopFacade.changeProductPolicy(username, shopId, productId, productRules);
+                    response.setReturnValue(true);
+                    logger.info(String.format("Product policy for product ID %d in shop ID %d was changed", productId, shopId));
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to change product policy for product ID %d in shop ID %d. Error: %s", productId, shopId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Receive the shops which the user has roles in.
      * @param token the users session token
@@ -1837,4 +1861,52 @@ public class ShopService {
         }
     }
     
+    /**
+     * Update the manager permissions in the shop.
+     * 
+     * @param token              The session token of the user performing the
+     *                           update.
+     * @param shopId             The ID of the shop where the manager is.
+     * @param managerUsername The username of the new manager being added to the
+     *                           shop.
+     * @param permissions        The new permission set for the manager.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updatePermissions(String token, Integer shopId, String managerUsername, Set<String> permissions) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    if (_userFacade.doesUserExist(username)) {
+                        if (_userFacade.doesUserExist(managerUsername)) {
+                            _shopFacade.updatePermissions(username, shopId, managerUsername, permissions);
+                            response.setReturnValue(true);
+                            logger.info(String.format("Manager %s permissions updated in Shop ID: %d", username, shopId));
+                            return new ResponseEntity<>(response, HttpStatus.OK);
+                        } else {
+                            response.setErrorMessage(String.format("Manager: %s does not exist.", managerUsername));
+                            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                        }
+                    } else {
+                        response.setErrorMessage("User does not exist.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                } else {
+                    response.setErrorMessage("User is not logged in.");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to update manager %s permissions in shopID %d. Error: %s", managerUsername, shopId,
+                            e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

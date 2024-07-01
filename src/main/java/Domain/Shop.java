@@ -17,12 +17,14 @@ import Domain.Alerts.CredentialsModifyAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Discounts.Discount;
+import Domain.Policies.ProductPolicy;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
 import Domain.Rules.RuleFactory;
 import Dtos.DiscountDto;
 import Dtos.ShopDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
@@ -396,7 +398,7 @@ public class Shop {
             permissions.retainAll(appointer.getPermissions());
         }
         Role manager = _userToRole.get(userRole);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE,
                     "Shop - modifyPermissions: User " + username + " didn't appoint manager " + userRole
                             + ". Can't change his permissions.");
@@ -443,7 +445,7 @@ public class Shop {
                     "User " + username + " doesn't have permission to fire people in the shop with id " + _shopId);
         }
         Role manager = _userToRole.get(managerUserName);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE, "Shop - fireRole: User " + username + " didn't appoint manager " + managerUserName
                     + ". Can't fire him.");
             throw new PermissionException(
@@ -1101,6 +1103,20 @@ public class Shop {
                 Rule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
                 _shopPolicy.addRule(newRule);
             }
+        }
+    }
+
+    // this function changes the shop policy
+    public void changeProductPolicy(String username, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
+            Product product = _productMap.get(productId);
+            ProductPolicy policy = new ProductPolicy();
+            for (UserRuleDto rule : productRules) {
+                Rule<User> newRule = RuleFactory.createUserRule(rule);
+                policy.addRule(newRule);
+            }
+            product.setProductPolicy(policy);
         }
     }
 

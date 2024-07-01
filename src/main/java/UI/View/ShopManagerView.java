@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.model.Dial;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -60,6 +61,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _viewSubordinatesDialog;
     private Dialog _viewDiscountsDialog;
     private Dialog _addDiscountDialog;
+    private Dialog _managePermissionsDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
@@ -373,6 +375,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                     toggleButton.setText("Details");
                 } else {
                     _viewSubordinatesGrid.setDetailsVisible(shopManager, true);
+
                     toggleButton.setText("Hide");
                 }
             });
@@ -386,6 +389,12 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 Span permissionSpan = new Span(PermissionMapper.getPermissionName(permission));
                 detailsLayout.add(permissionSpan);
             });
+            Button managePermissionsBtn = new Button("Manage Permissions", e -> {
+                createManagePermissionsDialog(shopManager).open();
+            });
+            if(!shopManager.getPermissions().contains(Permission.FOUNDER) && !shopManager.getPermissions().contains(Permission.OWNER)){
+                detailsLayout.add(managePermissionsBtn);   
+            }
             return detailsLayout;
         }));
 
@@ -712,5 +721,80 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             // Method to convert LocalDate to Date
     private Date convertToDate(LocalDate localDate) {
         return java.sql.Date.valueOf(localDate);
+    }
+
+    public Dialog createManagePermissionsDialog(ShopManagerDto manager) {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Manage Permissions");
+        headline.getStyle().set("margin", "0");
+        formLayout.add(headline);
+
+        // Create a set to store selected permissions
+        Set<Permission> selectedPermissions = new HashSet<>(manager.getPermissions());
+
+        // Create CheckboxGroup for permissions
+        CheckboxGroup<Permission> checkboxGroup = new CheckboxGroup<>();
+        checkboxGroup.setLabel("Permissions");
+        Set<Permission> allPermissions = new HashSet<>(Arrays.asList(Permission.values()));
+        allPermissions.remove(Permission.FOUNDER); // Founder cannot be assigned
+        allPermissions.remove(Permission.OWNER); // Owner cannot be assigned
+        checkboxGroup.setItems(allPermissions);
+
+        // If Founder or Owner, can select all permissions
+        if (_permissions.contains(Permission.FOUNDER) || _permissions.contains(Permission.OWNER)) {
+            checkboxGroup.setItemEnabledProvider(permission -> permission != Permission.FOUNDER && permission != Permission.OWNER);
+        } else {
+            checkboxGroup.setItemEnabledProvider(_permissions::contains);
+        }
+
+        checkboxGroup.setItemLabelGenerator(PermissionMapper::getPermissionName);
+        checkboxGroup.setValue(selectedPermissions);
+
+        checkboxGroup.addValueChangeListener(event -> {
+            selectedPermissions.clear();
+            selectedPermissions.addAll(event.getValue());
+        });
+
+        formLayout.add(checkboxGroup);
+
+        // Add form layout to dialog
+        dialog.add(formLayout);
+
+        Button saveButton = new Button("Save", e -> {
+            // Handle save logic here
+            if(selectedPermissions.isEmpty()){
+                Notification.show("Please select at least one permission");
+                return;
+            }
+            if(selectedPermissions.equals(manager.getPermissions())){
+                Notification.show("No changes made");
+                return;
+            }
+            presenter.updatePermissions(manager.getUsername(), selectedPermissions, isSuccess -> {
+                if(isSuccess){
+                    Notification.show("Permissions updated successfully");
+                    manager.setPermissions(selectedPermissions);
+                    _viewSubordinatesDialog.close();
+                    presenter.fetchMySubordinates(managers -> {
+                        _subordinates = managers;
+                        _viewSubordinatesDialog = createViewSubordinatesDialog();
+                        _viewSubordinatesDialog.open();
+                    });
+                }else{
+                    Notification.show("Failed to update permissions");
+                }
+            });
+            dialog.close();
+        });
+        Button cancelButton = new Button("Cancel", e -> dialog.close());
+        HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
+        formLayout.add(buttonsLayout);
+
+        return dialog;
     }
 }

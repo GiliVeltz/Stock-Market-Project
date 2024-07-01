@@ -45,6 +45,14 @@ public class ShoppingCartFacade {
     public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepo = cartsRepo;
         _guestsCarts = new HashMap<>();
+
+        // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     // Public method to provide access to the _shoppingCartFacade

@@ -1,6 +1,10 @@
 package UI.View;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -22,7 +26,6 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.component.html.Span;
 
 import UI.Presenter.UserMainPagePresenter;
-// import Dtos.UserDto;
 import UI.Model.UserDto;
 
 @CssImport("./styles/shared-styles.css")
@@ -35,12 +38,12 @@ public class UserMainPageView extends BaseView {
     private Button _openShopButton;
     private VerticalLayout shopsLayout;
     private VerticalLayout messagesLayout;
+    private VerticalLayout orderLayout;
     private Button saveButton; // Moved saveButton declaration to class level
     private Button editButton;
-    public TextField usernameField = new TextField("Username");
-    public TextField passwordField = new TextField("Password");
-    public TextField emailField = new TextField("Email");
-    public TextField birthDateField = new TextField("Birth Date");
+    public TextField usernameField = new TextField();
+    public TextField emailField = new TextField();
+    public DatePicker birthDateField = new DatePicker();
 
     public UserMainPageView() {
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
@@ -51,12 +54,14 @@ public class UserMainPageView extends BaseView {
         Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
         Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
         Tab messagesTab = new Tab(VaadinIcon.COMMENT.create(), new Span("My Messages"));
+        Tab orderHistoryTab = new Tab(VaadinIcon.CART.create(), new Span("Order History"));
 
         profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
         shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
         messagesTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        orderHistoryTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
 
-        Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab);
+        Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab, orderHistoryTab);
         tabs.addClassName("custom-tabs");
 
         VerticalLayout profileLayout = new VerticalLayout();
@@ -69,6 +74,10 @@ public class UserMainPageView extends BaseView {
         UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
         messagesLayout.add(userMessagesPageView);
 
+        orderLayout = new VerticalLayout();
+        UserOrderHistoryView userOrderHistoryPageView = new UserOrderHistoryView();
+        orderLayout.add(userOrderHistoryPageView);
+
         FormLayout userInfoLayout = new FormLayout();
 
         // Fetch user information from presenter
@@ -79,9 +88,6 @@ public class UserMainPageView extends BaseView {
         // Display user information in non-editable fields
         usernameField.setReadOnly(true);
         userInfoLayout.addFormItem(usernameField, "Username");
-
-        passwordField.setReadOnly(true);
-        userInfoLayout.addFormItem(passwordField, "Password");
 
         emailField.setReadOnly(true);
         userInfoLayout.addFormItem(emailField, "Email");
@@ -102,7 +108,6 @@ public class UserMainPageView extends BaseView {
 
         editButton = new Button("Edit Details", event -> {
             // Switch to edit mode
-            passwordField.setReadOnly(false);
             emailField.setReadOnly(false);
             birthDateField.setReadOnly(false);
 
@@ -112,15 +117,15 @@ public class UserMainPageView extends BaseView {
 
         saveButton = new Button("Save", event -> {
             // Save changes to presenter or backend
+            Date date = Date.from(birthDateField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
             presenter.updateUserInfo(
-                    new UserDto(usernameField.getValue(), passwordField.getValue(), emailField.getValue(), null));
+                    new UserDto(usernameField.getValue(), emailField.getValue(), "", date));
 
             // Notify user of successful save
             Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
 
             // Switch back to view mode
             usernameField.setReadOnly(true);
-            passwordField.setReadOnly(true);
             emailField.setReadOnly(true);
             birthDateField.setReadOnly(true);
 
@@ -143,6 +148,7 @@ public class UserMainPageView extends BaseView {
             boolean isProfileTabSelected = event.getSelectedTab() == profileTab;
             boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
             boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
+            boolean isOrderHistoryTabSelected = event.getSelectedTab() == orderHistoryTab;
 
             profileLayout.setVisible(isProfileTabSelected);
 
@@ -159,15 +165,25 @@ public class UserMainPageView extends BaseView {
                 messagesLayout.add(UpdateduserMessagesPageView);
             }
             messagesLayout.setVisible(isMessagesTabSelected);
+
+            if (isOrderHistoryTabSelected) {
+                orderLayout.removeAll();
+                UserOrderHistoryView UpdateduserOrderHistoryPageView = new UserOrderHistoryView();
+                orderLayout.add(UpdateduserOrderHistoryPageView);
+            }
+            orderLayout.setVisible(isOrderHistoryTabSelected);
+
             // messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
             _openShopButton
-                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
+                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab
+                                    || event.getSelectedTab() == orderHistoryTab));
         });
 
         tabs.setSelectedTab(profileTab);
         profileLayout.setVisible(true);
         shopsLayout.setVisible(false);
         messagesLayout.setVisible(false);
+        orderLayout.setVisible(false);
 
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setWidthFull();
@@ -196,7 +212,7 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
     }
 
     // Method to construct or reload the messages content
@@ -234,8 +250,6 @@ public class UserMainPageView extends BaseView {
             shopsLayout.removeAll();
             UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
             shopsLayout.add(UpdateduserShopsPageView);
-
-
 
             // Close the dialog after submission
             dialog.close();
