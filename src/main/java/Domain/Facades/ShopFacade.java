@@ -36,6 +36,7 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
@@ -724,6 +725,18 @@ public class ShopFacade {
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeShopPolicy(username, shopRules);
+    }
+
+    // this function is responsible for changing the product policy
+    @Transactional
+    public void changeProductPolicy(String username, int shopId, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        if (shop.isShopClosed())
+            throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
+        shop.changeProductPolicy(username, productId, productRules);
     }
 
     // This function is responsible for getting all the shops in the system
