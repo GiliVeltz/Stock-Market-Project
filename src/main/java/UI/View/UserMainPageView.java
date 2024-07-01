@@ -119,7 +119,7 @@ public class UserMainPageView extends BaseView {
             // Save changes to presenter or backend
             Date date = Date.from(birthDateField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
             presenter.updateUserInfo(
-                    new UserDto(usernameField.getValue(), emailField.getValue(), "1234567", date));
+                    new UserDto(usernameField.getValue(), emailField.getValue(), "", date));
 
             // Notify user of successful save
             Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
