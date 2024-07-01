@@ -1,4 +1,4 @@
-package Server;
+package Server.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +51,13 @@ public class UserController {
             @RequestParam String username,
             @RequestHeader(value = "Authorization") String token) {
         return _userService.viewShoppingCart(token, username);
+    }
+
+    @GetMapping("/viewOrderHistory")
+    public ResponseEntity<Response> viewOrderHistory(
+            @RequestParam String username,
+            @RequestHeader(value = "Authorization") String token) {
+        return _userService.viewOrderHistory(token, username);
     }
 
     @PostMapping("/purchaseCart")

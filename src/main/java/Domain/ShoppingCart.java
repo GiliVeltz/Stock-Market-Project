@@ -36,7 +36,7 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterPayment();
+        _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = ShopFacade.getShopFacade();
         _user = null;
     }
@@ -53,7 +53,7 @@ public class ShoppingCart {
     public ShoppingCart(ShopFacade shopFacade) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterPayment();
+        _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = shopFacade;
         _user = null;
     }

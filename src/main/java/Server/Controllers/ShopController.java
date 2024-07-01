@@ -1,4 +1,4 @@
-package Server;
+package Server.Controllers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -262,6 +262,15 @@ public class ShopController {
             @RequestHeader(value = "Authorization") String token,
             @RequestParam Integer shopId) {
         return _shopService.deleteShopDiscount(token, discountDto, shopId);
+    }
+
+    @PostMapping("/updatePermissions")
+    public ResponseEntity<Response> updatePermissions(@RequestHeader("Authorization") String token,
+                                                @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        String managerUsername = (String) request.get("managerUsername");
+        Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
+        return _shopService.updatePermissions(token, shopId, managerUsername, permissions);
     }
     
     

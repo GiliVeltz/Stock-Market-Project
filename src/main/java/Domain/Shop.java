@@ -396,7 +396,7 @@ public class Shop {
             permissions.retainAll(appointer.getPermissions());
         }
         Role manager = _userToRole.get(userRole);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE,
                     "Shop - modifyPermissions: User " + username + " didn't appoint manager " + userRole
                             + ". Can't change his permissions.");
@@ -443,7 +443,7 @@ public class Shop {
                     "User " + username + " doesn't have permission to fire people in the shop with id " + _shopId);
         }
         Role manager = _userToRole.get(managerUserName);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE, "Shop - fireRole: User " + username + " didn't appoint manager " + managerUserName
                     + ". Can't fire him.");
             throw new PermissionException(
