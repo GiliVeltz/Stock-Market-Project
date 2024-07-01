@@ -3663,11 +3663,103 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem(String username, String password,
-            String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem'");
+    public boolean TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem(String username, String password, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User(username, password, "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+        _shoppingCartFacade.addCartForUser("guestToken", user);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open shop using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+
+        // user buys the product using UserService
+        List<Integer> basketsToBuy = new ArrayList<>();
+        basketsToBuy.add(0);
+        String cardNumber = "123456789";
+        String address = "address";
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // user remove the shop
+        ResponseEntity<Response> res5 = _shopServiceUnderTest.closeShop(userToken, 0);
+
+        // Act
+        ResponseEntity<Response> res6 = _userServiceUnderTest.getPersonalPurchaseHistory(userToken);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if(res4.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if(res5.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        if(res6.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res6.getBody().getErrorMessage());
+            return false;
+        }
+
+        // check if the purchased cart indeed returned
+        List<Order> purchaseHistory = (List<Order>) res6.getBody().getReturnValue();
+        if(purchaseHistory.size() == 0){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: purchase history is empty");
+            return false;
+        }
+
+        return true;
     }
 
     @SuppressWarnings("deprecation")
@@ -3851,9 +3943,108 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     }
 
     @Override
-    public boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password,
-            String productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem'");
+    public boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password, String productId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(guestToken);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        String userToken = "userToken";
+        when(_tokenServiceMock.validateToken(userToken)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(userToken)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
+
+        // create a user in the system
+        User user = new User(username, password, "email@email.com", new Date());
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+        
+        // initiate _shoppingCartFacade
+        _shoppingCartFacade = new ShoppingCartFacade();
+
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        // create a shopingcart for the username
+        _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
+        _shoppingCartFacade.addCartForUser("guestToken", user);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
+
+        // user "user" open shop using ShopSerivce
+        ShopDto shopDto1 = new ShopDto("shopTestGuest1", "bankDetails1", "address1");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(userToken, shopDto1);
+
+        // shop owner adds a product1 to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto("product1", Category.CLOTHING, 100, 5);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
+
+        // guest adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+
+        // user buys the product using UserService
+        List<Integer> basketsToBuy = new ArrayList<>();
+        basketsToBuy.add(0);
+        String cardNumber = "123456789";
+        String address = "address";
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+
+        // user remove the product from the shop
+        ResponseEntity<Response> res5 = _shopServiceUnderTest.removeProductFromShop(userToken, 0, productDto);
+
+        // Act
+        ResponseEntity<Response> res6 = _userServiceUnderTest.getPersonalPurchaseHistory(userToken);
+
+        // Assert
+        if(res1.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if(res2.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if(res3.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if(res4.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        if(res5.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res5.getBody().getErrorMessage());
+            return false;
+        }
+        if(res6.getBody().getErrorMessage() != null){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: " + res6.getBody().getErrorMessage());
+            return false;
+        }
+
+        // check if the purchased cart indeed returned
+        List<Order> purchaseHistory = (List<Order>) res6.getBody().getReturnValue();
+        if(purchaseHistory.size() == 0){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: purchase history is empty");
+            return false;
+        }
+
+        // check that the product is still in the purchase history
+        if(purchaseHistory.get(0).getProductsByShoppingBasket().size() == 0){
+            logger.info("TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem Error message: product is not in the purchase history");
+            return false;
+        }
+        
+        return true;
     }
 }

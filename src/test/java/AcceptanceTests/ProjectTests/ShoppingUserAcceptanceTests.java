@@ -198,8 +198,8 @@ public class ShoppingUserAcceptanceTests{
     @Test
     public void TestUserViewHistoryPurchaseList() {
         assertTrue(_bridge.TestUserViewHistoryPurchaseList("bob","bobspassword") ); // success - the user secceeded to see his history purchased list
-        //assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "product1") ); // success - the product exsist in the history purchased list
-        //assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem("bob","bobspassword", "shop1") ); // success - the shop products exsist in the history purchased list
+        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "0") ); // success - the product exsist in the history purchased list
+        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem("bob","bobspassword", "0") ); // success - the shop products exsist in the history purchased list
     }
     
     // Test that a user can see his own private details.
