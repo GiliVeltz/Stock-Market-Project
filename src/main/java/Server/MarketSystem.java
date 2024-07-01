@@ -7,10 +7,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -290,10 +292,12 @@ public class MarketSystem {
 
         // handle instructions :
         if (instruction.equals("logIn")){
+            //logIn#user_name#password
             userFacade.logIn(instruction_params[1], instruction_params[2]);
         }
         
         else if (instruction.equals("register")){
+            //register#user_name#password#email#birthdate
             LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
             @SuppressWarnings("deprecation")
             Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
@@ -302,6 +306,7 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("add_admin")){
+            //add_admin#user_name#password#email#birthdate
             LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
             @SuppressWarnings("deprecation")
             Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
@@ -312,6 +317,7 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("logOut")){
+            //logOut#user_name
             userFacade.logOut(instruction_params[1]);
         }
 
@@ -322,6 +328,7 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("open_shop")){
+            //open_shop#user_name#shop_name#bank_details#shop_address
             ShopDto shopDto = new ShopDto(instruction_params[2], instruction_params[3], instruction_params[4]);
             shopFacade.openNewShop(instruction_params[1], shopDto);
         }
@@ -333,16 +340,27 @@ public class MarketSystem {
         }
         
         else if (instruction.equals("add_product_to_shop")){
+            //add_product_to_shop#user_name#shop_name#category#product_name#price#quantity
             ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
             int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
             shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
         }
         
         else if (instruction.equals("appoint_shop_owner")){
-            
+            //appoint_shop_owner#founder_user_name#shop_name#owner_user_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.addShopOwner(instruction_params[1], shopId, instruction_params[3]);
+
         }
 
         else if (instruction.equals("appoint_shop_manager")){
+            //appoint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            Set<String> permissions = new HashSet<>();
+            for (int i = 4; i < instruction_params.length; i++){
+                permissions.add(instruction_params[i]);
+            }
+            shopFacade.addShopManager(instruction_params[1], shopId, instruction_params[3], permissions);
         }
 
         else if (instruction.equals("close_shop")){
