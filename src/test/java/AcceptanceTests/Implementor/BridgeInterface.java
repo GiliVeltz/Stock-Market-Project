@@ -43,9 +43,6 @@ public interface BridgeInterface {
     boolean TestGuestRegisterToTheSystem(String username, String password, String email);
     
     @Test
-    boolean TestUserEnterTheSystem(String SystemStatus);
-    
-    @Test
     boolean testLoginToTheSystem(String username, String password);
 
     // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------

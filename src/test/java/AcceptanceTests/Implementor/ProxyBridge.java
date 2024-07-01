@@ -45,11 +45,6 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserEnterTheSystem(String SystemStatus) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem' in ProxyBridge class");
-    }
-
-    @Override
     public boolean testLoginToTheSystem(String username, String password) {
         throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem' in ProxyBridge class");
     }

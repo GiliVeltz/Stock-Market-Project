@@ -377,12 +377,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         logger.info("TestGuestRegisterToTheSystem Error message: " + res.getBody().getErrorMessage());
         return res.getBody().getErrorMessage() == null;
     }
-
-    @Test
-    public boolean TestUserEnterTheSystem(String SystemStatus) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem'");
-    }
-
+    
     @Test
     public boolean testLoginToTheSystem(String username, String password) {
         // Arrange
