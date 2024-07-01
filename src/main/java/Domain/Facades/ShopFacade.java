@@ -43,17 +43,17 @@ import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import enums.Permission;
-
 @Service
 public class ShopFacade {
     private static ShopFacade _shopFacade;
+
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository, UserFacade userFacade) {
+    public ShopFacade(InterfaceShopRepository shopRepository) {
         _shopRepository = shopRepository;
-        _userFacade = userFacade;
+        _userFacade = UserFacade.getUserFacade();
 
         //For testing UI
         // try {
@@ -64,14 +64,9 @@ public class ShopFacade {
         // }
     }
 
-    // for tests
-    public ShopFacade(UserFacade userFacade){
-        _userFacade = userFacade;
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-    }
-
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
+        _userFacade = UserFacade.getUserFacade();
 
         //For testing UI
         // try {
@@ -93,6 +88,11 @@ public class ShopFacade {
             _shopFacade = new ShopFacade();
         }
         return _shopFacade;
+    }
+
+    // set shop repository to be used in real system
+    public void setShopRepository(InterfaceShopRepository shopRepository) {
+        _shopRepository = shopRepository;
     }
 
     public Shop getShopByShopId(int shopId) {
@@ -972,6 +972,39 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+    }
+
+    // this function returns the shop id by its name and founder
+    public int getShopIdByShopNameAndFounder(String founder, String shopName) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName) && shop.getFounderName().equals(founder)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // shop names are unique, so we can get the shop id by its name
+    public int getShopIdByShopName(String string) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(string)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // this function returns the product id by its name and shop id
+    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            for (Product product : shop.getAllProductsList()) {
+                if (product.getProductName().equals(string)) {
+                    return product.getProductId();
+                }
+            }
+        }
+        return -1;
     }
 
 
