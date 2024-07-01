@@ -26,7 +26,6 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.component.html.Span;
 
 import UI.Presenter.UserMainPagePresenter;
-// import Dtos.UserDto;
 import UI.Model.UserDto;
 
 @CssImport("./styles/shared-styles.css")
@@ -39,6 +38,7 @@ public class UserMainPageView extends BaseView {
     private Button _openShopButton;
     private VerticalLayout shopsLayout;
     private VerticalLayout messagesLayout;
+    private VerticalLayout orderLayout;
     private Button saveButton; // Moved saveButton declaration to class level
     private Button editButton;
     public TextField usernameField = new TextField();
@@ -54,12 +54,14 @@ public class UserMainPageView extends BaseView {
         Tab profileTab = new Tab(VaadinIcon.USER.create(), new Span("My Profile"));
         Tab shopsTab = new Tab(VaadinIcon.SHOP.create(), new Span("My Shops"));
         Tab messagesTab = new Tab(VaadinIcon.COMMENT.create(), new Span("My Messages"));
+        Tab orderHistoryTab = new Tab(VaadinIcon.CART.create(), new Span("Order History"));
 
         profileTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
         shopsTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
         messagesTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        orderHistoryTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
 
-        Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab);
+        Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab, orderHistoryTab);
         tabs.addClassName("custom-tabs");
 
         VerticalLayout profileLayout = new VerticalLayout();
@@ -71,6 +73,10 @@ public class UserMainPageView extends BaseView {
         messagesLayout = new VerticalLayout();
         UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
         messagesLayout.add(userMessagesPageView);
+
+        orderLayout = new VerticalLayout();
+        UserOrderHistoryView userOrderHistoryPageView = new UserOrderHistoryView();
+        orderLayout.add(userOrderHistoryPageView);
 
         FormLayout userInfoLayout = new FormLayout();
 
@@ -142,6 +148,7 @@ public class UserMainPageView extends BaseView {
             boolean isProfileTabSelected = event.getSelectedTab() == profileTab;
             boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
             boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
+            boolean isOrderHistoryTabSelected = event.getSelectedTab() == orderHistoryTab;
 
             profileLayout.setVisible(isProfileTabSelected);
 
@@ -158,15 +165,25 @@ public class UserMainPageView extends BaseView {
                 messagesLayout.add(UpdateduserMessagesPageView);
             }
             messagesLayout.setVisible(isMessagesTabSelected);
+
+            if (isOrderHistoryTabSelected) {
+                orderLayout.removeAll();
+                UserOrderHistoryView UpdateduserOrderHistoryPageView = new UserOrderHistoryView();
+                orderLayout.add(UpdateduserOrderHistoryPageView);
+            }
+            orderLayout.setVisible(isOrderHistoryTabSelected);
+
             // messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
             _openShopButton
-                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab));
+                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab
+                                    || event.getSelectedTab() == orderHistoryTab));
         });
 
         tabs.setSelectedTab(profileTab);
         profileLayout.setVisible(true);
         shopsLayout.setVisible(false);
         messagesLayout.setVisible(false);
+        orderLayout.setVisible(false);
 
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setWidthFull();
@@ -195,7 +212,7 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, openShopButtonLayout);
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
     }
 
     // Method to construct or reload the messages content
@@ -233,8 +250,6 @@ public class UserMainPageView extends BaseView {
             shopsLayout.removeAll();
             UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
             shopsLayout.add(UpdateduserShopsPageView);
-
-
 
             // Close the dialog after submission
             dialog.close();

@@ -30,7 +30,6 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
         _userFacade = userFacade;
@@ -55,29 +54,20 @@ public class UserService {
                     response.setErrorMessage("Username or password is empty.");
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-                if (_userFacade.AreCredentialsCorrect(userName, password)) {
-                    User user = _userFacade.getUserByUsername(userName);
-                    if (user.isLoggedIn()){
-                        response.setErrorMessage("User is already logged in.");
-                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                    }
-                    user.logIn();
-                    _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    // update the new token for the user
-                    String newToken = _tokenService.generateUserToken(userName);
-                    response.setReturnValue(newToken);
+                _userFacade.logIn(userName, password);
+                
+                _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), _userFacade.getUserByUsername(userName));
+                // update the new token for the user
+                String newToken = _tokenService.generateUserToken(userName);
+                response.setReturnValue(newToken);
              
-                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
-                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+                Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
+                NotificationHandler.getInstance().sendMessage(userName, alert);
 
-                    logger.info("User " + userName + " Logged In Succesfully");
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    response.setErrorMessage("User Name Is Not Registered Or Password Is Incorrect.");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                }
+                logger.info("User " + userName + " Logged In Succesfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -95,29 +85,19 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_userFacade.doesUserExist(userName)) {
-                    User user = _userFacade.getUserByUsername(userName);
-                    if (!user.isLoggedIn()){
-                        response.setErrorMessage("User " + userName + " is not logged in!");
-                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                    }
-                    user.logOut();
-                    String newToken = _tokenService.generateGuestToken();
-                    String id = _tokenService.extractGuestId(newToken);
-                    _userFacade.addNewGuest(id);
-                    _shoppingCartFacade.addCartForGuest(id);
-                    logger.info("User successfully logged out: " + userName);
-                    response.setReturnValue(newToken);
-                    // close this session
-                    WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
-                    Alert alert = new GeneralAlert("system Administrator", userName,
-                    "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    response.setErrorMessage("A user with the username given in the token does not exist.");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                }
+                _userFacade.logOut(userName);
+                String newToken = _tokenService.generateGuestToken();
+                String id = _tokenService.extractGuestId(newToken);
+                _userFacade.addNewGuest(id);
+                _shoppingCartFacade.addCartForGuest(id);
+                logger.info("User successfully logged out: " + userName);
+                response.setReturnValue(newToken);
+                // close this session
+                 WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
+                Alert alert = new GeneralAlert("system Administrator", userName,
+                "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                NotificationHandler.getInstance().sendMessage(userName, alert);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -453,6 +433,22 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to view shopping cart: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to view shopping cart: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Response> viewOrderHistory(String token, String username) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token) && _tokenService.isUserAndLoggedIn(token)) {
+                response.setReturnValue(_userFacade.viewOrderHistory(username));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to view order history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to view order history: " + e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

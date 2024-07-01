@@ -46,21 +46,33 @@ import enums.Permission;
 @Service
 public class ShopFacade {
     private static ShopFacade _shopFacade;
-
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository) {
+    public ShopFacade(InterfaceShopRepository shopRepository, UserFacade userFacade) {
         _shopRepository = shopRepository;
-        _userFacade = UserFacade.getUserFacade();
+        _userFacade = userFacade;
+
+        //For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
-        public ShopFacade() {
+    // for tests
+    public ShopFacade(UserFacade userFacade){
+        _userFacade = userFacade;
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
+    }
 
-        // For testing UI
+    public ShopFacade() {
+        _shopRepository = new MemoryShopRepository(new ArrayList<>());
+
+        //For testing UI
         // try {
         //     initUI();
         // }
@@ -933,4 +945,21 @@ public class ShopFacade {
         }
         shop.removeDiscount(discountDto.id);
     }
+
+    // Update the permissins of manager in shop.
+    @Transactional
+    public void updatePermissions(String username, Integer shopId, String managerUsername, Set<String> permissions)
+        throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        // Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream()
+                .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
+                .collect(Collectors.toSet());
+        shop.modifyPermissions(username, managerUsername, permissionsSet);
+    }
+
+
 }
