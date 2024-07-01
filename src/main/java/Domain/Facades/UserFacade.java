@@ -31,6 +31,16 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
+    public UserFacade() {
+        _userRepository = new MemoryUserRepository(new ArrayList<>());
+        _guestIds = new ArrayList<>();
+        _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // // //For testing UI
+        // initUI();
+    }
+
     public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
@@ -41,7 +51,6 @@ public class UserFacade {
         // initUI();
     }
 
-    @Autowired
     public UserFacade(InterfaceUserRepository userRepository) {
         _userRepository = userRepository;
         _guestIds = new ArrayList<>();
@@ -58,6 +67,11 @@ public class UserFacade {
             _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
+    }
+
+    // set the user repository to be used real time
+    public void setUserRepository(InterfaceUserRepository userRepository) {
+        _userRepository = userRepository;
     }
 
     // logIn function
