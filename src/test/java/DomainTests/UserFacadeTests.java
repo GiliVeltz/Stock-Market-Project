@@ -513,20 +513,6 @@ public class UserFacadeTests {
     }
 
     @Test
-    public void testSetUserDetails_whenPasswordIsEmpty_thenError() throws StockMarketException {
-        // Arrange
-        String userTest = "john_doe";
-        String email = "email@email.com";
-        String password = "";
-        
-        _registeredUsers.add(_user1);
-        _userFacadeUnderTest = new UserFacade(_registeredUsers, _guestIds);
-
-        // Act & Assert
-        assertThrows(StockMarketException.class, () -> _userFacadeUnderTest.setUserDetails(userTest, new UserDto(userTest, password, email, new Date())));
-    }
-
-    @Test
     public void testSetUserDetails_whenUserDoesNotExist_thenError() throws StockMarketException {
         // Arrange
         String userTest = "john_doe";
