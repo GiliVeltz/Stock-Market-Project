@@ -1185,7 +1185,62 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     @Test
     public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
-        return false;
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+        
+        String tokenShopOwner = "userNameOwner";
+        String tokenShopNotOwner = "userNameNotOwner";
+
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn("userNameOwner");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+
+        when(_tokenServiceMock.validateToken(tokenShopNotOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopNotOwner)).thenReturn("userNameNotOwner");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopNotOwner)).thenReturn(true);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("userNameOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopManager = new User("userNameManager", _passwordEncoder.encodePassword("shopManagerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }, new ArrayList<>());
+
+        _shopFacade = new ShopFacade();
+
+        try {
+            _shopFacade.openNewShop("userNameOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopOwner, 0, "userNameManager", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.getShopManagerPermissions(token, Integer.parseInt(shopId));
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerGetShopManagersPermissions Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
     }
 
     @Test
