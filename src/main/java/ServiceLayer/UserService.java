@@ -392,7 +392,7 @@ public class UserService {
     }
 
     // this function is responsible for setting the user personal details.
-    @Transactional
+    // @Transactional
     public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
         Response response = new Response();
         try {
