@@ -1,5 +1,8 @@
 package Server.Controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -132,6 +135,21 @@ public class UserController {
         // "http://localhost:8080/api/user/removeProductFromShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
         ResponseEntity<Response> resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
+        return resp;
+    }
+
+     @GetMapping("/reportToAdmin")
+    public ResponseEntity<Response> reportToAdmin(@RequestHeader("Authorization") String token,@RequestParam String message) {
+       
+        String decodedString = "";
+    try {
+        decodedString = URLDecoder.decode(message, StandardCharsets.UTF_8.toString());
+          
+    } catch (Exception e) {
+        // Handle exception (e.g., UnsupportedEncodingException, which should not happen for UTF-8)
+        e.printStackTrace();
+    }
+        ResponseEntity<Response> resp = _userService.reportToAdmin(token,decodedString);
         return resp;
     }
 }

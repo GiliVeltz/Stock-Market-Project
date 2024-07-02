@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Alerts.Alert;
 import Domain.Alerts.GeneralAlert;
+import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
@@ -166,33 +167,6 @@ public class SystemService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to leave the system: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to leave the system: " + e.getMessage(), e);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Transactional
-    public ResponseEntity<Response> reportToAdmin(String token,String message) {
-        Response response = new Response();
-        try {
-            if (_tokenService.validateToken(token)) {
-                if (_tokenService.isUserAndLoggedIn(token)) {
-                    String user = _tokenService.extractUsername(token); 
-                     logger.info(String.format("New report created by user: %s", user));
-                    Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
-                    NotificationHandler.getInstance().sendMessage(owner, alert);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    response.setErrorMessage("Problem with posses complain please try again.");
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-                }
-            } else {
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
-
-        } catch (Exception e) {
-            response.setErrorMessage(
-                    String.format("Failed to open complain. Error: %s", e.getMessage()));
-            logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

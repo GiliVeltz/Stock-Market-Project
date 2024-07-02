@@ -168,7 +168,7 @@ public class UserMainPageView extends BaseView {
                 // complaintDetails;
                 String message = "report submitted for shop " + ", from user: " + username + ".\n"
                         + "The reason: " + selectedReason + ".\n" + "details:" + complaintDetails;
-                presenter.openComplain(message);
+                presenter.openReport(message);
             });
 
             formLayout.addFormItem(reasonSelect, "Reason");

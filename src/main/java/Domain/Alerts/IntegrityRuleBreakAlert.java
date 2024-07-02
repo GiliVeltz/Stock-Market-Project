@@ -6,9 +6,9 @@ public class IntegrityRuleBreakAlert implements Alert{
     private String targetUser;
     private String message;
 
-    public IntegrityRuleBreakAlert(String fromUser, String targetUser,String message){
+    public IntegrityRuleBreakAlert(String fromUser,String message){
         this.fromUser = fromUser;
-        this.targetUser = targetUser;   
+        this.targetUser = "u1_Admin";   
         this.message = message;
         setMessage();
      
@@ -19,7 +19,7 @@ public class IntegrityRuleBreakAlert implements Alert{
     }
     @Override
     public void setMessage() {
-        this.message = "New Notification: " + targetUser + "\n" + this.message;
+        this.message = "New Notification: " + targetUser + " user: " + fromUser + "report on breaking integrity rule " +"\n" + this.message;
         
     }
     public void setMessage(String message){
