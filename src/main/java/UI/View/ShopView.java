@@ -142,7 +142,7 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
         Select<String> reasonSelect = new Select<>();
         reasonSelect.setLabel("Select the reason from the list below");
         reasonSelect.setItems("No longer needed", "Item doesn't match the description",
-                "Item defective or doesn't work", "Damaged", "Items are missing", "Expiry date issues");
+                "Item defective or doesn't work", "Damaged", "Items are missing", "Expiry date issues","Other...");
         reasonSelect.setPlaceholder("Please select");
         reasonSelect.setWidthFull(); // Make the select component full width
     
@@ -158,7 +158,7 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
             Notification.show("Complaint submitted: " + selectedReason);
             complainDialog.close();
             String username = (String) UI.getCurrent().getSession().getAttribute("username");
-            String message = "admin: Complaint submitted: from user :"+ username + ".\n" + "reason: " + selectedReason + ".\n" +"details:" + complaintDetails; 
+            String message = "u1_Admin: Complaint submitte for shop" + _shopId +", from user :"+ username + ".\n" + "The reason: " + selectedReason + ".\n" +"details:" + complaintDetails; 
             _presenter.openComplain(message);
         });
     
