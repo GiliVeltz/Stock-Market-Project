@@ -18,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -201,80 +202,124 @@ public class UserMainPageView extends BaseView {
         _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
         _openShopButton.setWidth("120px");
 
-        // // Create and configure the "Report" button
-        // Button reportButton = new Button("Report", e -> createReportDialog().open());
-        // reportButton.setWidth("120px");
+        // Create and configure the "Report" button
+        Button reportButton = new Button("Report", e -> createReportDialog().open());
+        reportButton.setWidth("120px");
 
-        // _myMessagesButton = new Button("My Messages", e -> {
-        // getUI().ifPresent(ui -> ui.navigate("user_messages"));
-        // });
-        // Add a click listener to the messagesTab
-        // Setup for messagesTab with a selected change listener
+        HorizontalLayout buttonLayout = new HorizontalLayout(_openShopButton, reportButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.END);
 
-        HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
-        openShopButtonLayout.setWidthFull();
-        openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-        openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
-
-        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
+        add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, buttonLayout);
     }
 
     // Method to construct or reload the messages content
     private UserMessagesPageView constructMessagesContent() { 
-        UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
+        UserMessagesPage View userMessagesPageView = new UserMessagesPageView();
         // Example: Add components to layout, such as messages
         return userMessagesPageView;
-    }
+        }
 
+    }
     private Dialog createOpenNewShopDialog() {
         Dialog dialog = new Dialog();
-
+    
         // Create a headline
         H2 headline = new H2("Open New Shop");
-
+    
         // Create form layout
         FormLayout formLayout = new FormLayout();
-
+    
         // Create form fields
         TextField shopNameField = new TextField("Shop Name");
         TextField bankDetailsField = new TextField("Bank Details");
         TextField shopAddressField = new TextField("Address");
-
+    
         // Add fields to the form layout
         formLayout.add(shopNameField, bankDetailsField, shopAddressField);
-
+    
         // Create buttons
         Button submitButton = new Button("Submit", event -> {
             // Handle form submission
             String shopName = shopNameField.getValue();
             String bankDetails = bankDetailsField.getValue();
             String shopAddress = shopAddressField.getValue();
-
+    
             presenter.openNewShop(shopName, bankDetails, shopAddress);
             shopsLayout.removeAll();
             UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
             shopsLayout.add(UpdateduserShopsPageView);
-
+    
             // Close the dialog after submission
             dialog.close();
         });
-
+    
         submitButton.addClassName("pointer-cursor");
-
+    
         Button cancelButton = new Button("Cancel", event -> dialog.close());
-
+    
         cancelButton.addClassName("pointer-cursor");
-
+    
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
-
+    
         // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);
-
+    
         return dialog;
     }
-}
+    
+    private Dialog createReportDialog() {
+        Dialog dialog = new Dialog();
+    
+        // Create a headline
+        H2 headline = new H2("Report Issue");
+    
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+    
+        // Create form fields
+        TextArea descriptionField = new TextArea("Description");
+        DatePicker dateField = new DatePicker("Date");
+    
+        // Add fields to the form layout
+        formLayout.add(descriptionField, dateField);
+    
+        // Create buttons
+        Button submitButton = new Button("Submit", event -> {
+            // Handle form submission
+            String description = descriptionField.getValue();
+            Date date = Date.from(dateField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+    
+            presenter.reportIssue(description, date);
+    
+            // Notify user of successful submission
+            Notification.show("Issue reported successfully", 3000, Notification.Position.TOP_CENTER);
+    
+            // Close the dialog after submission
+            dialog.close();
+        });
+    
+        submitButton.addClassName("pointer-cursor");
+    
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+    
+        cancelButton.addClassName("pointer-cursor");
+    
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
+    
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        dialog.add(dialogLayout);
+    
+        return dialog;
+    }
