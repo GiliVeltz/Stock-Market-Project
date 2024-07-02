@@ -1,4 +1,5 @@
 package UI.View;
+
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,6 @@ public class UserMessagesPageView extends VerticalLayout {
     private VerticalLayout messagesLayout;
     private ProgressBar loadingIndicator;
     private List<Message> allMessages;
-    // private List<Message> unreadMessages;
-    // private List<Message> currentMessages;
 
     public UserMessagesPageView() {
         // Retrieve the username from the session
@@ -88,8 +87,6 @@ public class UserMessagesPageView extends VerticalLayout {
         createMessageTextArea(allMessages); // Display all messages
     }
 
-    
-
     private void showUnreadMessages() {
         messagesLayout.removeAll();
         // copy the all messages to current messages
@@ -121,6 +118,13 @@ public class UserMessagesPageView extends VerticalLayout {
             if (!message.isRead()) {
                 messageLayout.addClassName("unread-message");
             }
+
+            // Add double-click event listener to the entire message layout
+            messageLayout.addClickListener(e -> {
+                if (e.getClickCount() == 2) { // Double-click detected
+                    showFullMessageDialog(message.getMessage());
+                }
+            });
     
             // Create the message text area
             Span messageTextArea = new Span();
@@ -169,7 +173,6 @@ public class UserMessagesPageView extends VerticalLayout {
         }
     }
 
-
     public void createUnreadMessageTextArea(List<Message> messages) {
         loadingIndicator.setVisible(false); // Hide loading indicator
         // allMessages = messages; // Store all messages for filtering
@@ -191,6 +194,13 @@ public class UserMessagesPageView extends VerticalLayout {
             if (!message.isRead()) {
                 messageLayout.addClassName("unread-message");
             }
+
+            // Add double-click event listener to the entire message layout
+            messageLayout.addClickListener(e -> {
+                if (e.getClickCount() == 2) { // Double-click detected
+                    showFullMessageDialog(message.getMessage());
+                }
+            });
     
             // Create the message text area
             Span messageTextArea = new Span();
@@ -247,4 +257,17 @@ public class UserMessagesPageView extends VerticalLayout {
         messagesLayout.removeAll();
         presenter.fetchMessages(_username);
     }
+    
+    private void showFullMessageDialog(String message) {
+        Dialog dialog = new Dialog();
+        dialog.setWidth("400px");
+        dialog.setHeight("300px");
+    
+        Span fullMessageSpan = new Span(message);
+        fullMessageSpan.addClassName("full-message-span");
+    
+        dialog.add(fullMessageSpan);
+        dialog.open();
+    }
+
 }

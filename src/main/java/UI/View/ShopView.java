@@ -158,7 +158,7 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
             Notification.show("Complaint submitted: " + selectedReason);
             complainDialog.close();
             String username = (String) UI.getCurrent().getSession().getAttribute("username");
-            String message = "u1_Admin: Complaint submitte for shop" + _shopId +", from user :"+ username + ".\n" + "The reason: " + selectedReason + ".\n" +"details:" + complaintDetails; 
+            String message = "u1_Admin: Complaint submitte for shop " + _shopId +", from user :"+ username + ".\n" + "The reason: " + selectedReason + ".\n" +"details:" + complaintDetails; 
             _presenter.openComplain(message);
         });
     
