@@ -36,13 +36,13 @@ import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
-import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import enums.Permission;
-
 @Service
 public class ShopFacade {
     private static ShopFacade _shopFacade;
@@ -88,6 +88,11 @@ public class ShopFacade {
             _shopFacade = new ShopFacade();
         }
         return _shopFacade;
+    }
+
+    // set shop repository to be used in real system
+    public void setShopRepository(InterfaceShopRepository shopRepository) {
+        _shopRepository = shopRepository;
     }
 
     public Shop getShopByShopId(int shopId) {
@@ -202,6 +207,21 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDto.productName, shopId));
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
+    }
+
+    @Transactional
+    public void openComplaint(Integer shopId, String userName,String message) throws StockMarketException {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToNotify = getShopByShopId(shopId);               
+                shopToNotify.openComplaint(userName, message);                
+            }
+        } catch (StockMarketException e) {
+            throw new StockMarketException(e.getMessage());
+        }
+
     }
 
     // Edit a product in a shop by its ID.
@@ -735,6 +755,18 @@ public class ShopFacade {
         shop.changeShopPolicy(username, shopRules);
     }
 
+    // this function is responsible for changing the product policy
+    @Transactional
+    public void changeProductPolicy(String username, int shopId, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        if (shop.isShopClosed())
+            throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
+        shop.changeProductPolicy(username, productId, productRules);
+    }
+
     // This function is responsible for getting all the shops in the system
     @Transactional
     public List<ShopGetterDto> getShopsEntities() {
@@ -955,6 +987,39 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+    }
+
+    // this function returns the shop id by its name and founder
+    public int getShopIdByShopNameAndFounder(String founder, String shopName) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName) && shop.getFounderName().equals(founder)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // shop names are unique, so we can get the shop id by its name
+    public int getShopIdByShopName(String string) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(string)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // this function returns the product id by its name and shop id
+    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            for (Product product : shop.getAllProductsList()) {
+                if (product.getProductName().equals(string)) {
+                    return product.getProductId();
+                }
+            }
+        }
+        return -1;
     }
 
     // get shopDto including rating by shopId

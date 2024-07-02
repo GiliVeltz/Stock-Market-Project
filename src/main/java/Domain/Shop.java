@@ -14,15 +14,18 @@ import java.util.logging.Logger;
 import Domain.Alerts.Alert;
 import Domain.Alerts.CloseShopAlert;
 import Domain.Alerts.CredentialsModifyAlert;
+import Domain.Alerts.GeneralAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Discounts.Discount;
+import Domain.Policies.ProductPolicy;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
 import Domain.Rules.RuleFactory;
 import Dtos.DiscountDto;
 import Dtos.ShopDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
@@ -1060,6 +1063,18 @@ public class Shop {
         }
     }
 
+     /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
+    public void openComplaint(String fromUsername,String message) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new GeneralAlert(fromUsername,owner, message);
+        _notificationHandler.sendMessage(owner, alert);
+        }
+    }
+
     /**
      * Notify the users that the shop has been re-opened.
      * @param username the  user that re-opened the shop.
@@ -1101,6 +1116,20 @@ public class Shop {
                 Rule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
                 _shopPolicy.addRule(newRule);
             }
+        }
+    }
+
+    // this function changes the shop policy
+    public void changeProductPolicy(String username, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
+            Product product = _productMap.get(productId);
+            ProductPolicy policy = new ProductPolicy();
+            for (UserRuleDto rule : productRules) {
+                Rule<User> newRule = RuleFactory.createUserRule(rule);
+                policy.addRule(newRule);
+            }
+            product.setProductPolicy(policy);
         }
     }
 

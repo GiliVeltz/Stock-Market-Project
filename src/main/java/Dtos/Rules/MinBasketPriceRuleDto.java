@@ -1,6 +1,6 @@
-package Dtos;
+package Dtos.Rules;
 
-public class MinBasketPriceRuleDto extends ShoppingBasketRuleDto {
+public class MinBasketPriceRuleDto implements ShoppingBasketRuleDto {
     public double minPrice;
 
     public MinBasketPriceRuleDto(double minPrice) {

@@ -1,5 +1,8 @@
 package UI.Presenter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
@@ -12,21 +15,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
+import UI.WebSocketClient;
+import UI.Model.BasketDto;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.View.ShopView;
 
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({ "rawtypes" })
 public class ShopViewPresenter {
 
     ShopView _view;
 
-    public ShopViewPresenter(ShopView view){
+    public ShopViewPresenter(ShopView view) {
         this._view = view;
     }
 
-    public void getShopProducts(){
-         RestTemplate restTemplate = new RestTemplate();
+    public void getShopProducts() {
+        RestTemplate restTemplate = new RestTemplate();
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -39,7 +44,8 @@ public class ShopViewPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
                         Integer shopId = (Integer) UI.getCurrent().getSession().getAttribute("shopId");
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _view.getServerPort() + "/api/shop/getAllProductInShop?shopId=" + shopId,
+                                "http://localhost:" + _view.getServerPort() + "/api/shop/getAllProductInShop?shopId="
+                                        + shopId,
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
@@ -51,13 +57,13 @@ public class ShopViewPresenter {
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 List<ProductDto> productDtoList = objectMapper.convertValue(
                                         responseBody.getReturnValue(),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ProductDto.class));
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                ProductDto.class));
                                 _view.displayAllProducts(productDtoList);
                                 _view.showSuccessMessage("products present successfully");
-                            }
-                            else {
+                            } else {
                                 _view.showErrorMessage("Failed to parse JSON response");
-                            }                       
+                            }
                         } else {
                             _view.showErrorMessage("Failed to present products");
                         }
@@ -68,5 +74,54 @@ public class ShopViewPresenter {
                 });
 
     }
+
+    // public void openComplain(String message) {
+    //     WebSocketClient.sendMessage(message);
+    // }
+
+
+    public void openComplain(String message) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        Integer shopId = (Integer) UI.getCurrent().getSession().getAttribute("shopId");
+                        try {
+                            String url = "http://localhost:" + _view.getServerPort() + "/api/shop/openComplaint?shopId=" + shopId + "&message=" + URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                url,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                _view.showSuccessMessage("complaint open successfully");
+                            } else {
+                                _view.showErrorMessage("Failed to parse JSON response");
+                            }
+                        } else {
+                            _view.showErrorMessage("Failed to open complaint");
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        _view.showErrorMessage("Failed to open complaint");
+                    }
+                });
+
+    }
+
 
 }

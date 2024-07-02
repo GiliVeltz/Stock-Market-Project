@@ -1,6 +1,10 @@
 package UI.View;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -37,10 +41,9 @@ public class UserMainPageView extends BaseView {
     private VerticalLayout orderLayout;
     private Button saveButton; // Moved saveButton declaration to class level
     private Button editButton;
-    public TextField usernameField = new TextField("Username");
-    public TextField passwordField = new TextField("Password");
-    public TextField emailField = new TextField("Email");
-    public TextField birthDateField = new TextField("Birth Date");
+    public TextField usernameField = new TextField();
+    public TextField emailField = new TextField();
+    public DatePicker birthDateField = new DatePicker();
 
     public UserMainPageView() {
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
@@ -86,9 +89,6 @@ public class UserMainPageView extends BaseView {
         usernameField.setReadOnly(true);
         userInfoLayout.addFormItem(usernameField, "Username");
 
-        passwordField.setReadOnly(true);
-        userInfoLayout.addFormItem(passwordField, "Password");
-
         emailField.setReadOnly(true);
         userInfoLayout.addFormItem(emailField, "Email");
 
@@ -108,7 +108,6 @@ public class UserMainPageView extends BaseView {
 
         editButton = new Button("Edit Details", event -> {
             // Switch to edit mode
-            passwordField.setReadOnly(false);
             emailField.setReadOnly(false);
             birthDateField.setReadOnly(false);
 
@@ -118,15 +117,15 @@ public class UserMainPageView extends BaseView {
 
         saveButton = new Button("Save", event -> {
             // Save changes to presenter or backend
+            Date date = Date.from(birthDateField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
             presenter.updateUserInfo(
-                    new UserDto(usernameField.getValue(), passwordField.getValue(), emailField.getValue(), null));
+                    new UserDto(usernameField.getValue(), emailField.getValue(), "", date));
 
             // Notify user of successful save
             Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
 
             // Switch back to view mode
             usernameField.setReadOnly(true);
-            passwordField.setReadOnly(true);
             emailField.setReadOnly(true);
             birthDateField.setReadOnly(true);
 

@@ -28,7 +28,6 @@ public class SystemService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
-    @Autowired
     public SystemService(ExternalServiceHandler externalServiceHandler,
             TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _externalServiceHandler = externalServiceHandler;
