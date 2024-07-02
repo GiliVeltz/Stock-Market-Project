@@ -1022,5 +1022,14 @@ public class ShopFacade {
         return -1;
     }
 
+    // get shopDto including rating by shopId
+    public ShopDto getShopDtoById(int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shopId, shop.getShopName(), shop.getBankDetails(), shop.getShopAddress(), shop.getShopRating());
+        }
+        return null;
+    }
+
 
 }
