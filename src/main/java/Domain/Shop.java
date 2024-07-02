@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import Domain.Alerts.Alert;
 import Domain.Alerts.CloseShopAlert;
 import Domain.Alerts.CredentialsModifyAlert;
+import Domain.Alerts.GeneralAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Discounts.Discount;
@@ -1059,6 +1060,18 @@ public class Shop {
             String owner = entry.getKey();
             Alert alert = new CloseShopAlert(owner, username, _shopId);
             _notificationHandler.sendMessage(owner, alert);
+        }
+    }
+
+     /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
+    public void openComplaint(String fromUsername,String message) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new GeneralAlert(fromUsername,owner, message);
+        _notificationHandler.sendMessage(owner, alert);
         }
     }
 

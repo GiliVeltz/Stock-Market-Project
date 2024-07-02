@@ -45,9 +45,9 @@ import enums.Category;
 public class MarketSystem {
 
     public final static String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
-    public final static String tests_config_file_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\tests_config.txt";
-    public static String instructions_config_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\instructions_config.txt";
-    public final static String system_config_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\system_config.txt";
+    public final static String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
+    public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
+    public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPayment payment_adapter;
     private AdapterSupply supply_adapter;

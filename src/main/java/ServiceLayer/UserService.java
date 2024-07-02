@@ -63,8 +63,8 @@ public class UserService {
              
                 WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
                 // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-                Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
-                NotificationHandler.getInstance().sendMessage(userName, alert);
+                // Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
+                // NotificationHandler.getInstance().sendMessage(userName, alert);
 
                 logger.info("User " + userName + " Logged In Succesfully");
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -94,9 +94,9 @@ public class UserService {
                 response.setReturnValue(newToken);
                 // close this session
                  WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
-                Alert alert = new GeneralAlert("system Administrator", userName,
-                "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
-                NotificationHandler.getInstance().sendMessage(userName, alert);
+                // Alert alert = new GeneralAlert("system Administrator", userName,
+                // "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                // NotificationHandler.getInstance().sendMessage(userName, alert);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
