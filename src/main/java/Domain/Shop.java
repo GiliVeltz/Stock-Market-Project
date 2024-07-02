@@ -1043,7 +1043,7 @@ public class Shop {
      * @param buyingUser the buying user.   
      * @param productIdList the product id list.
      */
-    public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
+    public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
