@@ -150,4 +150,8 @@ public void getUserInfo() {
                     }
                 });
     }
+
+    public void openComplain(String message) {
+        
+    }
 }    
