@@ -80,13 +80,6 @@ public class UserMessagesPageView extends VerticalLayout {
         messagesLayout.addClassName("messages-layout");
         add(messagesLayout);
 
-        // Add pagination controls
-        HorizontalLayout paginationControls = new HorizontalLayout();
-        Button prevButton = new Button("Previous", e -> showPage(currentPage - 1));
-        Button nextButton = new Button("Next", e -> showPage(currentPage + 1));
-        paginationControls.add(prevButton, nextButton);
-        add(paginationControls);
-
         // Fetch all messages initially
         presenter.fetchMessages(_username);
     }
@@ -104,22 +97,6 @@ public class UserMessagesPageView extends VerticalLayout {
         createUnreadMessageTextArea(unreadMessages); // Display unread messages
     }
 
-    // private void sortMessages(boolean ascending) {
-    //     allMessages.sort((m1, m2) -> ascending ? m1.getTimestamp().compareTo(m2.getTimestamp())
-    //             : m2.getTimestamp().compareTo(m1.getTimestamp()));
-    //     showPage(currentPage);
-    // }
-
-    private void showPage(int page) {
-        if (page < 0 || page * MESSAGES_PER_PAGE >= allMessages.size()) {
-            return;
-        }
-        currentPage = page;
-        int start = page * MESSAGES_PER_PAGE;
-        int end = Math.min(start + MESSAGES_PER_PAGE, allMessages.size());
-        List<Message> paginatedMessages = allMessages.subList(start, end);
-        createMessageTextArea(paginatedMessages);
-    }
 
     public void createMessageTextArea(List<Message> messages) {
         messagesLayout.removeAll(); // Clear existing messages
