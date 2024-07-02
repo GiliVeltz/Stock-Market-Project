@@ -31,14 +31,12 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
     public static void main(String[] args) {
         port = findAvailablePort();
         System.setProperty("server.port", "8081");
-        //System.setProperty("server.port", String.valueOf(port));
+        // System.setProperty("server.port", String.valueOf(port));
         // System.out.println("Server port: " + port);
         SpringApplication app = new SpringApplication(Application.class);
         app.run(args);
 
     }
-
-
 
     private static int findAvailablePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -47,7 +45,5 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
             throw new RuntimeException("Failed to find an available port", e);
         }
     }
-
- 
 
 }

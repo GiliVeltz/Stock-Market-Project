@@ -11,6 +11,7 @@ public class Message {
 
     public Message(String message) {
         this.message = message;
+        this.targetUser = "";
         this.timestamp = LocalDateTime.now(); // Automatically sets the current time and date
         this.isRead = false;
         setMessage(message);
