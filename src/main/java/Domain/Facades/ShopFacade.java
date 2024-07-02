@@ -209,6 +209,21 @@ public class ShopFacade {
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
     }
 
+    @Transactional
+    public void openComplaint(Integer shopId, String userName,String message) throws StockMarketException {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToNotify = getShopByShopId(shopId);               
+                shopToNotify.openComplaint(userName, message);                
+            }
+        } catch (StockMarketException e) {
+            throw new StockMarketException(e.getMessage());
+        }
+
+    }
+
     // Edit a product in a shop by its ID.
     @Transactional
     public synchronized void editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew,

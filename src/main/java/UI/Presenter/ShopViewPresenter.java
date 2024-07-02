@@ -1,5 +1,8 @@
 package UI.Presenter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
@@ -13,6 +16,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
 import UI.WebSocketClient;
+import UI.Model.BasketDto;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.View.ShopView;
@@ -71,8 +75,53 @@ public class ShopViewPresenter {
 
     }
 
+    // public void openComplain(String message) {
+    //     WebSocketClient.sendMessage(message);
+    // }
+
+
     public void openComplain(String message) {
-        WebSocketClient.sendMessage(message);
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        Integer shopId = (Integer) UI.getCurrent().getSession().getAttribute("shopId");
+                        try {
+                            String url = "http://localhost:" + _view.getServerPort() + "/api/shop/openComplaint?shopId=" + shopId + "&message=" + URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                url,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                _view.showSuccessMessage("complaint open successfully");
+                            } else {
+                                _view.showErrorMessage("Failed to parse JSON response");
+                            }
+                        } else {
+                            _view.showErrorMessage("Failed to open complaint");
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        _view.showErrorMessage("Failed to open complaint");
+                    }
+                });
+
     }
+
 
 }
