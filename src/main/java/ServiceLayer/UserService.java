@@ -145,6 +145,8 @@ public class UserService {
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
                     _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
+                    Alert alert = new PurchaseFromShopUserAlert(userName);
+                    NotificationHandler.getInstance().sendMessage(userName, alert);
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
