@@ -32,9 +32,6 @@ public class UserMessagesPageView extends VerticalLayout {
     private ProgressBar loadingIndicator;
     private List<Message> allMessages = new ArrayList<>();
     private List<Message> allCurrentMessages = new ArrayList<>();
-    private int currentPage = 0;
-    private static final int MESSAGES_PER_PAGE = 5;
-    private LocalDateTime lastVisit;
 
     public UserMessagesPageView() {
         // Retrieve the username from the session
