@@ -1,8 +1,6 @@
 package AcceptanceTests.Implementor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -33,7 +31,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.*;
-import Domain.Alerts.Alert;
 import Domain.Alerts.PurchaseFromShopUserAlert;
 import Domain.Authenticators.*;
 import Domain.ExternalServices.ExternalServiceHandler;
