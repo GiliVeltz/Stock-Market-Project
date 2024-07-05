@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class SearchProductResponseDto {
     private String errorMessage;
-    private Map<String, List<ProductDto>> returnValue;
+    private Map<ShopDto, List<ProductDto>> returnValue;
 
     public SearchProductResponseDto() {
     }
 
-    public SearchProductResponseDto(String errorMessage, Map<String, List<ProductDto>> returnValue) {
+    public SearchProductResponseDto(String errorMessage, Map<ShopDto, List<ProductDto>> returnValue) {
         this.errorMessage = errorMessage;
         this.returnValue = returnValue;
     }
@@ -23,11 +23,11 @@ public class SearchProductResponseDto {
         this.errorMessage = errorMessage;
     }
 
-    public Map<String, List<ProductDto>> getReturnValue() {
+    public Map<ShopDto, List<ProductDto>> getReturnValue() {
         return returnValue;
     }
 
-    public void setReturnValue(Map<String, List<ProductDto>> returnValue) {
+    public void setReturnValue(Map<ShopDto, List<ProductDto>> returnValue) {
         this.returnValue = returnValue;
     }
 }

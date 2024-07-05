@@ -18,6 +18,7 @@ import com.vaadin.flow.component.UI;
 import UI.Model.ProductDto;
 import UI.Model.ProductSearchDto;
 import UI.Model.SearchProductResponseDto;
+import UI.Model.ShopDto;
 import UI.View.Header;
 import UI.View.SearchProductsResultsView;
 
@@ -81,10 +82,10 @@ public class SearchProductsPresenter {
                                 if (response.getStatusCode().is2xxSuccessful()) {
                                     // convert to ResponseDTO
                                     SearchProductResponseDto responseDto = objectMapper.readValue(responseBody, SearchProductResponseDto.class);
-                                    Map<String, List<ProductDto>> shopNameToProducts = responseDto.getReturnValue();
+                                    Map<ShopDto, List<ProductDto>> shopToProducts = responseDto.getReturnValue();
             
-                                    if (shopNameToProducts != null) {
-                                        searchProductsResultsView.displayResponseProducts(shopNameToProducts);
+                                    if (shopToProducts != null) {
+                                        searchProductsResultsView.displayResponseProducts(shopToProducts);
                                     }
                                     else {
                                         searchProductsResultsView.showErrorMessage("Searched products loading failed");
