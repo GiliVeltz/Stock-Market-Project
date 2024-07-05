@@ -1,5 +1,7 @@
 package Server.Controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,8 @@ public class ShopController {
         ResponseEntity<Response> resp =_shopService.openNewShop(token, shopDto);
         return resp;
     }
+
+   
 
     @GetMapping("/closeShop")
     public ResponseEntity<Response> closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
@@ -228,12 +232,27 @@ public class ShopController {
 
     @GetMapping("/getShopManagers")
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        
         return _shopService.getShopManagers(token, shopId);
     }
 
     @GetMapping(value = "/getAllProductInShop", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response>getAllProductInShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getAllProductInShop(token, shopId);
+    }
+
+     @GetMapping("/openComplaint")
+    public ResponseEntity<Response> openComplaint(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,@RequestParam String message) {
+        String decodedString = "";
+    try {
+        decodedString = URLDecoder.decode(message, StandardCharsets.UTF_8.toString());
+          
+    } catch (Exception e) {
+        // Handle exception (e.g., UnsupportedEncodingException, which should not happen for UTF-8)
+        e.printStackTrace();
+    }
+    return _shopService.openComplaint(token,shopId,decodedString);
+      
     }
     
 

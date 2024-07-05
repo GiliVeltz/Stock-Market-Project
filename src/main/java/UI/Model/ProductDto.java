@@ -1,5 +1,7 @@
 package UI.Model;
 
+import java.util.Set;
+
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +21,12 @@ public class ProductDto {
     @NotBlank(message = "Product quantity is required")
     private int productQuantity;
 
+    // @NotBlank(message = "Product rating is required")
+    private double productRating;
+
+    // @NotBlank(message = "Keywords are required")
+    private Set<String> keywords;
+
     // Constructor
     public ProductDto(){}
 
@@ -27,6 +35,15 @@ public class ProductDto {
         this.category = category;
         this.price = price;
         this.productQuantity = productQuantity;
+    }
+
+    public ProductDto(String productName, Category category, double price, int productQuantity, double productRating, Set<String> keywords) {
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productQuantity = productQuantity;
+        this.productRating = productRating;
+        this.keywords = keywords;
     }
 
     // Getters and setters
@@ -52,6 +69,22 @@ public class ProductDto {
 
     public void setPrice(double newPrice) {
         this.price = newPrice;
+    }
+
+    public double getProductRating() {
+        return this.productRating;
+    }
+
+    public void setProductRating(double newRating) {
+        this.productRating = newRating;
+    }
+
+    public Set<String> getKeywords() {
+        return this.keywords;
+    }
+
+    public void setKeywords(Set<String> newKeywords) {
+        this.keywords = newKeywords;
     }
 
     // public Integer getProductQuantity() { // Update getter name

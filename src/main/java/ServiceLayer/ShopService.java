@@ -84,6 +84,32 @@ public class ShopService {
         }
     }
 
+    @Transactional
+    public ResponseEntity<Response> openComplaint(String token, Integer shopId,String message) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String user = _tokenService.extractUsername(token); 
+                    // logger.info(String.format("New shop created by: %s with Shop ID: %d", founder, shopId));
+                    _shopFacade.openComplaint(shopId, user, message);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage("Problem with posses complain please try again.");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to open complain. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Close a shop with the specified shop ID and user name.
      * 
@@ -258,14 +284,14 @@ public class ShopService {
         }
     }
 
-    /**
+   /**
      * searches products by their name.
      * 
      * @param token       The session token of the user performing the search.
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName The name of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
      */
     @Transactional
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
@@ -274,16 +300,16 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
-                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopDto, productDtoList);
                     }
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
                 } else {
@@ -308,7 +334,7 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of ShopDto and ProductDTOs, or indicating failure.
      */
     @Transactional
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
@@ -317,16 +343,16 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
-                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopDto, productDtoList);
                     }
                     logger.info(String.format("Products in the category of %s were found in %s",
                             productCategory.toString(), shopIDString));
@@ -354,7 +380,7 @@ public class ShopService {
      * @param shopId   The ID of the shop to search in OR null to search in all
      *                 shops.
      * @param keywords The list of keywords.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopDto and ProductDTOs, or indicating failure.
      */
     @Transactional
     public ResponseEntity<Response> searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
@@ -369,16 +395,16 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
-                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopDto, productDtoList);
                     }
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
                             shopIDString));
@@ -408,7 +434,7 @@ public class ShopService {
      *                 shops.
      * @param minPrice The minimum price of the product.
      * @param maxPrice The maximum price of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopDto and ProductDTOs, or indicating failure.
      */
     @Transactional
     public ResponseEntity<Response> searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice) {
@@ -418,15 +444,16 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
-                Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopDto, productDtoList);
                     }
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));
@@ -1904,6 +1931,50 @@ public class ShopService {
             response.setErrorMessage(
                     String.format("Failed to update manager %s permissions in shopID %d. Error: %s", managerUsername, shopId,
                             e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * searches products by their name.
+     * 
+     * @param token       The session token of the user performing the search.
+     * @param shopId      The ID of the shop to search in OR null to search in all
+     *                    shops.
+     * @param productName The name of the product.
+     * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
+     */
+    @Transactional
+    public ResponseEntity<Response> searchProductInShopByNameNew(String token, Integer shopId, String productName) {
+        Response response = new Response();
+        String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
+        try {
+            if (_tokenService.validateToken(token)) {
+                Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
+                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                if (products != null && !products.isEmpty()) {
+                    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
+                        List<ProductDto> productDtoList = new ArrayList<>();
+                        for (Product product : entry.getValue()) {
+                            ProductDto productDto = new ProductDto(product);
+                            productDtoList.add(productDto);
+                        }
+                        productDtosPerShop.put(shopDto, productDtoList);
+                    }
+                    logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
+                } else {
+                    logger.info(String.format("Products named %s were not found in %s", productName, shopIDString));
+                }
+                response.setReturnValue(productDtosPerShop);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(String.format(String.format("Failed to search products named %s in %s . Error:",
+                    productName, shopIDString, e.getMessage())));
             logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

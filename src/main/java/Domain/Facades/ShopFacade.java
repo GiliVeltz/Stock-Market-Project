@@ -209,6 +209,21 @@ public class ShopFacade {
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
     }
 
+    @Transactional
+    public void openComplaint(Integer shopId, String userName,String message) throws StockMarketException {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToNotify = getShopByShopId(shopId);               
+                shopToNotify.openComplaint(userName, message);                
+            }
+        } catch (StockMarketException e) {
+            throw new StockMarketException(e.getMessage());
+        }
+
+    }
+
     // Edit a product in a shop by its ID.
     @Transactional
     public synchronized void editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew,
@@ -818,20 +833,20 @@ public class ShopFacade {
         shop.addKeywordsToProduct(username, productId, keywords);
     }
 
-    // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
-    //     // _shopRepository.addShop(shop);
-    //     // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
-    //     // product.updateProductQuantity(10);
-    //     // shop.addProductToShop("Tal", product);
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
 
-    //     openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
-    //     openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
-    //     addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
-    // }
+        openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
+    }
 
     // this function is responsible for getting all the shop managers
     @Transactional
@@ -1005,6 +1020,15 @@ public class ShopFacade {
             }
         }
         return -1;
+    }
+
+    // get shopDto including rating by shopId
+    public ShopDto getShopDtoById(int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shopId, shop.getShopName(), shop.getBankDetails(), shop.getShopAddress(), shop.getShopRating());
+        }
+        return null;
     }
 
 
