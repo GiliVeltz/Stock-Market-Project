@@ -174,13 +174,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
-    // TODO: METAR - need to implement this test
     @Test
     public void TestUserMessagingShopHePurchasedFrom() {
-        assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // success - the user secceeded to send the message
-        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // fail - the score in invalid
-        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop2", "message1") ); // fail - the user didnot purchased from this shop
+        assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "0", "message1") ); // success - the user secceeded to send the message
+        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "1", "message1") ); // fail - the user didnot purchased from this shop
     }
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
