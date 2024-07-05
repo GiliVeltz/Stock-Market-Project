@@ -158,7 +158,7 @@ public class ShoppingBasket implements Cloneable {
         return true;
     }
     private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) {
-        shop.notfyPurchaseFromShop(buyingUser,productIdList);
+        shop.notfyOwnerPurchaseFromShop(buyingUser,productIdList);
     }
  
     

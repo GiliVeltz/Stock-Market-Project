@@ -1,5 +1,7 @@
 package Dtos;
 
+import java.util.Set;
+
 import Domain.Product;
 import enums.Category;
 
@@ -9,6 +11,8 @@ public class ProductDto {
     public Category category;
     public double price;
     public int productQuantity;
+    public double productRating;
+    public Set<String> keywords;
 
     // Constructor
     public ProductDto(String productName, Category category, double price, int productQuantity) {
@@ -23,5 +27,7 @@ public class ProductDto {
         this.category = product.getCategory();
         this.price = product.getPrice();
         this.productQuantity = product.getProductQuantity();
+        this.productRating = product.getProductRating();
+        this.keywords = product.getKeywords();
     }
 }

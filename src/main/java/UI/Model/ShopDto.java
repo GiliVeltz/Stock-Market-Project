@@ -34,6 +34,15 @@ public class ShopDto {
         this.isShopClosed = false;
     }
 
+    public ShopDto(String shopName, String bankDetails, String shopAddress, Double shopRating) {
+        this.shopName = shopName;
+        this.bankDetails = bankDetails;
+        this.shopAddress = shopAddress;
+        this.shopRating = shopRating;
+        this.shopRatersCounter = 0;
+        this.isShopClosed = false;
+    }
+
     public ShopDto(Integer shopId, String shopName ,String bankDetails, String shopAddress, Double shopRating, Integer shopRatersCounter, boolean isShopClosed) {
         this.shopId = shopId;
         this.shopName = shopName;
