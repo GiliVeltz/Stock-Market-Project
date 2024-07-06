@@ -15,7 +15,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -58,11 +57,6 @@ public class UserMessagesPageView extends VerticalLayout {
         searchField.addValueChangeListener(e -> filterMessages(e.getValue()));
         filterOptions.add(searchField);
 
-        TextField searchField = new TextField();
-        searchField.setPlaceholder("Search messages...");
-        searchField.addValueChangeListener(e -> filterMessages(e.getValue()));
-        filterOptions.add(searchField);
-
         Button showAllButton = new Button("Show All");
         showAllButton.addClassName("filter-button");
         showAllButton.addClickListener(e -> showAllMessages());
@@ -97,8 +91,6 @@ public class UserMessagesPageView extends VerticalLayout {
     }
 
     private void showUnreadMessages() {
-        messagesLayout.removeAll(); // Clear existing messages
-        List<Message> unreadMessages = allCurrentMessages.stream()
         messagesLayout.removeAll(); // Clear existing messages
         List<Message> unreadMessages = allCurrentMessages.stream()
                 .filter(message -> !message.isRead())
@@ -289,27 +281,6 @@ public class UserMessagesPageView extends VerticalLayout {
         }
     }
 
-
-    private void filterMessages(String keyword) {
-        messagesLayout.removeAll(); // Clear existing messages
-        
-        if (keyword == null || keyword.isEmpty()) {
-            createMessageTextArea(allCurrentMessages);
-        } else {
-            List<Message> filteredMessages = allCurrentMessages.stream()
-                .filter(message -> message.getMessage().toLowerCase().contains(keyword.toLowerCase()))
-                .collect(Collectors.toList());
-            
-            if (filteredMessages.isEmpty()) {
-                Paragraph noMessagesParagraph = new Paragraph("No messages found");
-                noMessagesParagraph.addClassName("no-messages");
-                messagesLayout.add(noMessagesParagraph);
-            } else {
-                createMessageTextArea(filteredMessages);
-            }
-        }
-    }
-
     private void showFullMessageDialog(String message) {
         Dialog dialog = new Dialog();
         dialog.setWidth("400px");
@@ -327,8 +298,6 @@ public class UserMessagesPageView extends VerticalLayout {
     public void setCurrentMessages(List<Message> messages) {
         this.allCurrentMessages = new ArrayList<Message>(messages);
     }
-    public void setCurrentMessages(List<Message> messages) {
-        this.allCurrentMessages = new ArrayList<Message>(messages);
-    }
+ 
 }
 
