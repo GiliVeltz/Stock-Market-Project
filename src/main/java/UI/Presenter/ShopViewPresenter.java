@@ -15,8 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
-import UI.WebSocketClient;
-import UI.Model.BasketDto;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.View.ShopView;
