@@ -162,8 +162,8 @@ public class UserMainPageView extends BaseView {
             FormLayout formLayout = new FormLayout();
             Select<String> reasonSelect = new Select<>();
             reasonSelect.setLabel("Select the reason from the list below");
-            reasonSelect.setItems("No longer needed", "Item doesn't match the description",
-                    "Item defective or doesn't work", "Damaged", "Items are missing", "Expiry date issues", "Other...");
+            reasonSelect.setItems("Seller listed fake products", "Item doesn't match the description",
+                    "Seller is selling alcohol or drugs to underage buyers", "Order was not fulfilled on time.", "Seller is overcharging for products.", "Expiry date issues", "Other...");
             reasonSelect.setPlaceholder("Please select");
             reasonSelect.setWidthFull(); // Make the select component full width
 
