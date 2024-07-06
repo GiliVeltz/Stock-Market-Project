@@ -68,10 +68,10 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy, int ordersId)
+    public void purchaseCart(PurchaseCartDetailsDto purchaseCartDetailsDto, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         try {
-            purchaseCartEditStock(basketsToBuy);
+            purchaseCartEditStock(purchaseCartDetailsDto.getBasketsToBuy());
         } catch (StockMarketException e) {
             logger.log(Level.SEVERE, "StockMarketException has been thrown: " + e.getMessage(), e);
             throw e;
@@ -80,7 +80,7 @@ public class ShoppingCart {
         Map<Double, String> priceToShopDetails = new HashMap<>();
         double overallPrice = 0;
 
-        for (Integer basketNum : basketsToBuy) {
+        for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
             ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
             double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
             overallPrice += amountToPay;
@@ -97,16 +97,16 @@ public class ShoppingCart {
             if (!_supplyMethod.handshake())
                 throw new ShippingFailedException("Shipping service is not available");
 
-            paymentTransactionId = _paymentMethod.payment(paymentInfo, overallPrice);
+            paymentTransactionId = _paymentMethod.payment(purchaseCartDetailsDto.getPaymentInfo(), overallPrice);
             if (paymentTransactionId == -1)
                 throw new PaymentFailedException("Payment failed");
 
-            supplyTransactionId = _supplyMethod.supply(supplyInfo);
+            supplyTransactionId = _supplyMethod.supply(purchaseCartDetailsDto.getSupplyInfo());
             if (supplyTransactionId == -1)
                 throw new ShippingFailedException("Shipping failed");
                 
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
-            for (Integer basketNum : basketsToBuy) {
+            for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
                 ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
                 //_supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
@@ -124,11 +124,11 @@ public class ShoppingCart {
 
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(basketsToBuy);
+            cancelPurchaseEditStock(purchaseCartDetailsDto.getBasketsToBuy());
             throw new PaymentFailedException("Payment failed");
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(basketsToBuy);
+            cancelPurchaseEditStock(purchaseCartDetailsDto.getBasketsToBuy());
             _paymentMethod.cancel_pay(paymentTransactionId);
             throw new ShippingFailedException("Shipping failed");
         }

@@ -36,9 +36,11 @@ import Domain.Authenticators.*;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
+import Dtos.PaymentInfoDto;
 import Dtos.ProductDto;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
+import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
@@ -86,6 +88,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     // other private fields
     private static String token = "token";
     private Logger logger = Logger.getLogger(RealBridge.class.getName());
+    private PaymentInfoDto paymentInfoDto;
+    private SupplyInfoDto  supplyInfoDto;
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
@@ -118,6 +122,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
+        
+        paymentInfoDto = new PaymentInfoDto("USD", "2222333344445555", "4", "2021", "Israel Israelovice", "262", "20444444");
+        supplyInfoDto = new SupplyInfoDto("Israel Israelovice", "Rager Blvd 12", "Beer Sheva", "Israel", "8458527");
     }
 
     @AfterEach
@@ -2080,7 +2087,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act
         ResponseEntity<Response> res6 = _userServiceUnderTest.purchaseCart(guestToken,
-                new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+                new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // Assert
         if (res1.getBody().getErrorMessage() != null) {
@@ -2212,7 +2219,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act
         ResponseEntity<Response> res8 = _userServiceUnderTest.purchaseCart(userBuyerToken,
-                new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+            new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // Assert
         if (res1.getBody().getErrorMessage() != null) {
@@ -2352,12 +2359,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // Act
         // Task for first thread
         Runnable task1 = () -> {
-            results.add(_userServiceUnderTest.purchaseCart(guestToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+            results.add(_userServiceUnderTest.purchaseCart(guestToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy)));
         };
 
         // Task for second thread
         Runnable task2 = () -> {
-            results.add(_userServiceUnderTest.purchaseCart(guestToken2, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address)));
+            results.add(_userServiceUnderTest.purchaseCart(guestToken2, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy)));
         };
 
         // Execute tasks
@@ -3213,7 +3220,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         basketsToBuy.add(Integer.parseInt(busketsToBuy));
 
         // Act
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // Assert
         if(res1.getBody().getErrorMessage() != null){
@@ -3430,7 +3437,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         basketsToBuy.add(0);
         String cardNumber = "123456789";
         String address = "address";
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // Act
         ResponseEntity<Response> res5 = _userServiceUnderTest.writeReview(userToken, Integer.parseInt(productId), 0, "review");
@@ -3615,7 +3622,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         basketsToBuy.add(Integer.parseInt(Id));
         String cardNumber = "123456789";
         String address = "address";
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // Assert - no error messages
         if(res1.getBody().getErrorMessage() != null){
@@ -3684,7 +3691,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // this user buys the product using UserService
         List<Integer> shoppingBackets = new ArrayList<>();
         shoppingBackets.add(0);
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(shoppingBackets, "123456789", "address");
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, shoppingBackets);
         ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(token, purchaseCartDetailsDto);
 
         // Act
@@ -3767,7 +3774,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         basketsToBuy.add(0);
         String cardNumber = "123456789";
         String address = "address";
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // user remove the shop
         ResponseEntity<Response> res5 = _shopServiceUnderTest.closeShop(userToken, 0);
@@ -4047,7 +4054,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         basketsToBuy.add(0);
         String cardNumber = "123456789";
         String address = "address";
-        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(basketsToBuy, cardNumber, address));
+        ResponseEntity<Response> res4 = _userServiceUnderTest.purchaseCart(userToken, new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, basketsToBuy));
 
         // user remove the product from the shop
         ResponseEntity<Response> res5 = _shopServiceUnderTest.removeProductFromShop(userToken, 0, productDto);

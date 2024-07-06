@@ -165,18 +165,18 @@ public class ShoppingCartFacade {
      * This method called when a user leave the system.
      */
      @Transactional
-    public void purchaseCartGuest(String guestID, PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy) throws StockMarketException {
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        _guestsCarts.get(guestID).purchaseCart(paymentInfo, supplyInfo, basketsToBuy, _cartsRepo.getUniqueOrderID());
+        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     /*
      * Purchase the cart of a user.
      */
     @Transactional
-    public void purchaseCartUser(String username, PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy) throws StockMarketException {
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(paymentInfo, supplyInfo, basketsToBuy, _cartsRepo.getUniqueOrderID());
+        _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     // Getters

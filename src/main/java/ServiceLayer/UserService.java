@@ -132,18 +132,18 @@ public class UserService {
     // by checking the token and the user type and then calling the purchaseCart
     // function
     @Transactional
-    public ResponseEntity<Response> purchaseCart(String token, PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy) {
+    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto purchaseCartDetails) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, paymentInfo, supplyInfo, basketsToBuy);
+                    _shoppingCartFacade.purchaseCartGuest(token, purchaseCartDetails);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, paymentInfo, supplyInfo, basketsToBuy);
+                    _shoppingCartFacade.purchaseCartUser(userName, purchaseCartDetails);
                     response.setReturnValue("User bought card succeed");
                     Alert alert = new PurchaseFromShopUserAlert(userName);
                     NotificationHandler.getInstance().sendMessage(userName, alert);
