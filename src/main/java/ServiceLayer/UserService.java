@@ -159,9 +159,12 @@ public class UserService {
 
     // this function is responsible for checking if a user is a system admin
     @Transactional
-    public ResponseEntity<Response> isSystemAdmin(String userId) {
+    public ResponseEntity<Response> isSystemAdmin(String token, String userId) {
         Response response = new Response();
         try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                
             if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
@@ -169,7 +172,7 @@ public class UserService {
             } else {
                 logger.info("User is not an admin: " + userId);
                 response.setReturnValue("User is not an admin");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());
