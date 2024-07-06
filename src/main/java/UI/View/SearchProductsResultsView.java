@@ -1,10 +1,13 @@
 package UI.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
@@ -15,10 +18,14 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import UI.Model.ProductDto;
+import UI.Model.SearchProductResponseDto;
+import UI.Model.ShopDto;
 import UI.Presenter.SearchProductsPresenter;
 
 @PageTitle("Search Products Results Page")
@@ -27,22 +34,405 @@ public class SearchProductsResultsView extends BaseView {
     //private SearchProductsPresenter presenter;
     Dialog resultsDialog;
     private final List<VerticalLayout> shopLayoutsList;
+    private Map<ShopDto, List<ProductDto>> shopToProductsMap;
+    private Map<ShopDto, VerticalLayout> shopLayoutMap;
+    private Map<ProductDto, Button> productButtonMap;
+    private boolean isAnyProductFound;
 
     public SearchProductsResultsView(SearchProductsPresenter presenter) {
         // Initialize presenter
         //this.presenter = presenter;
         this.shopLayoutsList = new ArrayList<>();
         resultsDialog = new Dialog();
+        resultsDialog.setWidth("1000px");
+        shopToProductsMap = new HashMap<>();
+        shopLayoutMap = new HashMap<>();
+        productButtonMap = new HashMap<>();
+        isAnyProductFound = false;
     }
 
+    public void displayResponseProductsNew (Map<String, List<ProductDto>> shopStringToProducts) {
+        clearSearchFilters();   // to delete the other one when inplemented
+        clearSearchResults();  // Clear previous search results
+
+        // create vertical Layout for the search results
+        VerticalLayout dialogContent = new VerticalLayout();
+
+        // Add "Products Search Results" title
+        H2 headline = new H2("Products Search Results");
+        headline.getStyle().set("margin", "0");
+
+        boolean isMoreThanOneShop = shopStringToProducts.size() > 1;
+
+        VerticalLayout filtersLayout = createFiltersSideBar(isMoreThanOneShop);
+        filtersLayout.setWidth("0%");
+        filtersLayout.setVisible(false);
+        filtersLayout.getStyle().set("margin-left", "0");
+        filtersLayout.getStyle().set("padding-left", "0");
+        
+
+        VerticalLayout resultLayout = new VerticalLayout();
+        resultLayout.setWidth("100%");
+
+        createShopProductsMap(shopStringToProducts);
+        createShopLayoutMap();
+
+        // Add the shop layouts to the main layout
+        for (VerticalLayout shopLayout : shopLayoutsList) {
+            resultLayout.add(shopLayout);
+        }
+         // Add close button
+         Button closeButton = new Button("Close");
+         closeButton.addClickListener(event -> {
+             clearSearchResults();
+             resultsDialog.close();
+         });
+         closeButton.addClassName("pointer-cursor");
+
+        HorizontalLayout dialogBodyLayout = new HorizontalLayout();
+        dialogBodyLayout.setWidthFull();
+        dialogBodyLayout.add(filtersLayout, resultLayout);
+
+        Button toggleFiltersButton = new Button("Show Filters");
+        toggleFiltersButton.addClassName("pointer-cursor");
+        toggleFiltersButton.addClickListener(event -> {
+            if (filtersLayout.isVisible()) {
+                filtersLayout.setWidth("0%");
+                resultLayout.setWidth("100%");
+                toggleFiltersButton.setText("Show Filters");
+                filtersLayout.setVisible(false);  // Hide filters
+            } else {
+                filtersLayout.setWidth("20%");  
+                resultLayout.setWidth("80%");
+                toggleFiltersButton.setText("Hide Filters");
+                filtersLayout.setVisible(true); // Show filters
+            }            
+        });
+        toggleFiltersButton.setVisible(isAnyProductFound);
+        if (isAnyProductFound) {
+            resultsDialog.setHeight("600px"); // Set a fixed height for the dialog
+            resultsDialog.getElement().getStyle().set("overflow", "auto"); // Ensure the dialog content is scrollable if needed
+        }
+        dialogContent.add(headline, toggleFiltersButton, dialogBodyLayout, closeButton);
+        dialogContent.setAlignItems(FlexComponent.Alignment.CENTER);
+        resultsDialog.add(dialogContent);
+        resultsDialog.open();
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private VerticalLayout createFiltersSideBar(boolean isMoreThanOneShop) {
+        VerticalLayout filtersLayout = new VerticalLayout();
+        boolean[] areFiltersPickedAndValid = {false, false, false, false}; // Price Range, Category, Product Rating, Shop Rating
+
+        // Product Price Range Filter
+        H5 priceRangeLabel = new H5("⬜Price Range");
+        priceRangeLabel.addClassName("filter-headline");
+        priceRangeLabel.addClassName("pointer-cursor");
+        Span priceRangeErrorMessage = new Span("Price range is not valid.");
+        priceRangeErrorMessage.addClassName("input-error-message");
+        priceRangeErrorMessage.setVisible(false);
+        NumberField minPrice = new NumberField("Min Price");
+        minPrice.setWidthFull();
+        NumberField maxPrice = new NumberField("Max Price");
+        maxPrice.setWidthFull();
+        VerticalLayout priceRangeLayout = new VerticalLayout(priceRangeLabel, priceRangeErrorMessage, minPrice, maxPrice);
+        priceRangeLayout.addClassName("filter-container");
+        priceRangeLabel.addClickListener(listener -> {
+            if (!areFiltersPickedAndValid[0]) {
+                if (minPrice.isEmpty() || maxPrice.isEmpty() || minPrice.getValue() > maxPrice.getValue()) {
+                    areFiltersPickedAndValid[0] = false;
+                    priceRangeErrorMessage.setVisible(true);
+                } else {
+                    areFiltersPickedAndValid[0] = true;
+                    priceRangeErrorMessage.setVisible(false);
+                    minPrice.setReadOnly(true);
+                    maxPrice.setReadOnly(true);
+                    priceRangeLabel.setText("☑️Price Range");
+                }
+            } else {
+                areFiltersPickedAndValid[0] = false;
+                priceRangeErrorMessage.setVisible(false);
+                minPrice.setReadOnly(false);
+                maxPrice.setReadOnly(false);
+                priceRangeLabel.setText("⬜Price Range");
+            }
+        });
+
+        // Product Category Filter
+        H5 categoryLabel = new H5("⬜Category");
+        categoryLabel.addClassName("filter-headline");
+        categoryLabel.addClassName("pointer-cursor");
+        Span categoryErrorMessage = new Span("You must pick a category.");
+        categoryErrorMessage.addClassName("input-error-message");
+        categoryErrorMessage.setVisible(false);
+        CheckboxGroup<String> categoryGroup = new CheckboxGroup<>();
+        categoryGroup.setItems("Electronics", "Clothing", "Home Appliances", "Books");
+        VerticalLayout categoryLayout = new VerticalLayout(categoryLabel, categoryErrorMessage, categoryGroup);
+        categoryLayout.addClassName("filter-container");
+        categoryLabel.addClickListener(listener -> {
+            if (!areFiltersPickedAndValid[1]) {
+                if (categoryGroup.getValue().isEmpty()) {
+                    areFiltersPickedAndValid[1] = false;
+                    categoryErrorMessage.setVisible(true);
+                } else {
+                    areFiltersPickedAndValid[1] = true;
+                    categoryErrorMessage.setVisible(false);
+                    categoryGroup.setReadOnly(true);
+                    categoryLabel.setText("☑️Category");
+                }
+            } else {
+                areFiltersPickedAndValid[1] = false;
+                categoryErrorMessage.setVisible(false);
+                categoryGroup.setReadOnly(false);
+                categoryLabel.setText("⬜Category");
+            }
+        });
+
+       // Product Rating Filter
+        H5 productRatingLabel = new H5("⬜Product Rating");
+        productRatingLabel.addClassName("filter-headline");
+        productRatingLabel.addClassName("pointer-cursor");
+        Span productRatingErrorMessage = new Span("You must pick a rating.");
+        productRatingErrorMessage.addClassName("input-error-message");
+        productRatingErrorMessage.setVisible(false);
+        CheckboxGroup<String> productRatingGroup = new CheckboxGroup<>();
+        productRatingGroup.setItems("No Rating", "⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐");
+        VerticalLayout productRatingLayout = new VerticalLayout(productRatingLabel, productRatingErrorMessage, productRatingGroup);
+        productRatingLayout.addClassName("filter-container");
+        productRatingLabel.addClickListener(listener -> {
+            if (!areFiltersPickedAndValid[2]) {
+                if (productRatingGroup.getValue().isEmpty()) {
+                    areFiltersPickedAndValid[2] = false;
+                    productRatingErrorMessage.setVisible(true);
+                } else {
+                    areFiltersPickedAndValid[2] = true;
+                    productRatingErrorMessage.setVisible(false);
+                    productRatingGroup.setReadOnly(true);
+                    productRatingLabel.setText("☑️Product Rating");
+                }
+            } else {
+                areFiltersPickedAndValid[2] = false;
+                productRatingErrorMessage.setVisible(false);
+                productRatingGroup.setReadOnly(false);
+                productRatingLabel.setText("⬜Product Rating");
+            }
+        });
+
+        // Shop Rating Filter
+        H5 shopRatingLabel = new H5("⬜Shop Rating");
+        shopRatingLabel.addClassName("filter-headline");
+        shopRatingLabel.addClassName("pointer-cursor");
+        Span shopRatingErrorMessage = new Span("You must pick a rating.");
+        shopRatingErrorMessage.addClassName("input-error-message");
+        shopRatingErrorMessage.setVisible(false);
+        CheckboxGroup<String> shopRatingGroup = new CheckboxGroup<>();
+        shopRatingGroup.setItems("No Rating", "⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐");
+        VerticalLayout shopRatingLayout = new VerticalLayout(shopRatingLabel, shopRatingErrorMessage, shopRatingGroup);
+        shopRatingLayout.addClassName("filter-container");
+
+        shopRatingLabel.addClickListener(event -> {
+            if (!areFiltersPickedAndValid[3]) {
+                if (shopRatingGroup.getValue().isEmpty()) {
+                    areFiltersPickedAndValid[3] = false;
+                    shopRatingErrorMessage.setVisible(true);
+                } else {
+                    areFiltersPickedAndValid[3] = true;
+                    shopRatingErrorMessage.setVisible(false);
+                    shopRatingGroup.setReadOnly(true);
+                    shopRatingLabel.setText("☑️Shop Rating");
+                }
+            } else {
+                areFiltersPickedAndValid[3] = false;
+                shopRatingErrorMessage.setVisible(false);
+                shopRatingGroup.setReadOnly(false);
+                shopRatingLabel.setText("⬜Shop Rating");
+            }
+        });
+        shopRatingLayout.setVisible(isMoreThanOneShop);
+
+        // Apply Filters Button
+        Button applyFiltersButton = new Button("Apply Filters");
+        applyFiltersButton.addClickListener(event -> {
+            // Placeholder for filter logic to be implemented later
+            // presenter.applyFilters(minPrice.getValue(), maxPrice.getValue(), categoryGroup.getValue(), productRatingGroup.getValue(), shopRatingGroup.getValue());
+        });
+        applyFiltersButton.addClassName("pointer-cursor");
+        applyFiltersButton.addClassName("filter-container");
+        // Placeholder for filter logic to be implemented later
+
+        // Clear Filters Button
+        Button clearFiltersButton = new Button("Clear Filters");
+        clearFiltersButton.addClickListener(event -> {
+            minPrice.clear();
+            maxPrice.clear();
+            categoryGroup.clear();
+            productRatingGroup.clear();
+            shopRatingGroup.clear();
+        });
+        clearFiltersButton.addClassName("pointer-cursor");
+        clearFiltersButton.addClassName("filter-container");
+
+        // Add all filters and buttons to the layout
+        filtersLayout.add(priceRangeLayout, categoryLayout, productRatingLayout, shopRatingLayout, applyFiltersButton, clearFiltersButton);
+        filtersLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, applyFiltersButton, clearFiltersButton);
+
+        return filtersLayout;
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /*
+     * Create the map of shops to products
+     */
+    public void createShopProductsMap(Map<String, List<ProductDto>> shopStringToProducts) {
+        clearSearchResults();
+        if (shopStringToProducts.isEmpty()) {
+            shopLayoutsList.add(createNoProductsShopLayout(true, null));
+        }
+        else {
+            for (Map.Entry<String, List<ProductDto>> entry : shopStringToProducts.entrySet()) {
+                shopToProductsMap.put(new ShopDto(entry.getKey()), entry.getValue());
+            }
+        }
+    }
+
+    /*
+     * Create the map of shopDto to layout
+     */
+    public void createShopLayoutMap() {
+        shopLayoutMap.clear();
+        for (Map.Entry<ShopDto, List<ProductDto>> entry : shopToProductsMap.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                VerticalLayout noResultsInShopLayout = createNoProductsShopLayout(true, entry.getKey());
+                shopLayoutMap.put(entry.getKey(), noResultsInShopLayout);
+                shopLayoutsList.add(noResultsInShopLayout);
+            } else {
+                VerticalLayout shopLayout = createInitialShopLayout(entry.getKey());
+                shopLayoutMap.put(entry.getKey(), shopLayout);
+                shopLayoutsList.add(shopLayout);
+            }
+        }
+        
+    }
+
+    /*
+     * Create a ShopLayout with no products
+     */
+    public VerticalLayout createNoProductsShopLayout (boolean isExist, ShopDto shop) {
+        VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout.setAlignItems(Alignment.START);
+        gridLayout.addClassName("light-component-container");
+        H3 shopNameLabel = new H3();
+        if (shop == null) {
+            shopNameLabel.add("All Shops");
+        }
+        // Create a vertical layout for the grid
+        else {
+            shopNameLabel.add(shop.getShopName());
+        }
+        shopNameLabel.addClassName("shop-name-label");
+        gridLayout.add(shopNameLabel);
+
+        H5 noResultsLabel = new H5();
+        if (isExist) {
+            noResultsLabel.add("No results were found.");
+        } else {
+            noResultsLabel.add("Shop with the given name does not exist, please try again.");
+        }
+        gridLayout.add(noResultsLabel);
+
+        // Add the grid layout to the main layout
+        gridLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        return gridLayout;
+    }
+
+    /*
+     * Create a ShopLayout with products
+     * call createProductButtonMap
+     */
+    private VerticalLayout createInitialShopLayout(ShopDto shop) {
+        isAnyProductFound = true;
+        
+        List<ProductDto> productsList = shopToProductsMap.get(shop);
+
+        // Create a vertical layout for the grid
+        VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout.setAlignItems(Alignment.START);
+        gridLayout.addClassName("light-component-container");
+
+        H3 shopNameLabel = new H3(shop.getShopName());
+        Double shopRating = shop.getShopRating();
+        H5 shopRatingLabel = new H5();
+        if (shopRating >= 0) {
+            shopRatingLabel.add("Shop Rating: " + shopRating);
+        }
+        else {
+            shopRatingLabel.add("Shop Rating: shop has no rating yet");
+        }
+        gridLayout.add(shopNameLabel, shopRatingLabel);
+        
+        // Set a maximum of 3 buttons per row
+        int maxButtonsPerRow = 3;
+        HorizontalLayout rowLayout = new HorizontalLayout();
+        int count = 0;
+
+        createProductButtonMap(productsList);
+
+        for (ProductDto product : productsList) {
+            rowLayout.add(productButtonMap.get(product));
+            if ((count + 1) % maxButtonsPerRow == 0 || count == productsList.size() - 1) {
+                gridLayout.add(rowLayout);
+                rowLayout = new HorizontalLayout();
+            }
+            count++;
+        }
+        // Add the grid layout to the main layout
+        gridLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        return gridLayout;
+    }
+
+
+    /*
+     * Create a map of productDto to button
+     */
+    private void createProductButtonMap (List<ProductDto> productsList) {
+        for (ProductDto product : productsList) {
+            Button productButton = new Button(product.getProductName());  // Display product name
+            productButton.addClassName("product-button");
+            productButton.addClassName("pointer-cursor");
+            productButton.addClickListener(event -> {
+            showProductDialog(product);  // Open a dialog with product details
+            });
+            productButtonMap.put(product, productButton);
+        }
+    }
+
+
+    /*
+     * Re-arrange the product buttons in page when a filter is applied
+     */
+    public void reArrangeProductButtonsWhenFiltered(ShopDto shop) {
+        int maxButtonsPerRow = 3;
+        HorizontalLayout rowLayout = new HorizontalLayout();
+        int count = 0;
+        // continue
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    
     public void displayResponseShopNotFound (String shopName) {
         clearSearchResults();  // Clear previous search results
 
         // create vertical Layout for the search results
         VerticalLayout dialogContent = new VerticalLayout();
 
-        // Add "Search Results" title
-        H2 headline = new H2("Search Results");
+        // Add "Products Search Results" title
+        H2 headline = new H2("Products Search Results");
         headline.getStyle().set("margin", "0");
         dialogContent.add(headline);
 
@@ -66,32 +456,41 @@ public class SearchProductsResultsView extends BaseView {
          resultsDialog.add(dialogContent);
          resultsDialog.open();
     }
-
-    public void displayResponseProducts (Map<String, List<ProductDto>> shopNameToProducts) {
+    
+    public void displayResponseProducts (Map<String, List<ProductDto>> shopStringToProducts) {
+        clearSearchFilters();   // to delete the other one when inplemented
         clearSearchResults();  // Clear previous search results
 
         // create vertical Layout for the search results
         VerticalLayout dialogContent = new VerticalLayout();
 
-        // Add "Search Results" title
-        H2 headline = new H2("Search Results");
+        // Add "Products Search Results" title
+        H2 headline = new H2("Products Search Results");
         headline.getStyle().set("margin", "0");
-        dialogContent.add(headline);
 
-        if (shopNameToProducts.isEmpty()) {
+        VerticalLayout filtersLayout = new VerticalLayout();
+        filtersLayout.setWidth("0%");
+        filtersLayout.add(new Div(new Text("filters placeHolder")));
+        //boolean[] isFiltersShown = {false};
+        filtersLayout.setVisible(false);
+
+        VerticalLayout resultLayout = new VerticalLayout();
+        resultLayout.setWidth("100%");
+
+        if (shopStringToProducts.isEmpty()) {
             createNoResultsLayout(true, "All Shops");
         }
 
-        for (Map.Entry<String, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
+        for (Map.Entry<String, List<ProductDto>> entry : shopStringToProducts.entrySet()) {
             if (entry.getValue().isEmpty()) {
-                createNoResultsLayout(true, entry.getKey());
+                createNoResultsLayout(true, SearchProductResponseDto.extractValue(entry.getKey(), "Name"));
             } else {
                 createShopLayout(entry.getKey(), entry.getValue());
             }
         }
         // Add the shop layouts to the main layout
         for (VerticalLayout shopLayout : shopLayoutsList) {
-            dialogContent.add(shopLayout);
+            resultLayout.add(shopLayout);
         }
          // Add close button
          Button closeButton = new Button("Close");
@@ -101,24 +500,51 @@ public class SearchProductsResultsView extends BaseView {
              resultsDialog.close();
          });
          closeButton.addClassName("pointer-cursor");
-         dialogContent.add(closeButton);
 
-         dialogContent.setAlignItems(FlexComponent.Alignment.CENTER);
-         resultsDialog.add(dialogContent);
-         resultsDialog.open();
+        HorizontalLayout dialogBodyLayout = new HorizontalLayout();
+        dialogBodyLayout.setWidthFull();
+        dialogBodyLayout.add(filtersLayout, resultLayout);
 
+        Button toggleFiltersButton = new Button("Show Filters");
+        toggleFiltersButton.addClassName("pointer-cursor");
+        toggleFiltersButton.addClickListener(event -> {
+            if (filtersLayout.isVisible()) {
+                filtersLayout.setWidth("0%");
+                resultLayout.setWidth("100%");
+                toggleFiltersButton.setText("Show Filters");
+                filtersLayout.setVisible(false);  // Hide filters
+                //isFiltersShown[0] = false;
+            } else {
+                filtersLayout.setWidth("20%");  
+                resultLayout.setWidth("80%");
+                toggleFiltersButton.setText("Hide Filters");
+                filtersLayout.setVisible(true); // Show filters
+                //isFiltersShown[0] = true;
+            }            
+        });
 
+        dialogContent.add(headline, toggleFiltersButton, dialogBodyLayout, closeButton);
+        dialogContent.setAlignItems(FlexComponent.Alignment.CENTER);
+        resultsDialog.add(dialogContent);
+        resultsDialog.open();
     }
 
-    private void createShopLayout(String shopName, List<ProductDto> productsList) {
+    private void createShopLayout(String shopString, List<ProductDto> productsList) {
         // Create a vertical layout for the grid
         VerticalLayout gridLayout = new VerticalLayout();
         gridLayout.setAlignItems(Alignment.START);
         gridLayout.addClassName("light-component-container");
 
-        H3 shopNameLabel = new H3(shopName);
-        shopNameLabel.addClassName("shop-name-label");
-        gridLayout.add(shopNameLabel);
+        H3 shopNameLabel = new H3(SearchProductResponseDto.extractValue(shopString, "Name"));
+        Double shopRating = Double.valueOf(SearchProductResponseDto.extractValue(shopString, "Rating"));
+        H5 shopRatingLabel = new H5();
+        if (shopRating >= 0) {
+            shopRatingLabel.add("Shop Rating: " + shopRating);
+        }
+        else {
+            shopRatingLabel.add("Shop Rating: shop has no rating yet");
+        }
+        gridLayout.add(shopNameLabel, shopRatingLabel);
         
         // Set a maximum of 3 buttons per row
         int maxButtonsPerRow = 3;
@@ -229,9 +655,17 @@ public class SearchProductsResultsView extends BaseView {
 
 
     public void clearSearchResults() {
+        shopToProductsMap.clear();
         shopLayoutsList.clear();
         resultsDialog.removeAll();
+        resultsDialog.setHeight(null);
         removeAll();  // Clear all components from the view
+    }
+
+    public void clearSearchFilters() {
+        // Implement logic to clear search filters (not shown here)
+        // Example: presenter.clearSearchFilters();
+        Notification.show("Clear Search Filters is not Implemented yet");
     }
 }
 

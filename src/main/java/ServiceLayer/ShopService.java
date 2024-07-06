@@ -267,8 +267,9 @@ public class ShopService {
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName The name of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -278,13 +279,13 @@ public class ShopService {
                 Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
                 } else {
@@ -309,8 +310,9 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopName and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -320,13 +322,13 @@ public class ShopService {
                 Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products in the category of %s were found in %s",
                             productCategory.toString(), shopIDString));
@@ -354,8 +356,9 @@ public class ShopService {
      * @param shopId   The ID of the shop to search in OR null to search in all
      *                 shops.
      * @param keywords The list of keywords.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
         Response response = new Response();
         // Setting strings of shop ID and keywords for logging
@@ -371,13 +374,13 @@ public class ShopService {
                 Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        String shopName = _shopFacade.getShopName(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopName, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
                             shopIDString));
@@ -407,8 +410,9 @@ public class ShopService {
      *                 shops.
      * @param minPrice The minimum price of the product.
      * @param maxPrice The maximum price of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopID and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -416,15 +420,16 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
-                Map<Integer, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());                       
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(entry.getKey(), productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));

@@ -1250,4 +1250,10 @@ public class Shop {
     public void setShopPolicy(ShopPolicy shopPolicy) {
         _shopPolicy = shopPolicy;
     }
+
+    // returns shopID, name and Rating for response.
+    // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
+    public String getShopStringForSearch() {
+        return " */Id/* " + getShopId() + " */Name/* " + getShopName() + " */Rating/* " + getShopRating();
+    }
 }

@@ -968,5 +968,15 @@ public class ShopFacade {
         return managers;
     }
 
+    // returns shopID, name and Rating for response.
+    // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
+    public String getShopStringForSearchById(int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopStringForSearch();
+        }
+        return null;
+    }
+
     
 }
