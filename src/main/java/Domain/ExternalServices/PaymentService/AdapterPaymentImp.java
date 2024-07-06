@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import Domain.ExternalServices.ExternalService;
+import Dtos.PaymentInfoDto;
 import Exceptions.PaymentFailedException;
 
 public class AdapterPaymentImp extends ExternalService implements AdapterPaymentInterface{
@@ -40,7 +41,7 @@ public class AdapterPaymentImp extends ExternalService implements AdapterPayment
     }
 
     @Override
-    public int payment(PaymentInfo paymentInfo, double price) {
+    public int payment(PaymentInfoDto paymentInfo, double price) {
         logger.info("Paying for the cart");
         return _paymentService.payment(paymentInfo, price);
     }

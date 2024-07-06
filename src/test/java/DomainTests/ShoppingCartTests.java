@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 
 import Domain.*;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Facades.ShopFacade;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.PaymentFailedException;
@@ -47,7 +47,7 @@ public class ShoppingCartTests {
     private AdapterPaymentImp adapterPaymentMock;
 
     @Mock
-    private AdapterSupply adapterSupplyMock;
+    private AdapterSupplyImp adapterSupplyMock;
 
     @Mock
     private ShopFacade shopFacadeMock;
@@ -57,7 +57,7 @@ public class ShoppingCartTests {
         shopMock = Mockito.mock(Shop.class);
         userMock = Mockito.mock(User.class);
         adapterPaymentMock = Mockito.mock(AdapterPaymentImp.class);
-        adapterSupplyMock = Mockito.mock(AdapterSupply.class);
+        adapterSupplyMock = Mockito.mock(AdapterSupplyImp.class);
         shopFacadeMock = Mockito.mock(ShopFacade.class);
         shoppingCartUnderTest = null;
     }

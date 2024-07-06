@@ -20,13 +20,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import UI.Model.BasketDto;
+import UI.Model.PaymentInfoDto;
+import UI.Model.SupplyInfoDto;
 import UI.Presenter.ShoppingCartPagePresentor;
 
 @PageTitle("Shopping Cart Page")
 @Route(value = "user_cart")
 public class ShoppingCartPageView extends BaseView {
     private ShoppingCartPagePresentor presenter;
-    //private H1 _title;
+    // private H1 _title;
     private Grid<BasketDto> grid = new Grid<>(BasketDto.class);
     private Map<BasketDto, Boolean> selectedItems = new HashMap<>();
     private boolean isGuest;
@@ -83,23 +85,22 @@ public class ShoppingCartPageView extends BaseView {
 
         // Shop ID column
         grid.addColumn(BasketDto::getShopID)
-            .setHeader("Shop ID")
-            .setKey("_shopID");
+                .setHeader("Shop ID")
+                .setKey("_shopID");
 
         // Product IDs column
         grid.addColumn(createProductIDsRenderer())
-            .setHeader("Product IDs")
-            .setKey("_productIDs");
+                .setHeader("Product IDs")
+                .setKey("_productIDs");
 
         // Total Price column
         grid.addColumn(BasketDto::getTotalPrice)
-            .setHeader("Total Price")
-            .setKey("_totalPrice");
+                .setHeader("Total Price")
+                .setKey("_totalPrice");
     }
 
     private Renderer<BasketDto> createProductIDsRenderer() {
-        return new TextRenderer<>(basketDto -> 
-            basketDto.getProductIDs().stream()
+        return new TextRenderer<>(basketDto -> basketDto.getProductIDs().stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(", ")));
     }
@@ -115,26 +116,52 @@ public class ShoppingCartPageView extends BaseView {
         FormLayout formLayout = new FormLayout();
 
         H3 paymentInfoHeader = new H3("Payment Information:");
-        H3 addressInfoHeader = new H3("Address Information:");
-        
+        H3 supplyInfoHeader = new H3("Supply Information:");
+
+        // Payment fields
+        TextField currencyField = new TextField("Currency");
         TextField cardNumberField = new TextField("Card Number");
+        TextField monthField = new TextField("Month");
+        TextField yearField = new TextField("Year");
+        TextField holderField = new TextField("Card Holder Name");
+        TextField ccvField = new TextField("CCV");
+        TextField idField = new TextField("ID");
+
+        // Supply fields
+        TextField nameField = new TextField("Name");
         TextField addressField = new TextField("Address");
-        
+        TextField cityField = new TextField("City");
+        TextField countryField = new TextField("Country");
+        TextField zipField = new TextField("ZIP Code");
 
         formLayout.add(paymentInfoHeader);
-        formLayout.add(cardNumberField);
-        formLayout.add(addressInfoHeader);
-        formLayout.add(addressField);
+        formLayout.add(currencyField, cardNumberField, monthField, yearField, holderField, ccvField, idField);
+
+        formLayout.add(supplyInfoHeader);
+        formLayout.add(nameField, addressField, cityField, countryField, zipField);
 
         Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
+            // Handle form submission for payment or supply
+            String currency = currencyField.getValue();
             String cardNumber = cardNumberField.getValue();
-            String address = addressField.getValue();
-            List<Integer> selectedIndexes = getSelectedIndexes();
-            
-            // Perform necessary actions with card number and address
-            presenter.purchaseCart(selectedIndexes, cardNumber, address);
+            String month = monthField.getValue();
+            String year = yearField.getValue();
+            String holder = holderField.getValue();
+            String ccv = ccvField.getValue();
+            String id = idField.getValue();
 
+            String name = nameField.getValue();
+            String address = addressField.getValue();
+            String city = cityField.getValue();
+            String country = countryField.getValue();
+            String zip = zipField.getValue();
+
+            List<Integer> selectedIndexes = getSelectedIndexes();
+
+            PaymentInfoDto paymentInfo = new PaymentInfoDto(currency, cardNumber, month, year, holder, ccv, id);
+            SupplyInfoDto supplyInfo = new SupplyInfoDto(name, address, city, country, zip);
+
+            presenter.purchaseCart(paymentInfo, supplyInfo, selectedIndexes);
             dialog.close();
         });
 
@@ -146,8 +173,8 @@ public class ShoppingCartPageView extends BaseView {
 
     public List<Integer> getSelectedIndexes() {
         return selectedItems.entrySet().stream()
-            .filter(Map.Entry::getValue)
-            .map(entry -> basketList.indexOf(entry.getKey()))
-            .collect(Collectors.toList());
+                .filter(Map.Entry::getValue)
+                .map(entry -> basketList.indexOf(entry.getKey()))
+                .collect(Collectors.toList());
     }
 }

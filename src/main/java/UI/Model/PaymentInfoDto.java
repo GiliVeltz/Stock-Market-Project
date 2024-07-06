@@ -1,6 +1,6 @@
-package Domain.ExternalServices.PaymentService;
+package UI.Model;
 
-public class PaymentInfo {
+public class PaymentInfoDto {
     private String currency;
     private String cardNumber;
     private String month;
@@ -9,10 +9,10 @@ public class PaymentInfo {
     private String ccv;
     private String id;
 
-    public PaymentInfo() {
+    public PaymentInfoDto() {
     }
 
-    public PaymentInfo(String currency, String cardNumber, String month, String year, String holder, String ccv, String id) {
+    public PaymentInfoDto(String currency, String cardNumber, String month, String year, String holder, String ccv, String id) {
         this.currency = currency;
         this.cardNumber = cardNumber;
         this.month = month;

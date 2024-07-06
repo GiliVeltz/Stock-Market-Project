@@ -12,7 +12,9 @@ import java.util.logging.Level;
 import Domain.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
+import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
@@ -130,18 +132,18 @@ public class UserService {
     // by checking the token and the user type and then calling the purchaseCart
     // function
     @Transactional
-    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
+    public ResponseEntity<Response> purchaseCart(String token, PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, details);
+                    _shoppingCartFacade.purchaseCartGuest(token, paymentInfo, supplyInfo, basketsToBuy);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, details);
+                    _shoppingCartFacade.purchaseCartUser(userName, paymentInfo, supplyInfo, basketsToBuy);
                     response.setReturnValue("User bought card succeed");
                     Alert alert = new PurchaseFromShopUserAlert(userName);
                     NotificationHandler.getInstance().sendMessage(userName, alert);

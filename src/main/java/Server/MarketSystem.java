@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import Domain.User;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
@@ -40,7 +40,7 @@ public class MarketSystem {
     public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentImp payment_adapter;
-    private AdapterSupply supply_adapter;
+    private AdapterSupplyImp supply_adapter;
 
     public static boolean test_flag = false;
 
@@ -74,7 +74,7 @@ public class MarketSystem {
     public AdapterPaymentImp getPayment_adapter() {
         return payment_adapter;
     }
-    public AdapterSupply getSupply_adapter() {
+    public AdapterSupplyImp getSupply_adapter() {
         return supply_adapter;
     }
 
@@ -130,7 +130,7 @@ public class MarketSystem {
         if (config.equals("external_services:tests")){
             logger.info("Set Tests External Services");
             payment_adapter = AdapterPaymentImp.getAdapterPayment();
-            supply_adapter = AdapterSupply.getAdapterSupply();
+            supply_adapter = AdapterSupplyImp.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapterTests();
             // this.supply_adapter = new SupplyAdapterTests();
             // NotificationHandler.setTestsHandler();
@@ -138,7 +138,7 @@ public class MarketSystem {
         else if (config.equals("external_services:fail_tests")){
             logger.info("Set Denied Tests External Services");
             payment_adapter = AdapterPaymentImp.getAdapterPayment();
-            supply_adapter = AdapterSupply.getAdapterSupply();
+            supply_adapter = AdapterSupplyImp.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapter() {
             //     @Override
             //     public boolean handshake() {
@@ -161,7 +161,7 @@ public class MarketSystem {
         else if (config.equals("external_services:real")){
             logger.info("Set Real External Services");
             payment_adapter = AdapterPaymentImp.getAdapterPayment();
-            supply_adapter = AdapterSupply.getAdapterSupply();
+            supply_adapter = AdapterSupplyImp.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapterImpl();
             // this.supply_adapter = new SupplyAdapterImpl();
         }

@@ -1,5 +1,7 @@
 package Domain.ExternalServices.PaymentService;
 
+import Dtos.PaymentInfoDto;
+
 public interface AdapterPaymentInterface {
 
     /**
@@ -17,7 +19,7 @@ public interface AdapterPaymentInterface {
      *  Output: transaction id - an integer in the range [10000, 100000] which indicates a
      *  transaction number if the transaction succeeds or -1 if the transaction has failed.
      */
-    int payment(PaymentInfo paymentInfo, double price);
+    int payment(PaymentInfoDto paymentInfo, double price);
 
     /**
      * This action type is used for cancelling a payment transaction.

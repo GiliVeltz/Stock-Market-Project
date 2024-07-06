@@ -2,6 +2,9 @@ package Domain.ExternalServices.PaymentService;
 
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+
+import Dtos.PaymentInfoDto;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +37,7 @@ public class ProxyPayment {
         return false;
     }
 
-    public int payment(PaymentInfo paymentInfo, double totalPrice)  {
+    public int payment(PaymentInfoDto paymentInfo, double totalPrice)  {
         // Form data
         Map<String, String> formData = new HashMap<>();
         formData.put("action_type", "pay");
@@ -54,13 +57,19 @@ public class ProxyPayment {
         // Request entity
         HttpEntity<Map<String, String>> request = new HttpEntity<>(formData, headers);
 
-        // Send POST request
-        ResponseEntity<String> response = restTemplate.postForEntity(externalSystemUrl, request, String.class);
+        try {
+            // Send POST request
+            ResponseEntity<String> response = restTemplate.postForEntity(externalSystemUrl, request, String.class);
 
-        // Parse the response to an integer
-        int paymentResponse = Integer.parseInt(response.getBody());
+            // Parse the response to an integer
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return Integer.parseInt(response.getBody());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return paymentResponse;
+        return -1; // Return -1 if payment failed
     }
 
     public int cancel_pay(int transaction_id)  {

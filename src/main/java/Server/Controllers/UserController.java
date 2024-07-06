@@ -66,7 +66,8 @@ public class UserController {
         // example request:
         // "http://localhost:8080/api/user/purchaseCart" -H "
         // Authorization: user_token_here"
-        ResponseEntity<Response> resp = _userService.purchaseCart(token, details);
+        ResponseEntity<Response> resp = _userService.purchaseCart(token, details.getPaymentInfo(),
+                details.getSupplyInfo(), details.getBasketsToBuy());
         return resp;
     }
 

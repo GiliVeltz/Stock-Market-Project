@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
-import Domain.ExternalServices.PaymentService.PaymentInfo;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Facades.ShopFacade;
+import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
+import Dtos.SupplyInfoDto;
 
 import java.util.Optional;
 import Exceptions.PaymentFailedException;
@@ -29,7 +30,7 @@ import Exceptions.ShopPolicyException;
 public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
     private AdapterPaymentImp _paymentMethod;
-    private AdapterSupply _supplyMethod;
+    private AdapterSupplyImp _supplyMethod;
     private ShopFacade _shopFacade;
     private User _user; // if the user is null, the cart is for a guest.
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
@@ -37,13 +38,13 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPaymentImp.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterSupply();
+        _supplyMethod = AdapterSupplyImp.getAdapterSupply();
         _shopFacade = ShopFacade.getShopFacade();
         _user = null;
     }
 
     // for tests
-    public ShoppingCart(ShopFacade shopFacade, AdapterPaymentImp paymentMethod, AdapterSupply supplyMethod) {
+    public ShoppingCart(ShopFacade shopFacade, AdapterPaymentImp paymentMethod, AdapterSupplyImp supplyMethod) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = paymentMethod;
         _supplyMethod = supplyMethod;
@@ -54,7 +55,7 @@ public class ShoppingCart {
     public ShoppingCart(ShopFacade shopFacade) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPaymentImp.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterSupply();
+        _supplyMethod = AdapterSupplyImp.getAdapterSupply();
         _shopFacade = shopFacade;
         _user = null;
     }
@@ -67,7 +68,7 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PaymentInfo details, List<Integer> basketsToBuy, int ordersId)
+    public void purchaseCart(PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         try {
             purchaseCartEditStock(basketsToBuy);
@@ -86,27 +87,33 @@ public class ShoppingCart {
             priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
         }
 
+        int paymentTransactionId = -1;
+        int supplyTransactionId = -1;
+
         try {
             if (!_paymentMethod.handshake())
                 throw new PaymentFailedException("Payment service is not available");
 
-            _supplyMethod.checkIfDeliverOk(details.address);
+            if (!_supplyMethod.handshake())
+                throw new ShippingFailedException("Shipping service is not available");
 
-            int transactionId = _paymentMethod.payment(details, overallPrice);
-            if (transactionId == -1)
+            paymentTransactionId = _paymentMethod.payment(paymentInfo, overallPrice);
+            if (paymentTransactionId == -1)
                 throw new PaymentFailedException("Payment failed");
 
-
+            supplyTransactionId = _supplyMethod.supply(supplyInfo);
+            if (supplyTransactionId == -1)
+                throw new ShippingFailedException("Shipping failed");
+                
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
             for (Integer basketNum : basketsToBuy) {
                 ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
-                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
-                                                                                         // deliver too.
+                //_supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
             }
 
             if (_user != null) {
-                Order order = new Order(ordersId, shoppingBasketsForOrder);
+                Order order = new Order(ordersId, shoppingBasketsForOrder, paymentTransactionId, supplyTransactionId);
                 _user.addOrder(order);
             }
 
@@ -117,12 +124,12 @@ public class ShoppingCart {
 
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(details.basketsToBuy);
+            cancelPurchaseEditStock(basketsToBuy);
             throw new PaymentFailedException("Payment failed");
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(details.basketsToBuy);
-            _paymentMethod.refound(details.cardNumber, overallPrice);
+            cancelPurchaseEditStock(basketsToBuy);
+            _paymentMethod.cancel_pay(paymentTransactionId);
             throw new ShippingFailedException("Shipping failed");
         }
     }
