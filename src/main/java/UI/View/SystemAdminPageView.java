@@ -29,9 +29,10 @@ public class SystemAdminPageView extends BaseView {
         Button sendingMessagesButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SendingMessages.png?raw=true", "Sending Messages", this::onSendingMessagesClick);
         Button purchaseHistoryButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/PurchaseHistory.png?raw=true", "Purchase History", this::onPurchaseHistoryClick);
         Button systemInformationButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SystemInformation.png?raw=true", "System Information", this::onSystemInformationClick);
-        
+        Button externalServiceButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/ExternalService.png?raw=true", "External Service", this::externalServiceClick);
+
         // Create layouts for buttons
-        HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton);
+        HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton, externalServiceButton);
         firstRow.setSpacing(true); // Add spacing between buttons
         firstRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
         firstRow.getStyle().set("margin-bottom", "150px"); 
@@ -54,8 +55,8 @@ public class SystemAdminPageView extends BaseView {
     private Button createImageButton(String imagePath, String tooltip, Runnable clickListener) {
         // Create an image component
         Image image = new Image(imagePath, tooltip);
-        image.setWidth("200px");
-        image.setHeight("200px");
+        image.setWidth("180px");
+        image.setHeight("180px");
     
         // Create a button and set the image as its icon
         Button button = new Button();
@@ -118,13 +119,97 @@ public class SystemAdminPageView extends BaseView {
         // Handle the sending messages action
     }
 
-    private void onPurchaseHistoryClick() {
-        Notification.show("Purchase History clicked");
-        // Handle the purchase history action
-    }
-
     private void onSystemInformationClick() {
         Notification.show("System Information clicked");
         // Handle the system information action
+    }
+
+    private void externalServiceClick() {
+        Notification.show("External Service clicked");
+        // Handle the system information action
+    }
+
+    private void onPurchaseHistoryClick() {
+        Dialog purchaseHistoryDialog = new Dialog();
+        purchaseHistoryDialog.setCloseOnEsc(true);
+        purchaseHistoryDialog.setCloseOnOutsideClick(true);
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.setSpacing(true);
+        dialogLayout.setPadding(true);
+        dialogLayout.setAlignItems(Alignment.CENTER);
+        
+        H4 headline = new H4("Choose Purchase History Type");
+        dialogLayout.add(headline);
+
+        // Button to view user purchase history
+        Button userPurchaseHistoryButton = new Button("User Purchase History", event -> {
+            purchaseHistoryDialog.close();
+            openUserPurchaseHistoryDialog();
+        });
+        
+        // Button to view shop purchase history
+        Button shopPurchaseHistoryButton = new Button("Shop Purchase History", event -> {
+            purchaseHistoryDialog.close();
+            openShopPurchaseHistoryDialog();
+        });
+
+        dialogLayout.add(userPurchaseHistoryButton, shopPurchaseHistoryButton);
+        purchaseHistoryDialog.add(dialogLayout);
+        purchaseHistoryDialog.open();
+    }
+
+    private void openUserPurchaseHistoryDialog() {
+        Dialog userDialog = new Dialog();
+        userDialog.setCloseOnEsc(true);
+        userDialog.setCloseOnOutsideClick(true);
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.setSpacing(true);
+        dialogLayout.setPadding(true);
+        dialogLayout.setAlignItems(Alignment.CENTER);
+        
+        H4 headline = new H4("Enter Username for User Purchase History");
+        dialogLayout.add(headline);
+
+        TextField usernameField = new TextField("Enter Username");
+        Button submitButton = new Button("Submit", event -> {
+            String username = usernameField.getValue();
+            presenter.getUserPurchaseHistory(username); // Call presenter method with username
+            userDialog.close();
+        });
+
+        Button cancelButton = new Button("Cancel", event -> userDialog.close());
+
+        dialogLayout.add(usernameField, new HorizontalLayout(submitButton, cancelButton));
+        userDialog.add(dialogLayout);
+        userDialog.open();
+    }
+
+    private void openShopPurchaseHistoryDialog() {
+        Dialog shopDialog = new Dialog();
+        shopDialog.setCloseOnEsc(true);
+        shopDialog.setCloseOnOutsideClick(true);
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.setSpacing(true);
+        dialogLayout.setPadding(true);
+        dialogLayout.setAlignItems(Alignment.CENTER);
+        
+        H4 headline = new H4("Enter Shop ID for Shop Purchase History");
+        dialogLayout.add(headline);
+
+        TextField shopIdField = new TextField("Enter Shop ID");
+        Button submitButton = new Button("Submit", event -> {
+            String shopId = shopIdField.getValue();
+            presenter.getShopPurchaseHistory(shopId); // Call presenter method with shop ID
+            shopDialog.close();
+        });
+
+        Button cancelButton = new Button("Cancel", event -> shopDialog.close());
+
+        dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
+        shopDialog.add(dialogLayout);
+        shopDialog.open();
     }
 }
