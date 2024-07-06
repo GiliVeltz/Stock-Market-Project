@@ -82,7 +82,7 @@ public class SearchProductsPresenter {
                                 if (response.getStatusCode().is2xxSuccessful()) {
                                     // convert to ResponseDTO
                                     SearchProductResponseDto responseDto = objectMapper.readValue(responseBody, SearchProductResponseDto.class);
-                                    Map<ShopDto, List<ProductDto>> shopToProducts = responseDto.getReturnValue();
+                                    Map<String, List<ProductDto>> shopToProducts = responseDto.getReturnValue();
             
                                     if (shopToProducts != null) {
                                         searchProductsResultsView.displayResponseProducts(shopToProducts);

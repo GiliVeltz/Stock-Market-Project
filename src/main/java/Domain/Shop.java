@@ -1247,6 +1247,12 @@ public class Shop {
         return discountDtos;
     }
 
+    // returns shopID, name and Rating for response.
+    // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
+    public String getShopStringForSearch() {
+        return " */Id/* " + getShopId() + " */Name/* " + getShopName() + " */Rating/* " + getShopRating();
+    }
+
     public void setBankDetails(String bankDetails) {
         _bankDetails = bankDetails;
     }

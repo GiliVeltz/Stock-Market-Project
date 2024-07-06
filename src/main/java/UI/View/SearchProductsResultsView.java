@@ -21,7 +21,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import UI.Model.ProductDto;
-import UI.Model.ShopDto;
+import UI.Model.SearchProductResponseDto;
 import UI.Presenter.SearchProductsPresenter;
 
 @PageTitle("Search Products Results Page")
@@ -140,7 +140,7 @@ public class SearchProductsResultsView extends BaseView {
          resultsDialog.open();
     }
 
-    public void displayResponseProducts (Map<ShopDto, List<ProductDto>> shopNameToProducts) {
+    public void displayResponseProducts (Map<String, List<ProductDto>> shopStringToProducts) {
         clearSearchResults();  // Clear previous search results
 
         // create vertical Layout for the search results
@@ -151,13 +151,13 @@ public class SearchProductsResultsView extends BaseView {
         headline.getStyle().set("margin", "0");
         dialogContent.add(headline);
 
-        if (shopNameToProducts.isEmpty()) {
+        if (shopStringToProducts.isEmpty()) {
             createNoResultsLayout(true, "All Shops");
         }
 
-        for (Map.Entry<ShopDto, List<ProductDto>> entry : shopNameToProducts.entrySet()) {
+        for (Map.Entry<String, List<ProductDto>> entry : shopStringToProducts.entrySet()) {
             if (entry.getValue().isEmpty()) {
-                createNoResultsLayout(true, entry.getKey().getShopName());
+                createNoResultsLayout(true, SearchProductResponseDto.extractValue(entry.getKey(), "Name"));
             } else {
                 createShopLayout(entry.getKey(), entry.getValue());
             }
@@ -183,15 +183,15 @@ public class SearchProductsResultsView extends BaseView {
 
     }
 
-    private void createShopLayout(ShopDto shopDto, List<ProductDto> productsList) {
+    private void createShopLayout(String shopString, List<ProductDto> productsList) {
         // Create a vertical layout for the grid
         VerticalLayout gridLayout = new VerticalLayout();
         gridLayout.setAlignItems(Alignment.START);
         gridLayout.addClassName("light-component-container");
 
-        H3 shopNameLabel = new H3(shopDto.getShopName());
+        H3 shopNameLabel = new H3(SearchProductResponseDto.extractValue(shopString, "Name"));
         shopNameLabel.addClassName("shop-name-label");
-        H5 shopRatingLabel = new H5("Rating: " + shopDto.getShopRating());
+        H5 shopRatingLabel = new H5("Rating: " + SearchProductResponseDto.extractValue(shopString, "Rating"));
         gridLayout.add(shopNameLabel, shopRatingLabel);
         
         // Set a maximum of 3 buttons per row
