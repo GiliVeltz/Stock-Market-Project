@@ -1,7 +1,13 @@
 package UI.View;
 
+import java.util.List;
+import java.util.Map;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Image;
@@ -12,16 +18,56 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+
+
+import UI.Model.OrderDto;
+import UI.Model.ShoppingBasketDto;
 import UI.Presenter.SystemAdminPresenter;
 
 @Route("admin")
 public class SystemAdminPageView extends BaseView {
 
     private SystemAdminPresenter presenter;
+    private Grid<OrderDto> userOrderGrid;
+    private final Div ordersDiv;
 
     public SystemAdminPageView() {
         presenter = new SystemAdminPresenter(this);
+        initializeLayout();
+        // // Create the image buttons
+        // Button closeShopButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/closeShop.png?raw=true", "Close Shop", this::onCloseShopClick);
+        // Button unsubscribeUserButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/UnsubscribeUser.png?raw=true", "Unsubscribe User", this::onUnsubscribeUserClick);
+        // Button respondingComplaintsButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/RespondingComplaints.png?raw=true", "Responding to Complaints", this::onRespondingComplaintsClick);
+        // Button sendingMessagesButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SendingMessages.png?raw=true", "Sending Messages", this::onSendingMessagesClick);
+        // Button purchaseHistoryButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/PurchaseHistory.png?raw=true", "Purchase History", this::onPurchaseHistoryClick);
+        // Button systemInformationButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SystemInformation.png?raw=true", "System Information", this::onSystemInformationClick);
+        // Button externalServiceButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/ExternalService.png?raw=true", "External Service", this::externalServiceClick);
 
+        // // Create layouts for buttons
+        // HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton, externalServiceButton);
+        // firstRow.setSpacing(true); // Add spacing between buttons
+        // firstRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
+        // firstRow.getStyle().set("margin-bottom", "150px"); 
+
+        // HorizontalLayout secondRow = new HorizontalLayout(sendingMessagesButton, purchaseHistoryButton, systemInformationButton);
+        // secondRow.setSpacing(true); // Add spacing between buttons
+        // secondRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
+        // secondRow.getStyle().set("margin-bottom", "150px");
+
+        // VerticalLayout layout = new VerticalLayout(firstRow, secondRow);
+        // layout.setSpacing(true); // Add spacing between rows
+        // layout.setPadding(true); // Add padding around the layout
+        // layout.setDefaultHorizontalComponentAlignment(VerticalLayout.Alignment.CENTER); // Center rows in the layout
+        // layout.setSizeFull(); // Make the layout take the full size of the container
+        // layout.setJustifyContentMode(VerticalLayout.JustifyContentMode.CENTER); // Center the layout vertically
+
+        // add(layout);
+
+        ordersDiv = new Div();
+        ordersDiv.setId("orders-div");
+    }
+
+    private void initializeLayout() {
         // Create the image buttons
         Button closeShopButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/closeShop.png?raw=true", "Close Shop", this::onCloseShopClick);
         Button unsubscribeUserButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/UnsubscribeUser.png?raw=true", "Unsubscribe User", this::onUnsubscribeUserClick);
@@ -30,25 +76,25 @@ public class SystemAdminPageView extends BaseView {
         Button purchaseHistoryButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/PurchaseHistory.png?raw=true", "Purchase History", this::onPurchaseHistoryClick);
         Button systemInformationButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SystemInformation.png?raw=true", "System Information", this::onSystemInformationClick);
         Button externalServiceButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/ExternalService.png?raw=true", "External Service", this::externalServiceClick);
-
+    
         // Create layouts for buttons
         HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton, externalServiceButton);
         firstRow.setSpacing(true); // Add spacing between buttons
         firstRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
-        firstRow.getStyle().set("margin-bottom", "150px"); 
-
+        firstRow.getStyle().set("margin-bottom", "150px");
+    
         HorizontalLayout secondRow = new HorizontalLayout(sendingMessagesButton, purchaseHistoryButton, systemInformationButton);
         secondRow.setSpacing(true); // Add spacing between buttons
         secondRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
         secondRow.getStyle().set("margin-bottom", "150px");
-
+    
         VerticalLayout layout = new VerticalLayout(firstRow, secondRow);
         layout.setSpacing(true); // Add spacing between rows
         layout.setPadding(true); // Add padding around the layout
         layout.setDefaultHorizontalComponentAlignment(VerticalLayout.Alignment.CENTER); // Center rows in the layout
         layout.setSizeFull(); // Make the layout take the full size of the container
         layout.setJustifyContentMode(VerticalLayout.JustifyContentMode.CENTER); // Center the layout vertically
-
+    
         add(layout);
     }
 
@@ -211,5 +257,63 @@ public class SystemAdminPageView extends BaseView {
         dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
         shopDialog.add(dialogLayout);
         shopDialog.open();
+    }
+
+
+    public void showUserOrders(List<OrderDto> orders) {
+        removeAll();
+        // Initialize the grid
+        userOrderGrid = new Grid<>(OrderDto.class, false);
+        userOrderGrid.addColumn(OrderDto::getOrderId).setHeader("Order ID");
+
+        // Add a button to expand each order and show details
+        userOrderGrid.addComponentColumn(orderDto -> {
+            Button detailsButton = new Button("Show Details");
+            detailsButton.addClickListener(e -> showOrderDetails(orderDto));
+            return detailsButton;
+        }).setHeader("Actions");
+
+        // Add components to the layout
+        add(userOrderGrid); // Add the grid directly to the layout
+        add(ordersDiv);
+
+        // Load order history
+        userOrderGrid.setItems(orders);
+
+        createBackButton();
+    }
+
+    
+    private void showOrderDetails(OrderDto orderDto) {
+
+        // Create a layout to hold the order details
+        VerticalLayout detailsLayout = new VerticalLayout();
+        detailsLayout.add("Order ID: " + orderDto.getOrderId());
+        detailsLayout.add("Total Order Amount: " + orderDto.getTotalOrderAmount());
+
+        // Add the shopping baskets for this order
+        for (Map.Entry<Integer, ShoppingBasketDto> entry : orderDto.getShoppingBasketMap().entrySet()) {
+            ShoppingBasketDto basketDto = entry.getValue();
+            detailsLayout.add("Shop ID: " + entry.getKey());
+            detailsLayout.add("Shop Name: " + basketDto.getShop().getShopName());
+            detailsLayout.add("Basket Total Amount: " + basketDto.getBasketTotalAmount());
+            detailsLayout.add("Product IDs: " + basketDto.getProductIdList().toString());
+        }
+
+        // Display the order details in the ordersDiv
+        ordersDiv.removeAll();
+        ordersDiv.add(detailsLayout);
+    }
+
+    private void createBackButton() {
+        Button backButton = new Button("Back");
+        backButton.addClickListener(event -> restoreInitialState());
+        add(backButton);
+    }
+
+    private void restoreInitialState() {
+        removeAll(); // Clear the current layout
+        ordersDiv.removeAll(); // Clear the ordersDiv
+        initializeLayout(); // Re-add the initial layout with buttons
     }
 }

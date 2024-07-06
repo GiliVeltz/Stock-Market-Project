@@ -6,11 +6,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
+import java.util.List;
 
+import UI.Model.OrderDto;
 import UI.Model.ShopDto;
 import UI.View.SystemAdminPageView;
-
+import UI.Model.Response;
 public class SystemAdminPresenter {
     private final SystemAdminPageView view;
 
@@ -54,10 +58,49 @@ public class SystemAdminPresenter {
         throw new UnsupportedOperationException("Unimplemented method 'getShopPurchaseHistory'");
     }
 
+ 
+    @SuppressWarnings("rawtypes")
     public void getUserPurchaseHistory(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserPurchaseHistory'");
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/user/getUserPurchaseHistory?username="
+                                        + username,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                List<OrderDto> orderDtoList = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                OrderDto.class));
+                                view.showUserOrders(orderDtoList);
+                                view.showSuccessMessage("Orders Showed successfully");
+                            } else {
+                                view.showErrorMessage(responseBody.getErrorMessage());
+                            }
+                        } else {
+                            view.showErrorMessage("Failed to show Orders");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to show Orders");
+                    }
+                });
     }
-
-
 }
