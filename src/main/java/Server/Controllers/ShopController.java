@@ -47,9 +47,7 @@ public class ShopController {
         return resp;
     }
 
-   
-
-    @GetMapping("/closeShop")
+    @PostMapping("/closeShop")
     public ResponseEntity<Response> closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }

@@ -1,13 +1,16 @@
 package UI.View;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import UI.Presenter.SystemAdminPresenter;
 
@@ -67,8 +70,37 @@ public class SystemAdminPageView extends BaseView {
     }    
 
     private void onCloseShopClick() {
-        Notification.show("Close Shop clicked");
-        // Handle the close shop action
+         // Create and configure the dialog
+        Dialog dialog = new Dialog();
+        
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+
+        H4 headline = new H4("Choose the shop ID you want to close");
+        dialog.add(headline);
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.setSpacing(true);
+        dialogLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER); 
+        dialogLayout.setAlignItems(Alignment.CENTER); 
+
+
+        // Create components for the dialog
+        TextField shopIdField = new TextField("Enter Shop ID");
+        Button submitButton = new Button("Submit", event -> {
+            String shopId = shopIdField.getValue();
+            presenter.closeShop(shopId); // Call presenter method with shop ID
+            dialog.close();
+        });
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        // Add components to the dialog layout
+        dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
+
+        dialog.add(dialogLayout);
+        dialog.open();
+
     }
 
     private void onUnsubscribeUserClick() {

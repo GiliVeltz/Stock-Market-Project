@@ -140,7 +140,7 @@ public class ShopFacade {
                 throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
-                if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
+                if (_userFacade.isAdmin(userName) || shopToClose.checkPermission(userName, Permission.FOUNDER)) {
                     shopToClose.closeShop();
                     getShopByShopId(shopId).notifyCloseShop(userName);
                 } else {
