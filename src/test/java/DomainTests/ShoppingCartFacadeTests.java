@@ -4,7 +4,7 @@ import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Exceptions.StockMarketException;
@@ -38,7 +38,7 @@ public class ShoppingCartFacadeTests {
     private ShopFacade _shopFacadeMock;
 
     @Mock
-    private AdapterPayment _AdapterPaymentMock;
+    private AdapterPaymentImp _AdapterPaymentMock;
 
     @Mock
     private AdapterSupply _AdapterSupplyMock;

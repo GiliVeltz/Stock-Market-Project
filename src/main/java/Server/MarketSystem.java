@@ -14,7 +14,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import Domain.User;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
@@ -39,7 +39,7 @@ public class MarketSystem {
     public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
-    private AdapterPayment payment_adapter;
+    private AdapterPaymentImp payment_adapter;
     private AdapterSupply supply_adapter;
 
     public static boolean test_flag = false;
@@ -71,7 +71,7 @@ public class MarketSystem {
         set_database(database_instruction);
     }
 
-    public AdapterPayment getPayment_adapter() {
+    public AdapterPaymentImp getPayment_adapter() {
         return payment_adapter;
     }
     public AdapterSupply getSupply_adapter() {
@@ -129,7 +129,7 @@ public class MarketSystem {
     public void set_external_services(String config) throws StockMarketException {
         if (config.equals("external_services:tests")){
             logger.info("Set Tests External Services");
-            payment_adapter = AdapterPayment.getAdapterPayment();
+            payment_adapter = AdapterPaymentImp.getAdapterPayment();
             supply_adapter = AdapterSupply.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapterTests();
             // this.supply_adapter = new SupplyAdapterTests();
@@ -137,7 +137,7 @@ public class MarketSystem {
         }
         else if (config.equals("external_services:fail_tests")){
             logger.info("Set Denied Tests External Services");
-            payment_adapter = AdapterPayment.getAdapterPayment();
+            payment_adapter = AdapterPaymentImp.getAdapterPayment();
             supply_adapter = AdapterSupply.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapter() {
             //     @Override
@@ -160,7 +160,7 @@ public class MarketSystem {
         }
         else if (config.equals("external_services:real")){
             logger.info("Set Real External Services");
-            payment_adapter = AdapterPayment.getAdapterPayment();
+            payment_adapter = AdapterPaymentImp.getAdapterPayment();
             supply_adapter = AdapterSupply.getAdapterSupply();
             // this.payment_adapter = new PaymentAdapterImpl();
             // this.supply_adapter = new SupplyAdapterImpl();

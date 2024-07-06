@@ -7,7 +7,8 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.PaymentService.PaymentInfo;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -27,7 +28,7 @@ import Exceptions.ShopPolicyException;
 // The shopping cart connected to one user at any time.
 public class ShoppingCart {
     private List<ShoppingBasket> _shoppingBaskets;
-    private AdapterPayment _paymentMethod;
+    private AdapterPaymentImp _paymentMethod;
     private AdapterSupply _supplyMethod;
     private ShopFacade _shopFacade;
     private User _user; // if the user is null, the cart is for a guest.
@@ -35,14 +36,14 @@ public class ShoppingCart {
 
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();
+        _paymentMethod = AdapterPaymentImp.getAdapterPayment();
         _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = ShopFacade.getShopFacade();
         _user = null;
     }
 
     // for tests
-    public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
+    public ShoppingCart(ShopFacade shopFacade, AdapterPaymentImp paymentMethod, AdapterSupply supplyMethod) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = paymentMethod;
         _supplyMethod = supplyMethod;
@@ -52,7 +53,7 @@ public class ShoppingCart {
     
     public ShoppingCart(ShopFacade shopFacade) {
         _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();
+        _paymentMethod = AdapterPaymentImp.getAdapterPayment();
         _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = shopFacade;
         _user = null;
@@ -66,10 +67,10 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details, int ordersId)
+    public void purchaseCart(PaymentInfo details, List<Integer> basketsToBuy, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         try {
-            purchaseCartEditStock(details.basketsToBuy);
+            purchaseCartEditStock(basketsToBuy);
         } catch (StockMarketException e) {
             logger.log(Level.SEVERE, "StockMarketException has been thrown: " + e.getMessage(), e);
             throw e;
@@ -78,7 +79,7 @@ public class ShoppingCart {
         Map<Double, String> priceToShopDetails = new HashMap<>();
         double overallPrice = 0;
 
-        for (Integer basketNum : details.getBasketsToBuy()) {
+        for (Integer basketNum : basketsToBuy) {
             ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
             double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
             overallPrice += amountToPay;
@@ -86,13 +87,18 @@ public class ShoppingCart {
         }
 
         try {
-            _paymentMethod.checkIfPaymentOk(details.cardNumber);
+            if (!_paymentMethod.handshake())
+                throw new PaymentFailedException("Payment service is not available");
+
             _supplyMethod.checkIfDeliverOk(details.address);
 
-            _paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
+            int transactionId = _paymentMethod.payment(details, overallPrice);
+            if (transactionId == -1)
+                throw new PaymentFailedException("Payment failed");
+
 
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
-            for (Integer basketNum : details.getBasketsToBuy()) {
+            for (Integer basketNum : basketsToBuy) {
                 ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
                 _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to

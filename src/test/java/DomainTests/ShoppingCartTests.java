@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import Domain.*;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -44,7 +44,7 @@ public class ShoppingCartTests {
     private User userMock;
 
     @Mock
-    private AdapterPayment adapterPaymentMock;
+    private AdapterPaymentImp adapterPaymentMock;
 
     @Mock
     private AdapterSupply adapterSupplyMock;
@@ -56,7 +56,7 @@ public class ShoppingCartTests {
     public void setUp() {
         shopMock = Mockito.mock(Shop.class);
         userMock = Mockito.mock(User.class);
-        adapterPaymentMock = Mockito.mock(AdapterPayment.class);
+        adapterPaymentMock = Mockito.mock(AdapterPaymentImp.class);
         adapterSupplyMock = Mockito.mock(AdapterSupply.class);
         shopFacadeMock = Mockito.mock(ShopFacade.class);
         shoppingCartUnderTest = null;
