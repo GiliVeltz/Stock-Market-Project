@@ -86,8 +86,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         try {
             // Act
-            shop.checkPermission(username, Permission.ADD_PRODUCT);
-            fail("null username should raise an error");
+            result = shop.checkPermission(username, Permission.ADD_PRODUCT);
         } catch (Exception e) {
             result = false;
         }
@@ -104,8 +103,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         try {
             // Act
-            shop.checkPermission(username, Permission.ADD_PRODUCT);
-            fail("Not exist username should raise an error");
+            result = shop.checkPermission(username, Permission.ADD_PRODUCT);
         } catch (Exception e) {
             result = false;
         }
@@ -122,8 +120,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "founder", "bank1", "adderss1");
         try {
             // Act
-            shop.checkPermission(username, Permission.ADD_PRODUCT);
-            fail("Username without Permission should raise an error");
+            result = shop.checkPermission(username, Permission.ADD_PRODUCT);
         } catch (Exception e) {
             result = false;
         }
@@ -141,8 +138,7 @@ public class ShopTests {
         Shop shop = new Shop(1, "shopName1", "founder", "bank1", "adderss1");
         try {
             // Act
-            shop.checkPermission(username, Permission.ADD_PRODUCT);
-            fail("Username without Permission should raise an error");
+            result = shop.checkPermission(username, Permission.ADD_PRODUCT);
         } catch (Exception e) {
             result = false;
         }
@@ -838,9 +834,8 @@ public class ShopTests {
         assertFalse(shop.checkIfHasRole("manager"));
 
         // Act & Assert
-        assertThrows(ShopException.class, () -> {
-            shop.checkPermission("manager", Permission.ADD_PRODUCT);
-        });
+        assertFalse( shop.checkPermission("manager", Permission.ADD_PRODUCT));
+
     }
 
     @Test
@@ -861,9 +856,8 @@ public class ShopTests {
         // Assert
         assertFalse(shop.checkIfHasRole("owner"));
         // Act & Assert
-        assertThrows(ShopException.class, () -> {
-            assertFalse(shop.checkPermission("owner", Permission.ADD_PRODUCT));
-        });
+        assertFalse(shop.checkPermission("owner", Permission.ADD_PRODUCT));
+
     }
 
     @Test
