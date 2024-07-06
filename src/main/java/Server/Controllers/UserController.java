@@ -74,11 +74,13 @@ public class UserController {
     }
 
     @GetMapping("/isSystemAdmin")
-    public ResponseEntity<Response> isSystemAdmin(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<Response> isSystemAdmin(
+        @RequestHeader(value = "Authorization") String token,
+        @RequestParam String username) {
         // example request:
         // "http://localhost:8080/api/user/isSystemAdmin" -H "Authorization":
         // user_token_here"
-        ResponseEntity<Response> resp = _userService.isSystemAdmin(token);
+        ResponseEntity<Response> resp = _userService.isSystemAdmin(token,username);
         return resp;
     }
 

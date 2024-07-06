@@ -15,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -57,6 +58,11 @@ public class UserMessagesPageView extends VerticalLayout {
         searchField.addValueChangeListener(e -> filterMessages(e.getValue()));
         filterOptions.add(searchField);
 
+        TextField searchField = new TextField();
+        searchField.setPlaceholder("Search messages...");
+        searchField.addValueChangeListener(e -> filterMessages(e.getValue()));
+        filterOptions.add(searchField);
+
         Button showAllButton = new Button("Show All");
         showAllButton.addClassName("filter-button");
         showAllButton.addClickListener(e -> showAllMessages());
@@ -87,20 +93,27 @@ public class UserMessagesPageView extends VerticalLayout {
     private void showAllMessages() {
         messagesLayout.removeAll(); // Clear existing messages
         createMessageTextArea(allCurrentMessages); // Display all messages
+        createMessageTextArea(allCurrentMessages); // Display all messages
     }
 
     private void showUnreadMessages() {
         messagesLayout.removeAll(); // Clear existing messages
         List<Message> unreadMessages = allCurrentMessages.stream()
+        messagesLayout.removeAll(); // Clear existing messages
+        List<Message> unreadMessages = allCurrentMessages.stream()
                 .filter(message -> !message.isRead())
                 .collect(Collectors.toList());
+        createUnreadMessageTextArea(unreadMessages); // Display unread messages
         createUnreadMessageTextArea(unreadMessages); // Display unread messages
     }
 
 
+
     public void createMessageTextArea(List<Message> messages) {
         messagesLayout.removeAll(); // Clear existing messages
+        messagesLayout.removeAll(); // Clear existing messages
         loadingIndicator.setVisible(false); // Hide loading indicator
+
 
         if (messages.isEmpty()) {
             Paragraph noMessagesParagraph = new Paragraph("No messages found");
@@ -109,7 +122,9 @@ public class UserMessagesPageView extends VerticalLayout {
             return;
         }
 
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
         for (Message message : messages) {
             HorizontalLayout messageLayout = new HorizontalLayout();
@@ -125,12 +140,15 @@ public class UserMessagesPageView extends VerticalLayout {
                 }
             });
 
+
             Span messageTextArea = new Span();
             messageTextArea.addClassName("message-text-area");
             messageTextArea.setText(truncateMessage(message.getMessage()));
 
+
             Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
             timestampParagraph.addClassName("timestamp");
+
 
             Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
             toggleReadButton.addClickListener(e -> {
@@ -139,6 +157,7 @@ public class UserMessagesPageView extends VerticalLayout {
                 refreshMessages(); // Refresh messages to reflect changes
             });
             toggleReadButton.addClassName("toggle-read-button");
+
 
             if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
                 Span readMoreSpan = new Span(" Read More");
@@ -192,12 +211,15 @@ public class UserMessagesPageView extends VerticalLayout {
                 }
             });
 
+
             Span messageTextArea = new Span();
             messageTextArea.addClassName("message-text-area");
             messageTextArea.setText(truncateMessage(message.getMessage()));
 
+
             Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
             timestampParagraph.addClassName("timestamp");
+
 
             Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
             toggleReadButton.addClickListener(e -> {
@@ -207,25 +229,31 @@ public class UserMessagesPageView extends VerticalLayout {
             });
             toggleReadButton.addClassName("toggle-read-button");
 
+
             if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
                 Span readMoreSpan = new Span(" Read More");
                 readMoreSpan.addClassName("read-more-link");
                 readMoreSpan.getElement().getStyle().set("color", "blue").set("cursor", "pointer");
+
 
                 readMoreSpan.addClickListener(e -> {
                     Dialog dialog = new Dialog();
                     dialog.setWidth("400px");
                     dialog.setHeight("300px");
 
+
                     Span fullMessageSpan = new Span(message.getMessage());
                     fullMessageSpan.addClassName("full-message-span");
+
 
                     dialog.add(fullMessageSpan);
                     dialog.open();
                 });
 
+
                 messageTextArea.add(readMoreSpan);
             }
+
 
             messageLayout.add(messageTextArea, timestampParagraph, toggleReadButton);
             messagesLayout.add(messageLayout);
@@ -261,13 +289,36 @@ public class UserMessagesPageView extends VerticalLayout {
         }
     }
 
+
+    private void filterMessages(String keyword) {
+        messagesLayout.removeAll(); // Clear existing messages
+        
+        if (keyword == null || keyword.isEmpty()) {
+            createMessageTextArea(allCurrentMessages);
+        } else {
+            List<Message> filteredMessages = allCurrentMessages.stream()
+                .filter(message -> message.getMessage().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+            
+            if (filteredMessages.isEmpty()) {
+                Paragraph noMessagesParagraph = new Paragraph("No messages found");
+                noMessagesParagraph.addClassName("no-messages");
+                messagesLayout.add(noMessagesParagraph);
+            } else {
+                createMessageTextArea(filteredMessages);
+            }
+        }
+    }
+
     private void showFullMessageDialog(String message) {
         Dialog dialog = new Dialog();
         dialog.setWidth("400px");
         dialog.setHeight("300px");
 
+
         Span fullMessageSpan = new Span(message);
         fullMessageSpan.addClassName("full-message-span");
+
 
         dialog.add(fullMessageSpan);
         dialog.open();
@@ -276,4 +327,8 @@ public class UserMessagesPageView extends VerticalLayout {
     public void setCurrentMessages(List<Message> messages) {
         this.allCurrentMessages = new ArrayList<Message>(messages);
     }
+    public void setCurrentMessages(List<Message> messages) {
+        this.allCurrentMessages = new ArrayList<Message>(messages);
+    }
 }
+

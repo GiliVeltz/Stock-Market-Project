@@ -2,7 +2,6 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import Domain.Order;
-import Domain.User;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -162,9 +160,12 @@ public class UserService {
 
     // this function is responsible for checking if a user is a system admin
     @Transactional
-    public ResponseEntity<Response> isSystemAdmin(String userId) {
+    public ResponseEntity<Response> isSystemAdmin(String token, String userId) {
         Response response = new Response();
         try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                
             if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
@@ -172,7 +173,7 @@ public class UserService {
             } else {
                 logger.info("User is not an admin: " + userId);
                 response.setReturnValue("User is not an admin");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());

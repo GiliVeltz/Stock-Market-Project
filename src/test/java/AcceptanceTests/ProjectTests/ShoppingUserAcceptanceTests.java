@@ -119,14 +119,10 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge")
-    // TODO: TAL - need to implement this test
     @Test
     public void testBuyingShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","1 4 5 6 7","Visa","Israel") ); // success - all products are available to buy them
-        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1 8 9","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
-        assertTrue(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // success - all shop policies are valid
-        assertFalse(_bridge.testBuyingShoppingCartPoliciesUser("bob","bobspassword") ); // fail - one of the shop policies (or more) is not available
+        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
     }
 
     // Test if the user can logout from the system.
@@ -137,11 +133,9 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test if the user logouts from the system - his shopping cart we saved in the system.
-    @Disabled("This test is disabled cuase needs to implement in real bridge - not working")
     @Test
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
-        // assertFalse(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // fail - his shopping cart not saved
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
@@ -180,18 +174,15 @@ public class ShoppingUserAcceptanceTests{
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.
-    @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
-    // TODO: METAR - need to implement this test
     @Test
     public void TestUserMessagingShopHePurchasedFrom() {
-        assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // success - the user secceeded to send the message
-        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop1", "message1") ); // fail - the score in invalid
-        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "shop2", "message1") ); // fail - the user didnot purchased from this shop
+        assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "0", "message1") ); // success - the user secceeded to send the message
+        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "1", "message1") ); // fail - the user didnot purchased from this shop
     }
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
-    // TODO: VLADI - need to implement this test
+    // TODO: METAR - need to implement this test
     @Test
     public void TestUserReportSystemManagerOnBreakingIntegrityRules() {
         assertTrue(_bridge.TestUserReportSystemManagerOnBreakingIntegrityRules("bob","bobspassword", "message1") ); // success - the user secceeded to send the message
@@ -202,8 +193,8 @@ public class ShoppingUserAcceptanceTests{
     @Test
     public void TestUserViewHistoryPurchaseList() {
         assertTrue(_bridge.TestUserViewHistoryPurchaseList("bob","bobspassword") ); // success - the user secceeded to see his history purchased list
-        //assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "product1") ); // success - the product exsist in the history purchased list
-        //assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem("bob","bobspassword", "shop1") ); // success - the shop products exsist in the history purchased list
+        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "0") ); // success - the product exsist in the history purchased list
+        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem("bob","bobspassword", "0") ); // success - the shop products exsist in the history purchased list
     }
     
     // Test that a user can see his own private details.

@@ -21,6 +21,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -38,19 +39,23 @@ public class UserMainPageView extends BaseView {
 
     private UserMainPagePresenter presenter;
     private String _username;
+    private String _userRole; 
     private Button _openShopButton;
     private Button _reportButton;
     private VerticalLayout shopsLayout;
     private VerticalLayout messagesLayout;
     private VerticalLayout orderLayout;
+    private VerticalLayout adminLayout;
     private Button saveButton; // Moved saveButton declaration to class level
     private Button editButton;
     public TextField usernameField = new TextField();
     public TextField emailField = new TextField();
     public DatePicker birthDateField = new DatePicker();
+    Tab systemAdminTab;
 
     public UserMainPageView() {
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
+        _userRole = (String) VaadinSession.getCurrent().getAttribute("role");
 
         H2 welcomeMessage = new H2("Welcome " + _username + "!");
         Header header = new LoggedInHeader("8080");
@@ -68,6 +73,13 @@ public class UserMainPageView extends BaseView {
         Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab, orderHistoryTab);
         tabs.addClassName("custom-tabs");
 
+        if ("admin".equals(_userRole)) {
+            systemAdminTab = new Tab(VaadinIcon.COG.create(), new Span("System Admin"));
+            systemAdminTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+            tabs.add(systemAdminTab);
+        }
+
+
         VerticalLayout profileLayout = new VerticalLayout();
 
         shopsLayout = new VerticalLayout(); // Use class-level variable
@@ -81,6 +93,10 @@ public class UserMainPageView extends BaseView {
         orderLayout = new VerticalLayout();
         UserOrderHistoryView userOrderHistoryPageView = new UserOrderHistoryView();
         orderLayout.add(userOrderHistoryPageView);
+
+        adminLayout = new VerticalLayout();
+        SystemAdminPageView systemAdminPageView = new SystemAdminPageView();
+        adminLayout.add(systemAdminPageView);
 
         FormLayout userInfoLayout = new FormLayout();
 
@@ -190,6 +206,7 @@ public class UserMainPageView extends BaseView {
             boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
             boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
             boolean isOrderHistoryTabSelected = event.getSelectedTab() == orderHistoryTab;
+            boolean isSystemAdminTabSelected = event.getSelectedTab() == systemAdminTab;
 
             profileLayout.setVisible(isProfileTabSelected);
 
@@ -214,6 +231,16 @@ public class UserMainPageView extends BaseView {
             }
             orderLayout.setVisible(isOrderHistoryTabSelected);
 
+            if (isSystemAdminTabSelected) {
+                adminLayout.removeAll();
+                SystemAdminPageView updatedAdminPageView = new SystemAdminPageView();
+                adminLayout.add(updatedAdminPageView);
+            }
+            adminLayout.setVisible(isSystemAdminTabSelected);
+
+
+            // _openShopButton.setVisible(!(isMessagesTabSelected || isProfileTabSelected || isOrderHistoryTabSelected || isSystemAdminTabSelected));
+
             _openShopButton.setVisible(isShopsTabSelected);
             _reportButton.setVisible(isProfileTabSelected);
         });
@@ -223,6 +250,7 @@ public class UserMainPageView extends BaseView {
         shopsLayout.setVisible(false);
         messagesLayout.setVisible(false);
         orderLayout.setVisible(false);
+        adminLayout.setVisible(false);
 
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setWidthFull();
@@ -247,6 +275,10 @@ public class UserMainPageView extends BaseView {
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
         add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
+
+        if ("admin".equals(_userRole)) {
+            add(adminLayout);
+        }
     }
 
     private UserMessagesPageView constructMessagesContent() {
