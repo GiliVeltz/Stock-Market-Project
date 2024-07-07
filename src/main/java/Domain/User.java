@@ -7,37 +7,38 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
-
 import Dtos.UserDto;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "User")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long _id;
 
-    @Column(name = "password", nullable = false)
+    // @Column(name = "password", nullable = false)
     private String _password;
 
-    @Column(name = "username", unique = true, nullable = false)
+    // @Column(name = "username", unique = true, nullable = false)
     private String _username;
 
-    @Column(name = "isAdmin", nullable = false)
+    // @Column(name = "isAdmin", nullable = false)
     private boolean _isAdmin;
 
-    @Column(name = "email", unique = true, nullable = false)
+    // @Column(name = "email", unique = true, nullable = false)
     private String _email;
 
-    @Column(name = "birthDate", nullable = false)
-    @Temporal(TemporalType.DATE)
+    // @Column(name = "birthDate", nullable = false)
+    // @Temporal(TemporalType.DATE)
     private Date _birthDate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> _purchaseHistory;
 
-    @Column(name = "isLoggedIn", nullable = false)
+    // @Column(name = "isLoggedIn", nullable = false)
     private boolean _isLoggedIn;
 
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
@@ -176,5 +177,9 @@ public class User {
         
         // Calculate the difference in years
         return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
+    }
+
+    public long getId(){
+        return _id;
     }
 }

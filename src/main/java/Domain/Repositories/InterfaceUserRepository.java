@@ -4,9 +4,6 @@ import java.util.List;
 
 import Domain.User;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public interface InterfaceUserRepository {
     boolean doesUserExist(String username);
 

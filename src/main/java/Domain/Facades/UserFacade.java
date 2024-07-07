@@ -1,12 +1,9 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +28,7 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
+
     public UserFacade() {
         _userRepository = new MemoryUserRepository(new ArrayList<>());
         _guestIds = new ArrayList<>();
@@ -46,7 +44,6 @@ public class UserFacade {
         _guestIds = guestIds;
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
-
         // // //For testing UI
         // initUI();
     }
@@ -68,6 +65,7 @@ public class UserFacade {
         }
         return _UserFacade;
     }
+
 
     // set the user repository to be used real time
     public void setUserRepository(InterfaceUserRepository userRepository) {
@@ -125,7 +123,6 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    @Transactional
     public void register(UserDto userDto) throws StockMarketException {
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
