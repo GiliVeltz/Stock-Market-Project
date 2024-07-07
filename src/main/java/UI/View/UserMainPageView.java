@@ -3,6 +3,7 @@ package UI.View;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -15,9 +16,12 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -35,18 +39,23 @@ public class UserMainPageView extends BaseView {
 
     private UserMainPagePresenter presenter;
     private String _username;
+    private String _userRole; 
     private Button _openShopButton;
+    private Button _reportButton;
     private VerticalLayout shopsLayout;
     private VerticalLayout messagesLayout;
     private VerticalLayout orderLayout;
+    private VerticalLayout adminLayout;
     private Button saveButton; // Moved saveButton declaration to class level
     private Button editButton;
     public TextField usernameField = new TextField();
     public TextField emailField = new TextField();
     public DatePicker birthDateField = new DatePicker();
+    Tab systemAdminTab;
 
     public UserMainPageView() {
         _username = (String) VaadinSession.getCurrent().getAttribute("username");
+        _userRole = (String) VaadinSession.getCurrent().getAttribute("role");
 
         H2 welcomeMessage = new H2("Welcome " + _username + "!");
         Header header = new LoggedInHeader("8080");
@@ -64,6 +73,13 @@ public class UserMainPageView extends BaseView {
         Tabs tabs = new Tabs(profileTab, shopsTab, messagesTab, orderHistoryTab);
         tabs.addClassName("custom-tabs");
 
+        if ("admin".equals(_userRole)) {
+            systemAdminTab = new Tab(VaadinIcon.COG.create(), new Span("System Admin"));
+            systemAdminTab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+            tabs.add(systemAdminTab);
+        }
+
+
         VerticalLayout profileLayout = new VerticalLayout();
 
         shopsLayout = new VerticalLayout(); // Use class-level variable
@@ -78,14 +94,15 @@ public class UserMainPageView extends BaseView {
         UserOrderHistoryView userOrderHistoryPageView = new UserOrderHistoryView();
         orderLayout.add(userOrderHistoryPageView);
 
+        adminLayout = new VerticalLayout();
+        SystemAdminPageView systemAdminPageView = new SystemAdminPageView();
+        adminLayout.add(systemAdminPageView);
+
         FormLayout userInfoLayout = new FormLayout();
 
-        // Fetch user information from presenter
-        //UserDto userDto = new UserDto();
         presenter = new UserMainPagePresenter(this);
         presenter.getUserInfo(); // Blocking call to get the result
-        // Handle the retrieved UserDto here
-        // Display user information in non-editable fields
+
         usernameField.setReadOnly(true);
         userInfoLayout.addFormItem(usernameField, "Username");
 
@@ -94,20 +111,17 @@ public class UserMainPageView extends BaseView {
 
         birthDateField.setReadOnly(true);
         userInfoLayout.addFormItem(birthDateField, "Birth Date");
-        // Initialize the cart image
-        Image cartImage = new Image("https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
+
+        Image cartImage = new Image(
+                "https://raw.githubusercontent.com/inbarbc/StockMarket_Project/main/shoppingCart.jpg", "Cart");
         cartImage.setWidth("400px");
 
-        // Create a horizontal layout for the cart image to center it
         HorizontalLayout cartImageLayout = new HorizontalLayout();
-        cartImageLayout.setWidthFull(); // Make the layout take full width
-        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the content
+        cartImageLayout.setWidthFull();
+        cartImageLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         cartImageLayout.add(cartImage);
 
-        // Initialize edit and save buttons
-
         editButton = new Button("Edit Details", event -> {
-            // Switch to edit mode
             emailField.setReadOnly(false);
             birthDateField.setReadOnly(false);
 
@@ -116,24 +130,19 @@ public class UserMainPageView extends BaseView {
         });
 
         saveButton = new Button("Save", event -> {
-            // Save changes to presenter or backend
             Date date = Date.from(birthDateField.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-            presenter.updateUserInfo(
-                    new UserDto(usernameField.getValue(), emailField.getValue(), "", date));
+            presenter.updateUserInfo(new UserDto(usernameField.getValue(), emailField.getValue(), "", date));
 
-            // Notify user of successful save
             Notification.show("Details saved successfully", 3000, Notification.Position.TOP_CENTER);
 
-            // Switch back to view mode
             usernameField.setReadOnly(true);
             emailField.setReadOnly(true);
             birthDateField.setReadOnly(true);
 
-            // Hide the save button
             saveButton.setVisible(false);
             editButton.setVisible(true);
         });
-        saveButton.setVisible(false); // Initially hide save button
+        saveButton.setVisible(false);
 
         HorizontalLayout editSaveButtonLayout = new HorizontalLayout(editButton, saveButton);
         editSaveButtonLayout.setWidthFull();
@@ -144,11 +153,60 @@ public class UserMainPageView extends BaseView {
 
         profileLayout.add(dialogLayout);
 
+        // Initialize the Report button
+        _reportButton = new Button("Report", e -> {
+            Dialog reportDialog = new Dialog();
+            reportDialog.setWidth("500px"); // Increased width
+            reportDialog.setHeight("400px"); // Increased height
+
+            FormLayout formLayout = new FormLayout();
+            Select<String> reasonSelect = new Select<>();
+            reasonSelect.setLabel("Select the reason from the list below");
+            reasonSelect.setItems("Seller listed fake products", "Item doesn't match the description",
+                    "Seller is selling alcohol or drugs to underage buyers", "Order was not fulfilled on time.", "Seller is overcharging for products.", "Expiry date issues", "Other...");
+            reasonSelect.setPlaceholder("Please select");
+            reasonSelect.setWidthFull(); // Make the select component full width
+
+            TextArea complaintField = new TextArea("Report details");
+            complaintField.setWidthFull(); // Make the text area full width
+            complaintField.setHeight("150px"); // Set height for the text area
+
+            Button submitButton = new Button("Submit", event -> {
+                // Implement logic to handle the complaint submission (e.g., send to the server)
+                String selectedReason = reasonSelect.getValue();
+                String complaintDetails = complaintField.getValue();
+                // Add your logic here to handle the complaint
+                Notification.show("Complaint submitted: " + selectedReason);
+                reportDialog.close();
+                String username = (String) UI.getCurrent().getSession().getAttribute("username");
+                // String message = "Complaint submitted for shop " + _shopId +", from user: "+
+                // username + ".\n" + "The reason: " + selectedReason + ".\n" +"details:" +
+                // complaintDetails;
+                String message = "report submitted for shop " + ", from user: " + username + ".\n"
+                        + "The reason: " + selectedReason + ".\n" + "details:" + complaintDetails;
+                presenter.openReport(message);
+            });
+
+            formLayout.addFormItem(reasonSelect, "Reason");
+            formLayout.addFormItem(complaintField, "Complaint details");
+            formLayout.add(submitButton);
+
+            // Make the form layout full width to fit the dialog
+            formLayout.setWidthFull();
+
+            reportDialog.add(formLayout);
+            reportDialog.open();
+        });
+
+        _reportButton.setWidth("120px");
+        _reportButton.setVisible(true); // Initially hidden
+
         tabs.addSelectedChangeListener(event -> {
             boolean isProfileTabSelected = event.getSelectedTab() == profileTab;
             boolean isShopsTabSelected = event.getSelectedTab() == shopsTab;
             boolean isMessagesTabSelected = event.getSelectedTab() == messagesTab;
             boolean isOrderHistoryTabSelected = event.getSelectedTab() == orderHistoryTab;
+            boolean isSystemAdminTabSelected = event.getSelectedTab() == systemAdminTab;
 
             profileLayout.setVisible(isProfileTabSelected);
 
@@ -173,10 +231,18 @@ public class UserMainPageView extends BaseView {
             }
             orderLayout.setVisible(isOrderHistoryTabSelected);
 
-            // messagesLayout.setVisible(event.getSelectedTab() == messagesTab);
-            _openShopButton
-                    .setVisible(!(event.getSelectedTab() == messagesTab || event.getSelectedTab() == profileTab
-                                    || event.getSelectedTab() == orderHistoryTab));
+            if (isSystemAdminTabSelected) {
+                adminLayout.removeAll();
+                SystemAdminPageView updatedAdminPageView = new SystemAdminPageView();
+                adminLayout.add(updatedAdminPageView);
+            }
+            adminLayout.setVisible(isSystemAdminTabSelected);
+
+
+            // _openShopButton.setVisible(!(isMessagesTabSelected || isProfileTabSelected || isOrderHistoryTabSelected || isSystemAdminTabSelected));
+
+            _openShopButton.setVisible(isShopsTabSelected);
+            _reportButton.setVisible(isProfileTabSelected);
         });
 
         tabs.setSelectedTab(profileTab);
@@ -184,6 +250,7 @@ public class UserMainPageView extends BaseView {
         shopsLayout.setVisible(false);
         messagesLayout.setVisible(false);
         orderLayout.setVisible(false);
+        adminLayout.setVisible(false);
 
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setWidthFull();
@@ -200,48 +267,41 @@ public class UserMainPageView extends BaseView {
 
         _openShopButton = new Button("Open Shop", e -> createOpenNewShopDialog().open());
         _openShopButton.setWidth("120px");
+        _openShopButton.setVisible(false); // Initially hidden
 
-        // _myMessagesButton = new Button("My Messages", e -> {
-        // getUI().ifPresent(ui -> ui.navigate("user_messages"));
-        // });
-        // Add a click listener to the messagesTab
-        // Setup for messagesTab with a selected change listener
-
-        HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton);
+        HorizontalLayout openShopButtonLayout = new HorizontalLayout(_openShopButton, _reportButton);
         openShopButtonLayout.setWidthFull();
         openShopButtonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         openShopButtonLayout.setAlignItems(FlexComponent.Alignment.END);
 
         add(header, mainLayout, shopsLayout, profileLayout, messagesLayout, orderLayout, openShopButtonLayout);
+
+        if ("admin".equals(_userRole)) {
+            add(adminLayout);
+        }
     }
 
-    // Method to construct or reload the messages content
-    private UserMessagesPageView constructMessagesContent() { 
+    private UserMessagesPageView constructMessagesContent() {
         UserMessagesPageView userMessagesPageView = new UserMessagesPageView();
-        // Example: Add components to layout, such as messages
         return userMessagesPageView;
     }
 
     private Dialog createOpenNewShopDialog() {
         Dialog dialog = new Dialog();
 
-        // Create a headline
         H2 headline = new H2("Open New Shop");
 
-        // Create form layout
         FormLayout formLayout = new FormLayout();
 
-        // Create form fields
         TextField shopNameField = new TextField("Shop Name");
-        TextField bankDetailsField = new TextField("Bank Details");
+        TextField bankDetailsField = new
+
+        TextField("Bank Details");
         TextField shopAddressField = new TextField("Address");
 
-        // Add fields to the form layout
         formLayout.add(shopNameField, bankDetailsField, shopAddressField);
 
-        // Create buttons
         Button submitButton = new Button("Submit", event -> {
-            // Handle form submission
             String shopName = shopNameField.getValue();
             String bankDetails = bankDetailsField.getValue();
             String shopAddress = shopAddressField.getValue();
@@ -251,7 +311,6 @@ public class UserMainPageView extends BaseView {
             UserShopsPageView UpdateduserShopsPageView = new UserShopsPageView();
             shopsLayout.add(UpdateduserShopsPageView);
 
-            // Close the dialog after submission
             dialog.close();
         });
 
@@ -261,12 +320,10 @@ public class UserMainPageView extends BaseView {
 
         cancelButton.addClassName("pointer-cursor");
 
-        // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
         buttonLayout.setWidthFull();
-        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER); // Center the buttons
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        // Add form layout and button layout to the dialog
         VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
         dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         dialog.add(dialogLayout);

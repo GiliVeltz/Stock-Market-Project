@@ -73,10 +73,6 @@ public class ShopViewPresenter {
 
     }
 
-    // public void openComplain(String message) {
-    //     WebSocketClient.sendMessage(message);
-    // }
-
 
     public void openComplain(String message) {
         RestTemplate restTemplate = new RestTemplate();

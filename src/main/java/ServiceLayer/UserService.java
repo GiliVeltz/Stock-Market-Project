@@ -107,6 +107,7 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     // this function is responsible for registering a new user to the system
     @Transactional
@@ -161,9 +162,12 @@ public class UserService {
 
     // this function is responsible for checking if a user is a system admin
     @Transactional
-    public ResponseEntity<Response> isSystemAdmin(String userId) {
+    public ResponseEntity<Response> isSystemAdmin(String token, String userId) {
         Response response = new Response();
         try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                
             if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
@@ -171,7 +175,7 @@ public class UserService {
             } else {
                 logger.info("User is not an admin: " + userId);
                 response.setReturnValue("User is not an admin");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());
@@ -451,6 +455,32 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to view order history: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to view order history: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Response> reportToAdmin(String token,String message) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String user = _tokenService.extractUsername(token); 
+                    logger.info(String.format("New report created by user: %s", user));
+                    _userFacade.reportToAdmin(user, message);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage("Problem with posses Report please try again.");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to open Report. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

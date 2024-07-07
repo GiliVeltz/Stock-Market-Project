@@ -178,7 +178,7 @@ public class Shop {
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - checkPermission: user " + username + " doesn't have a role in the shop with id " + _shopId);
-            throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
+            return false;
         }
         Role role = _userToRole.get(username);
         if (!isOwnerOrFounder(role) && !role.hasPermission(p)) {
