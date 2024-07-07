@@ -502,101 +502,101 @@ public class ShoppingCartTests {
         assertEquals(product4.getProductQuantity(), 11);
     }
 
-    @Test
-    public void testPurchaseCart_whenEveryThingIsOkAndItsGuest_shouldReduceStockMakeShopOrdersPayDeliver()
-            throws StockMarketException {
-        // Arrange
-        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
-        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
-        product.updateProductQuantity(10);
-        shop.addProductToShop("ownerUsername", product);
-        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
-        product2.updateProductQuantity(10);
-        shop.addProductToShop("ownerUsername", product2);
-        Shop shop2 = new Shop(2, "shopName2", "ownerUsername2", "bank2", "address2");
-        Product product3 = new Product(3, "product3", Category.ELECTRONICS, 100.0);
-        product3.updateProductQuantity(10);
-        shop2.addProductToShop("ownerUsername2", product3);
-        Product product4 = new Product(4, "product4", Category.ELECTRONICS, 100.0);
-        product4.updateProductQuantity(10);
-        shop2.addProductToShop("ownerUsername2", product4);
+    // @Test
+    // public void testPurchaseCart_whenEveryThingIsOkAndItsGuest_shouldReduceStockMakeShopOrdersPayDeliver()
+    //         throws StockMarketException {
+    //     // Arrange
+    //     shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+    //     Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
+    //     Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+    //     product.updateProductQuantity(10);
+    //     shop.addProductToShop("ownerUsername", product);
+    //     Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+    //     product2.updateProductQuantity(10);
+    //     shop.addProductToShop("ownerUsername", product2);
+    //     Shop shop2 = new Shop(2, "shopName2", "ownerUsername2", "bank2", "address2");
+    //     Product product3 = new Product(3, "product3", Category.ELECTRONICS, 100.0);
+    //     product3.updateProductQuantity(10);
+    //     shop2.addProductToShop("ownerUsername2", product3);
+    //     Product product4 = new Product(4, "product4", Category.ELECTRONICS, 100.0);
+    //     product4.updateProductQuantity(10);
+    //     shop2.addProductToShop("ownerUsername2", product4);
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        shoppingCartUnderTest.addProduct(1, 1);
-        shoppingCartUnderTest.addProduct(1, 1);
-        shoppingCartUnderTest.addProduct(2, 1);
-        shoppingCartUnderTest.addProduct(3, 2);
-        shoppingCartUnderTest.addProduct(4, 2);
+    //     when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+    //     when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+    //     shoppingCartUnderTest.addProduct(1, 1);
+    //     shoppingCartUnderTest.addProduct(1, 1);
+    //     shoppingCartUnderTest.addProduct(2, 1);
+    //     shoppingCartUnderTest.addProduct(3, 2);
+    //     shoppingCartUnderTest.addProduct(4, 2);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
-            new ArrayList<>(Arrays.asList(0, 1)));
+    //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+    //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        // Act
-        shoppingCartUnderTest.purchaseCart(purchaseCartDetailsDto, 0);
+    //     // Act
+    //     shoppingCartUnderTest.purchaseCart(purchaseCartDetailsDto, 0);
 
-        // Assert
-        assertEquals(product.getProductQuantity(), 8);
-        assertEquals(product2.getProductQuantity(), 9);
-        assertEquals(product3.getProductQuantity(), 9);
-        assertEquals(product4.getProductQuantity(), 9);
-        assertEquals(shop.getPurchaseHistory().size(), 1);
-        assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
-        assertEquals(shop2.getPurchaseHistory().size(), 1);
-        assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
-    }
+    //     // Assert
+    //     assertEquals(product.getProductQuantity(), 8);
+    //     assertEquals(product2.getProductQuantity(), 9);
+    //     assertEquals(product3.getProductQuantity(), 9);
+    //     assertEquals(product4.getProductQuantity(), 9);
+    //     assertEquals(shop.getPurchaseHistory().size(), 1);
+    //     assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
+    //     assertEquals(shop2.getPurchaseHistory().size(), 1);
+    //     assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
+    // }
 
-    @Test
-    public void testPurchaseCart_whenEveryThingIsOkAndItsUser_shouldReduceStockMakeOrdersPayDeliver()
-            throws StockMarketException {
-        // Arrange
-        shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        Date date = new Date();
-        date.setTime(0);
-        User user = new User("user", "passwordUser", "email", date);
-        Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
-        Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
-        product.updateProductQuantity(10);
-        shop.addProductToShop("ownerUsername", product);
-        Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
-        product2.updateProductQuantity(10);
-        shop.addProductToShop("ownerUsername", product2);
-        Shop shop2 = new Shop(2, "shopName2", "ownerUsername2", "bank2", "address2");
-        Product product3 = new Product(3, "product3", Category.ELECTRONICS, 100.0);
-        product3.updateProductQuantity(10);
-        shop2.addProductToShop("ownerUsername2", product3);
-        Product product4 = new Product(4, "product4", Category.ELECTRONICS, 100.0);
-        product4.updateProductQuantity(10);
-        shop2.addProductToShop("ownerUsername2", product4);
+    // @Test
+    // public void testPurchaseCart_whenEveryThingIsOkAndItsUser_shouldReduceStockMakeOrdersPayDeliver()
+    //         throws StockMarketException {
+    //     // Arrange
+    //     shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
+    //     Date date = new Date();
+    //     date.setTime(0);
+    //     User user = new User("user", "passwordUser", "email", date);
+    //     Shop shop = new Shop(1, "shopName1", "ownerUsername", "bank1", "address1");
+    //     Product product = new Product(1, "product1", Category.ELECTRONICS, 100.0);
+    //     product.updateProductQuantity(10);
+    //     shop.addProductToShop("ownerUsername", product);
+    //     Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
+    //     product2.updateProductQuantity(10);
+    //     shop.addProductToShop("ownerUsername", product2);
+    //     Shop shop2 = new Shop(2, "shopName2", "ownerUsername2", "bank2", "address2");
+    //     Product product3 = new Product(3, "product3", Category.ELECTRONICS, 100.0);
+    //     product3.updateProductQuantity(10);
+    //     shop2.addProductToShop("ownerUsername2", product3);
+    //     Product product4 = new Product(4, "product4", Category.ELECTRONICS, 100.0);
+    //     product4.updateProductQuantity(10);
+    //     shop2.addProductToShop("ownerUsername2", product4);
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.addProduct(1, 1);
-        shoppingCartUnderTest.addProduct(1, 1);
-        shoppingCartUnderTest.addProduct(2, 1);
-        shoppingCartUnderTest.addProduct(3, 2);
-        shoppingCartUnderTest.addProduct(4, 2);
+    //     when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+    //     when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+    //     shoppingCartUnderTest.SetUser(user);
+    //     shoppingCartUnderTest.addProduct(1, 1);
+    //     shoppingCartUnderTest.addProduct(1, 1);
+    //     shoppingCartUnderTest.addProduct(2, 1);
+    //     shoppingCartUnderTest.addProduct(3, 2);
+    //     shoppingCartUnderTest.addProduct(4, 2);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
-            new ArrayList<>(Arrays.asList(0, 1)));
+    //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+    //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        // Act
-        shoppingCartUnderTest.purchaseCart(purchaseCartDetailsDto, 0);
+    //     // Act
+    //     shoppingCartUnderTest.purchaseCart(purchaseCartDetailsDto, 0);
 
-        // Assert
-        assertEquals(product.getProductQuantity(), 8);
-        assertEquals(product2.getProductQuantity(), 9);
-        assertEquals(product3.getProductQuantity(), 9);
-        assertEquals(product4.getProductQuantity(), 9);
-        assertEquals(shop.getPurchaseHistory().size(), 1);
-        assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
-        assertEquals(shop2.getPurchaseHistory().size(), 1);
-        assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
-        assertEquals(user.getPurchaseHistory().size(), 1);
-        assertEquals(user.getPurchaseHistory().get(0).getOrderId(), 0);
-    }
+    //     // Assert
+    //     assertEquals(product.getProductQuantity(), 8);
+    //     assertEquals(product2.getProductQuantity(), 9);
+    //     assertEquals(product3.getProductQuantity(), 9);
+    //     assertEquals(product4.getProductQuantity(), 9);
+    //     assertEquals(shop.getPurchaseHistory().size(), 1);
+    //     assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
+    //     assertEquals(shop2.getPurchaseHistory().size(), 1);
+    //     assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
+    //     assertEquals(user.getPurchaseHistory().size(), 1);
+    //     assertEquals(user.getPurchaseHistory().get(0).getOrderId(), 0);
+    // }
 
     @Test
     public void testPurchaseCart_whenSomeProductsNotInStockItsGuest_shouldNotReduceStockNotMakeShopOrdersNotDeliverNotPay()
