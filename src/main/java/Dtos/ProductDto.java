@@ -7,6 +7,7 @@ import enums.Category;
 
 public class ProductDto {
 
+    public int productId;
     public String productName;
     public Category category;
     public double price;
@@ -16,6 +17,7 @@ public class ProductDto {
 
     // Constructor
     public ProductDto(String productName, Category category, double price, int productQuantity) {
+        this.productId = -1;
         this.productName = productName;
         this.category = category;
         this.price = price;
@@ -23,6 +25,7 @@ public class ProductDto {
     }
 
     public ProductDto(Product product) {
+        this.productId = product.getProductId();
         this.productName = product.getProductName();
         this.category = product.getCategory();
         this.price = product.getPrice();

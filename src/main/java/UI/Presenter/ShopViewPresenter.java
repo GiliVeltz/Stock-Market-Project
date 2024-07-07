@@ -117,7 +117,7 @@ public class ShopViewPresenter {
 
     }
 
-    public void addProductToCart(String shopId, String productId, int quantity) {
+    public void addProductToCart(int shopId, int productId, int quantity) {
         RestTemplate restTemplate = new RestTemplate();
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -131,8 +131,8 @@ public class ShopViewPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _view.getServerPort() + "/api/user/addProductToShoppingCart?productId=" + productId +
-                                 "&shopId=" + shopId + "&quantity=" + quantity,
+                                "http://localhost:" + _view.getServerPort() + "/api/user/addProductToShoppingCart?productID=" + productId +
+                                 "&shopID=" + shopId + "&quantity=" + quantity,
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);

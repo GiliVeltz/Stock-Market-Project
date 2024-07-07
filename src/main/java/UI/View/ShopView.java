@@ -138,7 +138,7 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
         priceAndControls.add(quantityControls);
 
         // Add to cart button
-        Button addToCartButton = new Button("Add to Cart", event -> addToCart(product));
+        Button addToCartButton = new Button("Add to Cart", event -> addToCart(product, quantityField.getValue().intValue()));
         productPanel.add(priceAndControls, addToCartButton);
 
         // Enable dragging of the product panel
@@ -147,9 +147,10 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
         return productPanel;
     }
 
-    private void addToCart(ProductDto product) {
+    private void addToCart(ProductDto product, int quantity) {
         // Implement logic to add the product to the cart (not shown here)
         // Example: presenter.addToCart(product);
+        _presenter.addProductToCart(_shopId, product.getProductId(), quantity);
         Notification.show(product.getProductName() + " added to cart");
     }
 
