@@ -1,5 +1,6 @@
 package UI.View;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,9 @@ public class UserMessagesPageView extends VerticalLayout {
     private ProgressBar loadingIndicator;
     private List<Message> allMessages = new ArrayList<>();
     private List<Message> allCurrentMessages = new ArrayList<>();
+    private int currentPage = 0;
+    private static final int MESSAGES_PER_PAGE = 5;
+    private LocalDateTime lastVisit;
 
     public UserMessagesPageView() {
         // Retrieve the username from the session
@@ -83,6 +87,7 @@ public class UserMessagesPageView extends VerticalLayout {
     private void showAllMessages() {
         messagesLayout.removeAll(); // Clear existing messages
         createMessageTextArea(allCurrentMessages); // Display all messages
+        createMessageTextArea(allCurrentMessages); // Display all messages
     }
 
     private void showUnreadMessages() {
@@ -91,12 +96,16 @@ public class UserMessagesPageView extends VerticalLayout {
                 .filter(message -> !message.isRead())
                 .collect(Collectors.toList());
         createUnreadMessageTextArea(unreadMessages); // Display unread messages
+        createUnreadMessageTextArea(unreadMessages); // Display unread messages
     }
+
 
 
     public void createMessageTextArea(List<Message> messages) {
         messagesLayout.removeAll(); // Clear existing messages
+        messagesLayout.removeAll(); // Clear existing messages
         loadingIndicator.setVisible(false); // Hide loading indicator
+
 
         if (messages.isEmpty()) {
             Paragraph noMessagesParagraph = new Paragraph("No messages found");
@@ -105,7 +114,9 @@ public class UserMessagesPageView extends VerticalLayout {
             return;
         }
 
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
         for (Message message : messages) {
             HorizontalLayout messageLayout = new HorizontalLayout();
@@ -121,12 +132,15 @@ public class UserMessagesPageView extends VerticalLayout {
                 }
             });
 
+
             Span messageTextArea = new Span();
             messageTextArea.addClassName("message-text-area");
             messageTextArea.setText(truncateMessage(message.getMessage()));
 
+
             Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
             timestampParagraph.addClassName("timestamp");
+
 
             Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
             toggleReadButton.addClickListener(e -> {
@@ -135,6 +149,7 @@ public class UserMessagesPageView extends VerticalLayout {
                 refreshMessages(); // Refresh messages to reflect changes
             });
             toggleReadButton.addClassName("toggle-read-button");
+
 
             if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
                 Span readMoreSpan = new Span(" Read More");
@@ -188,12 +203,15 @@ public class UserMessagesPageView extends VerticalLayout {
                 }
             });
 
+
             Span messageTextArea = new Span();
             messageTextArea.addClassName("message-text-area");
             messageTextArea.setText(truncateMessage(message.getMessage()));
 
+
             Paragraph timestampParagraph = new Paragraph(message.getTimestamp().format(formatter));
             timestampParagraph.addClassName("timestamp");
+
 
             Button toggleReadButton = new Button(message.isRead() ? "Mark as Unread" : "Mark as Read");
             toggleReadButton.addClickListener(e -> {
@@ -203,25 +221,31 @@ public class UserMessagesPageView extends VerticalLayout {
             });
             toggleReadButton.addClassName("toggle-read-button");
 
+
             if (message.getMessage().length() > 200) { // Adjust this value based on your requirement
                 Span readMoreSpan = new Span(" Read More");
                 readMoreSpan.addClassName("read-more-link");
                 readMoreSpan.getElement().getStyle().set("color", "blue").set("cursor", "pointer");
+
 
                 readMoreSpan.addClickListener(e -> {
                     Dialog dialog = new Dialog();
                     dialog.setWidth("400px");
                     dialog.setHeight("300px");
 
+
                     Span fullMessageSpan = new Span(message.getMessage());
                     fullMessageSpan.addClassName("full-message-span");
+
 
                     dialog.add(fullMessageSpan);
                     dialog.open();
                 });
 
+
                 messageTextArea.add(readMoreSpan);
             }
+
 
             messageLayout.add(messageTextArea, timestampParagraph, toggleReadButton);
             messagesLayout.add(messageLayout);
@@ -262,8 +286,10 @@ public class UserMessagesPageView extends VerticalLayout {
         dialog.setWidth("400px");
         dialog.setHeight("300px");
 
+
         Span fullMessageSpan = new Span(message);
         fullMessageSpan.addClassName("full-message-span");
+
 
         dialog.add(fullMessageSpan);
         dialog.open();
@@ -272,4 +298,6 @@ public class UserMessagesPageView extends VerticalLayout {
     public void setCurrentMessages(List<Message> messages) {
         this.allCurrentMessages = new ArrayList<Message>(messages);
     }
+ 
 }
+

@@ -831,7 +831,7 @@ public class ShopFacadeTests {
         ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userFacadeMock);
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
-        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId(), 1);
         ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
@@ -860,7 +860,7 @@ public class ShopFacadeTests {
         ShopService shopService = new ShopService(_ShopFacadeUnderTests, _tokenServiceMock, _userFacadeMock);
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
-        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId(), 1);
         ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
@@ -888,7 +888,7 @@ public class ShopFacadeTests {
         ShoppingBasket shoppingBasket = new ShoppingBasket(_shop1);
         Product product = new Product(1, "product1", category, 10);
         _shop1.addProductToShop("founderName1", product);
-        shoppingBasket.addProductToShoppingBasket(user, product.getProductId());
+        shoppingBasket.addProductToShoppingBasket(user, product.getProductId(), 1);
         ShopOrder shopOrder = new ShopOrder(1, shopId, shoppingBasket);
         _shop1.addOrderToOrderHistory(shopOrder);
 
@@ -914,7 +914,7 @@ public class ShopFacadeTests {
         ShoppingBasket testShoppingBasket = new ShoppingBasket(_shop1);
         Product testProduct = new Product(1, "product1", productCategory, 10);
         _shop1.addProductToShop("founderName1", testProduct);
-        testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId());
+        testShoppingBasket.addProductToShoppingBasket(testUser, testProduct.getProductId(), 1);
 
         ShopOrder testShopOrder = new ShopOrder(1, shopId, testShoppingBasket);
 

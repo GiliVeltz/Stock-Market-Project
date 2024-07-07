@@ -4,6 +4,7 @@ package UI.Presenter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -54,10 +55,13 @@ public class HeaderPresenter {
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
                                 VaadinSession.getCurrent().setAttribute("username", username);
-                                view.showSuccessMessage("Login successful");
-                                view.switchToLogout();
-                                view.navigateToUserMainPage();
-                                System.out.println(response.getBody());
+
+                                checkIfAdmin(newToken, username);
+
+                                // view.showSuccessMessage("Login successful");
+                                // view.switchToLogout();
+                                // view.navigateToUserMainPage();
+                                // System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Login failed: " + responseBody.getErrorMessage());
                             }
@@ -72,6 +76,42 @@ public class HeaderPresenter {
                         view.showErrorMessage("Login failed");
                     }
                 });
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void checkIfAdmin(String token, String username) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+
+        String url = "http://localhost:" + _serverPort + "/api/user/isSystemAdmin?username=" + username;
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Response> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    requestEntity,
+                    Response.class);
+            Response responseBody = response.getBody();
+
+            if ("User is an admin".equals(responseBody.getReturnValue().toString())) {
+                VaadinSession.getCurrent().setAttribute("role", "admin");
+            } else {
+                VaadinSession.getCurrent().setAttribute("role", "user");
+            }
+
+            // Provide feedback to the user and navigate to the user main page
+            view.showSuccessMessage("Login successful");
+            view.switchToLogout();
+            view.navigateToUserMainPage();
+            System.out.println(responseBody);
+        } catch (HttpClientErrorException e) {
+            ResponseHandler.handleResponse(e.getStatusCode());
+        } catch (Exception e) {
+            view.showErrorMessage("Failed to check admin status");
+            e.printStackTrace();
+        }
     }
     
     @SuppressWarnings("rawtypes")
