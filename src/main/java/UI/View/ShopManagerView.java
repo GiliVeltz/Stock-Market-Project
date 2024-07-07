@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -16,11 +19,14 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -80,6 +86,16 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
     }
 
+     // Button creation helper method
+    Button createButtonWithIcon(String text, VaadinIcon icon, ComponentEventListener<ClickEvent<Button>> listener) {
+        Button button = new Button(text, new Icon(icon));
+        button.addClickListener(listener);
+        button.setWidth("300px");
+        button.setHeight("60px");
+        button.getElement().getStyle().set("font-size", "20px");
+        return button;
+    }
+
     public void createPermissionButtons(List<String> permissions) {
         if(permissions.isEmpty()){
             add(new Paragraph("No permissions found"));
@@ -88,39 +104,55 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         // Create a vertical layout
         VerticalLayout buttonsLayout = new VerticalLayout();
-        buttonsLayout.setAlignItems(Alignment.END);
+        buttonsLayout.setAlignItems(Alignment.CENTER);
 
         // Create buttons
-        Button addProductsbtn = new Button("Add Product");
-        Button addDiscountsBtn = new Button("View Discounts", e -> {
+        Button addProductsBtn = createButtonWithIcon("Add Product", VaadinIcon.PLUS, event -> createaddProductDialog().open());
+        Button addDiscountsBtn = createButtonWithIcon("View Discounts", VaadinIcon.GIFT, event -> {
             presenter.fetchShopDiscounts(discounts -> {
-            _discounts = discounts;
-            _viewDiscountsDialog = createViewDiscountsDialog();
-            _viewDiscountsDialog.open();
+                _discounts = discounts;
+                _viewDiscountsDialog = createViewDiscountsDialog();
+                _viewDiscountsDialog.open();
             });
         });
-        Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
-        Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
-        Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
-        Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
-        Button viewSubordinateBtn = new Button("View Subordinates", e -> {
+        Button changeProductPolicyBtn = createButtonWithIcon("Change Product Policy", VaadinIcon.EDIT, event -> presenter.changeProductPolicy());
+        Button changeShopPolicyBtn = createButtonWithIcon("Change Shop Policy", VaadinIcon.COGS, event -> presenter.changeProductPolicy());
+        Button appointManagerBtn = createButtonWithIcon("Appoint Manager", VaadinIcon.USER_STAR, event -> _appointManagerDialog.open());
+        Button appointOwnerBtn = createButtonWithIcon("Appoint Owner", VaadinIcon.USER_CHECK, event -> _appointOwnerDialog.open());
+        Button viewSubordinateBtn = createButtonWithIcon("View Subordinates", VaadinIcon.USERS, event -> {
             presenter.fetchMySubordinates(managers -> {
                 _subordinates = managers;
                 _viewSubordinatesDialog = createViewSubordinatesDialog();
                 _viewSubordinatesDialog.open();
-            
             });
         });
-        Button viewShopRolesBtn = new Button("View Shop Roles", e -> {
+        Button viewShopRolesBtn = createButtonWithIcon("View Shop Roles", VaadinIcon.USER_CHECK, event -> {
             presenter.fetchShopManagers(managers -> {
                 setManagers(managers);
                 _viewRolesDialog = createViewRolesDialog();
                 _viewRolesDialog.open();
-            
             });
         });
-        Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
-        Button viewProductsbtn = new Button("View Products", e -> presenter.viewProducts());
+        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> presenter.viewPurchases());
+        Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> presenter.viewProducts());
+        Button closeShopBtn = createButtonWithIcon("Close Shop", VaadinIcon.CLOSE, event -> {
+        Dialog closeDialog = new Dialog();
+        closeDialog.add(new Paragraph("Are you sure you want to close the shop?"));
+
+        Button yesButton = new Button("Yes", yesEvent -> {
+            // Logic to close the shop
+            presenter.closeShop(String.valueOf(getShopId()));
+            closeDialog.close();
+        });
+        yesButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        Button noButton = new Button("No", noEvent -> closeDialog.close());
+
+        HorizontalLayout dialogButtons = new HorizontalLayout(yesButton, noButton);
+        closeDialog.add(dialogButtons);
+        closeDialog.open();
+    });
+    
 
         // Here we create a set of permissions from the strings.
         _permissions = permissions.stream()
@@ -138,7 +170,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             appointOwnerBtn.setEnabled(false);
 
             if(!_permissions.contains(Permission.ADD_PRODUCT)){
-                addProductsbtn.setEnabled(false);
+                addProductsBtn.setEnabled(false);
             }
             if(!_permissions.contains(Permission.ADD_DISCOUNT_POLICY)){
                 addDiscountsBtn.setEnabled(false);
@@ -161,13 +193,29 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
   
         }
 
-        // Create registration dialog
-        Dialog addProductDialog = createaddProductDialog();
-        addProductsbtn.addClickListener(event -> addProductDialog.open());
+        HorizontalLayout row = new HorizontalLayout();
+        row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        int count = 0;
+        for (Button button : Arrays.asList(
+                appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn,
+                addProductsBtn, viewProductsBtn, viewPurchasesBtn, addDiscountsBtn,
+                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn)) {
+            row.add(button);
+            count++;
+            if (count % 4 == 0) {
+                row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+                buttonsLayout.add(row);
+                row = new HorizontalLayout();
+            }
+        }
+        // Add any remaining buttons
+        if (count % 4 != 0) {
+            row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+            buttonsLayout.add(row);
+        }
 
-        buttonsLayout.add(appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn, addProductsbtn, viewProductsbtn, viewPurchasesBtn, addDiscountsBtn, changeProductPolicyBtn, changeShopPolicyBtn);
         add(_title, buttonsLayout);
-
+    
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
