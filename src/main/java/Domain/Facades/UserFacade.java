@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Alerts.Alert;
+import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Order;
@@ -262,6 +263,12 @@ public class UserFacade {
             orderDtos.add(new OrderDto(order));
         }
         return orderDtos;
+    }
+
+    public void reportToAdmin(String user, String message) {
+        Alert alert = new IntegrityRuleBreakAlert(user, message);
+        String targetUser = alert.getTargetUser();
+       notifyUser(targetUser, alert);
     }
 
     // // // function to initilaize data for UI testing

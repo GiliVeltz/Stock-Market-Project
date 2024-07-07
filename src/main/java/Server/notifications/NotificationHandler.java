@@ -39,5 +39,10 @@ public class NotificationHandler {
         wServer.sendMessage(targetUsername, message);
     }
 
+    // Using this method for testing purposes
+    public static void setInstance(NotificationHandler _notificationHandlerMock) {
+        instance = _notificationHandlerMock;
+    }
+
 
 }

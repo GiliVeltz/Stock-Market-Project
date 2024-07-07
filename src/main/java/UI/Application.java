@@ -48,6 +48,4 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
         }
     }
 
- 
-
 }

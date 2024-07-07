@@ -23,7 +23,6 @@ import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductSearchDto;
 import Dtos.ShopDto;
-import Dtos.UserDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 
@@ -48,9 +47,7 @@ public class ShopController {
         return resp;
     }
 
-   
-
-    @GetMapping("/closeShop")
+    @PostMapping("/closeShop")
     public ResponseEntity<Response> closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }
