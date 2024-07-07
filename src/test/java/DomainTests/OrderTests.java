@@ -84,7 +84,7 @@ public class OrderTests {
         }
 
         try {
-            basket.addProductToShoppingBasket(userMock, 1);
+            basket.addProductToShoppingBasket(userMock, 1, 1);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Expected ProdcutPolicyException or PoductDoesNotExistsException to be thrown");
@@ -129,8 +129,8 @@ public class OrderTests {
         }
 
         try {
-            basket.addProductToShoppingBasket(userMock, 1);
-            basket.addProductToShoppingBasket(userMock, 2);
+            basket.addProductToShoppingBasket(userMock, 1, 1);
+            basket.addProductToShoppingBasket(userMock, 2, 1);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Expected ProdcutPolicyException or PoductDoesNotExistsException to be thrown");

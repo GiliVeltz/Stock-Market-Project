@@ -205,7 +205,7 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException
      */
-    public void addProduct(int productID, int shopID) throws StockMarketException {
+    public void addProduct(int productID, int shopID, int quantity) throws StockMarketException {
         // Check if the product exists in the shop.
         if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
@@ -226,7 +226,7 @@ public class ShoppingCart {
         }
 
         // add the product to the basket.
-        basket.addProductToShoppingBasket(_user, productID);
+        basket.addProductToShoppingBasket(_user, productID, quantity);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 
