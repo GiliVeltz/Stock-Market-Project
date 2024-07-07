@@ -83,4 +83,17 @@ public class Order {
             calcTotalAmount();
         return _totalOrderAmount; 
     }
+
+    public Map<Integer, ShoppingBasket> getShoppingBasketMap() {
+        return _shoppingBasketMap;
+    }
+
+    // for tests - get all product ids
+    public List<Integer> getAllProductIds() {
+        List<Integer> allProductIds = new java.util.ArrayList<>();
+        for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
+            allProductIds.addAll(entry.getValue().getProductIdList());
+        }
+        return allProductIds;
+    }
 }

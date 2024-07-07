@@ -36,7 +36,7 @@ public class ShoppingCart {
     public ShoppingCart() {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterPayment();
+        _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = ShopFacade.getShopFacade();
         _user = null;
     }
@@ -53,7 +53,7 @@ public class ShoppingCart {
     public ShoppingCart(ShopFacade shopFacade) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterPayment();
+        _supplyMethod = AdapterSupply.getAdapterSupply();
         _shopFacade = shopFacade;
         _user = null;
     }
@@ -120,9 +120,11 @@ public class ShoppingCart {
             throw new ShippingFailedException("Shipping failed");
         }
     }
+    
     public String getUsernameString() {
         return _user == null ? "Guest" : _user.getUserName();
     }
+
     /*
      * Go thorugh the list of baskets to buy and purchase them.
      * If an exception is thrown, cancel the purchase of all the baskets that were
@@ -190,7 +192,7 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException
      */
-    public void addProduct(int productID, int shopID) throws StockMarketException {
+    public void addProduct(int productID, int shopID, int quantity) throws StockMarketException {
         // Check if the product exists in the shop.
         if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
@@ -211,7 +213,7 @@ public class ShoppingCart {
         }
 
         // add the product to the basket.
-        basket.addProductToShoppingBasket(_user, productID);
+        basket.addProductToShoppingBasket(_user, productID, quantity);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 

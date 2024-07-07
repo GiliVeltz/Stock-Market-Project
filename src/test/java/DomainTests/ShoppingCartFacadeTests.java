@@ -6,7 +6,7 @@ import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
-import Domain.Repositories.ShoppingCartRepositoryInterface;
+import Domain.Repositories.InterfaceShoppingCartRepository;
 import Exceptions.StockMarketException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class ShoppingCartFacadeTests {
     private PasswordEncoderUtil _passwordEncoderMock;
     
     @Mock
-    private ShoppingCartRepositoryInterface _cartsRepoMock;
+    private InterfaceShoppingCartRepository _cartsRepoMock;
 
     @Mock
     private ShopFacade _shopFacadeMock;
@@ -131,11 +131,11 @@ public class ShoppingCartFacadeTests {
         int shopID = 1;
         int productID = 1;
         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).addProduct(productID, shopID);
+        doNothing().when(_cartMock).addProduct(productID, shopID, 1);
 
         // Act & Assert
         try {
-            shoppingCartFacadeUnderTest.addProductToUserCart(userName, productID, shopID);
+            shoppingCartFacadeUnderTest.addProductToUserCart(userName, productID, shopID, 1);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception thrown when not expected: " + e.getMessage());

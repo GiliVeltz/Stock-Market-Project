@@ -3,12 +3,15 @@ package Domain.ExternalServices;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import Dtos.ExternalServiceDto;
 
 /**
  * This class represents an external service handler.
  * It manages a list of external services.
  */
+@Component
 public class ExternalServiceHandler {
 
     private Map<Integer, ExternalService> _externalServices; // uniqe id for each external service

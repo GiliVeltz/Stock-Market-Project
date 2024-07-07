@@ -1,5 +1,7 @@
-package Server;
+package Server.Controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +47,7 @@ public class ShopController {
         return resp;
     }
 
-    @GetMapping("/closeShop")
+    @PostMapping("/closeShop")
     public ResponseEntity<Response> closeShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.closeShop(token, shopId);
     }
@@ -228,6 +230,7 @@ public class ShopController {
 
     @GetMapping("/getShopManagers")
     public ResponseEntity<Response>getShopManagers(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        
         return _shopService.getShopManagers(token, shopId);
     }
 
@@ -235,11 +238,57 @@ public class ShopController {
     public ResponseEntity<Response>getAllProductInShop(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getAllProductInShop(token, shopId);
     }
+
+     @GetMapping("/openComplaint")
+    public ResponseEntity<Response> openComplaint(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,@RequestParam String message) {
+        String decodedString = "";
+    try {
+        decodedString = URLDecoder.decode(message, StandardCharsets.UTF_8.toString());
+          
+    } catch (Exception e) {
+        // Handle exception (e.g., UnsupportedEncodingException, which should not happen for UTF-8)
+        e.printStackTrace();
+    }
+    return _shopService.openComplaint(token,shopId,decodedString);
+      
+    }
     
 
     @GetMapping("/getMySubordinates")
     public ResponseEntity<Response>getMySubordinates(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
         return _shopService.getMySubordinates(token, shopId);
     }
+
+    @GetMapping("/getShopDiscounts")
+    public ResponseEntity<Response>getShopDiscounts(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopDiscounts(token, shopId);
+    }
+
+    @PostMapping("/addShopDiscount")
+    public ResponseEntity<Response> addShopDiscount(
+            @RequestBody BasicDiscountDto discountDto,
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam Integer shopId) {
+        return _shopService.addShopDiscount(token, discountDto, shopId);
+    }
+
+    @PostMapping("/deleteShopDiscount")
+    public ResponseEntity<Response> deleteShopDiscount(
+            @RequestBody BasicDiscountDto discountDto,
+            @RequestHeader(value = "Authorization") String token,
+            @RequestParam Integer shopId) {
+        return _shopService.deleteShopDiscount(token, discountDto, shopId);
+    }
+
+    @PostMapping("/updatePermissions")
+    public ResponseEntity<Response> updatePermissions(@RequestHeader("Authorization") String token,
+                                                @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        String managerUsername = (String) request.get("managerUsername");
+        Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
+        return _shopService.updatePermissions(token, shopId, managerUsername, permissions);
+    }
+    
+    
 
 }

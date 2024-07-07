@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import io.jsonwebtoken.Claims;
@@ -106,4 +107,4 @@ public class TokenService {
     public boolean isGuest(String token) {
         return extractUsername(token) == null;
     }
-    }
+}

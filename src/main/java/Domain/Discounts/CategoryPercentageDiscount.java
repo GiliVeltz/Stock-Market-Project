@@ -9,33 +9,34 @@ import Domain.Product;
 import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
+import enums.Category;
 
 public class CategoryPercentageDiscount extends BaseDiscount {
     private double _percentage;
-    private String _category;
+    private Category _category;
 
     /**
      * Represents a percentage discount for the a specific category.
      */
-    public CategoryPercentageDiscount(Date expirationDate, double percentage, String category) {
-        super(expirationDate);
+    public CategoryPercentageDiscount(Date expirationDate, double percentage, Category category, int id) {
+        super(expirationDate, id);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
         _category = category;
         _rule = (basket) -> {
             try {
-                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().toString().equals(_category));
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
             } catch (StockMarketException e) {
                 e.printStackTrace();
                 return false;
             }
         };
-        _specialRule = (product) -> product.getCategory().toString().equals(_category);
+        _specialRule = (product) -> product.getCategory().equals(_category);
     }
 
     public CategoryPercentageDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.category, dto.id);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
         if (!_rule.predicate(basket))
             return;
         for (Product product : basket.getProductsList()) {
-            if(!product.getCategory().toString().equals(_category)){
+            if(!product.getCategory().equals(_category)){
                 continue;
             }
             int product_id = product.getProductId();
@@ -66,5 +67,10 @@ public class CategoryPercentageDiscount extends BaseDiscount {
             }
             basket.setProductPriceToAmount(newpriceToAmount, product_id);
         }
+    }
+
+    @Override
+    public BasicDiscountDto getDto() {
+        return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), _category, getId());
     }
 }

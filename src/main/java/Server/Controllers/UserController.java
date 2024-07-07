@@ -1,4 +1,7 @@
-package Server;
+package Server.Controllers;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +56,13 @@ public class UserController {
         return _userService.viewShoppingCart(token, username);
     }
 
+    @GetMapping("/viewOrderHistory")
+    public ResponseEntity<Response> viewOrderHistory(
+            @RequestParam String username,
+            @RequestHeader(value = "Authorization") String token) {
+        return _userService.viewOrderHistory(token, username);
+    }
+
     @PostMapping("/purchaseCart")
     public ResponseEntity<Response> purchaseCart(@RequestHeader(value = "Authorization") String token,
             @RequestBody(required = false) PurchaseCartDetailsDto details) {
@@ -64,11 +74,13 @@ public class UserController {
     }
 
     @GetMapping("/isSystemAdmin")
-    public ResponseEntity<Response> isSystemAdmin(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<Response> isSystemAdmin(
+        @RequestHeader(value = "Authorization") String token,
+        @RequestParam String username) {
         // example request:
         // "http://localhost:8080/api/user/isSystemAdmin" -H "Authorization":
         // user_token_here"
-        ResponseEntity<Response> resp = _userService.isSystemAdmin(token);
+        ResponseEntity<Response> resp = _userService.isSystemAdmin(token,username);
         return resp;
     }
 
@@ -92,7 +104,8 @@ public class UserController {
     }
 
     @PostMapping("/setUserDetails")
-    public ResponseEntity<Response> setUserDetails(@RequestHeader(value = "Authorization") String token, @RequestParam UserDto userDto) {
+    public ResponseEntity<Response> setUserDetails(@RequestBody UserDto userDto,
+                                                @RequestHeader(value = "Authorization") String token) {
         ResponseEntity<Response> resp = _userService.setUserDetails(token, userDto);
         return resp;
     }
@@ -109,11 +122,11 @@ public class UserController {
 
     @PostMapping("/addProductToShoppingCart")
     public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
-            @RequestParam int productID, @RequestParam int shopID) {
+            @RequestParam int productID, @RequestParam int shopID, @RequestParam int quantity) {
         // example request:
         // "http://localhost:8080/api/user/addProductToShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
-        ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID);
+        ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID, quantity);
         return resp;
     }
 
@@ -124,6 +137,21 @@ public class UserController {
         // "http://localhost:8080/api/user/removeProductFromShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
         ResponseEntity<Response> resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
+        return resp;
+    }
+
+     @GetMapping("/reportToAdmin")
+    public ResponseEntity<Response> reportToAdmin(@RequestHeader("Authorization") String token,@RequestParam String message) {
+       
+        String decodedString = "";
+    try {
+        decodedString = URLDecoder.decode(message, StandardCharsets.UTF_8.toString());
+          
+    } catch (Exception e) {
+        // Handle exception (e.g., UnsupportedEncodingException, which should not happen for UTF-8)
+        e.printStackTrace();
+    }
+        ResponseEntity<Response> resp = _userService.reportToAdmin(token,decodedString);
         return resp;
     }
 }

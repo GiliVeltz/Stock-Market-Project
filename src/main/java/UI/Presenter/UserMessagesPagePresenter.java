@@ -19,11 +19,13 @@ public class UserMessagesPagePresenter {
         // Assuming messagesTextArea is a JTextArea or similar
         //create a TextArea for each message
         
-            view.createMessageTextArea(messages);
-        
-    
-    
+        view.setCurrentMessages(messages);
+        view.createMessageTextArea(messages);
 
+    }
+
+    public void updateMessageStatus(Message message) {
+       WebSocketClient.updateMessageStsatus(message);
     }
     
 }

@@ -1,5 +1,10 @@
 package UI.Presenter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -85,11 +90,10 @@ public void getUserInfo() {
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 UserDto userDto = objectMapper.convertValue(responseBody.getReturnValue(), UserDto.class);
                                 view.usernameField.setValue(userDto.getUsername());
-                                view.passwordField.setValue(userDto.getPassword());
                                 view.emailField.setValue(userDto.getEmail());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                view.birthDateField.setValue(dateFormat.format(userDto.getBirthDate()));
-
+                                view.birthDateField.setValue(userDto.getBirthDate().toInstant()
+                                      .atZone(ZoneId.systemDefault())
+                                      .toLocalDate());
                                 view.showSuccessMessage("Fetch user details succeed");
                             } else {
                                 view.showErrorMessage("Fetch user details failed: " + responseBody.getErrorMessage());
@@ -148,5 +152,48 @@ public void getUserInfo() {
                         view.showErrorMessage("Authorization token not found. Please log in.");
                     }
                 });
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void openReport(String message) {
+        RestTemplate restTemplate = new RestTemplate();
+    
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+    
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+    
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        try {
+                            String url = "http://localhost:" + SERVER_PORT + "/api/user/reportToAdmin?message=" + URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                url,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+    
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+    
+                            if (responseBody.getErrorMessage() == null) {
+                                view.showSuccessMessage("Report submitted successfully");
+                            } else {
+                                view.showErrorMessage("Failed to parse JSON response");
+                            }
+                        } else {
+                            view.showErrorMessage("Failed to submit report ");
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to submit report");
+                    }
+                });
+
     }
 }    

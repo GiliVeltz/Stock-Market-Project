@@ -14,15 +14,18 @@ import java.util.logging.Logger;
 import Domain.Alerts.Alert;
 import Domain.Alerts.CloseShopAlert;
 import Domain.Alerts.CredentialsModifyAlert;
+import Domain.Alerts.GeneralAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Discounts.Discount;
+import Domain.Policies.ProductPolicy;
 import Domain.Policies.ShopPolicy;
 import Domain.Rules.Rule;
 import Domain.Rules.RuleFactory;
 import Dtos.DiscountDto;
 import Dtos.ShopDto;
-import Dtos.ShoppingBasketRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.PermissionException;
 import Exceptions.ProdcutPolicyException;
@@ -35,6 +38,8 @@ import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
 import enums.Category;
 import enums.Permission;
+
+///
 
 //TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 
@@ -173,7 +178,7 @@ public class Shop {
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - checkPermission: user " + username + " doesn't have a role in the shop with id " + _shopId);
-            throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
+            return false;
         }
         Role role = _userToRole.get(username);
         if (!isOwnerOrFounder(role) && !role.hasPermission(p)) {
@@ -394,7 +399,7 @@ public class Shop {
             permissions.retainAll(appointer.getPermissions());
         }
         Role manager = _userToRole.get(userRole);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE,
                     "Shop - modifyPermissions: User " + username + " didn't appoint manager " + userRole
                             + ". Can't change his permissions.");
@@ -441,7 +446,7 @@ public class Shop {
                     "User " + username + " doesn't have permission to fire people in the shop with id " + _shopId);
         }
         Role manager = _userToRole.get(managerUserName);
-        if (manager.getAppointedBy() != username) {
+        if (!manager.getAppointedBy().equals(username)) {
             logger.log(Level.SEVERE, "Shop - fireRole: User " + username + " didn't appoint manager " + managerUserName
                     + ". Can't fire him.");
             throw new PermissionException(
@@ -735,6 +740,7 @@ public class Shop {
 
         int discountId = _nextDiscountId++;
         _discounts.put(discountId, discount);
+        discount.setId(discountId);
         return discountId;
     }
 
@@ -833,7 +839,7 @@ public class Shop {
         return product.getProductRating();
     }
 
-    private Boolean isProductExist(Integer productId) throws StockMarketException {
+    public Boolean isProductExist(Integer productId) throws StockMarketException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
                     "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",
@@ -1037,7 +1043,7 @@ public class Shop {
      * @param buyingUser the buying user.   
      * @param productIdList the product id list.
      */
-    public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
+    public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
@@ -1054,6 +1060,18 @@ public class Shop {
             String owner = entry.getKey();
             Alert alert = new CloseShopAlert(owner, username, _shopId);
             _notificationHandler.sendMessage(owner, alert);
+        }
+    }
+
+     /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
+    public void openComplaint(String fromUsername,String message) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new GeneralAlert(fromUsername,owner, message);
+        _notificationHandler.sendMessage(owner, alert);
         }
     }
 
@@ -1098,6 +1116,20 @@ public class Shop {
                 Rule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
                 _shopPolicy.addRule(newRule);
             }
+        }
+    }
+
+    // this function changes the shop policy
+    public void changeProductPolicy(String username, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
+            Product product = _productMap.get(productId);
+            ProductPolicy policy = new ProductPolicy();
+            for (UserRuleDto rule : productRules) {
+                Rule<User> newRule = RuleFactory.createUserRule(rule);
+                policy.addRule(newRule);
+            }
+            product.setProductPolicy(policy);
         }
     }
 
