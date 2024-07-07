@@ -49,13 +49,13 @@ public class ShopFacade {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
         _userFacade = UserFacade.getUserFacade();
 
-        // For testing UI
-        try {
-            initUI();
-        }
-        catch (StockMarketException e) {
-            e.printStackTrace();
-        }
+        // // For testing UI
+        // try {
+        //     initUI();
+        // }
+        // catch (StockMarketException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
