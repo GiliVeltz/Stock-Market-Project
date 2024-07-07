@@ -300,7 +300,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
@@ -343,7 +343,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
@@ -395,7 +395,7 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
                         String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
