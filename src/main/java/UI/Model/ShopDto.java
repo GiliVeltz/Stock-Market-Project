@@ -79,7 +79,7 @@ public class ShopDto {
         this.shopAddress = shopAddress;
     }
 
-    public Double getShopRating() { return shopRating;}
+    public double getShopRating() { return shopRating;}
 
     public void setShopRating(Double shopRating){
         this.shopRating = shopRating;

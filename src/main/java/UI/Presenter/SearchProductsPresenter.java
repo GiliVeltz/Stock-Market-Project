@@ -84,7 +84,7 @@ public class SearchProductsPresenter {
                                     Map<String, List<ProductDto>> shopNameToProducts = responseDto.getReturnValue();
             
                                     if (shopNameToProducts != null) {
-                                        searchProductsResultsView.displayResponseProductsNew(shopNameToProducts);
+                                        searchProductsResultsView.displayResponseProducts(shopNameToProducts);
                                     }
                                     else {
                                         searchProductsResultsView.showErrorMessage("Searched products loading failed");

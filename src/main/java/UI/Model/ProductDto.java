@@ -18,17 +18,17 @@ public class ProductDto {
     @NotBlank(message = "Price is required")
     private double price;
 
-    @NotBlank(message = "Product quantity is required")
-    private int productQuantity;
+    @NotBlank(message = "Product rating is required")
+    private double productRating;
 
     // Constructor
     public ProductDto(){}
 
-    public ProductDto(String productName, Category category, double price, int productQuantity) {
+    public ProductDto(String productName, Category category, double price, double productRating) {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productQuantity = productQuantity;
+        this.productRating = productRating;
     }
 
     // Getters and setters
@@ -54,6 +54,14 @@ public class ProductDto {
 
     public void setPrice(double newPrice) {
         this.price = newPrice;
+    }
+
+    public double getProductRating() {
+        return this.productRating;
+    }
+
+    public void setProductRating(double newRating) {
+        this.productRating = newRating;
     }
 
     // public Integer getProductQuantity() { // Update getter name
