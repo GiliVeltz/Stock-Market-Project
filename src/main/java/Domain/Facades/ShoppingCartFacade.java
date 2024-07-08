@@ -36,10 +36,6 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
     }
 
-    // get instance of class
-    public static ShoppingCartFacade getInstance() {
-        return instance;
-    }
 
     // set shopping cart repository to be used in real system
     public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {

@@ -140,7 +140,6 @@ public class Shop {
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             _nextDiscountId = 0;
             _isClosed = false;
-
             
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);

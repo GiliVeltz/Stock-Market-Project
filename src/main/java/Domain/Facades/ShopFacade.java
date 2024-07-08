@@ -66,10 +66,7 @@ public class ShopFacade {
         // }
     }
 
-    // Public method to provide access to the _shopFacade
-    public static ShopFacade getInstance() {
-        return instance;
-    }
+    // for tests
 
     // set shop repository to be used in real system
     public void setShopRepository(InterfaceShopRepository shopRepository) {

@@ -25,7 +25,6 @@ import Server.notifications.NotificationHandler;
 
 @Service
 public class UserFacade {
-    private static UserFacade instance;
     private InterfaceUserRepository _userRepository;
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
@@ -40,14 +39,11 @@ public class UserFacade {
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
-        instance = this;
         // // //For testing UI
         // initUI();
     }
 
-    // get instance of class
-    public static UserFacade getInstance() {
-        return instance;
+    // for tests
     }
 
     // set the user repository to be used real time
@@ -65,7 +61,6 @@ public class UserFacade {
         if (user.isLoggedIn()){
                 throw new StockMarketException("User is already logged in.");
         }
-        
         user.logIn();
         _userRepository.save(user);
     }
@@ -76,15 +71,13 @@ public class UserFacade {
         if (!user.isLoggedIn()){
                 throw new StockMarketException("User is not logged in.");
         }
-        
         user.logOut();
         _userRepository.save(user);
     }
 
     // function to check if a user exists in the system
     public boolean doesUserExist(String username) {
-        return _userRepository.doesUserExist(username);
-        // return repository.findByName(username) != null;
+        return _userRepository.existsByusername(username);
     }
 
     // function to get a user by username
@@ -93,7 +86,7 @@ public class UserFacade {
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
             throw new UserException(String.format("Username %s does not exist.", username));
-        return _userRepository.getUserByUsername(username);
+        return _userRepository.findByusername(username);
     }
 
     // function to check if the credentials are correct
@@ -200,7 +193,7 @@ public class UserFacade {
     // getting the user personal details
     @Transactional
     public UserDto getUserDetails(String username) {
-        User user = _userRepository.getUserByUsername(username);
+        User user = _userRepository.findByusername(username);
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 
