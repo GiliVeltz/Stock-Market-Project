@@ -8,11 +8,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
 
 // calss that represents an order for the user
 @Entity
+@Table(name = "[order]")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
