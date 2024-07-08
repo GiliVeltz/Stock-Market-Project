@@ -60,7 +60,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
     }
@@ -72,19 +72,19 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public ShoppingCart getOne(Long id) {
+    public ShoppingCart getOne(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public ShoppingCart getById(Long id) {
+    public ShoppingCart getById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public ShoppingCart getReferenceById(Long id) {
+    public ShoppingCart getReferenceById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
@@ -114,25 +114,25 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public List<ShoppingCart> findAllById(Iterable<Long> ids) {
+    public List<ShoppingCart> findAllById(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
     @Override
     public <S extends ShoppingCart> S save(S entity) {
-        _shoppingCarts.put(entity.getUsernameString(), entity);
-        return entity;
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
-    public Optional<ShoppingCart> findById(Long id) {
+    public Optional<ShoppingCart> findById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
@@ -144,7 +144,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
@@ -156,7 +156,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
+    public void deleteAllById(Iterable<? extends Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
@@ -215,4 +215,5 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
+
 }

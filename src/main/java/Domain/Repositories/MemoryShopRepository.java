@@ -39,6 +39,9 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
+    public synchronized int getUniqueProductID() { return _productIdCounter++;}
+
+    @Override
     public void flush() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'flush'");
@@ -63,7 +66,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
     }
@@ -75,19 +78,19 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public Shop getOne(Long id) {
+    public Shop getOne(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public Shop getById(Long id) {
+    public Shop getById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public Shop getReferenceById(Long id) {
+    public Shop getReferenceById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
@@ -117,7 +120,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public List<Shop> findAllById(Iterable<Long> ids) {
+    public List<Shop> findAllById(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
@@ -129,13 +132,13 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public Optional<Shop> findById(Long id) {
+    public Optional<Shop> findById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
@@ -147,7 +150,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
@@ -159,7 +162,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
+    public void deleteAllById(Iterable<? extends Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
@@ -217,5 +220,4 @@ public class MemoryShopRepository implements InterfaceShopRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
-
 }

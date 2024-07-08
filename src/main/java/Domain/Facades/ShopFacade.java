@@ -12,26 +12,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Discounts.BaseDiscount;
-import Domain.Discounts.CategoryFixedDiscount;
-import Domain.Discounts.CategoryPercentageDiscount;
-import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.Discount;
-import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPercentageDiscount;
-import Domain.Discounts.ShopFixedDiscount;
-import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Entities.Product;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.AppointedManagerAlert;
+import Domain.Entities.Alerts.AppointedOwnerAlert;
+import Domain.Entities.Alerts.FireManagerAlert;
+import Domain.Entities.Discounts.BaseDiscount;
+import Domain.Entities.Discounts.CategoryFixedDiscount;
+import Domain.Entities.Discounts.CategoryPercentageDiscount;
+import Domain.Entities.Discounts.ConditionalDiscount;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Discounts.ProductFixedDiscount;
+import Domain.Entities.Discounts.ProductPercentageDiscount;
+import Domain.Entities.Discounts.ShopFixedDiscount;
+import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceShopRepository;
-import Domain.Alerts.Alert;
-import Domain.Alerts.AppointedManagerAlert;
-import Domain.Alerts.AppointedOwnerAlert;
-import Domain.Alerts.FireManagerAlert;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -42,8 +44,6 @@ import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
-import enums.Category;
-import enums.Permission;
 @Service
 public class ShopFacade {
     private static ShopFacade instance;
@@ -75,13 +75,13 @@ public class ShopFacade {
         _shopRepository = shopRepository;
     }
 
-    public Shop getShopByShopId(int shopId) {
-        return _shopRepository.getShopByID(shopId);
+    public Shop getShopByShopId(Integer shopId) {
+        return _shopRepository.findById(shopId).orElse(null);
     }
 
     // Checks if a shop ID exists.
-    public Boolean isShopIdExist(int shopId) {
-        return _shopRepository.doesShopExist(shopId);
+    public Boolean isShopIdExist(Integer shopId) {
+        return _shopRepository.findById(shopId).orElse(null) == null;
     }
 
     // Open a new shop only if the user is not a manager or owner of another shop.

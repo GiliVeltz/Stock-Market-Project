@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.Set;
 
-import enums.Permission;
+import Domain.Entities.enums.Permission;
 
 public class ShopManagerDto {
     String username;

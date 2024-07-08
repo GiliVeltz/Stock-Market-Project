@@ -26,6 +26,7 @@ import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
@@ -36,7 +37,6 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShippingFailedException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 public class ShoppingCartTests {
 

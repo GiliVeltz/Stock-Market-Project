@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.Date;
 
-import Domain.Discounts.Discount;
+import Domain.Entities.Discounts.Discount;
 
 public class DiscountDto {
     private Date _expirationDate;

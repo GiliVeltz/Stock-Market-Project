@@ -41,7 +41,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
     }
@@ -53,19 +53,19 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public Product getOne(Long id) {
+    public Product getOne(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public Product getById(Long id) {
+    public Product getById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public Product getReferenceById(Long id) {
+    public Product getReferenceById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
@@ -95,7 +95,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public List<Product> findAllById(Iterable<Long> ids) {
+    public List<Product> findAllById(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
@@ -107,13 +107,13 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public Optional<Product> findById(Long id) {
+    public Optional<Product> findById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
@@ -125,7 +125,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
@@ -137,7 +137,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
+    public void deleteAllById(Iterable<? extends Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
@@ -195,5 +195,5 @@ public class MemoryProductRepository implements InterfaceProductRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
-    
+
 }

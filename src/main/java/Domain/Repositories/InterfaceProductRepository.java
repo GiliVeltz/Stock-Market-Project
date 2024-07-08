@@ -6,5 +6,5 @@ import org.springframework.data.repository.NoRepositoryBean;
 import Domain.Entities.Product;
 
 @NoRepositoryBean
-public interface InterfaceProductRepository extends JpaRepository<Product, Long> {
+public interface InterfaceProductRepository extends JpaRepository<Product, Integer> {
 }

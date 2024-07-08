@@ -32,12 +32,12 @@ import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Exceptions.StockMarketException;
 import ServiceLayer.ShopService;
 import ServiceLayer.TokenService;
-import enums.Category;
 
 public class ShopFacadeTests {
 

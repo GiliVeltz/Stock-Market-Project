@@ -41,7 +41,7 @@ import Exceptions.ShopPolicyException;
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long _shoppingCartId;
+    private Integer _shoppingCartId;
     // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @Transient
     private List<ShoppingBasket> _shoppingBaskets;

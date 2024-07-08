@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Entities.Product;
 import Domain.Entities.ShopOrder;
+import Domain.Entities.enums.Category;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Dtos.BasicDiscountDto;
@@ -28,7 +29,6 @@ import Dtos.ShopManagerDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service

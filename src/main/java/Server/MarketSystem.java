@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
@@ -31,7 +32,6 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 @Service
 public class MarketSystem {

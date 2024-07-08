@@ -25,11 +25,11 @@ import Domain.Entities.Product;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 public class ShoppingBasketTests {
 

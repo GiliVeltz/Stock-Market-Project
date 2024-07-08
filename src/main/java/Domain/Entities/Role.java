@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.Entities.enums.Permission;
 import Exceptions.*;
-import enums.Permission;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +24,7 @@ public class Role {
      */
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long _roleId;
+    private Integer _roleId;
 
     private final String _appointedBy;
     

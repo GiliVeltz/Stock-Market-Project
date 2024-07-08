@@ -17,8 +17,8 @@ import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
-import Domain.Alerts.*;
 import Domain.Entities.Order;
+import Domain.Entities.Alerts.*;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service

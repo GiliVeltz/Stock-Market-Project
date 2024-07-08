@@ -10,8 +10,11 @@ import org.springframework.stereotype.Repository;
 import Domain.Entities.Shop;
 
 @NoRepositoryBean
-public interface InterfaceShopRepository extends JpaRepository<Shop, Long> {
+public interface InterfaceShopRepository extends JpaRepository<Shop, Integer> {
     
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Shop s WHERE s._shopName = ?1")
     int getUniqueShopID();
+
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Shop s WHERE s._shopName = ?1")
+    int getUniqueProductID();
 }

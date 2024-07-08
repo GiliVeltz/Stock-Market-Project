@@ -18,9 +18,9 @@ import Domain.Entities.Product;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 public class OrderTests {
 

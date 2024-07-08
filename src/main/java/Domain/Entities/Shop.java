@@ -11,17 +11,19 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.CloseShopAlert;
-import Domain.Alerts.CredentialsModifyAlert;
-import Domain.Alerts.GeneralAlert;
-import Domain.Alerts.PurchaseFromShopAlert;
-import Domain.Alerts.ReOpenShopAlert;
-import Domain.Discounts.Discount;
-import Domain.Policies.ProductPolicy;
-import Domain.Policies.ShopPolicy;
-import Domain.Rules.Rule;
-import Domain.Rules.RuleFactory;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.CloseShopAlert;
+import Domain.Entities.Alerts.CredentialsModifyAlert;
+import Domain.Entities.Alerts.GeneralAlert;
+import Domain.Entities.Alerts.PurchaseFromShopAlert;
+import Domain.Entities.Alerts.ReOpenShopAlert;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Policies.ProductPolicy;
+import Domain.Entities.Policies.ShopPolicy;
+import Domain.Entities.Rules.Rule;
+import Domain.Entities.Rules.RuleFactory;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
 import Dtos.DiscountDto;
 import Dtos.ShopDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
@@ -36,14 +38,14 @@ import Exceptions.ShopException;
 import Exceptions.ShopPolicyException;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
-import enums.Category;
-import enums.Permission;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
 ///
@@ -51,38 +53,66 @@ import jakarta.persistence.Transient;
 //TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 @Entity
 public class Shop {
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int _shopId;
+    private Integer _shopId;
+
+    @Column(unique = true, nullable = false)
     private String _shopName;
+
+    @Column(unique = true, nullable = false)
     private String _shopFounder; // Shop founder username
+    
     // @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Transient
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, targetEntity = Product.class)
     private Map<Integer, Product> _productMap; // <ProductId, Product>
+
     // @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Transient
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, targetEntity = ShopOrder.class)
     private List<ShopOrder> _orderHistory;
-    // @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    
+    // shop to users to roles
+    //@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Transient
     private Map<String, Role> _userToRole; // <userName, Role>
+
     @Transient
     private static final Logger logger = Logger.getLogger(Shop.class.getName());
+
     @Transient
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private Map<Integer, Discount> _discounts;
+
+    @Column(nullable = false)
     private String _bankDetails;
+
+    @Column(nullable = false)
     private String _shopAddress;
+
+    @Column(nullable = false)
     private Double _shopRating;
+
+    @Column(nullable = false)
     private Integer _shopRatersCounter;
+
     @Transient
+    @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL)
     private ShopPolicy _shopPolicy;
+
+    @Column(nullable = false)
     private int _nextDiscountId;
+
+    @Column(nullable = false)
     private boolean _isClosed;
+
     @Transient
     private NotificationHandler _notificationHandler;
     
-
     // Constructor
-    public Shop(Integer shopId, String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
+    public Shop(int shopId, String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
             throws ShopException {
         try {
             logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id " + shopId
@@ -113,10 +143,6 @@ public class Shop {
                     + ". The Founder of the shop is: " + shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
-    }
-
-    public Shop(int shopId, String shopName, String founderUsername, ShopDto shopDto) throws StockMarketException {
-        this(shopId, shopName, founderUsername, shopDto.bankDetails, shopDto.shopAddress);
     }
 
     public void closeShop() {
@@ -206,7 +232,7 @@ public class Shop {
         return true;
     }
 
-    public Map<Integer, Discount> getDiscountsOfProduct(Integer productId) throws StockMarketException {
+    public Map<Integer, Discount> getDiscountsOfProduct(int productId) throws StockMarketException {
         // check if the product exists
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE,
@@ -276,7 +302,7 @@ public class Shop {
         return true;
     }
 
-    public double getProductPriceById(Integer product) {
+    public double getProductPriceById(int product) {
         return _productMap.get(product).getPrice();
     }
 
@@ -726,7 +752,7 @@ public class Shop {
     }
 
     // Get product by ID
-    public Product getProductById(Integer productId) throws ProductDoesNotExistsException {
+    public Product getProductById(int productId) throws ProductDoesNotExistsException {
         // check if product exists
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, "Shop - getProductById: Error while trying to get product with id: " + productId
@@ -845,7 +871,7 @@ public class Shop {
         return isOwnerOrFounder(role);
     }
 
-    public void addProductRating(Integer productId, Integer rating) throws StockMarketException {
+    public void addProductRating(int productId, Integer rating) throws StockMarketException {
         if (!isProductExist(productId))
             throw new StockMarketException(String.format("Product ID: %d doesn't exist.", productId));
 
@@ -853,12 +879,12 @@ public class Shop {
         product.addProductRating(rating);
     }
 
-    public Double getProductRating(Integer productId) {
+    public Double getProductRating(int productId) {
         Product product = _productMap.get(productId);
         return product.getProductRating();
     }
 
-    public Boolean isProductExist(Integer productId) throws StockMarketException {
+    public Boolean isProductExist(int productId) throws StockMarketException {
         if (!_productMap.containsKey(productId)) {
             logger.log(Level.SEVERE, String.format(
                     "Shop : Error while trying to find product with id: %d in shopId: %d. Product does not exist",
@@ -877,7 +903,7 @@ public class Shop {
         return false;
     }
 
-    public void updateProductQuantity(String username, Integer productId, Integer productAmoutn)
+    public void updateProductQuantity(String username, int productId, Integer productAmoutn)
             throws StockMarketException {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
@@ -902,7 +928,7 @@ public class Shop {
         }
     }
 
-    public void updateProductName(String username, Integer productId, String ProdcutName) throws StockMarketException
+    public void updateProductName(String username, int productId, String ProdcutName) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
@@ -928,7 +954,7 @@ public class Shop {
 
     }
 
-    public void updateProductPrice(String username, Integer productId, Double productPrice) throws StockMarketException
+    public void updateProductPrice(String username, int productId, Double productPrice) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
@@ -953,7 +979,7 @@ public class Shop {
         }
     }
 
-    public void updateProductCategory(String username, Integer productId, Category category) throws StockMarketException
+    public void updateProductCategory(String username, int productId, Category category) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
@@ -1094,7 +1120,7 @@ public class Shop {
                 + " successfuly removed a rule from product policy of shop with id: " + _shopId);
     }
 
-    public String getProductPolicyInfo(Integer productId) throws StockMarketException {
+    public String getProductPolicyInfo(int productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductPolicyInfo();
         } else {
@@ -1111,7 +1137,7 @@ public class Shop {
         return discountsBuilder.toString();
     }
 
-    public String getProductDiscountsInfo(Integer productId) throws StockMarketException {
+    public String getProductDiscountsInfo(int productId) throws StockMarketException {
         // TODO: implement after getDiscountsByProduct is implemented
         if (isProductExist(productId)) {
             StringBuilder discountsBuilder = new StringBuilder();
@@ -1125,7 +1151,7 @@ public class Shop {
         }
     }
 
-    public String getProductGeneralInfo(Integer productId) throws StockMarketException {
+    public String getProductGeneralInfo(int productId) throws StockMarketException {
         if (isProductExist(productId)) {
             return _productMap.get(productId).getProductGeneralInfo();
         } else {
@@ -1229,7 +1255,7 @@ public class Shop {
     }
 
       
-    public synchronized void addKeywordsToProduct(String userName, Integer productId, List<String> keywords) throws StockMarketException {
+    public synchronized void addKeywordsToProduct(String userName, int productId, List<String> keywords) throws StockMarketException {
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addKeywordsToProduct: " + userName + " trying add key words to product " + productId
                 + " in the shop with id " + _shopId);

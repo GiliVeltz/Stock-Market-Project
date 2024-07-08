@@ -1,6 +1,7 @@
 package Domain.Entities;
 
 import Exceptions.StockMarketException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,14 +15,17 @@ public class ShopOrder {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer _orderId;
+
     // @OneToOne(mappedBy = "shopOrder")
     @Transient
     private ShoppingBasket _shoppingBasket;
+
+    @Column(name = "totalOrderAmount", nullable = false)
     private double _totalOrderAmount;
 
     // Constructor
     //TODO - Metar: check why not applying the clone method of ShoppingBasket
-    public ShopOrder(int orderId, Integer shopId,ShoppingBasket shoppingBasket) throws StockMarketException {
+    public ShopOrder(int orderId, int shopId, ShoppingBasket shoppingBasket) throws StockMarketException {
         _orderId = orderId;
         _shoppingBasket = shoppingBasket.clone();
         _totalOrderAmount = _shoppingBasket.getShoppingBasketPrice();

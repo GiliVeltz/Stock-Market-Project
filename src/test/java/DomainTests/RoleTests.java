@@ -15,9 +15,9 @@ import Domain.*;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.User;
+import Domain.Entities.enums.Permission;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
-import enums.Permission;
 
 public class RoleTests {
 

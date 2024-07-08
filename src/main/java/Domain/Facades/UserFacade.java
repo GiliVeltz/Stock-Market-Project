@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Entities.Order;
 import Domain.Entities.User;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
 import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceUserRepository;

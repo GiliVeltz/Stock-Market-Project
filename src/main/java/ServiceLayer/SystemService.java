@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.GeneralAlert;
-import Domain.Alerts.IntegrityRuleBreakAlert;
-import Domain.Alerts.PurchaseFromShopAlert;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.GeneralAlert;
+import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
+import Domain.Entities.Alerts.PurchaseFromShopAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;

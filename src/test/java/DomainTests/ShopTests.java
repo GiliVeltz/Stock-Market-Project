@@ -17,18 +17,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import Domain.Discounts.Discount;
-import Domain.Discounts.ProductPercentageDiscount;
 import Domain.Entities.Product;
 import Domain.Entities.Shop;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Discounts.ProductPercentageDiscount;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
 import Dtos.Rules.AllItemsRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
 import Exceptions.ProductAlreadyExistsException;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
-import enums.Category;
-import enums.Permission;
 
 public class ShopTests {
 
