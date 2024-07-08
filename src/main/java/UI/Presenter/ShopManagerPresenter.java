@@ -629,5 +629,225 @@ public class ShopManagerPresenter {
                 });
 
     }
-   
+
+    public void updateProductQuantity(Integer shopId, Integer productId, Integer quantity)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                
+                        try{
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/updateProductQuantity?shopId=" + 
+                                shopId + "&productId=" + productId + "&quantity=" + quantity,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The product quantity has been updated successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to update the product");
+                            }
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            String errorMessage = "An error occurred";
+                            try {
+                                String message = e.getMessage();
+                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
+                                int endIndex = message.indexOf("\",", startIndex);
+                                
+                                if (startIndex >= 16 && endIndex > startIndex) {
+                                    errorMessage = message.substring(startIndex, endIndex);
+                                }
+                            } catch (Exception ex) {
+                                // Handle any unexpected errors in extracting the error message
+                                errorMessage = "An unexpected error occurred while processing the error message.";
+                            }
+                            
+                            view.showErrorMessage("Error: " + errorMessage);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to update the product");
+                    }
+                });
+    }
+
+    public void updateProductPrice(Integer shopId, Integer productId, Double price)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                
+                        try{
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/updateProductPrice?shopId=" + 
+                                shopId + "&productId=" + productId + "&price=" + price,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The product price has been updated successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to update the product");
+                            }
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            String errorMessage = "An error occurred";
+                            try {
+                                String message = e.getMessage();
+                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
+                                int endIndex = message.indexOf("\",", startIndex);
+                                
+                                if (startIndex >= 16 && endIndex > startIndex) {
+                                    errorMessage = message.substring(startIndex, endIndex);
+                                }
+                            } catch (Exception ex) {
+                                // Handle any unexpected errors in extracting the error message
+                                errorMessage = "An unexpected error occurred while processing the error message.";
+                            }
+                            
+                            view.showErrorMessage("Error: " + errorMessage);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to update the product");
+                    }
+                });
+    }
+
+    public void updateProductName(Integer shopId, Integer productId, String name)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                
+                        try{
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/updateProductName?shopId=" + 
+                                shopId + "&productId=" + productId + "&name=" + name,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The product name has been updated successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to update the product");
+                            }
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            String errorMessage = "An error occurred";
+                            try {
+                                String message = e.getMessage();
+                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
+                                int endIndex = message.indexOf("\",", startIndex);
+                                
+                                if (startIndex >= 16 && endIndex > startIndex) {
+                                    errorMessage = message.substring(startIndex, endIndex);
+                                }
+                            } catch (Exception ex) {
+                                // Handle any unexpected errors in extracting the error message
+                                errorMessage = "An unexpected error occurred while processing the error message.";
+                            }
+                            
+                            view.showErrorMessage("Error: " + errorMessage);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to update the product");
+                    }
+                });
+    }
+
+    public void updateProductCategory(Integer shopId, Integer productId, Category category)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                
+                        try{
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/updateProductCategory?shopId=" + 
+                                shopId + "&productId=" + productId + "&category=" + category,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The product category has been updated successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to update the product");
+                            }
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            String errorMessage = "An error occurred";
+                            try {
+                                String message = e.getMessage();
+                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
+                                int endIndex = message.indexOf("\",", startIndex);
+                                
+                                if (startIndex >= 16 && endIndex > startIndex) {
+                                    errorMessage = message.substring(startIndex, endIndex);
+                                }
+                            } catch (Exception ex) {
+                                // Handle any unexpected errors in extracting the error message
+                                errorMessage = "An unexpected error occurred while processing the error message.";
+                            }
+                            
+                            view.showErrorMessage("Error: " + errorMessage);
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to update the product");
+                    }
+                });
+    }
+    
 }
