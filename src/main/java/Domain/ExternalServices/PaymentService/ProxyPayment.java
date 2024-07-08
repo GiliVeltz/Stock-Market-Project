@@ -46,7 +46,7 @@ public class ProxyPayment {
         formData.add("month", paymentInfo.getMonth());
         formData.add("year", paymentInfo.getYear());
         formData.add("holder", paymentInfo.getHolder());
-        formData.add("ccv", paymentInfo.getCcv());
+        formData.add("cvv", paymentInfo.getCvv());
         formData.add("id", paymentInfo.getId());
 
         // Headers

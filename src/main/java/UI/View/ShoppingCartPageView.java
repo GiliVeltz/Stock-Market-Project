@@ -124,7 +124,7 @@ public class ShoppingCartPageView extends BaseView {
         TextField monthField = new TextField("Month");
         TextField yearField = new TextField("Year");
         TextField holderField = new TextField("Card Holder Name");
-        TextField ccvField = new TextField("CCV");
+        TextField cvvField = new TextField("CVV");
         TextField idField = new TextField("ID");
 
         // Supply fields
@@ -135,7 +135,7 @@ public class ShoppingCartPageView extends BaseView {
         TextField zipField = new TextField("ZIP Code");
 
         formLayout.add(paymentInfoHeader);
-        formLayout.add(currencyField, cardNumberField, monthField, yearField, holderField, ccvField, idField);
+        formLayout.add(currencyField, cardNumberField, monthField, yearField, holderField, cvvField, idField);
 
         formLayout.add(supplyInfoHeader);
         formLayout.add(nameField, addressField, cityField, countryField, zipField);
@@ -147,7 +147,7 @@ public class ShoppingCartPageView extends BaseView {
             String month = monthField.getValue();
             String year = yearField.getValue();
             String holder = holderField.getValue();
-            String ccv = ccvField.getValue();
+            String cvv = cvvField.getValue();
             String id = idField.getValue();
 
             String name = nameField.getValue();
@@ -158,7 +158,7 @@ public class ShoppingCartPageView extends BaseView {
 
             List<Integer> selectedIndexes = getSelectedIndexes();
 
-            PaymentInfoDto paymentInfo = new PaymentInfoDto(currency, cardNumber, month, year, holder, ccv, id);
+            PaymentInfoDto paymentInfo = new PaymentInfoDto(currency, cardNumber, month, year, holder, cvv, id);
             SupplyInfoDto supplyInfo = new SupplyInfoDto(name, address, city, country, zip);
 
             presenter.purchaseCart(paymentInfo, supplyInfo, selectedIndexes);

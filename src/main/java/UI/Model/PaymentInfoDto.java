@@ -6,19 +6,19 @@ public class PaymentInfoDto {
     private String month;
     private String year;
     private String holder;
-    private String ccv;
+    private String cvv;
     private String id;
 
     public PaymentInfoDto() {
     }
 
-    public PaymentInfoDto(String currency, String cardNumber, String month, String year, String holder, String ccv, String id) {
+    public PaymentInfoDto(String currency, String cardNumber, String month, String year, String holder, String cvv, String id) {
         this.currency = currency;
         this.cardNumber = cardNumber;
         this.month = month;
         this.year = year;
         this.holder = holder;
-        this.ccv = ccv;
+        this.cvv = cvv;
         this.id = id;
     }
 
@@ -42,8 +42,8 @@ public class PaymentInfoDto {
         this.holder = holder;
     }
 
-    public void setCcv(String ccv) {
-        this.ccv = ccv;
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
     }
 
     public void setId(String id) {
@@ -70,8 +70,8 @@ public class PaymentInfoDto {
         return holder;
     }
 
-    public String getCcv() {
-        return ccv;
+    public String getCvv() {
+        return cvv;
     }
 
     public String getId() {
