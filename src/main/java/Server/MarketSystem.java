@@ -6,18 +6,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.Scanner;
+import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
 
-import Domain.Shop;
 import Domain.User;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
@@ -30,20 +25,19 @@ import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
+import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
-import Server.Controllers.UserController;
-import Server.notifications.NotificationHandler;
-import ServiceLayer.UserService;
+import enums.Category;
 
 @Service
 public class MarketSystem {
 
     public final static String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
-    public final static String tests_config_file_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\tests_config.txt";
-    public static String instructions_config_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\instructions_config.txt";
-    public final static String system_config_path = "..\\StockMarket_Project\\src\\main\\java\\Server\\Configuration\\system_config.txt";
+    public final static String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
+    public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
+    public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPayment payment_adapter;
     private AdapterSupply supply_adapter;
@@ -83,7 +77,6 @@ public class MarketSystem {
     public AdapterSupply getSupply_adapter() {
         return supply_adapter;
     }
-
 
     /**
      * reading the data from the configuration file.
@@ -229,9 +222,13 @@ public class MarketSystem {
         }
         else if (config.equals(("database:real_init"))){
             // HibernateUtils.set_demo_use();
+            // TODO: change to real time system repository
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
+            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
+            shopFacade.setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
+            userFacade.setUserRepository(userRepository);
             
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
             init_data_to_market(instructions_config_path);
@@ -288,10 +285,12 @@ public class MarketSystem {
 
         // handle instructions :
         if (instruction.equals("logIn")){
+            //logIn#user_name#password
             userFacade.logIn(instruction_params[1], instruction_params[2]);
         }
         
         else if (instruction.equals("register")){
+            //register#user_name#password#email#birthdate
             LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
             @SuppressWarnings("deprecation")
             Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
@@ -300,6 +299,7 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("add_admin")){
+            //add_admin#user_name#password#email#birthdate
             LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
             @SuppressWarnings("deprecation")
             Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
@@ -310,16 +310,22 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("logOut")){
+            //logOut#user_name
             userFacade.logOut(instruction_params[1]);
         }
 
         else if (instruction.equals("add_product_to_cart")){
+            //add_product_to_cart#user_name#product_name#shop_name
+            int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+            int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+            shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId, 1);
         }
 
         else if (instruction.equals("buy_cart")){
         }
 
         else if (instruction.equals("open_shop")){
+            //open_shop#user_name#shop_name#bank_details#shop_address
             ShopDto shopDto = new ShopDto(instruction_params[2], instruction_params[3], instruction_params[4]);
             shopFacade.openNewShop(instruction_params[1], shopDto);
         }
@@ -328,21 +334,45 @@ public class MarketSystem {
         }
 
         else if (instruction.equals("rate_shop")){
+            //rate_shop#user_name#shop_name#rating
+            int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+            shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
         }
         
         else if (instruction.equals("add_product_to_shop")){
+            //add_product_to_shop#user_name#shop_name#category#product_name#price#quantity
+            ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
         }
         
         else if (instruction.equals("appoint_shop_owner")){
+            //appoint_shop_owner#founder_user_name#shop_name#owner_user_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.addShopOwner(instruction_params[1], shopId, instruction_params[3]);
+
         }
 
         else if (instruction.equals("appoint_shop_manager")){
+            //appoint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            Set<String> permissions = new HashSet<>();
+            for (int i = 4; i < instruction_params.length; i++){
+                permissions.add(instruction_params[i]);
+            }
+            shopFacade.addShopManager(instruction_params[1], shopId, instruction_params[3], permissions);
         }
 
         else if (instruction.equals("close_shop")){
+            //close_shop#user_name#shop_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.closeShop(shopId, instruction_params[2]);
         }
 
-        else if (instruction.equals("open_close_shop")){
+        else if (instruction.equals("reopen_shop")){
+            //reopen_shop#user_name#shop_name
+            int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+            shopFacade.reOpenShop(shopId, instruction_params[2]);
         }
         
         else{

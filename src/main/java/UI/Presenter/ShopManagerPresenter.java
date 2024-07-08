@@ -24,8 +24,8 @@ import UI.Model.Permission;
 import UI.Model.ProductDto;
 import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
+import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
-import UI.Model.UserDto;
 import UI.View.ShopManagerView;
 import UI.Model.Category;
 
@@ -309,7 +309,7 @@ public class ShopManagerPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        ProductDto productDto = new ProductDto(productName, category, price, 0);
+                        ProductDto productDto = new ProductDto(productName, category, price, -1);
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
                         headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
@@ -566,6 +566,35 @@ public class ShopManagerPresenter {
                 });
     }
     
-    
+    public void closeShop(String shopId) {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/closeShop?shopId=" + shopId ,
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            view.showSuccessMessage("The shop has been closed successfully.");
+                            System.out.println(response.getBody());
+                        } else {
+                            view.showErrorMessage("Failed to close the shop");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to close the shop");
+                    }
+                });
+    }
    
 }

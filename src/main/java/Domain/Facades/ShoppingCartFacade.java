@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Order;
@@ -41,7 +40,6 @@ public class ShoppingCartFacade {
         // }
     }
 
-    @Autowired
     public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepo = cartsRepo;
         _guestsCarts = new HashMap<>();
@@ -61,6 +59,11 @@ public class ShoppingCartFacade {
             _shoppingCartFacade = new ShoppingCartFacade();
         }
         return _shoppingCartFacade;
+    }
+
+    // set shopping cart repository to be used in real system
+    public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
+        _cartsRepo = cartsRepo;
     }
 
     // Add a cart for a guest by token.
@@ -91,10 +94,10 @@ public class ShoppingCartFacade {
      * This method called when a user add a product to his cart.
      */
     @Transactional
-    public void addProductToUserCart(String userName, int productID, int shopID) throws StockMarketException {
+    public void addProductToUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
-            cart.addProduct(productID, shopID);
+            cart.addProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -106,10 +109,10 @@ public class ShoppingCartFacade {
      * This method called when a guest user add a product to his cart.
      */
     @Transactional
-    public void addProductToGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
+    public void addProductToGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.addProduct(productID, shopID);
+            cart.addProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product added to guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -267,13 +270,13 @@ public class ShoppingCartFacade {
         _guestsCarts.put(guestID, cart);
     }
 
-    // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     ShoppingCart cartUI = new ShoppingCart();
-    //     _cartsRepo.addCartForUser("tal", cartUI);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 1, 1);
-    //     addProductToUserCart("tal", 2, 1);    
-    // }
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        ShoppingCart cartUI = new ShoppingCart();
+        _cartsRepo.addCartForUser("tal", cartUI);
+        addProductToUserCart("tal", 0, 0, 1);
+        addProductToUserCart("tal", 0, 0, 1);
+        addProductToUserCart("tal", 1, 1, 1);
+        addProductToUserCart("tal", 2, 1, 1);    
+    }
 }

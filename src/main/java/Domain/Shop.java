@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import Domain.Alerts.Alert;
 import Domain.Alerts.CloseShopAlert;
 import Domain.Alerts.CredentialsModifyAlert;
+import Domain.Alerts.GeneralAlert;
 import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.Alerts.ReOpenShopAlert;
 import Domain.Discounts.Discount;
@@ -177,7 +178,7 @@ public class Shop {
         if (!checkIfHasRole(username)) {
             logger.log(Level.SEVERE,
                     "Shop - checkPermission: user " + username + " doesn't have a role in the shop with id " + _shopId);
-            throw new ShopException("User " + username + " doesn't have a role in this shop with id " + _shopId);
+            return false;
         }
         Role role = _userToRole.get(username);
         if (!isOwnerOrFounder(role) && !role.hasPermission(p)) {
@@ -1042,7 +1043,7 @@ public class Shop {
      * @param buyingUser the buying user.   
      * @param productIdList the product id list.
      */
-    public void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
+    public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
         for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, _shopId);
@@ -1059,6 +1060,18 @@ public class Shop {
             String owner = entry.getKey();
             Alert alert = new CloseShopAlert(owner, username, _shopId);
             _notificationHandler.sendMessage(owner, alert);
+        }
+    }
+
+     /**
+     * Notify the users that the shop has been closed.
+     * @param username the user that closed the shop.
+     */
+    public void openComplaint(String fromUsername,String message) {
+        for (Map.Entry<String, Role> entry : _userToRole.entrySet()) {
+            String owner = entry.getKey();
+            Alert alert = new GeneralAlert(fromUsername,owner, message);
+        _notificationHandler.sendMessage(owner, alert);
         }
     }
 
@@ -1268,5 +1281,11 @@ public class Shop {
 
     public void setShopPolicy(ShopPolicy shopPolicy) {
         _shopPolicy = shopPolicy;
+    }
+
+    // returns shopID, name and Rating for response.
+    // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
+    public String getShopStringForSearch() {
+        return " */Id/* " + getShopId() + " */Name/* " + getShopName() + " */Rating/* " + getShopRating();
     }
 }

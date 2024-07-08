@@ -13,14 +13,30 @@ public class ShopDto {
     public Integer shopRatersCounter;
     public boolean isShopClosed;
 
+    public ShopDto() {
+    }
+
     public ShopDto(String shopName, String bankDetails, String shopAddress) {
         this.shopName = shopName;
         this.bankDetails = bankDetails;
         this.shopAddress = shopAddress;
     }
 
+    public ShopDto(Integer shopId, String shopName, String bankDetails, String shopAddress, Double shopRating) {
+        this.shopId = shopId;
+        this.shopName = shopName;
+        this.bankDetails = bankDetails;
+        this.shopAddress = shopAddress;
+        this.shopRating = shopRating;
+    }
+    
+
     public void setShopId(Integer shopId) {
         this.shopId = shopId;
+    }
+
+    public void setShopRating(Double shopRating) {
+        this.shopRating = shopRating;
     }
 
     public ShopDto (Shop shop) {

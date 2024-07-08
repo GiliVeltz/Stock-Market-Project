@@ -1,16 +1,13 @@
 package Domain.Facades;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Alerts.Alert;
+import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Order;
@@ -31,6 +28,16 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
+    public UserFacade() {
+        _userRepository = new MemoryUserRepository(new ArrayList<>());
+        _guestIds = new ArrayList<>();
+        _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        // // //For testing UI
+        // initUI();
+    }
+
     public UserFacade(List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
@@ -41,7 +48,6 @@ public class UserFacade {
         // initUI();
     }
 
-    @Autowired
     public UserFacade(InterfaceUserRepository userRepository) {
         _userRepository = userRepository;
         _guestIds = new ArrayList<>();
@@ -58,6 +64,11 @@ public class UserFacade {
             _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
         }
         return _UserFacade;
+    }
+
+    // set the user repository to be used real time
+    public void setUserRepository(InterfaceUserRepository userRepository) {
+        _userRepository = userRepository;
     }
 
     // logIn function
@@ -251,6 +262,12 @@ public class UserFacade {
             orderDtos.add(new OrderDto(order));
         }
         return orderDtos;
+    }
+
+    public void reportToAdmin(String user, String message) {
+        Alert alert = new IntegrityRuleBreakAlert(user, message);
+        String targetUser = alert.getTargetUser();
+       notifyUser(targetUser, alert);
     }
 
     // // // function to initilaize data for UI testing

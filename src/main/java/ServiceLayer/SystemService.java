@@ -3,7 +3,6 @@ package ServiceLayer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Alerts.Alert;
 import Domain.Alerts.GeneralAlert;
+import Domain.Alerts.IntegrityRuleBreakAlert;
+import Domain.Alerts.PurchaseFromShopAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.ExternalServiceDto;
+import Server.notifications.NotificationHandler;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
