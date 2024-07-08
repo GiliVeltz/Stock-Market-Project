@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.User;
@@ -50,11 +51,11 @@ public class MarketSystem {
     private UserFacade userFacade;
     private ShoppingCartFacade shoppingCartFacade;
 
-    public MarketSystem() throws StockMarketException {
-        shopFacade = ShopFacade.getShopFacade();
-        userFacade = UserFacade.getUserFacade();
-        shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-
+    @Autowired
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
+        this.shopFacade = shopFacade;
+        this.userFacade = userFacade;
+        this.shoppingCartFacade = shoppingCartFacade;
         this.init_market(system_config_path);
     }
 

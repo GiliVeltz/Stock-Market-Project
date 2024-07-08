@@ -25,7 +25,6 @@ import Server.notifications.NotificationHandler;
 
 @Service
 public class UserFacade {
-    private static UserFacade _UserFacade;
     @Autowired
     private DbUserRepository repository;
     private InterfaceUserRepository _userRepository;
@@ -33,21 +32,14 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
-    public UserFacade( List<User> registeredUsers, List<String> guestIds) {
+    @Autowired
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
-        _EmailValidator = new EmailValidator();
-        _passwordEncoder = new PasswordEncoderUtil();
+        _EmailValidator = EmailValidator;
+        _passwordEncoder = passwordEncoder;
         // // //For testing UI
         // initUI();
-    }
-
-    // Public method to provide access to the _UserFacade
-    public static synchronized UserFacade getUserFacade() {
-        if (_UserFacade == null) {
-            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
-        }
-        return _UserFacade;
     }
 
 
@@ -84,6 +76,7 @@ public class UserFacade {
     @Transactional
     public boolean doesUserExist(String username) {
         return _userRepository.doesUserExist(username);
+        // return repository.findByName(username) != null;
     }
 
     // function to get a user by username
@@ -123,8 +116,8 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            this._userRepository.addUser(new User(userDto));
-            // this.repository.save(new User(userDto));
+            // this._userRepository.addUser(new User(userDto));
+            this.repository.save(new User(userDto));
         } else {
             throw new StockMarketException("Username already exists.");
         }

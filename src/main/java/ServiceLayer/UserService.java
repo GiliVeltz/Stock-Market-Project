@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,17 +29,12 @@ public class UserService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
+    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
         _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
-    }
-
-    public UserService() {
-        _userFacade = UserFacade.getUserFacade();
-        _tokenService = TokenService.getTokenService();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }
 
     // this function is responsible for logging in a user to the system by checking

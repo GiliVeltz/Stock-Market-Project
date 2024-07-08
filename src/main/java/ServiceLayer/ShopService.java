@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,16 +39,11 @@ public class ShopService {
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
+    @Autowired
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
         _shopFacade = shopFacade;
         _tokenService = tokenService;
         _userFacade = userFacade;
-    }
-  
-    public ShopService() {
-        _shopFacade = ShopFacade.getShopFacade();
-        _tokenService = TokenService.getTokenService();
-        _userFacade = UserFacade.getUserFacade();
     }
 
     /**

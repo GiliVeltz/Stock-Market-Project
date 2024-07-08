@@ -51,9 +51,9 @@ public class ShopFacade {
     private InterfaceShopRepository _shopRepository;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository) {
+    public ShopFacade(InterfaceShopRepository shopRepository, UserFacade userFacade) {
         _shopRepository = shopRepository;
-        _userFacade = UserFacade.getUserFacade();
+        _userFacade = userFacade;
 
         //For testing UI
         // try {
@@ -66,7 +66,7 @@ public class ShopFacade {
 
     public ShopFacade() {
         _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
+        // _userFacade = UserFacade.getUserFacade();
 
         //For testing UI
         // try {
@@ -79,7 +79,7 @@ public class ShopFacade {
 
     public ShopFacade(List<Shop> shopsList) { // ForTests
         _shopRepository = new MemoryShopRepository(shopsList);
-        _userFacade = UserFacade.getUserFacade();
+        // _userFacade = UserFacade.getUserFacade();
     }
 
     // Public method to provide access to the _shopFacade

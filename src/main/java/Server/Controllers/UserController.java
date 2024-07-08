@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +49,13 @@ public class UserController {
     public ResponseEntity<Response> logout(@RequestHeader(value = "Authorization") String token) {
         return _userService.logOut(token);
     }
+
+    // @GetMapping("/test")
+    // public ResponseEntity<Response> test(){
+    //     Response response = new Response();
+    //     response.setReturnValue(_bookService.list());
+    //     return new ResponseEntity<>(response, HttpStatus.OK);
+    // }
 
     @GetMapping("/viewShoppingCart")
     public ResponseEntity<Response> viewShoppingCart(
