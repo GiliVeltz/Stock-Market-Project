@@ -42,23 +42,35 @@ public class ShoppingCart {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer _shoppingCartId;
+
     // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @Transient
     private List<ShoppingBasket> _shoppingBaskets;
+
     @Transient
     private AdapterPayment _paymentMethod;
+
     @Transient
     private AdapterSupply _supplyMethod;
+
     @Transient
     @Autowired
     private ShopFacade _shopFacade;
+
     @Column(name = "username", nullable = false)
     private String _username; // or guestToken string
+
     @Transient
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "_shoppingCart", optional = true, targetEntity = User.class)
     private User _user; // if the user is null, the cart is for a guest.
+
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
+    // Default constructor for hibernate
+    public ShoppingCart() {
+    }
+
+    // Constructor
     public ShoppingCart(String username) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();

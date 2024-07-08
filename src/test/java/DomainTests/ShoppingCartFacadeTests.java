@@ -2,7 +2,6 @@ package DomainTests;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
-import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Entities.Order;
 import Domain.Entities.Shop;

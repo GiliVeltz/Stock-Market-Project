@@ -44,6 +44,7 @@ public class MarketSystem {
     private AdapterPayment payment_adapter;
     private AdapterSupply supply_adapter;
 
+    // not in used
     public static boolean test_flag = false;
 
     private static final Logger logger = Logger.getLogger(MarketSystem.class.getName());
@@ -187,11 +188,11 @@ public class MarketSystem {
             logger.info("Init Data For Tests: No Database");
             test_flag = true;
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
-            ShoppingCartFacade.getInstance().setShoppingCartRepository(shoppingCartRepository);
+            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
-            ShopFacade.getInstance().setShopRepository(shopRepository);
+            shopFacade.setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
-            UserFacade.getInstance().setUserRepository(userRepository);
+            userFacade.setUserRepository(userRepository);
         }
         else if (config.equals("database:tests_load_and_drop")){
             // load from test-db
@@ -240,7 +241,8 @@ public class MarketSystem {
      * @return true if the system load data successfully.
      *  false if was illegal instructions order OR illegal format instruction.
      */
-    public void init_data_to_market(String instructions_config_path){
+    public void init_data_to_market(String instructions_config_path){ 
+        logger.info("Start to Init Data From Instructions File");
         // HashMap<String, MarketFacade> facades = new HashMap<>();
         try{
             File file = new File(instructions_config_path);
@@ -393,7 +395,7 @@ public class MarketSystem {
                 }
                 shopFacade.addShopManager(instruction_params[1], shopId, instruction_params[3], permissions);
             } catch (Exception e) {
-                logger.info("[run_instruction] Ass Shop Manager Fail: " + e.getMessage());
+                logger.info("[run_instruction] Add Shop Manager Fail: " + e.getMessage());
             }
         }
 

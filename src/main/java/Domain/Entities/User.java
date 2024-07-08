@@ -52,8 +52,10 @@ public class User {
 
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
+    // Default constructor for JPA
     public User(){}
 
+    // Constructor
     public User(String username, String password, String email, Date birthDate) {
         _username = username;
         _password = password;

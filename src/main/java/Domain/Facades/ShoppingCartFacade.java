@@ -35,12 +35,6 @@ public class ShoppingCartFacade {
         _cartsRepository = cartsRepository;
         _guestsCarts = new HashMap<>();
     }
-    
-    // init for tests
-    public ShoppingCartFacade(MemoryShoppingCartRepository cartsRepository) {
-        _cartsRepository = cartsRepository;
-        _guestsCarts = new HashMap<>();
-    }
 
     // get instance of class
     public static ShoppingCartFacade getInstance() {

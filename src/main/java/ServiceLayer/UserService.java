@@ -30,6 +30,9 @@ public class UserService {
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Autowired
+    private NotificationHandler notificationHandler;
+
+    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade) {
         _userFacade = userFacade;
@@ -141,7 +144,7 @@ public class UserService {
                     _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
                     Alert alert = new PurchaseFromShopUserAlert(userName);
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                    notificationHandler.sendMessage(userName, alert);
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

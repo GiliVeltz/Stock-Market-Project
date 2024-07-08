@@ -49,6 +49,10 @@ public class ShoppingBasket implements Cloneable {
     @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
 
+    // Default constructor
+    public ShoppingBasket() {
+    }
+
     // Constructor
     public ShoppingBasket(Shop shop) {
         _shop = shop;

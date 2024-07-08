@@ -30,6 +30,9 @@ public class UserFacade {
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
+    
+    @Autowired
+    private NotificationHandler notificationHandler;
 
     @Autowired
     public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository) {
@@ -40,15 +43,6 @@ public class UserFacade {
         instance = this;
         // // //For testing UI
         // initUI();
-    }
-
-    // for tests
-    public UserFacade(InterfaceUserRepository userRepository, List<String> guestIds) {
-        _userRepository = userRepository;
-        instance = this;
-        _guestIds = guestIds;
-        _EmailValidator = new EmailValidator();
-        _passwordEncoder = new PasswordEncoderUtil();
     }
 
     // get instance of class
@@ -73,6 +67,7 @@ public class UserFacade {
         }
         
         user.logIn();
+        _userRepository.save(user);
     }
 
     // logOut function
@@ -83,6 +78,7 @@ public class UserFacade {
         }
         
         user.logOut();
+        _userRepository.save(user);
     }
 
     // function to check if a user exists in the system
@@ -235,7 +231,7 @@ public class UserFacade {
     @Transactional
     public boolean notifyUser(String targetUser, Alert alert) {
         try {
-            NotificationHandler.getInstance().sendMessage(targetUser, alert);
+            notificationHandler.sendMessage(targetUser, alert);
             return true;
         } catch (Exception e) {
             return false;

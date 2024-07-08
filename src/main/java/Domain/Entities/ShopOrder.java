@@ -23,6 +23,10 @@ public class ShopOrder {
     @Column(name = "totalOrderAmount", nullable = false)
     private double _totalOrderAmount;
 
+    // Default constructor
+    public ShopOrder() {
+    }
+
     // Constructor
     //TODO - Metar: check why not applying the clone method of ShoppingBasket
     public ShopOrder(int orderId, int shopId, ShoppingBasket shoppingBasket) throws StockMarketException {

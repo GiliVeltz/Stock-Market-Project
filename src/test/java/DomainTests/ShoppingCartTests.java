@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import Domain.*;
 import Domain.Entities.Product;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;

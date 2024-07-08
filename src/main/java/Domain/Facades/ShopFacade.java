@@ -66,12 +66,6 @@ public class ShopFacade {
         // }
     }
 
-    // for tests
-    public ShopFacade(List<Shop> shops) {
-        _shopRepository = new MemoryShopRepository(shops);
-        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<>()), new ArrayList<>());
-    }
-
     // Public method to provide access to the _shopFacade
     public static ShopFacade getInstance() {
         return instance;

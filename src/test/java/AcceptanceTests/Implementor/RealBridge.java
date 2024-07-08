@@ -30,15 +30,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import Domain.*;
 import Domain.Authenticators.*;
 import Domain.Entities.Order;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.Entities.Alerts.PurchaseFromShopUserAlert;
 import Domain.Entities.enums.Category;
 import Domain.ExternalServices.ExternalServiceHandler;
+import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.*;
 import Domain.Repositories.*;
 import Dtos.ExternalServiceDto;
@@ -50,7 +52,6 @@ import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
 import ServiceLayer.*;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -67,7 +68,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private UserService _userServiceUnderTest;
 
     // real facades to use in tests
-    private ShopFacade _shopFacade = ShopFacade.getInstance();
+    private ShopFacade _shopFacade;
     private ShoppingCartFacade _shoppingCartFacade;
     private UserFacade _userFacade;
     private PasswordEncoderUtil _passwordEncoder;
@@ -87,6 +88,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     PasswordEncoderUtil _passwordEncoderMock;
     @Mock
     NotificationHandler _notificationHandlerMock;
+    @Mock
+    AdapterPayment _adapterPaymentMock;
+    @Mock
+    AdapterSupply _adapterSupplyMock;
 
     // other private fields
     private static String token = "token";
@@ -108,8 +113,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public void init() {
         MockitoAnnotations.openMocks(this);
 
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
                     {
                         add(new User("Bob", "bobspassword", "email@example.com", new Date()));
@@ -138,8 +143,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         MockitoAnnotations.openMocks(this);
         _passwordEncoder = new PasswordEncoderUtil();
         _externalServiceHandler = new ExternalServiceHandler();
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com",
@@ -333,8 +338,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public boolean TestGuestEnterTheSystem(String shouldSeccess) {
         // Arrange
         MockitoAnnotations.openMocks(this);
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>()), new ArrayList<>());
         _externalServiceHandler = new ExternalServiceHandler();
 
@@ -365,8 +370,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // Arrange
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(new User("Bobi", "encodePassword", "email@example.com",
@@ -396,8 +401,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
@@ -514,8 +519,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.isUserAndLoggedIn(username)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn("founder")).thenReturn(true);
 
-        _shopFacade = ShopFacade.getInstance();
-        _shoppingCartFacade = ShoppingCartFacade.getInstance();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(new User("shopManager", "shopManagerPassword", "email@email.com", new Date()));
@@ -1902,7 +1907,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }), new ArrayList<>());
 
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade;
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuest(guestToken);
@@ -2021,7 +2026,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
@@ -2032,7 +2037,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // initiate _shoppingCartFacade
         _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
 
@@ -2151,18 +2156,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User shopOwner = new User("shopOwner", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(shopOwner);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
 
@@ -2295,22 +2300,22 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
 
-        ShoppingCart shoppingCart2 = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart2 = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         
         _shoppingCartFacade.addCartForGuestForTests(guestToken2, shoppingCart2);
 
@@ -2457,14 +2462,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto1 = new ProductDto("productName1", Category.CLOTHING, 100, 1);
        ProductDto productDto2 = new ProductDto("productName2", Category.CLOTHING, 50, 1);
@@ -2529,14 +2534,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto = new ShopDto("shopName1", "bankDetails", "address");
         ProductDto productDto1 = new ProductDto("productName1", Category.CLOTHING, 100, 1);
        ProductDto productDto2 = new ProductDto("productName2", Category.CLOTHING, 50, 1);
@@ -2602,14 +2607,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
         
         try {
@@ -2650,14 +2655,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
 
@@ -2717,14 +2722,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto1 = new ShopDto("shopName1", "bankDetails", "address");
         ProductDto productDto1 = new ProductDto("productName1", Category.CLOTHING, 100, 1);
         ShopDto shopDto2 = new ShopDto("shopName2", "bankDetails", "address");
@@ -2788,14 +2793,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto1 = new ShopDto("shopName1", "bankDetails", "address");
         ProductDto productDto1 = new ProductDto("productName1", Category.CLOTHING, 100, 1);
         ShopDto shopDto2 = new ShopDto("shopName2", "bankDetails", "address");
@@ -2863,14 +2868,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
 
@@ -2933,14 +2938,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // create users in the system
         User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
         User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(owner);
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
 
@@ -3002,14 +3007,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
          // create users in the system
          User owner = new User("owner", _passwordEncoder.encodePassword("password1"), "email1@email.com", new Date());
          User user = new User("user", _passwordEncoder.encodePassword("password2"), "email2@email.com", new Date());
-         _userFacade = new UserFacade(new ArrayList<User>() {
+         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
              {
                  add(owner);
                  add(user);
              }
-         }, new ArrayList<>());
+         }), new ArrayList<>());
  
-         _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+         _shopFacade = new ShopFacade(new ArrayList<Shop>());
          ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
          ProductDto productDto = new ProductDto("productName1", Category.CLOTHING, 100, 1);
          List<String> keyword1 = new ArrayList<>();
@@ -3075,14 +3080,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
                 add(shopFounder);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -3121,14 +3126,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User(username, _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initialize _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
         // create a shopping cart for the user
         _shoppingCartFacade.addCartForGuest(username);
@@ -3137,7 +3142,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // user opens shop and adds product to it
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         try {
             _shopFacade.openNewShop(username, shopDto);
             _shopFacade.addProductToShop(0, productDto, username);
@@ -3180,18 +3185,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
         _shoppingCartFacade.addCartForUser("guestToken", user);
@@ -3245,9 +3250,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
-        _shopFacade = ShopFacade.getShopFacade();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>()), new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest(username);
 
@@ -3293,9 +3298,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         MockitoAnnotations.openMocks(this);
         _externalServiceHandler = new ExternalServiceHandler();
         _passwordEncoder = new PasswordEncoderUtil();
-        _shopFacade = ShopFacade.getShopFacade();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
-        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>());
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>()), new ArrayList<>());
 
         _shoppingCartFacade.addCartForGuest(username);
 
@@ -3357,7 +3362,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
@@ -3397,18 +3402,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
         _shoppingCartFacade.addCartForUser("guestToken", user);
@@ -3476,13 +3481,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
                 "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
         ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(shopFounder);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -3529,13 +3534,13 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
                 "email@email.com", new Date());
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(shopFounder);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
 
         try {
             _shopFacade.openNewShop("Founder", shopDto);
@@ -3582,18 +3587,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User(username, password, "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
         _shoppingCartFacade.addCartForUser("guestToken", user);
@@ -3662,11 +3667,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // initiate a user object
         User user = new User(username, password, "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
@@ -3734,18 +3739,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User(username, password, "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
         _shoppingCartFacade.addCartForUser("guestToken", user);
@@ -3826,11 +3831,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // initiate a user object
         User user = new User(username, password, "email@email.com", new Date(10, 10, 2021));
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
@@ -3860,11 +3865,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // initiate a user object
         User user = new User("bob", "bobspassword", "email@email.com", new Date());
         UserDto userDto = new UserDto(user.getUserName(), newPassword, newEmail, user.getBirthDate());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
@@ -3898,14 +3903,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User(username, "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuest(username);
@@ -3957,14 +3962,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuest(guestname);
@@ -4014,18 +4019,18 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a user in the system
         User user = new User(username, password, "email@email.com", new Date());
-        _userFacade = new UserFacade(new ArrayList<User>() {
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>());
+        }), new ArrayList<>());
 
-        _shopFacade = new ShopFacade(new ArrayList<Shop>())();
+        _shopFacade = new ShopFacade(new ArrayList<Shop>());
         
         // initiate _shoppingCartFacade
-        _shoppingCartFacade = new ShoppingCartFacade();
+        _shoppingCartFacade = new ShoppingCartFacade(new MemoryShoppingCartRepository());
 
-        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade);
+        ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         // create a shopingcart for the username
         _shoppingCartFacade.addCartForGuestForTests(guestToken, shoppingCart);
         _shoppingCartFacade.addCartForUser("guestToken", user);

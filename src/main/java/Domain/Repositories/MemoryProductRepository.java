@@ -16,6 +16,10 @@ import Domain.Entities.Product;
 @Repository
 public class MemoryProductRepository implements InterfaceProductRepository {
 
+    // TODO: Implement the methods of the InterfaceProductRepository
+
+    List<Product> products;
+
     @Override
     public void flush() {
         // TODO Auto-generated method stub

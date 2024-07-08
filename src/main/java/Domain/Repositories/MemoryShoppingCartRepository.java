@@ -109,8 +109,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public List<ShoppingCart> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return List.copyOf(_shoppingCarts.values());
     }
 
     @Override
@@ -121,14 +120,13 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public <S extends ShoppingCart> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        _shoppingCarts.put(entity.getUsernameString(), entity);
+        return entity;
     }
 
     @Override
     public Optional<ShoppingCart> findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return Optional.ofNullable(_shoppingCarts.get(id));
     }
 
     @Override

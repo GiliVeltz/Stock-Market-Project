@@ -1,7 +1,5 @@
 package Domain.Entities.enums;
 
-import jakarta.persistence.Entity;
-
 /**
  * This enum represents the permissions that a user with a role in a specific shop has. 
  */

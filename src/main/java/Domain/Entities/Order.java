@@ -24,6 +24,10 @@ public class Order {
     
     private double _totalOrderAmount;
 
+    // Default constructor
+    public Order() {
+    }
+
     // Constructor
     public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
         _orderId = orderId;

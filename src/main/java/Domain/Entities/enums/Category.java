@@ -1,5 +1,4 @@
 package Domain.Entities.enums;
-import jakarta.persistence.Entity;
 
 //TODO >> remove to service shop
 public enum Category {

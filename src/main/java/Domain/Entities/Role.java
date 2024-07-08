@@ -43,6 +43,15 @@ public class Role {
     @Transient
     private static final Logger logger = Logger.getLogger(Role.class.getName());
 
+    // Default constructor for hibernate.
+    public Role(){
+        _username = null;
+        _storeId = -1;
+        _appointedBy = null;
+        _permissions = new HashSet<Permission>();
+        _appointments = new HashSet<String>();
+    }
+
     /**
      * Basic constructor with permission set.
      * @param username the username in the system that the role belongs to.

@@ -110,8 +110,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public List<User> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return new ArrayList<>(_registeredUsers.values());
     }
 
     @Override
@@ -122,14 +121,14 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public <S extends User> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        _registeredUsers.put(entity.getUserName(), entity);
+        return entity;
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        User user = _registeredUsers.values().stream().filter(u -> Long.valueOf(u.getId()).equals(id)).findFirst().orElse(null);
+        return Optional.ofNullable(user);
     }
 
     @Override

@@ -11,20 +11,11 @@ import Domain.Entities.Alerts.Alert;
 @Component
 public class NotificationHandler {
 
-    private static NotificationHandler instance;
     @Autowired
     private static WebSocketServer wServer;
 
     private NotificationHandler() {
         // Initialization code
-        wServer = WebSocketServer.getInstance();
-    }
-
-    public static synchronized NotificationHandler getInstance() {
-        if (instance == null) {
-            instance = new NotificationHandler();
-        }
-        return instance;
     }
     
      /**
@@ -38,11 +29,4 @@ public class NotificationHandler {
         String message = alert.getMessage();
         wServer.sendMessage(targetUsername, message);
     }
-
-    // Using this method for testing purposes
-    public static void setInstance(NotificationHandler _notificationHandlerMock) {
-        instance = _notificationHandlerMock;
-    }
-
-
 }

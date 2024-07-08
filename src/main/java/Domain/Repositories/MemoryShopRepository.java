@@ -115,8 +115,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public List<Shop> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return new ArrayList<>(_shops.values());
     }
 
     @Override
@@ -127,14 +126,13 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public <S extends Shop> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        _shops.put(entity.getShopId(), entity);
+        return entity;
     }
 
     @Override
     public Optional<Shop> findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return Optional.ofNullable(_shops.get(id));
     }
 
     @Override

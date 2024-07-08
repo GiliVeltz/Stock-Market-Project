@@ -61,6 +61,10 @@ public class Product implements Cloneable {
 
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
+    // Default constructor
+    public Product() {
+    }
+
     // Constructor
     public Product(int productId, String productName, Category category, double price) {
         this._productId = productId;
