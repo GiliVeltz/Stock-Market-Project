@@ -3,9 +3,9 @@ package Domain.Repositories;
 import java.util.HashMap;
 import java.util.Map;
 
-import Domain.ShoppingCart;
-
 import org.springframework.stereotype.Repository;
+
+import Domain.Entities.ShoppingCart;
 
 @Repository
 public class MemoryShoppingCartRepository implements InterfaceShoppingCartRepository {

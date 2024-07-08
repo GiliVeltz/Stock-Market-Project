@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Entities;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,8 +12,16 @@ import Domain.Policies.ProductPolicy;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
 import enums.Category;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
+@Entity
 public class Product implements Cloneable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer _productId;
     private String _productName;
     private double _price;
@@ -21,8 +29,11 @@ public class Product implements Cloneable {
     private HashSet<String> _keywords;
     private Double _productRating;
     private Integer _productRatersCounter;
+    @Transient
     private Category _category;
+    @Transient
     private ProductPolicy _productPolicy;
+    @Transient
     private Map<String, String> _reviews; // usernames and reviews
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 

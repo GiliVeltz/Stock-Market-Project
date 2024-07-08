@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import Domain.User;
+import Domain.Entities.User;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;

@@ -1,6 +1,6 @@
 package Dtos;
 
-import Domain.Shop;
+import Domain.Entities.Shop;
 
 public class ShopWithIdDto {
     public int shopId;

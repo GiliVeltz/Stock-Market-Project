@@ -1,5 +1,5 @@
 
-package Domain;
+package Domain.Entities;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -7,16 +7,25 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
 
 import Dtos.UserDto;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
-@Table(name = "User")
+@Table(name = "[user]")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long _id;
 
     @Column(name = "password", nullable = false)
     private String _password;
@@ -24,8 +33,8 @@ public class User {
     @Column(name = "username", unique = true, nullable = false)
     private String _username;
 
-    @Column(name = "isAdmin", nullable = false)
-    private boolean _isAdmin;
+    @Column(name = "isAdmin", nullable = true)
+    private boolean _isAdmin=false;
 
     @Column(name = "email", unique = true, nullable = false)
     private String _email;
@@ -34,10 +43,11 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date _birthDate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
     private List<Order> _purchaseHistory;
 
-    @Column(name = "isLoggedIn", nullable = false)
+    @Column(name = "isLoggedIn", nullable = true)
     private boolean _isLoggedIn;
 
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
@@ -176,5 +186,9 @@ public class User {
         
         // Calculate the difference in years
         return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
+    }
+
+    public long getId(){
+        return _id;
     }
 }

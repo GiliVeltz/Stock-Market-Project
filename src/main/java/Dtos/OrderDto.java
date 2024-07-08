@@ -3,8 +3,8 @@ package Dtos;
 import java.util.HashMap;
 import java.util.Map;
 
-import Domain.Order;
-import Domain.ShoppingBasket;
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
 
 public class OrderDto {

@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Entities;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -6,6 +6,10 @@ import java.util.logging.Logger;
 
 import Exceptions.*;
 import enums.Permission;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 /** 
  * This class represents the role of a user in a specific shop.
@@ -18,6 +22,10 @@ public class Role {
      * @Constraint Must be an owner in the shop.
      * @Special_Case If the role is the founder of the shop, this field is null.
      */
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long _roleId;
+
     private final String _appointedBy;
     
     private final int _storeId; // The store id that this role is connected to.
@@ -28,10 +36,11 @@ public class Role {
      * The permissions of this role in the shop.
      * @Constraint has to be at least one permission.
      */
+    @Transient
     private Set<Permission> _permissions;
-
+    
     private Set<String> _appointments; // The appointments of this user in a specific shop.
-
+    @Transient
     private static final Logger logger = Logger.getLogger(Role.class.getName());
 
     /**
