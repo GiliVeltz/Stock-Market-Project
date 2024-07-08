@@ -72,10 +72,6 @@ public class ShopFacade {
         _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<>()), new ArrayList<>());
     }
 
-    // Public method to provide access to the _shopFacade
-    public static ShopFacade getInstance() {
-        return instance;
-    }
 
     // set shop repository to be used in real system
     public void setShopRepository(InterfaceShopRepository shopRepository) {

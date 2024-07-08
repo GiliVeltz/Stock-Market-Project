@@ -51,11 +51,6 @@ public class UserFacade {
         _passwordEncoder = new PasswordEncoderUtil();
     }
 
-    // get instance of class
-    public static UserFacade getInstance() {
-        return instance;
-    }
-
     // set the user repository to be used real time
     public void setUserRepository(InterfaceUserRepository userRepository) {
         _userRepository = userRepository;
@@ -71,8 +66,8 @@ public class UserFacade {
         if (user.isLoggedIn()){
                 throw new StockMarketException("User is already logged in.");
         }
-        
         user.logIn();
+        _userRepository.save(user);
     }
 
     // logOut function
@@ -81,14 +76,13 @@ public class UserFacade {
         if (!user.isLoggedIn()){
                 throw new StockMarketException("User is not logged in.");
         }
-        
         user.logOut();
+        _userRepository.save(user);
     }
 
     // function to check if a user exists in the system
     public boolean doesUserExist(String username) {
         return _userRepository.existsByUsername(username);
-        // return repository.findByName(username) != null;
     }
 
     // function to get a user by username
