@@ -10,8 +10,7 @@ import Domain.Entities.User;
 
 @NoRepositoryBean
 public interface InterfaceUserRepository extends JpaRepository<User, Long> {
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u._username = ?1")
-    boolean doesUserExist(String _username);
+    boolean existsByUsername(String username);
 
-    User findByName(String username);
+    User findByUserName(String username);
 }
