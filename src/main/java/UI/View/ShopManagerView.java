@@ -171,6 +171,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         reopenDialog.open();
     });
 
+     // Add Edit Product button
+     Button editProductBtn = createButtonWithIcon("Edit Product", VaadinIcon.EDIT, event -> createEditProductDialog().open());
+
+
 
         // Here we create a set of permissions from the strings.
         _permissions = permissions.stream()
@@ -217,7 +221,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         for (Button button : Arrays.asList(
                 appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn,
                 addProductsBtn, viewProductsBtn, viewPurchasesBtn, addDiscountsBtn,
-                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn)) {
+                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn, editProductBtn)) {
             row.add(button);
             count++;
             if (count % 4 == 0) {
@@ -237,6 +241,81 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
+    }
+
+    private Dialog createEditProductDialog() {
+        Dialog editProductDialog = new Dialog();
+        TextField productIdField = new TextField("Enter Product ID");
+
+        Button fetchProductBtn = new Button("Fetch Product", event -> {
+            String productId = productIdField.getValue();
+            // Logic to fetch product details using the product ID
+
+            // Create buttons for editing product details
+            Button updateQuantityBtn = new Button("Update Quantity", e -> createUpdateQuantityDialog(productId).open());
+            Button updatePriceBtn = new Button("Update Price", e -> createUpdatePriceDialog(productId).open());
+            Button updateNameBtn = new Button("Update Name", e -> createUpdateNameDialog(productId).open());
+            Button updateCategoryBtn = new Button("Update Category", e -> createUpdateCategoryDialog(productId).open());
+
+            VerticalLayout editOptionsLayout = new VerticalLayout(updateQuantityBtn, updatePriceBtn, updateNameBtn, updateCategoryBtn);
+            editProductDialog.add(editOptionsLayout);
+        });
+
+        editProductDialog.add(productIdField, fetchProductBtn);
+        return editProductDialog;
+    }
+
+    private Dialog createUpdateQuantityDialog(String productId) {
+        Dialog dialog = new Dialog();
+        TextField quantityField = new TextField("New Quantity");
+        Button saveBtn = new Button("Save", event -> {
+            String newQuantity = quantityField.getValue();
+            // Logic to update the product quantity using the product ID and new quantity
+            dialog.close();
+            Notification.show("Quantity updated");
+        });
+        dialog.add(quantityField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdatePriceDialog(String productId) {
+        Dialog dialog = new Dialog();
+        TextField priceField = new TextField("New Price");
+        Button saveBtn = new Button("Save", event -> {
+            String newPrice = priceField.getValue();
+            // Logic to update the product price using the product ID and new price
+            dialog.close();
+            Notification.show("Price updated");
+        });
+        dialog.add(priceField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateNameDialog(String productId) {
+        Dialog dialog = new Dialog();
+        TextField nameField = new TextField("New Name");
+        Button saveBtn = new Button("Save", event -> {
+            String newName = nameField.getValue();
+            // Logic to update the product name using the product ID and new name
+            dialog.close();
+            Notification.show("Name updated");
+        });
+        dialog.add(nameField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateCategoryDialog(String productId) {
+        Dialog dialog = new Dialog();
+        ComboBox<String> categoryField = new ComboBox<>("New Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
+        Button saveBtn = new Button("Save", event -> {
+            String newCategory = categoryField.getValue();
+            // Logic to update the product category using the product ID and new category
+            dialog.close();
+            Notification.show("Category updated to " + newCategory);
+        });
+        dialog.add(categoryField, saveBtn);
+        return dialog;
     }
 
     public int getShopId() {
