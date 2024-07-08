@@ -10,6 +10,7 @@ import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Exceptions.StockMarketException;
@@ -37,7 +38,7 @@ public class ShoppingCartFacadeTests {
     private PasswordEncoderUtil _passwordEncoderMock;
     
     @Mock
-    private MemoryShoppingCartRepository _cartsRepoMock;
+    private DbShoppingCartRepository _cartsRepoMock;
 
     @Mock
     private ShopFacade _shopFacadeMock;
@@ -69,7 +70,8 @@ public class ShoppingCartFacadeTests {
     public void setUp() throws StockMarketException {
         MockitoAnnotations.openMocks(this);
         _guestsCarts = new HashMap<>();
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(new MemoryShoppingCartRepository());
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest.setShoppingCartRepository(new MemoryShoppingCartRepository());
     }
 
     @AfterEach

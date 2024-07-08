@@ -226,11 +226,11 @@ public class MarketSystem {
         }
         else if (config.equals(("database:real_init"))){            
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
-            init_data_to_market(instructions_config_path);
         }
         else {
             throw new StockMarketException("System Config File - Illegal Database Data.");
         }
+        init_data_to_market(instructions_config_path);
     }
 
     /**

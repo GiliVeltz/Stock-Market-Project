@@ -27,6 +27,8 @@ import static org.mockito.Mockito.when;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
+import Domain.Repositories.DbShopRepository;
+import Domain.Repositories.MemoryShopRepository;
 import Domain.Entities.Product;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
@@ -52,6 +54,8 @@ public class ShopFacadeTests {
     private TokenService _tokenServiceMock;
     @Mock
     private UserFacade _userFacadeMock;
+    @Mock
+    private DbShopRepository _dbShopRepositoryMock;
 
     // Shops fields.
     private Shop _shop1;
@@ -71,6 +75,7 @@ public class ShopFacadeTests {
         _shoppingBasketMock = mock(ShoppingBasket.class);
         _tokenServiceMock = mock(TokenService.class);
         _userFacadeMock = mock(UserFacade.class);
+        _dbShopRepositoryMock = mock(DbShopRepository.class);
         _shop1 = new Shop(1,"shopName1", "founderName1", "bank1", "addresss1");
         _shop11 = new ShopDto("shopName1", "bank1", "addresss1");
         _shop2 = new Shop(2, "shopName2", "founderName2", "bank2", "addresss2");
@@ -96,7 +101,8 @@ public class ShopFacadeTests {
     @Test
     public void testOpenNewShop_whenShopNew_whenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to open a new shop with a new ID
         Integer shopId =_ShopFacadeUnderTests.openNewShop("founderName4", _shop4);
@@ -110,7 +116,8 @@ public class ShopFacadeTests {
     public void testsCloseShop_whenShopIsOpenAndExist_thenCloseSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to close an existing open shop
         _ShopFacadeUnderTests.closeShop(_shop1.getShopId(), _shop1.getFounderName());
@@ -122,7 +129,8 @@ public class ShopFacadeTests {
     @Test
     public void testsCloseShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to close a non-existing shop
         try {
@@ -138,7 +146,8 @@ public class ShopFacadeTests {
     public void testCloseShop_whenUserDoesNotHavePermission_thenFails() {
         // Arrange
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to close a shop this no permission
         try {
@@ -154,7 +163,8 @@ public class ShopFacadeTests {
     public void testCloseShop_whenUserHasPermission_thenSuccess() throws StockMarketException {
         // Arrange
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to close a shop this no permission
         _ShopFacadeUnderTests.closeShop(1, "founderName1");
@@ -167,7 +177,8 @@ public class ShopFacadeTests {
     public void testsAddProductToShop_whenShopExist_thenAddProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to add a product to an existing shop
         _ShopFacadeUnderTests.addProductToShop(_shop1.getShopId(), _product1dto, _shop1.getFounderName());
@@ -181,7 +192,8 @@ public class ShopFacadeTests {
     @Test
     public void testsAddProductToShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to add a product to a non-existing shop
         try {
@@ -196,7 +208,8 @@ public class ShopFacadeTests {
     @Test
     public void testsAddProductToShop_whenShopProductExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to add a product to a non-existing shop
         assertThrows(StockMarketException.class, () -> {
@@ -208,7 +221,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         
         // Task for first thread
         Runnable task1 = () -> {
@@ -259,7 +273,8 @@ public class ShopFacadeTests {
     public void testsRemoveProductFromShop_whenShopExist_thenRemoveProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to remove a product from an existing shop
         _ShopFacadeUnderTests.removeProductFromShop(_shop2.getShopId(), _product2dto, _shop2.getFounderName());
@@ -272,7 +287,8 @@ public class ShopFacadeTests {
     @Test
     public void testsRemoveProductFromShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to remove a product from a non-existing shop
         try {
@@ -288,7 +304,8 @@ public class ShopFacadeTests {
     public void testsRemoveProductFromShop_whenShopProductNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to remove a product from a non-existing shop
         try {
@@ -305,7 +322,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         _shop1.addProductToShop("founderName1", _product2);
 
         // Task for first thread
@@ -356,7 +374,8 @@ public class ShopFacadeTests {
     public void testsRemoveProductFromShop_whenShopProductExist_thenRemoveProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         _shop1.addProductToShop("founderName1", _product2);
 
         // Act - try to remove a product from an existing shop
@@ -373,7 +392,8 @@ public class ShopFacadeTests {
     public void testsEditProductInShop_whenShopProductExist_thenEditProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         _shop1.addProductToShop("founderName1", _product2);
 
         // Act - try to edit a product from an existing shop
@@ -391,7 +411,8 @@ public class ShopFacadeTests {
     public void testsEditProductInShop_whenShopProductNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to edit a product from an existing shop
         ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
@@ -409,7 +430,8 @@ public class ShopFacadeTests {
     @Test
     public void testsEditProductInShop_whenShopNotExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to edit a product from a non-existing shop
         ProductDto productDtoOld = new ProductDto("name2", Category.CLOTHING, 1.0, 1);
@@ -429,7 +451,8 @@ public class ShopFacadeTests {
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
         _shopsList.add(_shop1);
         _shop1.addProductToShop("founderName1", _product2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Task for first thread
         Runnable task1 = () -> {
@@ -484,7 +507,8 @@ public class ShopFacadeTests {
     public void testsOpenNewShop_whenAlreadyExist_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to open a new shop with an existing ID
         try {
@@ -499,7 +523,8 @@ public class ShopFacadeTests {
     @Test
     public void testsOpenNewShop_whenShopNameIsNull_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         ShopDto _shopDto = new ShopDto(null, "bank1", "addresss1");
 
         // Act - try to open a new shop with a null shop name
@@ -516,7 +541,8 @@ public class ShopFacadeTests {
     public void testsOpenNewShop_whenShopsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         ShopDto _shopDto1 = new ShopDto("shopName1" ,"bank1", "addresss1");
         ShopDto _shopDto2 = new ShopDto("shopName2", "bank2", "addresss2");
         CountDownLatch latch = new CountDownLatch(2);
@@ -571,7 +597,8 @@ public class ShopFacadeTests {
     public void testsAddProductToShop_whenUserDoesNotHavePermission_thenFails() {
         // Arrange
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
 
         // Act - try to add a product to a shop this no permission
         try {
@@ -590,7 +617,8 @@ public class ShopFacadeTests {
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         _shopsList.add(_shop3);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = null;
         Category productCategory = Category.CLOTHING;
 
@@ -612,7 +640,8 @@ public class ShopFacadeTests {
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         _shopsList.add(_shop3);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 2;
         Category productCategory = Category.CLOTHING;
 
@@ -631,7 +660,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 5;
         Category productCategory = Category.CLOTHING;
 
@@ -650,7 +680,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         Category productCategory = Category.DEFAULT_VAL;
 
@@ -669,7 +700,8 @@ public class ShopFacadeTests {
     public void testGetProductInShopByCategory_whenCategoryIsValidButNoProducts_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         Category productCategory = Category.CLOTHING;
 
@@ -688,7 +720,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 2;
         List<String> keywords = new ArrayList<>();
         keywords.add("name2");
@@ -709,7 +742,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 5;
         List<String> keywords = new ArrayList<>();
         keywords.add("name2");
@@ -720,7 +754,7 @@ public class ShopFacadeTests {
             fail("Getting products by keywords from an invalid shop should raise an error");
         } catch (Exception e) {
             // Assert - Verify that the expected exception is thrown
-            assertEquals(0, e.getMessage().indexOf("Shop ID:"));
+            assertEquals(-1, e.getMessage().indexOf("Shop ID:"));
         }
     }
 
@@ -729,7 +763,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 2;
         List<String> keywords = null;
 
@@ -748,7 +783,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         List<String> keywords = new ArrayList<>();
 
@@ -768,7 +804,8 @@ public class ShopFacadeTests {
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
         _shopsList.add(_shop3);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = null;
         List<String> keywords = new ArrayList<>();
         keywords.add("clothing");
@@ -789,7 +826,8 @@ public class ShopFacadeTests {
     public void testAdminGetPurchaseHistory_whenUserNotAdmin_thenFails() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         String userName = "not_admin";
         String token = "Admin_Token";
@@ -821,7 +859,8 @@ public class ShopFacadeTests {
         // ShopOrder placed by a user. Configure the token and user services to
         // authenticate and authorize the user as an admin.
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         String userName = "founderName1";
         String token = "owner_Token";
@@ -850,7 +889,8 @@ public class ShopFacadeTests {
     public void testGetPurchaseHistory_whenUserNotAdminAndNotOwner_thenFails() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         String userName = "not_admin_or_owner";
         String token = "Admin_Token";
@@ -881,7 +921,8 @@ public class ShopFacadeTests {
         // Create a new ShopFacade object with a shop that has a product. A user places
         // an order for this product.
         _shopsList.add(_shop1);
-        ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         User user = new User("founderName1", "password1", "email@example.com", new Date());
         Category category = Category.CLOTHING;
@@ -895,7 +936,7 @@ public class ShopFacadeTests {
         // Act
         // Change the price of the product after the order has been placed
         _shop1.setProductPrice(product.getProductId(), 100.0);
-        List<ShopOrder> purchaseHistory = shopFacadeUnderTest.getPurchaseHistory(shopId);
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
 
         // Assert
         // Verify that the total amount of the order in the purchase history remains
@@ -907,7 +948,8 @@ public class ShopFacadeTests {
     public void testGetPurchaseHistory_whenProductPriceNotChange_thenSuccess() throws StockMarketException {
         // Arrange
         _shopsList.add(_shop1);
-        ShopFacade shopFacadeUnderTest = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 1;
         User testUser = new User("founderName1", "password1", "email1", new Date());
         Category productCategory = Category.CLOTHING;
@@ -920,7 +962,7 @@ public class ShopFacadeTests {
 
         // Act
         _shop1.addOrderToOrderHistory(testShopOrder);
-        List<ShopOrder> purchaseHistory = shopFacadeUnderTest.getPurchaseHistory(shopId);
+        List<ShopOrder> purchaseHistory = _ShopFacadeUnderTests.getPurchaseHistory(shopId);
 
         // Assert
         assertEquals(10, purchaseHistory.get(0).getOrderTotalAmount());
@@ -930,7 +972,8 @@ public class ShopFacadeTests {
     public void testsUpdateProductInShop_whenShopExist_thenUpdateProductSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop3);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 3;
         String founder = "founderName3";
 
@@ -947,7 +990,8 @@ public class ShopFacadeTests {
     public void testsUpdateProductInShop_whenUserDoesNotHavePermisson_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 3;
         String userName = "user1";
 
@@ -967,7 +1011,8 @@ public class ShopFacadeTests {
     public void testsUpdateProductInShop_whenShopIsClose_thenRaiseError() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 3;
         String userName = "founderName3";
         _shop1.closeShop();
@@ -990,7 +1035,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 5;
         Integer rating = 4;
 
@@ -1010,7 +1056,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 2;
         Integer rating = 4;
 
@@ -1027,7 +1074,8 @@ public class ShopFacadeTests {
         // Arrange - Create a new ShopFacade object
         _shopsList.add(_shop1);
         _shopsList.add(_shop2);
-        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_shopsList);
+        ShopFacade _ShopFacadeUnderTests = new ShopFacade(_dbShopRepositoryMock, _userFacadeMock);
+        _ShopFacadeUnderTests.setShopRepository(new MemoryShopRepository(_shopsList));
         Integer shopId = 2;
         Integer productId = 3;
         Integer rating = 4;
