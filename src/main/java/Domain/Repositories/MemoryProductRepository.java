@@ -1,8 +1,6 @@
 package Domain.Repositories;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -13,27 +11,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Repository;
 
-import Domain.Entities.ShoppingCart;
+import Domain.Entities.Product;
 
 @Repository
-public class MemoryShoppingCartRepository implements InterfaceShoppingCartRepository {
-    Map<String, ShoppingCart> _shoppingCarts;
-    private int _orderIdCounter;
-
-    public MemoryShoppingCartRepository() {
-        _shoppingCarts = new HashMap<>();
-        _orderIdCounter = 0;
-    }
-
-    @Override
-    public ShoppingCart getCartByUsername(String username) {
-        return _shoppingCarts.get(username);
-    }
-
-    @Override
-    public synchronized int getUniqueOrderID() {
-        return _orderIdCounter++;
-    }
+public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public void flush() {
@@ -42,19 +23,19 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public <S extends ShoppingCart> S saveAndFlush(S entity) {
+    public <S extends Product> S saveAndFlush(S entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAndFlush'");
     }
 
     @Override
-    public <S extends ShoppingCart> List<S> saveAllAndFlush(Iterable<S> entities) {
+    public <S extends Product> List<S> saveAllAndFlush(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAllAndFlush'");
     }
 
     @Override
-    public void deleteAllInBatch(Iterable<ShoppingCart> entities) {
+    public void deleteAllInBatch(Iterable<Product> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
     }
@@ -72,61 +53,61 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public ShoppingCart getOne(Long id) {
+    public Product getOne(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public ShoppingCart getById(Long id) {
+    public Product getById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public ShoppingCart getReferenceById(Long id) {
+    public Product getReferenceById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
-    public <S extends ShoppingCart> List<S> findAll(Example<S> example) {
+    public <S extends Product> List<S> findAll(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends ShoppingCart> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends Product> List<S> findAll(Example<S> example, Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends ShoppingCart> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Product> List<S> saveAll(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
     }
 
     @Override
-    public List<ShoppingCart> findAll() {
+    public List<Product> findAll() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public List<ShoppingCart> findAllById(Iterable<Long> ids) {
+    public List<Product> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
     @Override
-    public <S extends ShoppingCart> S save(S entity) {
-        _shoppingCarts.put(entity.getUsernameString(), entity);
-        return entity;
+    public <S extends Product> S save(S entity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
-    public Optional<ShoppingCart> findById(Long id) {
+    public Optional<Product> findById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
@@ -150,7 +131,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public void delete(ShoppingCart entity) {
+    public void delete(Product entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
@@ -162,7 +143,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public void deleteAll(Iterable<? extends ShoppingCart> entities) {
+    public void deleteAll(Iterable<? extends Product> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
     }
@@ -174,45 +155,45 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
     }
 
     @Override
-    public List<ShoppingCart> findAll(Sort sort) {
+    public List<Product> findAll(Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public Page<ShoppingCart> findAll(Pageable pageable) {
+    public Page<Product> findAll(Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends ShoppingCart> Optional<S> findOne(Example<S> example) {
+    public <S extends Product> Optional<S> findOne(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findOne'");
     }
 
     @Override
-    public <S extends ShoppingCart> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Product> Page<S> findAll(Example<S> example, Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends ShoppingCart> long count(Example<S> example) {
+    public <S extends Product> long count(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'count'");
     }
 
     @Override
-    public <S extends ShoppingCart> boolean exists(Example<S> example) {
+    public <S extends Product> boolean exists(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'exists'");
     }
 
     @Override
-    public <S extends ShoppingCart, R> R findBy(Example<S> example,
-            Function<FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Product, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
+    
 }

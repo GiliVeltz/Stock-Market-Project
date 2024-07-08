@@ -26,6 +26,7 @@ import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
 import Domain.Repositories.MemoryShopRepository;
+import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Domain.Alerts.Alert;
 import Domain.Alerts.AppointedManagerAlert;
@@ -45,13 +46,13 @@ import enums.Category;
 import enums.Permission;
 @Service
 public class ShopFacade {
-    private static ShopFacade _shopFacade;
+    private static ShopFacade instance;
 
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository, UserFacade userFacade) {
+    public ShopFacade(DbShopRepository shopRepository, UserFacade userFacade) {
         _shopRepository = shopRepository;
         _userFacade = userFacade;
 
@@ -64,30 +65,9 @@ public class ShopFacade {
         // }
     }
 
-    public ShopFacade() {
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        // _userFacade = UserFacade.getUserFacade();
-
-        //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
-    public ShopFacade(List<Shop> shopsList) { // ForTests
-        _shopRepository = new MemoryShopRepository(shopsList);
-        // _userFacade = UserFacade.getUserFacade();
-    }
-
     // Public method to provide access to the _shopFacade
-    public static synchronized ShopFacade getShopFacade() {
-        if (_shopFacade == null) {
-            _shopFacade = new ShopFacade();
-        }
-        return _shopFacade;
+    public static ShopFacade getInstance() {
+        return instance;
     }
 
     // set shop repository to be used in real system
@@ -127,7 +107,7 @@ public class ShopFacade {
         }
 
         int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
+        _shopRepository.save(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         getShopByShopId(shopId).notifyReOpenShop(userName);
         return shopId;
     }
@@ -369,7 +349,7 @@ public class ShopFacade {
     // this function is responsible return all the shops in the system
     @Transactional
     public List<Shop> getAllShops() {
-        return _shopRepository.getAllShops();
+        return _shopRepository.findAll();
     }
 
     // this function is responsible return all the shops in the system as DTO

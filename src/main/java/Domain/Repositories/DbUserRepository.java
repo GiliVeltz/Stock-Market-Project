@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import Domain.Entities.User;
 
-@Primary
 @Repository
 public interface DbUserRepository extends InterfaceUserRepository{
 } 

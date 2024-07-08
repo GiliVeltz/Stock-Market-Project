@@ -185,11 +185,11 @@ public class MarketSystem {
         if (config.equals("database:tests")){
             // no db
             logger.info("Init Data For Tests: No Database");
-            // NotificationHandler.setTestsHandler();
             test_flag = true;
-            // HibernateUtils.set_tests_mode();
-            // InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
-            // InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
+            InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
+            ShoppingCartFacade.getInstance().setShoppingCartRepository(shoppingCartRepository);
+            InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
+            ShopFacade.getInstance().setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
             UserFacade.getInstance().setUserRepository(userRepository);
         }

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,6 +23,7 @@ import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,17 +50,20 @@ public class ShoppingCart {
     @Transient
     private AdapterSupply _supplyMethod;
     @Transient
+    @Autowired
     private ShopFacade _shopFacade;
-    // @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    @Column(name = "username", nullable = false)
+    private String _username; // or guestToken string
     @Transient
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "_shoppingCart", optional = true, targetEntity = User.class)
     private User _user; // if the user is null, the cart is for a guest.
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
-    public ShoppingCart() {
+    public ShoppingCart(String username) {
         _shoppingBaskets = new ArrayList<>();
         _paymentMethod = AdapterPayment.getAdapterPayment();
         _supplyMethod = AdapterSupply.getAdapterSupply();
-        _shopFacade = ShopFacade.getShopFacade();
+        _username = username;
         _user = null;
     }
 
@@ -66,14 +73,7 @@ public class ShoppingCart {
         _paymentMethod = paymentMethod;
         _supplyMethod = supplyMethod;
         _shopFacade = shopFacade;
-        _user = null;
-    }
-    
-    public ShoppingCart(ShopFacade shopFacade) {
-        _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterSupply();
-        _shopFacade = shopFacade;
+        _username = null;
         _user = null;
     }
 
@@ -141,7 +141,7 @@ public class ShoppingCart {
     }
     
     public String getUsernameString() {
-        return _user == null ? "Guest" : _user.getUserName();
+        return _username;
     }
 
     /*
@@ -259,6 +259,7 @@ public class ShoppingCart {
     // Set the user of the cart.
     public void SetUser(User user) {
         _user = user;
+        _username = user.getUserName();
     }
 
     // Get shopping baskets of the cart.
