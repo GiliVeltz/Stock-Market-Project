@@ -25,43 +25,43 @@ import jakarta.persistence.Transient;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long _id;
+    private Long id;
 
     @Column(name = "password", nullable = false)
-    private String _password;
+    private String password;
 
     @Column(name = "username", unique = true, nullable = false)
-    private String _username;
+    private String username;
 
     @Column(name = "isAdmin", nullable = true)
-    private boolean _isAdmin=false;
+    private boolean isAdmin=false;
 
     @Column(name = "email", unique = true, nullable = false)
-    private String _email;
+    private String email;
 
     @Column(name = "birthDate", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date _birthDate;
+    private Date birthDate;
 
     // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Transient
-    private List<Order> _purchaseHistory;
+    private List<Order> purchaseHistory;
 
     @Column(name = "isLoggedIn", nullable = true)
-    private boolean _isLoggedIn;
+    private boolean isLoggedIn;
 
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     public User(){}
 
     public User(String username, String password, String email, Date birthDate) {
-        _username = username;
-        _password = password;
-        _isAdmin = false;
-        _email = email;
-        _birthDate = birthDate;
-        _purchaseHistory = new ArrayList<Order>();
-        _isLoggedIn = false;
+        this.username = username;
+        this.password = password;
+        isAdmin = false;
+        this.email = email;
+        this.birthDate = birthDate;
+        purchaseHistory = new ArrayList<Order>();
+        isLoggedIn = false;
     }
 
     public User(UserDto userDto) {
@@ -69,11 +69,11 @@ public class User {
     }
 
     public String getPassword() {
-        return _password;
+        return password;
     }
 
     public boolean isCurrUser(String username, String password) {
-        if (_username == username & _password == password) {
+        if (username == username & password == password) {
             return true;
         }
         return false;
@@ -86,7 +86,7 @@ public class User {
             throw new IllegalArgumentException("Order is null");
 
         }
-        _purchaseHistory.add(order);
+        purchaseHistory.add(order);
     }
 
     /**
@@ -95,7 +95,7 @@ public class User {
      * @return A boolean indicating whether the user is an admin.
      */
     public boolean isAdmin() {
-        return _isAdmin;
+        return isAdmin;
     }
 
     /**
@@ -105,14 +105,14 @@ public class User {
      *         history.
      */
     public List<Order> getPurchaseHistory() {
-        return _purchaseHistory;
+        return purchaseHistory;
     }
 
     // check id age above some age for policies
     public boolean checkAgeAbove(int age) {
         Calendar currentCalendar = Calendar.getInstance();
         Calendar birthCalendar = Calendar.getInstance();
-        birthCalendar.setTime(_birthDate);
+        birthCalendar.setTime(birthDate);
 
         int currentYear = currentCalendar.get(Calendar.YEAR);
         int birthYear = birthCalendar.get(Calendar.YEAR);
@@ -135,53 +135,53 @@ public class User {
     // getters and setters:
 
     public String getUserName() {
-        return _username;
+        return username;
     }
 
     public String getEmail() {
-        return _email;
+        return email;
     }
 
     public void setEmail(String email) {
-        _email = email;
+        email = email;
     }
 
     public void setPassword(String password) {
-        _password = password;
+        password = password;
     }
 
     public Date getBirthDate() {
-        return _birthDate;
+        return birthDate;
     }
 
     public void setBirthDate(Date birthDate) {
-        _birthDate = birthDate;
+        birthDate = birthDate;
     }
 
     public String toString() {
-        return "User [username=" + _username + ", encoded password= " + _password + ", email=" + _email
-                + ", birth date=" + _birthDate.toString() + "]";
+        return "User [username=" + username + ", encoded password= " + password + ", email=" + email
+                + ", birth date=" + birthDate.toString() + "]";
     }
 
     public void setIsSystemAdmin(boolean b) {
-        _isAdmin = true;
+        isAdmin = true;
     }
 
     public boolean isLoggedIn() {
-        return _isLoggedIn;
+        return isLoggedIn;
     }
 
     public void logIn() {
-        _isLoggedIn = true;
+        isLoggedIn = true;
     }
 
     public void logOut() {
-        _isLoggedIn = false;
+        isLoggedIn = false;
     }
 
     public int getAge() {
         // Convert _birthDate to LocalDate
-        LocalDate birthDateLocal = _birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate birthDateLocal = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         
         // Get the current date
         LocalDate currentDate = LocalDate.now();
@@ -191,6 +191,6 @@ public class User {
     }
 
     public long getId(){
-        return _id;
+        return id;
     }
 }
