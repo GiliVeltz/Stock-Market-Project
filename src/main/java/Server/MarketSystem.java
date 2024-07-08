@@ -187,11 +187,11 @@ public class MarketSystem {
             logger.info("Init Data For Tests: No Database");
             test_flag = true;
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
-            ShoppingCartFacade.getInstance().setShoppingCartRepository(shoppingCartRepository);
+            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
-            ShopFacade.getInstance().setShopRepository(shopRepository);
+            shopFacade.setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
-            UserFacade.getInstance().setUserRepository(userRepository);
+            userFacade.setUserRepository(userRepository);
         }
         else if (config.equals("database:tests_load_and_drop")){
             // load from test-db
