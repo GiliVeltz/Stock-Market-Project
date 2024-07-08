@@ -57,7 +57,7 @@ public class MarketSystem {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
-        this.init_market(system_config_path);
+        this.init_market(tests_config_file_path);
     }
 
     // initiate the system using the args config files

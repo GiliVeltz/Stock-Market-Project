@@ -32,6 +32,7 @@ import Domain.Entities.Discounts.ShopPercentageDiscount;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
 import Domain.Repositories.MemoryShopRepository;
+import Domain.Repositories.MemoryUserRepository;
 import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Dtos.BasicDiscountDto;
@@ -63,6 +64,12 @@ public class ShopFacade {
         // catch (StockMarketException e) {
         //     e.printStackTrace();
         // }
+    }
+
+    // for tests
+    public ShopFacade(List<Shop> shops) {
+        _shopRepository = new MemoryShopRepository(shops);
+        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<>()), new ArrayList<>());
     }
 
     // Public method to provide access to the _shopFacade

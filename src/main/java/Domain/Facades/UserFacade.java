@@ -42,6 +42,15 @@ public class UserFacade {
         // initUI();
     }
 
+    // for tests
+    public UserFacade(InterfaceUserRepository userRepository, List<String> guestIds) {
+        _userRepository = userRepository;
+        instance = this;
+        _guestIds = guestIds;
+        _EmailValidator = new EmailValidator();
+        _passwordEncoder = new PasswordEncoderUtil();
+    }
+
     // get instance of class
     public static UserFacade getInstance() {
         return instance;
