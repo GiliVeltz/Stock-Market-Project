@@ -13,6 +13,9 @@ public class ShopDto {
     public Integer shopRatersCounter;
     public boolean isShopClosed;
 
+    public ShopDto() {
+    }
+
     public ShopDto(String shopName, String bankDetails, String shopAddress) {
         this.shopName = shopName;
         this.bankDetails = bankDetails;
