@@ -1,10 +1,21 @@
-package Domain;
+package Domain.Entities;
 
 import Exceptions.StockMarketException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 
 //class that represents an order for the shop
+@Entity
 public class ShopOrder {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer _orderId;
+    // @OneToOne(mappedBy = "shopOrder")
+    @Transient
     private ShoppingBasket _shoppingBasket;
     private double _totalOrderAmount;
 

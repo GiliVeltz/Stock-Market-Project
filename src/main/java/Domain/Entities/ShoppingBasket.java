@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Entities;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -12,17 +12,30 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping basket that contains a list of products.
 // The shopping basket can belongs to one and only shop and one user.
 
+@Entity
 public class ShoppingBasket implements Cloneable {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long _shoppingBasketId;
+    // @OneToOne(mappedBy = "shoppingBasket")
+    @Transient
     private Shop _shop;
     private List<Integer> _productIdList;
     private double _basketTotalAmount;
+    @Transient
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
-
+    @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
 
     // Constructor

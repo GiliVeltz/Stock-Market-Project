@@ -2,7 +2,7 @@ package Domain.Repositories;
 
 import java.util.List;
 
-import Domain.User;
+import Domain.Entities.User;
 
 public interface InterfaceUserRepository {
     boolean doesUserExist(String username);

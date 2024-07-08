@@ -1,6 +1,6 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 
 /**
  * Represents a rule that checks if a shopping basket contains a minimum amount of a specific product.

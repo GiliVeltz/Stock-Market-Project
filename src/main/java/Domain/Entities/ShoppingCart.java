@@ -1,4 +1,4 @@
-package Domain;
+package Domain.Entities;
 
 import java.util.List;
 import java.util.Map;
@@ -19,17 +19,36 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
 
 //TODO: TAL: add pay and ship methods to this class.
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
+@Entity
 public class ShoppingCart {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long _shoppingCartId;
+    // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    @Transient
     private List<ShoppingBasket> _shoppingBaskets;
+    @Transient
     private AdapterPayment _paymentMethod;
+    @Transient
     private AdapterSupply _supplyMethod;
+    @Transient
     private ShopFacade _shopFacade;
+    // @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    @Transient
     private User _user; // if the user is null, the cart is for a guest.
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 

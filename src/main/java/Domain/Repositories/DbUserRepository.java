@@ -1,9 +1,10 @@
 package Domain.Repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import Domain.Customer;
-import Domain.User;
+import Domain.Entities.User;
 
-public interface DbUserRepository extends JpaRepository<Customer, Long>{
+@Repository
+public interface DbUserRepository extends JpaRepository<User, Long>{
 
 } 

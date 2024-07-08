@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import Domain.Shop;
-
 import org.springframework.stereotype.Repository;
+
+import Domain.Entities.Shop;
 
 @Repository
 public class MemoryShopRepository implements InterfaceShopRepository {

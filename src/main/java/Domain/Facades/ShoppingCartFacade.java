@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
-import Domain.Order;
-import Domain.ShoppingBasket;
-import Domain.ShoppingCart;
-import Domain.User;
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.ShoppingCart;
+import Domain.Entities.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Dtos.BasketDto;
