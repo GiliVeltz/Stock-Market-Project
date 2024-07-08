@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import Domain.User;
-
 import org.springframework.stereotype.Repository;
+
+import Domain.Entities.User;
 
 @Repository
 public class MemoryUserRepository implements InterfaceUserRepository {

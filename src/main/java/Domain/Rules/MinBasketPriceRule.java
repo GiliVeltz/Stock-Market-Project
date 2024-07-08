@@ -1,6 +1,6 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
 
 /**

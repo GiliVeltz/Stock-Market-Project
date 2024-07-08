@@ -1,12 +1,13 @@
 package Domain.Discounts;
 
 import java.util.Date;
-import Domain.ShoppingBasket;
+
+import Domain.Entities.Product;
+import Domain.Entities.ShoppingBasket;
 import Domain.Rules.Rule;
 import Dtos.BasicDiscountDto;
 import Exceptions.DiscountExpiredException;
 import Exceptions.StockMarketException;
-import Domain.Product;
 
 public abstract class Discount {
     protected Rule<ShoppingBasket> _rule;

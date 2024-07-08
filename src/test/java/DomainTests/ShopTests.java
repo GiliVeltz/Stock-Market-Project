@@ -16,10 +16,11 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import Domain.Product;
-import Domain.Shop;
+
 import Domain.Discounts.Discount;
 import Domain.Discounts.ProductPercentageDiscount;
+import Domain.Entities.Product;
+import Domain.Entities.Shop;
 import Dtos.Rules.AllItemsRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;

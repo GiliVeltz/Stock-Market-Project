@@ -36,7 +36,7 @@ public class ProductDto {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productQuantity = productQuantity;
+        this.productRating = productRating;
     }
 
     public ProductDto(int productId, String productName, Category category, double price, int productQuantity, double productRating, Set<String> keywords) {

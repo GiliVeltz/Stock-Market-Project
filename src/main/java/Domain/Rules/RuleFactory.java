@@ -1,7 +1,7 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
-import Domain.User;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Dtos.Rules.AllItemsRuleDto;
 import Dtos.Rules.AndRuleDto;
 import Dtos.Rules.ConditionRuleDto;

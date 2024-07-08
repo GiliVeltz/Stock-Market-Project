@@ -2,7 +2,7 @@ package Domain.Discounts;
 
 import java.util.List;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Exceptions.StockMarketException;

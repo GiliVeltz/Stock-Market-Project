@@ -3,7 +3,7 @@ package Dtos;
 import java.util.HashSet;
 import java.util.Map;
 
-import Domain.Product;
+import Domain.Entities.Product;
 
 public class ProductGetterDto {
     @SuppressWarnings("unused")

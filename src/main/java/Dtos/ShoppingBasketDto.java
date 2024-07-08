@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
 
 public class ShoppingBasketDto {

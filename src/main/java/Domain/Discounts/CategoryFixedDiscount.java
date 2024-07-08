@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import Domain.Product;
-import Domain.ShoppingBasket;
+import Domain.Entities.Product;
+import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 import enums.Category;

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import Domain.Product;
+import Domain.Entities.Product;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
 import enums.Category;

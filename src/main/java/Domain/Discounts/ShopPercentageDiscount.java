@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
 public class ShopPercentageDiscount extends BaseDiscount {
