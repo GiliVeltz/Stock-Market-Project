@@ -22,11 +22,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import Domain.Shop;
 import UI.Model.ProductDto;
-import UI.Model.SearchProductResponseDto;
 import UI.Model.ShopDto;
 import UI.Presenter.SearchProductsPresenter;
 
