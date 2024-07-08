@@ -522,13 +522,13 @@ public class ShoppingCartTests {
     //     product4.updateProductQuantity(10);
     //     shop2.addProductToShop("ownerUsername2", product4);
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
@@ -570,14 +570,14 @@ public class ShoppingCartTests {
     //     product4.updateProductQuantity(10);
     //     shop2.addProductToShop("ownerUsername2", product4);
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // shoppingCartUnderTest.SetUser(user);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
@@ -712,15 +712,15 @@ public class ShoppingCartTests {
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
-        .checkIfPaymentOk(purchaseCartDetailsDto.cardNumber);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
+        // .checkIfPaymentOk(purchaseCartDetailsDto.cardNumber);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     // Act & Assert
     //     assertThrows(PaymentFailedException.class, () -> {
@@ -760,16 +760,16 @@ public class ShoppingCartTests {
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
-        .checkIfPaymentOk(purchaseCartDetailsDto.cardNumber);
-        shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
+        // .checkIfPaymentOk(purchaseCartDetailsDto.cardNumber);
+        // shoppingCartUnderTest.SetUser(user);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     // Act & Assert
     //     assertThrows(PaymentFailedException.class, () -> {
@@ -807,15 +807,15 @@ public class ShoppingCartTests {
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
-        .checkIfDeliverOk(purchaseCartDetailsDto.address);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
+        // .checkIfDeliverOk(purchaseCartDetailsDto.address);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     // Act & Assert
     //     assertThrows(ShippingFailedException.class, () -> {
@@ -855,16 +855,16 @@ public class ShoppingCartTests {
     //     PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
     //         new ArrayList<>(Arrays.asList(0, 1)));
 
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
-        doThrow(new ShippingFailedException("Delivery falied")).when(adapterSupplyMock)
-        .checkIfDeliverOk(purchaseCartDetailsDto.address);
-        shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(2, 1, 1);
-        shoppingCartUnderTest.addProduct(3, 2, 1);
-        shoppingCartUnderTest.addProduct(4, 2, 1);
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
+        // doThrow(new ShippingFailedException("Delivery falied")).when(adapterSupplyMock)
+        // .checkIfDeliverOk(purchaseCartDetailsDto.address);
+        // shoppingCartUnderTest.SetUser(user);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(2, 1, 1);
+        // shoppingCartUnderTest.addProduct(3, 2, 1);
+        // shoppingCartUnderTest.addProduct(4, 2, 1);
 
     //     // Act & Assert
     //     assertThrows(ShippingFailedException.class, () -> {
@@ -889,15 +889,15 @@ public class ShoppingCartTests {
     //     product.updateProductQuantity(10);
     //     shop.addProductToShop("ownerUsername", product);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
-                "123456789", "Guest Address");
-        Map<Double, String> paymentDetails = new HashMap<>();
-        paymentDetails.put(200.0, "bank1");
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
-        .pay(purchaseCartDetailsDto.cardNumber, paymentDetails, 200.0);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
+        // PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
+        //         "123456789", "Guest Address");
+        // Map<Double, String> paymentDetails = new HashMap<>();
+        // paymentDetails.put(200.0, "bank1");
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
+        // .pay(purchaseCartDetailsDto.cardNumber, paymentDetails, 200.0);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
 
     //     // Act & Assert
     //     assertThrows(PaymentFailedException.class, () -> {
@@ -920,16 +920,16 @@ public class ShoppingCartTests {
     //     product.updateProductQuantity(10);
     //     shop.addProductToShop("ownerUsername", product);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
-                "123456789", "Guest Address");
-        Map<Double, String> paymentDetails = new HashMap<>();
-        paymentDetails.put(200.0, "bank1");
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
-        .pay(purchaseCartDetailsDto.cardNumber, paymentDetails, 200.0);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.SetUser(user);
+        // PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
+        //         "123456789", "Guest Address");
+        // Map<Double, String> paymentDetails = new HashMap<>();
+        // paymentDetails.put(200.0, "bank1");
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // doThrow(new PaymentFailedException("Payment failed")).when(adapterPaymentMock)
+        // .pay(purchaseCartDetailsDto.cardNumber, paymentDetails, 200.0);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.SetUser(user);
 
     //     // Act & Assert
     //     assertThrows(PaymentFailedException.class, () -> {
@@ -950,15 +950,15 @@ public class ShoppingCartTests {
     //     product.updateProductQuantity(10);
     //     shop.addProductToShop("ownerUsername", product);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
-                "123456789", "Guest Address");
-        Map<Double, String> paymentDetails = new HashMap<>();
-        paymentDetails.put(200.0, "bank1");
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
-        .deliver(purchaseCartDetailsDto.address, "address1");
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
+        // PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
+        //         "123456789", "Guest Address");
+        // Map<Double, String> paymentDetails = new HashMap<>();
+        // paymentDetails.put(200.0, "bank1");
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
+        // .deliver(purchaseCartDetailsDto.address, "address1");
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
 
     //     // Act & Assert
     //     assertThrows(ShippingFailedException.class, () -> {
@@ -981,16 +981,16 @@ public class ShoppingCartTests {
     //     product.updateProductQuantity(10);
     //     shop.addProductToShop("ownerUsername", product);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
-                "123456789", "Guest Address");
-        Map<Double, String> paymentDetails = new HashMap<>();
-        paymentDetails.put(200.0, "bank1");
-        when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
-        doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
-        .deliver(purchaseCartDetailsDto.address, "address1");
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.addProduct(1, 1, 1);
-        shoppingCartUnderTest.SetUser(user);
+        // PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(new ArrayList<>(Arrays.asList(0)),
+        //         "123456789", "Guest Address");
+        // Map<Double, String> paymentDetails = new HashMap<>();
+        // paymentDetails.put(200.0, "bank1");
+        // when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
+        // doThrow(new ShippingFailedException("Delivery failed")).when(adapterSupplyMock)
+        // .deliver(purchaseCartDetailsDto.address, "address1");
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.addProduct(1, 1, 1);
+        // shoppingCartUnderTest.SetUser(user);
 
     //     // Act & Assert
     //     assertThrows(ShippingFailedException.class, () -> {

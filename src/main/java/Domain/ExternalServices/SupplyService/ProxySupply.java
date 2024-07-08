@@ -1,12 +1,11 @@
 package Domain.ExternalServices.SupplyService;
 
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import Dtos.SupplyInfoDto;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ProxySupply {
 
@@ -40,27 +39,26 @@ public class ProxySupply {
 
     public int supply(SupplyInfoDto supplyInfo) {
         // Form data
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("action_type", "supply");
+        formData.add("name", supplyInfo.getName());
+        formData.add("address", supplyInfo.getAddress());
+        formData.add("city", supplyInfo.getCity());
+        formData.add("country", supplyInfo.getCountry());
+        formData.add("zip", supplyInfo.getZip());
+
+        // Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        Map<String, String> formData = new HashMap<>();
-        formData.put("action_type", "supply");
-        formData.put("name", supplyInfo.getName());
-        formData.put("address", supplyInfo.getAddress());
-        formData.put("city", supplyInfo.getCity());
-        formData.put("country", supplyInfo.getCountry());
-        formData.put("zip", supplyInfo.getZip());
-
-        StringBuilder formBody = new StringBuilder();
-        formData.forEach((key, value) -> formBody.append(key).append("=").append(value).append("&"));
-        String requestBody = formBody.toString().substring(0, formBody.length() - 1);
-
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        // Request entity
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
 
         try {
+            // Send POST request
             ResponseEntity<String> response = restTemplate.postForEntity(externalSystemUrl, request, String.class);
 
-            // Check the response and parse it to integer
+            // Parse the response to an integer
             if (response.getStatusCode() == HttpStatus.OK) {
                 return Integer.parseInt(response.getBody());
             }

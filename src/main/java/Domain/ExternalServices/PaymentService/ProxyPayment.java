@@ -1,12 +1,11 @@
 package Domain.ExternalServices.PaymentService;
 
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import Dtos.PaymentInfoDto;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ProxyPayment {
     private String externalSystemUrl = "https://damp-lynna-wsep-1984852e.koyeb.app/";
@@ -39,23 +38,23 @@ public class ProxyPayment {
 
     public int payment(PaymentInfoDto paymentInfo, double totalPrice)  {
         // Form data
-        Map<String, String> formData = new HashMap<>();
-        formData.put("action_type", "pay");
-        formData.put("amount", Double.toString(totalPrice));
-        formData.put("currency", paymentInfo.getCurrency());
-        formData.put("card_number", paymentInfo.getCardNumber());
-        formData.put("month", paymentInfo.getMonth());
-        formData.put("year", paymentInfo.getYear());
-        formData.put("holder", paymentInfo.getHolder());
-        formData.put("ccv", paymentInfo.getCcv());
-        formData.put("id", paymentInfo.getId());
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("action_type", "pay");
+        formData.add("amount", Double.toString(totalPrice));
+        formData.add("currency", paymentInfo.getCurrency());
+        formData.add("card_number", paymentInfo.getCardNumber());
+        formData.add("month", paymentInfo.getMonth());
+        formData.add("year", paymentInfo.getYear());
+        formData.add("holder", paymentInfo.getHolder());
+        formData.add("ccv", paymentInfo.getCcv());
+        formData.add("id", paymentInfo.getId());
 
         // Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         // Request entity
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(formData, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
 
         try {
             // Send POST request

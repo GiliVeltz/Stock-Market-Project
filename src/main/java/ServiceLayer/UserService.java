@@ -139,7 +139,7 @@ public class UserService {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, purchaseCartDetails);
+                    _shoppingCartFacade.purchaseCartGuest(_tokenService.extractGuestId(token), purchaseCartDetails);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
