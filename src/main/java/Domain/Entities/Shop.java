@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.CloseShopAlert;
 import Domain.Entities.Alerts.CredentialsModifyAlert;
@@ -109,6 +111,7 @@ public class Shop {
     private boolean _isClosed;
 
     @Transient
+    @Autowired
     private NotificationHandler _notificationHandler;
     
     // Constructor
@@ -133,8 +136,6 @@ public class Shop {
             _userToRole.putIfAbsent(shopFounderUserName, founder);
             _nextDiscountId = 0;
             _isClosed = false;
-            _notificationHandler = NotificationHandler.getInstance();
-
             
             logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
                     + ". The Founder of the shop is: " + shopFounderUserName);

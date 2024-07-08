@@ -25,11 +25,12 @@ import Server.notifications.NotificationHandler;
 
 @Service
 public class UserFacade {
-    private static UserFacade instance;
     private InterfaceUserRepository _userRepository;
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
+    @Autowired
+    private NotificationHandler notificationHandler;
 
     @Autowired
     public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository) {
@@ -37,7 +38,6 @@ public class UserFacade {
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
-        instance = this;
         // // //For testing UI
         // initUI();
     }
@@ -45,7 +45,6 @@ public class UserFacade {
     // for tests
     public UserFacade(InterfaceUserRepository userRepository, List<String> guestIds) {
         _userRepository = userRepository;
-        instance = this;
         _guestIds = guestIds;
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
@@ -229,7 +228,7 @@ public class UserFacade {
     @Transactional
     public boolean notifyUser(String targetUser, Alert alert) {
         try {
-            NotificationHandler.getInstance().sendMessage(targetUser, alert);
+            notificationHandler.sendMessage(targetUser, alert);
             return true;
         } catch (Exception e) {
             return false;
