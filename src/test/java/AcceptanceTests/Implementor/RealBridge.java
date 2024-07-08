@@ -40,6 +40,8 @@ import Dtos.ProductDto;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
 import Dtos.UserDto;
+import Dtos.Rules.MinBasketPriceRuleDto;
+import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
@@ -820,7 +822,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-        List<ShoppingBasketRuleDto> policy = new ArrayList<>();
+        List<MinBasketPriceRuleDto> policy1 = new ArrayList<>();
+        List<MinProductAmountRuleDto> policy2 = new ArrayList<>();
+        
 
         if(newPolicy.equals("fail")) {
             return false;
@@ -828,7 +832,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act
         ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
-        ResponseEntity<Response> res2 = _shopServiceUnderTest.changeShopPolicy(tokenShopOwner, Integer.parseInt(shopId), policy);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.changeShopPolicy(tokenShopOwner, Integer.parseInt(shopId), policy1, policy2);
 
         // Assert
         if (res1.getBody().getErrorMessage() != null) {

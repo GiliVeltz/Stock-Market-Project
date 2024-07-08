@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Product;
 import Domain.Role;
 import Domain.Repositories.MemoryShopRepository;
+import Domain.Rules.Rule;
+import Domain.Rules.RuleFactory;
 import Domain.Repositories.InterfaceShopRepository;
 import Domain.Shop;
 import Domain.Alerts.Alert;
@@ -31,11 +34,14 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.ShopOrder;
+import Domain.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
+import Dtos.Rules.MinBasketPriceRuleDto;
+import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
@@ -625,6 +631,21 @@ public class ShopFacade {
         }
     }
 
+    // this function returns the shop policy
+    @Transactional
+    public List<ShoppingBasketRuleDto> getShopPolicy(Integer shopId) throws StockMarketException {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            List<Rule<ShoppingBasket>> rules = shop.getShopPolicy().getRules();
+            List<ShoppingBasketRuleDto> rulesDto = rules.stream().map(rule -> RuleFactory.createShoppingBasketRuleDto(rule)).toList();
+            return rulesDto;
+        } else {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+
+
     // this function returns the product policy
     @Transactional
     public String getProductPolicyInfo(Integer shopId, Integer productId) throws StockMarketException {
@@ -780,13 +801,16 @@ public class ShopFacade {
 
     // this function is responsible for changing the shop policy
     @Transactional
-    public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
+    public void changeShopPolicy(String username, int shopId,  List<MinBasketPriceRuleDto> minBasketRules, List<MinProductAmountRuleDto> minProductRules)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
+        List<ShoppingBasketRuleDto> shopRules = new ArrayList<>();
+        shopRules.addAll(minBasketRules);
+        shopRules.addAll(minProductRules);
         shop.changeShopPolicy(username, shopRules);
     }
 

@@ -1,4 +1,6 @@
-package Dtos.Rules;
+package UI.Model.ShopPolicy;
+
+import UI.Model.RuleDto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,5 +15,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(name = "MinBasketPriceRuleDto", value = MinBasketPriceRuleDto.class)
 })
 public interface ShoppingBasketRuleDto extends RuleDto {
-    
+    public ShoppingBasketRuleDto createCopy(ShoppingBasketRuleDto toCopy);
 }

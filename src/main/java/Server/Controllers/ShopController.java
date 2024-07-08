@@ -23,6 +23,9 @@ import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductSearchDto;
 import Dtos.ShopDto;
+import Dtos.Rules.MinBasketPriceRuleDto;
+import Dtos.Rules.MinProductAmountRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import enums.Category;
@@ -308,6 +311,22 @@ public class ShopController {
         Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.updatePermissions(token, shopId, managerUsername, permissions);
     }
+
+    @GetMapping("/getShopPolicy")
+    public ResponseEntity<Response> getShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopPolicy(token, shopId);
+    }
+
+    @PostMapping("/updateShopPolicy")
+    public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token,
+                                                @RequestBody Map<String, Object> request) {
+        Integer shopId = (Integer) request.get("shopId");
+        List<MinBasketPriceRuleDto> minBasketRules = (List<MinBasketPriceRuleDto>) request.get("minBasketRules");
+        List<MinProductAmountRuleDto> minProductRules = (List<MinProductAmountRuleDto>) request.get("minProductRules");
+        
+        return _shopService.updateShopPolicy(token, shopId, minBasketRules, minProductRules);
+    }
+    
     
     
 
