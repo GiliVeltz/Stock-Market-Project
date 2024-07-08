@@ -291,25 +291,25 @@ public class ShopService {
      * @param shopId      The ID of the shop to search in OR null to search in all
      *                    shops.
      * @param productName The name of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopDTO and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
-    @Transactional
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductInShopByName(String token, Integer shopId, String productName) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByName(shopId, productName);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopDto, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products named %s were found in %s", productName, shopIDString));
                 } else {
@@ -334,25 +334,25 @@ public class ShopService {
      * @param shopId          The ID of the shop to search in OR null to search in
      *                        all shops.
      * @param productCategory The category of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of ShopDto and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
-    @Transactional
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductInShopByCategory(String token, Integer shopId, Category productCategory) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductInShopByCategory(shopId, productCategory);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopDto, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products in the category of %s were found in %s",
                             productCategory.toString(), shopIDString));
@@ -380,9 +380,9 @@ public class ShopService {
      * @param shopId   The ID of the shop to search in OR null to search in all
      *                 shops.
      * @param keywords The list of keywords.
-     * @return A response indicating the success of the operation, containing a dictionary of shopDto and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
-    @Transactional
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductsInShopByKeywords(String token, Integer shopId, List<String> keywords) {
         Response response = new Response();
         // Setting strings of shop ID and keywords for logging
@@ -395,16 +395,16 @@ public class ShopService {
         try {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByKeywords(shopId, keywords);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopDto, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products taged by the keywords: %s were found in %s", keywordsString,
                             shopIDString));
@@ -434,9 +434,9 @@ public class ShopService {
      *                 shops.
      * @param minPrice The minimum price of the product.
      * @param maxPrice The maximum price of the product.
-     * @return A response indicating the success of the operation, containing a dictionary of shopDto and ProductDTOs, or indicating failure.
+     * @return A response indicating the success of the operation, containing a dictionary of shopString and ProductDTOs, or indicating failure.
      */
-    @Transactional
+    // shopString contains shopID, name and Rating for response, for example " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public ResponseEntity<Response> searchProductsInShopByPriceRange(String token, Integer shopId, Double minPrice, Double maxPrice) {
         Response response = new Response();
         String shopIDString = (shopId == null ? "all shops" : "shop ID " + shopId.toString());
@@ -444,16 +444,16 @@ public class ShopService {
             if (_tokenService.validateToken(token)) {
                 Map<Integer, List<Product>> products = _shopFacade.getProductsInShopByPriceRange(shopId, minPrice,
                         maxPrice);
-                Map<ShopDto, List<ProductDto>> productDtosPerShop = new HashMap<>();
+                Map<String, List<ProductDto>> productDtosPerShop = new HashMap<>();
                 if (products != null && !products.isEmpty()) {
                     for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-                        ShopDto shopDto = _shopFacade.getShopDtoById(entry.getKey());
+                        String shopString = _shopFacade.getShopStringForSearchById(entry.getKey());                       
                         List<ProductDto> productDtoList = new ArrayList<>();
                         for (Product product : entry.getValue()) {
                             ProductDto productDto = new ProductDto(product);
                             productDtoList.add(productDto);
                         }
-                        productDtosPerShop.put(shopDto, productDtoList);
+                        productDtosPerShop.put(shopString, productDtoList);
                     }
                     logger.info(String.format("Products in the price range of %d - %d were found in %s", minPrice,
                             maxPrice, shopIDString));
@@ -744,6 +744,124 @@ public class ShopService {
 
             String userName = _tokenService.extractUsername(token);
             _shopFacade.updateProductQuantity(userName, shopId, productId, productAmount);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Updates the name of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product name is being
+     *                      updated.
+     * @param productId     The ID of the product whose name is being updated.
+     * @param productAmount The new name of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductName(String token, Integer shopId, Integer productId, String productName) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductName(userName, shopId, productId, productName);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Updates the price of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product price is being
+     *                      updated.
+     * @param productId     The ID of the product whose price is being updated.
+     * @param productAmount The new price amount of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductPrice(String token, Integer shopId, Integer productId, Double productPrice) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductPrice(userName, shopId, productId, productPrice);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Updates the category of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product category is being
+     *                      updated.
+     * @param productId     The ID of the product whose category is being updated.
+     * @param productAmount The new category amount of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductCategory(String token, Integer shopId, Integer productId, Category category) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductCategory(userName, shopId, productId, category);
             logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

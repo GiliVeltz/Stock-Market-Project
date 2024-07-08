@@ -1922,7 +1922,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act - this user adds a product to the shopping cart using UserService
         ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken,
-                Integer.parseInt(productId), 0);
+                Integer.parseInt(productId), 0, 1);
 
         // Assert
         if (res1.getBody().getErrorMessage() != null) {
@@ -1990,7 +1990,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // user adds product to shopping cart
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0, 1);
 
         // Act
         ResponseEntity<Response> res = _userServiceUnderTest.getShoppingCart(tokenCheck);
@@ -2076,11 +2076,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
-        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
-        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1);
-        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2);
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0, 1);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0, 1);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0, 1);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 2, 1, 1);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 3, 2, 1);
 
         // Act
         ResponseEntity<Response> res6 = _userServiceUnderTest.purchaseCart(guestToken,
@@ -2208,11 +2208,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
-        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0);
-        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0);
-        ResponseEntity<Response> res6 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1);
-        ResponseEntity<Response> res7 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0, 1);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 0, 0, 1);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 1, 0, 1);
+        ResponseEntity<Response> res6 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 2, 1, 1);
+        ResponseEntity<Response> res7 = _userServiceUnderTest.addProductToShoppingCart(userBuyerToken, 3, 2, 1);
 
         // Act
         ResponseEntity<Response> res8 = _userServiceUnderTest.purchaseCart(userBuyerToken,
@@ -2343,11 +2343,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         }
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0);
-        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 0, 0);
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0);
-        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
-        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0);
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 0, 0, 1);
+        ResponseEntity<Response> res2 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 0, 0, 1);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, 1, 0, 1);
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0, 1);
+        ResponseEntity<Response> res5 = _userServiceUnderTest.addProductToShoppingCart(guestToken2, 1, 0, 1);
 
         // Act
         ArrayList<ResponseEntity<Response>> results = new ArrayList<ResponseEntity<Response>>();
@@ -3096,7 +3096,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // Act
-        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res1 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // Assert
         if (res1.getBody().getErrorMessage() != null) {
@@ -3149,7 +3149,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // user adds product to shopping cart
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+        _userServiceUnderTest.addProductToShoppingCart(token, 0, 0, 1);
 
         // Act
         ResponseEntity<Response> res = _userServiceUnderTest.getShoppingCart(token);
@@ -3210,7 +3210,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // user buys the product using UserService
         List<Integer> basketsToBuy = new ArrayList<>();
@@ -3427,7 +3427,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // user buys the product using UserService
         List<Integer> basketsToBuy = new ArrayList<>();
@@ -3612,7 +3612,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // user buys the product using UserService
         List<Integer> basketsToBuy = new ArrayList<>();
@@ -3683,7 +3683,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
 
         // this user adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token, 0, 0, 1);
 
         // this user buys the product using UserService
         List<Integer> shoppingBackets = new ArrayList<>();
@@ -3764,7 +3764,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // user buys the product using UserService
         List<Integer> basketsToBuy = new ArrayList<>();
@@ -3926,7 +3926,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // Act - this user adds a product to the shopping cart using UserService
         ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(token,
-                Integer.parseInt(productId), Integer.parseInt(shopId));
+                Integer.parseInt(productId), Integer.parseInt(shopId), 1);
 
         // Assert
         if (res1.getBody().getErrorMessage() != null)
@@ -3983,7 +3983,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // Act - this user adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), Integer.parseInt(shopId));
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(guestToken, Integer.parseInt(productId), Integer.parseInt(shopId), 1);
         
         // Assert
         if (res1.getBody().getErrorMessage() != null)
@@ -4044,7 +4044,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(userToken, 0, productDto);
 
         // guest adds a product to the shopping cart using UserService
-        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0);
+        ResponseEntity<Response> res3 = _userServiceUnderTest.addProductToShoppingCart(userToken, 0, 0, 1);
 
         // user buys the product using UserService
         List<Integer> basketsToBuy = new ArrayList<>();

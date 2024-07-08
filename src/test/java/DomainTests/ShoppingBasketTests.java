@@ -62,7 +62,7 @@ public class ShoppingBasketTests {
         
         // Act
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -81,7 +81,7 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -89,7 +89,7 @@ public class ShoppingBasketTests {
 
         // Act
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -112,7 +112,7 @@ public class ShoppingBasketTests {
 
         // Act
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
             fail("Expected ProductDoesNotExistsException exception not thrown");
         } catch (Exception e) {
             // Assert
@@ -129,7 +129,7 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -151,7 +151,7 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -198,8 +198,8 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -258,8 +258,8 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -301,8 +301,8 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -362,8 +362,8 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -399,8 +399,8 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         try {
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1);
-            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 1, 1);
+            shoppingBasketUnderTest.addProductToShoppingBasket(userMock, 2, 1);
         } catch (ProdcutPolicyException e) {
             e.printStackTrace();
             fail("Unexpected ProdcutPolicyException exception thrown");
@@ -451,10 +451,10 @@ public class ShoppingBasketTests {
         Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(10);
         shop.addProductToShop("ownerUsername", product2);
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
 
         // Act
         boolean result = shoppingBasket.purchaseBasket("Guest");
@@ -479,10 +479,10 @@ public class ShoppingBasketTests {
         Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(0);
         shop.addProductToShop("ownerUsername", product2);
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
 
         // Act
         boolean result = shoppingBasket.purchaseBasket(buyer.getUserName());
@@ -507,12 +507,12 @@ public class ShoppingBasketTests {
         Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(1);
         shop.addProductToShop("ownerUsername", product2);
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
 
         // Act
         boolean result = shoppingBasket.purchaseBasket(buyer.getUserName());
@@ -536,10 +536,10 @@ public class ShoppingBasketTests {
         Product product2 = new Product(2, "product2", Category.ELECTRONICS, 100.0);
         product2.updateProductQuantity(10);
         shopMock.addProductToShop("ownerUsername", product2);
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
         doThrow(new ShopPolicyException("Basket does not meet shop policy")).when(shopMock).ValidateBasketMeetsShopPolicy(shoppingBasket);
 
         // Act & Assert
@@ -567,10 +567,10 @@ public class ShoppingBasketTests {
         product2.updateProductQuantity(1);
         shop.addProductToShop("ownerUsername", product2);
 
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId(), 1);
         final boolean[] results = new boolean[2];
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
 
@@ -629,10 +629,10 @@ public class ShoppingBasketTests {
         product2.updateProductQuantity(2);
         shop.addProductToShop("ownerUsername", product2);
 
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId(), 1);
         final boolean[] results = new boolean[2];
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
 
@@ -689,8 +689,8 @@ public class ShoppingBasketTests {
         product2.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product2);
 
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
 
         // Act
         shoppingBasket.cancelPurchase();
@@ -717,10 +717,10 @@ public class ShoppingBasketTests {
         product2.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product2);
 
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId());
-        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product.getProductId(), 1);
+        shoppingBasket2.addProductToShoppingBasket(buyer2, product2.getProductId(), 1);
 
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads
 
@@ -787,9 +787,9 @@ public class ShoppingBasketTests {
         product2.updateProductQuantity(3);
         shop.addProductToShop("ownerUsername", product2);
 
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId());
-        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId());
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product.getProductId(), 1);
+        shoppingBasket.addProductToShoppingBasket(buyer, product2.getProductId(), 1);
 
         // Act
         double price = shoppingBasket.calculateShoppingBasketPrice();

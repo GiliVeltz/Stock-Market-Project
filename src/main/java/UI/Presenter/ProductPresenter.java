@@ -12,6 +12,7 @@ import com.vaadin.flow.component.UI;
 
 import UI.Model.Response;
 import UI.Model.ProductDto;
+import UI.Model.PurchaseCartDetailsDto;
 import UI.View.ProductView;
 
 public class ProductPresenter {

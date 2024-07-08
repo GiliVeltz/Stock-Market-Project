@@ -318,7 +318,7 @@ public class MarketSystem {
             //add_product_to_cart#user_name#product_name#shop_name
             int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
             int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
-            shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId);
+            shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId, 1);
         }
 
         else if (instruction.equals("buy_cart")){

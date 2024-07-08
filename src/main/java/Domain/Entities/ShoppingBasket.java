@@ -47,7 +47,7 @@ public class ShoppingBasket implements Cloneable {
     }
 
     // Adds a product to the shopping basket after validating the user doesn't violate the product policy.
-    public void addProductToShoppingBasket(User user, Integer productId) throws StockMarketException {
+    public void addProductToShoppingBasket(User user, Integer productId, int quantity) throws StockMarketException {
         if (user == null) {
             logger.log(Level.FINE,
                 "ShoppingBasket - addProductToShoppingBasket - Check if a guest (null user in shopping basket) can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
@@ -61,7 +61,8 @@ public class ShoppingBasket implements Cloneable {
         _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
 
         // add the product to the basket
-        _productIdList.add(productId);
+        for (int i = 0; i < quantity; i++)
+            _productIdList.add(productId);
         
         if (user == null) {
             logger.log(Level.FINE,

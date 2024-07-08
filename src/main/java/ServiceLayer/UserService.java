@@ -258,16 +258,15 @@ public class UserService {
         }
     }
 
-    // this function is responsible for getting the purchase history of a shop.
     @Transactional
-    public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID, int quantity) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
-                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID);
+                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID, quantity);
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
-                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
+                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID, quantity);
                 } else {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }

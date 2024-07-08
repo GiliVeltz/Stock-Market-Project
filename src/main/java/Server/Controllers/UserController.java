@@ -122,11 +122,11 @@ public class UserController {
 
     @PostMapping("/addProductToShoppingCart")
     public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
-            @RequestParam int productID, @RequestParam int shopID) {
+            @RequestParam int productID, @RequestParam int shopID, @RequestParam int quantity) {
         // example request:
         // "http://localhost:8080/api/user/addProductToShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
-        ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID);
+        ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID, quantity);
         return resp;
     }
 

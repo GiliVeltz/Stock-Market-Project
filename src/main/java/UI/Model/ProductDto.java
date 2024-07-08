@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDto {
+    private int productId;
 
     @NotBlank(message = "Product name is required")
     private String productName;
@@ -31,13 +32,15 @@ public class ProductDto {
     public ProductDto(){}
 
     public ProductDto(String productName, Category category, double price, int productQuantity) {
+        this.productId = -1;
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productQuantity = productQuantity;
+        this.productRating = productRating;
     }
 
-    public ProductDto(String productName, Category category, double price, int productQuantity, double productRating, Set<String> keywords) {
+    public ProductDto(int productId, String productName, Category category, double price, int productQuantity, double productRating, Set<String> keywords) {
+        this.productId = productId;
         this.productName = productName;
         this.category = category;
         this.price = price;
@@ -47,6 +50,14 @@ public class ProductDto {
     }
 
     // Getters and setters
+    public int getProductId() {
+        return this.productId;
+    }
+
+    public void setProductId(int newProductId) {
+        this.productId = newProductId;
+    }
+
     public String getProductName() {
         return productName;
     }
