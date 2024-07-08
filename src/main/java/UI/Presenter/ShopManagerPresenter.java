@@ -309,7 +309,7 @@ public class ShopManagerPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        ProductDto productDto = new ProductDto(productName, category, price, 0);
+                        ProductDto productDto = new ProductDto(productName, category, price, -1);
                         HttpHeaders headers = new HttpHeaders();
                         headers.add("Authorization", token);
                         headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
