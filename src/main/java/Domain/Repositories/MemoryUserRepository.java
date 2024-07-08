@@ -27,12 +27,12 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
+    public boolean existsByusername(String username) {
         return username != null && _registeredUsers.containsKey(username);
     }
 
     @Override
-    public User findByUserName(String username) {
+    public User findByusername(String username) {
         return _registeredUsers.get(username);
     }
 

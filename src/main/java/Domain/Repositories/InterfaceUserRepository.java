@@ -10,7 +10,7 @@ import Domain.Entities.User;
 
 @NoRepositoryBean
 public interface InterfaceUserRepository extends JpaRepository<User, Long> {
-    boolean existsByUsername(String username);
+    boolean existsByusername(String username);
 
-    User findByUserName(String username);
+    User findByusername(String username);
 }
