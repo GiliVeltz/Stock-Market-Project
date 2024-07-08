@@ -43,9 +43,6 @@ public class UserFacade {
         // initUI();
     }
 
-    // for tests
-    }
-
     // set the user repository to be used real time
     public void setUserRepository(InterfaceUserRepository userRepository) {
         _userRepository = userRepository;
