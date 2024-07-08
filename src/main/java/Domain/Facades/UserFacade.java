@@ -123,7 +123,8 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            this.repository.save(new User(userDto));
+            this._userRepository.addUser(new User(userDto));
+            // this.repository.save(new User(userDto));
         } else {
             throw new StockMarketException("Username already exists.");
         }
