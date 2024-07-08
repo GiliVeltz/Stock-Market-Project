@@ -192,6 +192,8 @@ public class ShopFacade {
         getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
 
+
+
     // Remove a product from a shop by its ID.
     @Transactional
     public synchronized void removeProductFromShop(Integer shopId, ProductDto productDto, String userName)
@@ -479,6 +481,39 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
         shop.updateProductQuantity(userName, productId, productAmount);
+    }
+
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductName(String userName, Integer shopId, Integer productId, String productName)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductName(userName, productId, productName);
+    }
+
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductPrice(String userName, Integer shopId, Integer productId, Double productPrice)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductPrice(userName, productId, productPrice);
+    }
+
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductCategory(String userName, Integer shopId, Integer productId, Category productCategpory)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductCategory(userName, productId, productCategpory);
     }
 
     public String getShopFounderUsername(Integer shopId) {

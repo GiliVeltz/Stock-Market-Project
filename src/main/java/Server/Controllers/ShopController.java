@@ -25,6 +25,7 @@ import Dtos.ProductSearchDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
+import enums.Category;
 
 @RestController
 @SuppressWarnings({"rawtypes" , "unchecked"})
@@ -123,6 +124,25 @@ public class ShopController {
             @RequestParam Integer productId, @RequestParam Integer quantity) {
         return _shopService.updateProductQuantity(token, shopId, productId, quantity);
     }
+
+    @PostMapping("/updateProductName")
+    public ResponseEntity<Response>updateProductName(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam String name) {
+        return _shopService.updateProductName(token, shopId, productId, name);
+    }
+
+    @PostMapping("/updateProductPrice")
+    public ResponseEntity<Response>updateProductPrice(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam Double price) {
+        return _shopService.updateProductPrice(token, shopId, productId, price);
+    }
+
+    @PostMapping("/updateProductCategory")
+    public ResponseEntity<Response>updateProductCategory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam Category category) {
+        return _shopService.updateProductCategory(token, shopId, productId, category);
+    }
+
 
     @PostMapping("/addShopOwner")
     public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> request) {

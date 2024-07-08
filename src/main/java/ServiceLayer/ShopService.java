@@ -757,6 +757,124 @@ public class ShopService {
     }
 
     /**
+     * Updates the name of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product name is being
+     *                      updated.
+     * @param productId     The ID of the product whose name is being updated.
+     * @param productAmount The new name of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductName(String token, Integer shopId, Integer productId, String productName) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductName(userName, shopId, productId, productName);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Updates the price of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product price is being
+     *                      updated.
+     * @param productId     The ID of the product whose price is being updated.
+     * @param productAmount The new price amount of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductPrice(String token, Integer shopId, Integer productId, Double productPrice) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductPrice(userName, shopId, productId, productPrice);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Updates the category of a specified product in a shop.
+     * 
+     * @param token         The session token of the user performing the update.
+     * @param shopId        The ID of the shop where the product category is being
+     *                      updated.
+     * @param productId     The ID of the product whose category is being updated.
+     * @param productAmount The new category amount of the product.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductCategory(String token, Integer shopId, Integer productId, Category category) {
+        Response response = new Response();
+        try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            if (!_shopFacade.isShopIdExist(shopId)){
+                response.setErrorMessage(String.format("Shop Id: %d not found", shopId));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String userName = _tokenService.extractUsername(token);
+            _shopFacade.updateProductCategory(userName, shopId, productId, category);
+            logger.info(String.format("Update product: %d quantity amont in shop: %d", productId, shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        catch (Exception e) {
+            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+            logger.log(Level.SEVERE, String.format("Failed to update product: %d quantity to shop: %d . Error: %s",
+                    productId, shopId, e.getMessage()), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Adds a new owner to a shop.
      * 
      * @param token            The session token of the user performing the update.
