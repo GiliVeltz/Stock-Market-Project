@@ -596,5 +596,38 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    public void reopenShop(String shopId)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/reopenShop?shopId=" + shopId ,
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            view.showSuccessMessage("The shop has been closed successfully.");
+                            System.out.println(response.getBody());
+                        } else {
+                            view.showErrorMessage("Failed to close the shop");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to close the shop");
+                    }
+                });
+
+    }
    
 }

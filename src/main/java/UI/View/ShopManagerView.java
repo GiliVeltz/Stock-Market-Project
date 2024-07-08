@@ -153,6 +153,24 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         closeDialog.open();
     });
     
+    Button reopenShopBtn = createButtonWithIcon("Reopen Shop", VaadinIcon.SHOP, event -> {
+        Dialog reopenDialog = new Dialog();
+        reopenDialog.add(new Paragraph("Are you sure you want to reopen the shop?"));
+
+        Button yesButton = new Button("Yes", yesEvent -> {
+            // Logic to reopen the shop
+            presenter.reopenShop(String.valueOf(getShopId()));
+            reopenDialog.close();
+        });
+        yesButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+        Button noButton = new Button("No", noEvent -> reopenDialog.close());
+
+        HorizontalLayout dialogButtons = new HorizontalLayout(yesButton, noButton);
+        reopenDialog.add(dialogButtons);
+        reopenDialog.open();
+    });
+
 
         // Here we create a set of permissions from the strings.
         _permissions = permissions.stream()
@@ -199,7 +217,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         for (Button button : Arrays.asList(
                 appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn,
                 addProductsBtn, viewProductsBtn, viewPurchasesBtn, addDiscountsBtn,
-                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn)) {
+                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn)) {
             row.add(button);
             count++;
             if (count % 4 == 0) {
