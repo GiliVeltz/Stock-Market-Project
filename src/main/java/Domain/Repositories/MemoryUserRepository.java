@@ -32,7 +32,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public User getUserByUsername(String username) {
+    public User findByName(String username) {
         return _registeredUsers.get(username);
     }
 

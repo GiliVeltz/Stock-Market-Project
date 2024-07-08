@@ -97,7 +97,7 @@ public class UserFacade {
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
             throw new UserException(String.format("Username %s does not exist.", username));
-        return _userRepository.getUserByUsername(username);
+        return _userRepository.findByName(username);
     }
 
     // function to check if the credentials are correct
@@ -204,7 +204,7 @@ public class UserFacade {
     // getting the user personal details
     @Transactional
     public UserDto getUserDetails(String username) {
-        User user = _userRepository.getUserByUsername(username);
+        User user = _userRepository.findByName(username);
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 
