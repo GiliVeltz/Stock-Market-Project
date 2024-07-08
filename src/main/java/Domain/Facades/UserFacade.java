@@ -25,23 +25,27 @@ import Server.notifications.NotificationHandler;
 
 @Service
 public class UserFacade {
-    @Autowired
-    private DbUserRepository repository;
+    private static UserFacade instance;
     private InterfaceUserRepository _userRepository;
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
     @Autowired
-    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator) {
-        _userRepository = new MemoryUserRepository(registeredUsers);
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository) {
         _guestIds = guestIds;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
+        _userRepository = repository;
+        instance = this;
         // // //For testing UI
         // initUI();
     }
 
+    // get instance of class
+    public static UserFacade getInstance() {
+        return instance;
+    }
 
     // set the user repository to be used real time
     public void setUserRepository(InterfaceUserRepository userRepository) {
@@ -73,14 +77,12 @@ public class UserFacade {
     }
 
     // function to check if a user exists in the system
-    @Transactional
     public boolean doesUserExist(String username) {
         return _userRepository.doesUserExist(username);
         // return repository.findByName(username) != null;
     }
 
     // function to get a user by username
-    @Transactional
     public User getUserByUsername(String username) throws StockMarketException {
         if (username == null)
             throw new UserException("Username is null.");
@@ -116,8 +118,7 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            // this._userRepository.addUser(new User(userDto));
-            this.repository.save(new User(userDto));
+            _userRepository.save(new User(userDto));
         } else {
             throw new StockMarketException("Username already exists.");
         }
@@ -164,7 +165,7 @@ public class UserFacade {
     // function to get all the registered users
     @Transactional
     public List<User> get_registeredUsers() {
-        return _userRepository.getAllUsers();
+        return _userRepository.findAll();
     }
 
     // function to return the purchase history for the user

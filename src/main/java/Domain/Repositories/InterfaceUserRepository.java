@@ -2,14 +2,17 @@ package Domain.Repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.NoRepositoryBean;
+
 import Domain.Entities.User;
 
-public interface InterfaceUserRepository {
-    boolean doesUserExist(String username);
+@NoRepositoryBean
+public interface InterfaceUserRepository extends JpaRepository<User, Long> {
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u._username = ?1")
+    boolean doesUserExist(String _username);
 
-    User getUserByUsername(String username);
-
-    void addUser(User user);
-
-    List<User> getAllUsers();
+    @Query("SELECT u FROM User u WHERE u._username = ?1")
+    User getUserByUsername(String _username);
 }
