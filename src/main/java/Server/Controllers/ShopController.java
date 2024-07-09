@@ -318,13 +318,14 @@ public class ShopController {
     }
 
     @PostMapping("/updateShopPolicy")
-    public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token,
-                                                @RequestBody Map<String, Object> request) {
-        Integer shopId = (Integer) request.get("shopId");
-        List<MinBasketPriceRuleDto> minBasketRules = (List<MinBasketPriceRuleDto>) request.get("minBasketRules");
-        List<MinProductAmountRuleDto> minProductRules = (List<MinProductAmountRuleDto>) request.get("minProductRules");
+    public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+                                                @RequestBody List<ShoppingBasketRuleDto> request) {
+        List<ShoppingBasketRuleDto> rules = request;
+        // List<MinBasketPriceRuleDto> minBasketRules = (List<MinBasketPriceRuleDto>) request.get("minBasketRules");
+        // List<MinProductAmountRuleDto> minProductRules = (List<MinProductAmountRuleDto>) request.get("minProductRules");
         
-        return _shopService.updateShopPolicy(token, shopId, minBasketRules, minProductRules);
+        //return _shopService.updateShopPolicy(token, shopId, minBasketRules, minProductRules);
+        return _shopService.updateShopPolicy(token, shopId, rules);
     }
     
     

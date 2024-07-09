@@ -1022,7 +1022,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 formLayout.remove(productIdField);
                 formLayout.remove(minProductAmount);
                 formLayout.add(minBasketPrice);
-            } else if ("Min Prodcut Amount".equals(selectedType)) {
+            } else if ("Min Product Amount".equals(selectedType)) {
                 minProductAmount.clear();
                 formLayout.remove(minBasketPrice);
                 formLayout.add(productIdField);
@@ -1044,7 +1044,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 }
                 rule = new MinBasketPriceRuleDto(minBasketPrice.getValue());
                 newRules.add(rule);
-            }else if("Min Prodcut Amount".equals(ruleType)){
+            }else if("Min Product Amount".equals(ruleType)){
                 if(minProductAmount.getValue() < 0){
                     Notification.show("Please enter a valid amount");
                     return;

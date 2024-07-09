@@ -801,17 +801,17 @@ public class ShopFacade {
 
     // this function is responsible for changing the shop policy
     @Transactional
-    public void changeShopPolicy(String username, int shopId,  List<MinBasketPriceRuleDto> minBasketRules, List<MinProductAmountRuleDto> minProductRules)
+    public void changeShopPolicy(String username, int shopId,  List<ShoppingBasketRuleDto> rules)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
-        List<ShoppingBasketRuleDto> shopRules = new ArrayList<>();
-        shopRules.addAll(minBasketRules);
-        shopRules.addAll(minProductRules);
-        shop.changeShopPolicy(username, shopRules);
+        // List<ShoppingBasketRuleDto> shopRules = new ArrayList<>();
+        // shopRules.addAll(minBasketRules);
+        // shopRules.addAll(minProductRules);
+        shop.changeShopPolicy(username, rules);
     }
 
     // this function is responsible for changing the product policy

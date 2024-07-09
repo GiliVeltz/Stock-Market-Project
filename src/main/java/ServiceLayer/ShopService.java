@@ -26,6 +26,7 @@ import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
+import Dtos.Rules.ShopPolicyRulesList;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Exceptions.StockMarketException;
@@ -1584,13 +1585,13 @@ public class ShopService {
      * @return the shops which the user has roles in.
      */
     @Transactional
-    public ResponseEntity<Response> changeShopPolicy(String token, int shopId,  List<MinBasketPriceRuleDto> minBasketRules, List<MinProductAmountRuleDto> minProductRules) {
+    public ResponseEntity<Response> changeShopPolicy(String token, int shopId,  List<ShoppingBasketRuleDto> rules) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 String username = _tokenService.extractUsername(token);
                 if (_userFacade.doesUserExist(username)) {
-                    _shopFacade.changeShopPolicy(username, shopId, minBasketRules, minProductRules);
+                    _shopFacade.changeShopPolicy(username, shopId, rules);
                     response.setReturnValue(true);
                     logger.info(String.format("Shop policy for shop ID %d was changed", shopId));
                     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -2120,7 +2121,11 @@ public class ShopService {
                         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                     }
                     List<ShoppingBasketRuleDto> rules = _shopFacade.getShopPolicy(shopId);
-                    response.setReturnValue(rules);
+                    ShopPolicyRulesList shopPolicyRulesList = new ShopPolicyRulesList();
+                    for (ShoppingBasketRuleDto rule : rules) {
+                        shopPolicyRulesList.add(rule);
+                    }
+                    response.setReturnValue(shopPolicyRulesList);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }else {
                     response.setErrorMessage(String.format("User name %s does not exist.", username));
@@ -2148,16 +2153,16 @@ public class ShopService {
      * @return A Response object indicating the success or failure of the operation.
      */
     @Transactional
-    public ResponseEntity<Response> updateShopPolicy(String token, Integer shopId, List<MinBasketPriceRuleDto> minBasketRules, List<MinProductAmountRuleDto> minProductRules) {
+    public ResponseEntity<Response> updateShopPolicy(String token, Integer shopId, List<ShoppingBasketRuleDto> rules) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isUserAndLoggedIn(token)) {
                     String username = _tokenService.extractUsername(token);
                     if (_userFacade.doesUserExist(username)) {
-                        _shopFacade.changeShopPolicy(username, shopId, minBasketRules, minProductRules);
+                        _shopFacade.changeShopPolicy(username, shopId, rules);
                         response.setReturnValue(true);
-                        logger.info(String.format("Shop policy updated in Shop ID: %d", username, shopId));
+                        logger.info(String.format("Shop policy updated in Shop ID: %d", shopId));
                         return new ResponseEntity<>(response, HttpStatus.OK);
                     } else {
                         response.setErrorMessage("User does not exist.");

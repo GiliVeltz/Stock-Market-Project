@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -37,6 +38,7 @@ import UI.Model.ShopManagerDto;
 import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
 import UI.Model.ShopPolicy.MinProductAmountRuleDto;
+import UI.Model.ShopPolicy.ShopPolicyRulesList;
 import UI.Model.ShopPolicy.ShoppingBasketRuleDto;
 import UI.View.ShopManagerView;
 import UI.Model.Category;
@@ -701,26 +703,29 @@ public class ShopManagerPresenter {
                     headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
 
                     // Prepare the request body with permissions
-                    Map<String, Object> requestBody = new HashMap<>();
-                    requestBody.put("shopId", view.getShopId());
-                    List<MinBasketPriceRuleDto> minBasketRules = new ArrayList<>();
-                    List<MinProductAmountRuleDto> minProductRules = new ArrayList<>();
-                    for (ShoppingBasketRuleDto rule : newRules) {
-                        if (rule instanceof MinBasketPriceRuleDto) {
-                            minBasketRules.add((MinBasketPriceRuleDto) rule);
-                        } else if (rule instanceof MinProductAmountRuleDto) {
-                            minProductRules.add((MinProductAmountRuleDto) rule);
-                        }
+                    ShopPolicyRulesList requestBody = new ShopPolicyRulesList();
+                    for(ShoppingBasketRuleDto rule : newRules){
+                        requestBody.add(rule);
                     }
-                    requestBody.put("minBasketRules", minBasketRules);
-                    requestBody.put("minProductRules", minProductRules);
-                
+                    //requestBody.put("shopId", view.getShopId());
+                    //requestBody.put("rules", (MinBasketPriceRuleDto)newRules.get(0));
 
-                    HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    // DEBUG: Log request body before serialization
+                    try {
+                        String requestBodyJson = objectMapper.writeValueAsString(requestBody);
+                        System.out.println("Request Body JSON: " + requestBodyJson);
+                    } catch (JsonProcessingException e) {
+                        System.err.println("Failed to convert request body to JSON: " + e.getMessage());
+                    }
+
+                    //HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+                    HttpEntity<ShopPolicyRulesList> requestEntity = new HttpEntity<>(requestBody, headers);
+
 
                     try {
                         ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/updateShopPolicy",
+                                "http://localhost:" + view.getServerPort() + "/api/shop/updateShopPolicy?shopId="+view.getShopId(),
                                 HttpMethod.POST,
                                 requestEntity,
                                 String.class
