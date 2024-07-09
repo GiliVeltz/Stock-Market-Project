@@ -9,8 +9,8 @@ import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Exceptions.StockMarketException;
 import org.junit.jupiter.api.AfterEach;
@@ -43,10 +43,10 @@ public class ShoppingCartFacadeTests {
     private ShopFacade _shopFacadeMock;
 
     @Mock
-    private AdapterPayment _AdapterPaymentMock;
+    private AdapterPaymentImp _AdapterPaymentMock;
 
     @Mock
-    private AdapterSupply _AdapterSupplyMock;
+    private AdapterSupplyImp _AdapterSupplyMock;
 
     @Mock
     private ShoppingCart _cartMock;
