@@ -28,9 +28,9 @@ public class Order {
     
     private double _totalOrderAmount;
 
-    @ManyToOne()
-    User user;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     // Default constructor
     public Order() {
     }
