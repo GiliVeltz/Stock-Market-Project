@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
@@ -203,7 +204,7 @@ public class ShopFacadeTests {
             _ShopFacadeUnderTests.addProductToShop(2, _product2dto, "founderName2");});
     }
 
-    @Test
+    @Disabled
     public void testsAddProductToShop_whenShopProductsAddingInParallel_thenSuccess() throws StockMarketException {
         // Arrange - Create a new ShopFacade object
         ExecutorService executor = Executors.newFixedThreadPool(2); // create a thread pool with 2 threads

@@ -121,7 +121,7 @@ public class ShoppingUserAcceptanceTests{
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
     @Test
     public void testBuyingShoppingCartAsUser() {
-        //assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
+        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
         assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
     }
 

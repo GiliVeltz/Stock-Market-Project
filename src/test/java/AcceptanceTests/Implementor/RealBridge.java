@@ -123,8 +123,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
                 _userFacade, _shoppingCartFacade);
         
-        paymentInfoDto = new PaymentInfoDto("USD", "2222333344445555", "4", "2021", "Israel Israelovice", "262", "20444444");
-        supplyInfoDto = new SupplyInfoDto("Israel Israelovice", "Rager Blvd 12", "Beer Sheva", "Israel", "8458527");
+        paymentInfoDto = new PaymentInfoDto("abc", "abc", "abc", "abc", "abc", "982", "abc");
+        supplyInfoDto = new SupplyInfoDto("abc", "abc", "abc", "abc", "abc");
     }
 
     @AfterEach
@@ -2021,6 +2021,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
         when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
 
+        paymentInfoDto = new PaymentInfoDto("abc", "abc", "abc", "abc", "abc", "982", "abc");
+        supplyInfoDto = new SupplyInfoDto("abc", "abc", "abc", "abc", "abc");
+        
         // create a user in the system
         User user = new User("user", "password", "email@email.com", new Date());
         _userFacade = new UserFacade(new ArrayList<User>() {
