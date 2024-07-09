@@ -1,6 +1,6 @@
 package Dtos;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class CategoryDto {
     public String _categoryName;

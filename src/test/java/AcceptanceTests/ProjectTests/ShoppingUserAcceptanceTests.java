@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 @ExtendWith(RealBridge.class)
 public class ShoppingUserAcceptanceTests{

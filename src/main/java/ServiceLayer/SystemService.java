@@ -3,15 +3,16 @@ package ServiceLayer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.GeneralAlert;
-import Domain.Alerts.IntegrityRuleBreakAlert;
-import Domain.Alerts.PurchaseFromShopAlert;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.GeneralAlert;
+import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
+import Domain.Entities.Alerts.PurchaseFromShopAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
@@ -30,6 +31,7 @@ public class SystemService {
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(SystemService.class.getName());
 
+    @Autowired
     public SystemService(ExternalServiceHandler externalServiceHandler,
             TokenService tokenService, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) {
         _externalServiceHandler = externalServiceHandler;
@@ -38,13 +40,6 @@ public class SystemService {
         _shoppingCartFacade = shoppingCartFacade;
         // TODO: create it as a singleton
         _externalServiceHandler = externalServiceHandler;
-    }
-
-    public SystemService() {
-        _externalServiceHandler = new ExternalServiceHandler();
-        _tokenService = TokenService.getTokenService();
-        _userFacade = UserFacade.getUserFacade();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }
 
     /**

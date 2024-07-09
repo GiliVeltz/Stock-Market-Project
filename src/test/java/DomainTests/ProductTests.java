@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import Domain.Entities.Product;
+import Domain.Entities.enums.Category;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 public class ProductTests {
      

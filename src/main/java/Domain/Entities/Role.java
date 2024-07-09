@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.Entities.enums.Permission;
 import Exceptions.*;
-import enums.Permission;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +24,7 @@ public class Role {
      */
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long _roleId;
+    private Integer _roleId;
 
     private final String _appointedBy;
     
@@ -42,6 +42,15 @@ public class Role {
     private Set<String> _appointments; // The appointments of this user in a specific shop.
     @Transient
     private static final Logger logger = Logger.getLogger(Role.class.getName());
+
+    // Default constructor for hibernate.
+    public Role(){
+        _username = null;
+        _storeId = -1;
+        _appointedBy = null;
+        _permissions = new HashSet<Permission>();
+        _appointments = new HashSet<String>();
+    }
 
     /**
      * Basic constructor with permission set.

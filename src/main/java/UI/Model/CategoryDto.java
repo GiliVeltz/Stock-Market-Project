@@ -1,6 +1,6 @@
 package UI.Model;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class CategoryDto {
     public String _categoryName;

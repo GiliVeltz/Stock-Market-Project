@@ -3,19 +3,21 @@ package Domain.Facades;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.User;
-import Domain.Repositories.MemoryUserRepository;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
+import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.OrderDto;
 import Dtos.UserDto;
@@ -25,34 +27,26 @@ import Server.notifications.NotificationHandler;
 
 @Service
 public class UserFacade {
-    private static UserFacade _UserFacade;
-    @Autowired
-    private DbUserRepository repository;
     private InterfaceUserRepository _userRepository;
-    private List<String> _guestIds;
+    private InterfaceGuestRepository _guestRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
+    
+    private NotificationHandler _notificationHandler;
 
-    public UserFacade( List<User> registeredUsers, List<String> guestIds) {
-        _userRepository = new MemoryUserRepository(registeredUsers);
-        _guestIds = guestIds;
-        _EmailValidator = new EmailValidator();
-        _passwordEncoder = new PasswordEncoderUtil();
+    @Autowired
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo, NotificationHandler notificationHandler) {
+        _guestRepository = guestRepo;
+        _EmailValidator = EmailValidator;
+        _passwordEncoder = passwordEncoder;
+        _userRepository = repository;
+        _notificationHandler = notificationHandler;
         // // //For testing UI
         // initUI();
     }
 
-    // Public method to provide access to the _UserFacade
-    public static synchronized UserFacade getUserFacade() {
-        if (_UserFacade == null) {
-            _UserFacade = new UserFacade(new ArrayList<>(), new ArrayList<>());
-        }
-        return _UserFacade;
-    }
-
-
     // set the user repository to be used real time
-    public void setUserRepository(InterfaceUserRepository userRepository) {
+    public void setUserRepository(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository) {
         _userRepository = userRepository;
     }
 
@@ -66,8 +60,8 @@ public class UserFacade {
         if (user.isLoggedIn()){
                 throw new StockMarketException("User is already logged in.");
         }
-        
         user.logIn();
+        _userRepository.save(user);
     }
 
     // logOut function
@@ -76,24 +70,22 @@ public class UserFacade {
         if (!user.isLoggedIn()){
                 throw new StockMarketException("User is not logged in.");
         }
-        
         user.logOut();
+        _userRepository.save(user);
     }
 
     // function to check if a user exists in the system
-    @Transactional
     public boolean doesUserExist(String username) {
-        return _userRepository.doesUserExist(username);
+        return _userRepository.existsByusername(username);
     }
 
     // function to get a user by username
-    @Transactional
     public User getUserByUsername(String username) throws StockMarketException {
         if (username == null)
             throw new UserException("Username is null.");
         if (!doesUserExist(username))
             throw new UserException(String.format("Username %s does not exist.", username));
-        return _userRepository.getUserByUsername(username);
+        return _userRepository.findByusername(username);
     }
 
     // function to check if the credentials are correct
@@ -123,8 +115,7 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            this._userRepository.addUser(new User(userDto));
-            // this.repository.save(new User(userDto));
+            _userRepository.save(new User(userDto));
         } else {
             throw new StockMarketException("Username already exists.");
         }
@@ -135,6 +126,7 @@ public class UserFacade {
     public void addOrderToUser(String username, Order order) throws StockMarketException {
         User user = getUserByUsername(username);
         user.addOrder(order);
+        _userRepository.save(user);
     }
 
     // function that check if a given user is an admin
@@ -147,7 +139,7 @@ public class UserFacade {
     // function to check if a given user is a guest
     @Transactional
     private boolean isGuestExists(String id) {
-        return _guestIds.contains(id);
+        return _guestRepository.existsByGuestId(id);
     }
 
     // function to add a new guest to the system
@@ -156,7 +148,7 @@ public class UserFacade {
         if (isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
         }
-        _guestIds.add(id);
+        _guestRepository.save(new Guest(id));
     }
 
     // function to remove a guest from the system
@@ -165,13 +157,13 @@ public class UserFacade {
         if (!isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
         }
-        _guestIds.remove(String.valueOf(id));
+        _guestRepository.deleteByGuestId(String.valueOf(id));
     }
 
     // function to get all the registered users
     @Transactional
     public List<User> get_registeredUsers() {
-        return _userRepository.getAllUsers();
+        return _userRepository.findAll();
     }
 
     // function to return the purchase history for the user
@@ -196,12 +188,13 @@ public class UserFacade {
             throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
+        _userRepository.save(user);
     }
 
     // getting the user personal details
     @Transactional
     public UserDto getUserDetails(String username) {
-        User user = _userRepository.getUserByUsername(username);
+        User user = _userRepository.findByusername(username);
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 
@@ -224,6 +217,7 @@ public class UserFacade {
         } else {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
+            _userRepository.save(user);
         }
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
@@ -232,7 +226,7 @@ public class UserFacade {
     @Transactional
     public boolean notifyUser(String targetUser, Alert alert) {
         try {
-            NotificationHandler.getInstance().sendMessage(targetUser, alert);
+            _notificationHandler.sendMessage(targetUser, alert);
             return true;
         } catch (Exception e) {
             return false;

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -28,7 +29,6 @@ import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
-import enums.Category;
 
 @RestController
 @SuppressWarnings({"rawtypes" , "unchecked"})

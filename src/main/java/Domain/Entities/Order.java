@@ -8,11 +8,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
 
 // calss that represents an order for the user
 @Entity
+@Table(name = "[order]")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +28,13 @@ public class Order {
     
     private double _totalOrderAmount;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    // Default constructor
+    public Order() {
+    }
+    
     // Constructor
     public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
         _orderId = orderId;

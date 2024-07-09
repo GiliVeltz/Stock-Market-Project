@@ -2,7 +2,6 @@ package DomainTests;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
-import Domain.*;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Entities.Order;
 import Domain.Entities.Shop;
@@ -11,7 +10,9 @@ import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.ExternalServices.PaymentService.AdapterPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
+import Domain.Repositories.MemoryShoppingCartRepository;
 import Exceptions.StockMarketException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ public class ShoppingCartFacadeTests {
     private PasswordEncoderUtil _passwordEncoderMock;
     
     @Mock
-    private InterfaceShoppingCartRepository _cartsRepoMock;
+    private DbShoppingCartRepository _cartsRepoMock;
 
     @Mock
     private ShopFacade _shopFacadeMock;
@@ -69,7 +70,8 @@ public class ShoppingCartFacadeTests {
     public void setUp() throws StockMarketException {
         MockitoAnnotations.openMocks(this);
         _guestsCarts = new HashMap<>();
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade();
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest.setShoppingCartRepository(new MemoryShoppingCartRepository());
     }
 
     @AfterEach

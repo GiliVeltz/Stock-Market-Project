@@ -13,28 +13,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Discounts.BaseDiscount;
-import Domain.Discounts.CategoryFixedDiscount;
-import Domain.Discounts.CategoryPercentageDiscount;
-import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.Discount;
-import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPercentageDiscount;
-import Domain.Discounts.ShopFixedDiscount;
-import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Entities.Product;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.AppointedManagerAlert;
+import Domain.Entities.Alerts.AppointedOwnerAlert;
+import Domain.Entities.Alerts.FireManagerAlert;
+import Domain.Entities.Discounts.BaseDiscount;
+import Domain.Entities.Discounts.CategoryFixedDiscount;
+import Domain.Entities.Discounts.CategoryPercentageDiscount;
+import Domain.Entities.Discounts.ConditionalDiscount;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Discounts.ProductFixedDiscount;
+import Domain.Entities.Discounts.ProductPercentageDiscount;
+import Domain.Entities.Discounts.ShopFixedDiscount;
+import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
 import Domain.Repositories.MemoryShopRepository;
-import Domain.Rules.Rule;
-import Domain.Rules.RuleFactory;
+import Domain.Repositories.MemoryUserRepository;
+import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceShopRepository;
-import Domain.Alerts.Alert;
-import Domain.Alerts.AppointedManagerAlert;
-import Domain.Alerts.AppointedOwnerAlert;
-import Domain.Alerts.FireManagerAlert;
-import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -47,19 +48,17 @@ import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
 import Exceptions.StockMarketException;
-import enums.Category;
-import enums.Permission;
 @Service
 public class ShopFacade {
-    private static ShopFacade _shopFacade;
+    private static ShopFacade instance;
 
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository) {
+    public ShopFacade(DbShopRepository shopRepository, UserFacade userFacade) {
         _shopRepository = shopRepository;
-        _userFacade = UserFacade.getUserFacade();
+        _userFacade = userFacade;
 
         //For testing UI
         // try {
@@ -68,32 +67,6 @@ public class ShopFacade {
         // catch (StockMarketException e) {
         //     e.printStackTrace();
         // }
-    }
-
-    public ShopFacade() {
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
-
-        //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
-    public ShopFacade(List<Shop> shopsList) { // ForTests
-        _shopRepository = new MemoryShopRepository(shopsList);
-        _userFacade = UserFacade.getUserFacade();
-    }
-
-    // Public method to provide access to the _shopFacade
-    public static synchronized ShopFacade getShopFacade() {
-        if (_shopFacade == null) {
-            _shopFacade = new ShopFacade();
-        }
-        return _shopFacade;
     }
 
     // set shop repository to be used in real system
@@ -101,13 +74,13 @@ public class ShopFacade {
         _shopRepository = shopRepository;
     }
 
-    public Shop getShopByShopId(int shopId) {
-        return _shopRepository.getShopByID(shopId);
+    public Shop getShopByShopId(Integer shopId) {
+        return _shopRepository.findById(shopId).orElse(null);
     }
 
     // Checks if a shop ID exists.
-    public Boolean isShopIdExist(int shopId) {
-        return _shopRepository.doesShopExist(shopId);
+    public Boolean isShopIdExist(Integer shopId) {
+        return _shopRepository.findById(shopId).orElse(null) == null;
     }
 
     // Open a new shop only if the user is not a manager or owner of another shop.
@@ -133,7 +106,7 @@ public class ShopFacade {
         }
 
         int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
+        _shopRepository.save(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
         getShopByShopId(shopId).notifyReOpenShop(userName);
         return shopId;
     }
@@ -375,7 +348,7 @@ public class ShopFacade {
     // this function is responsible return all the shops in the system
     @Transactional
     public List<Shop> getAllShops() {
-        return _shopRepository.getAllShops();
+        return _shopRepository.findAll();
     }
 
     // this function is responsible return all the shops in the system as DTO

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import AcceptanceTests.Implementor.BridgeInterface;
 import AcceptanceTests.Implementor.RealBridge;
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 @ExtendWith(RealBridge.class)
 

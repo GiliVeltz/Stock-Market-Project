@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.Order;
@@ -14,7 +15,9 @@ import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
+import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
+import Domain.Repositories.InterfaceUserRepository;
 import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.StockMarketException;
@@ -22,54 +25,27 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ShoppingCartFacade {
-    private static ShoppingCartFacade _shoppingCartFacade;
+    private static ShoppingCartFacade instance;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
-    InterfaceShoppingCartRepository _cartsRepo;
+    InterfaceShoppingCartRepository _cartsRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
-
-    public ShoppingCartFacade() {
+    
+    @Autowired
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository) {
+        _cartsRepository = cartsRepository;
         _guestsCarts = new HashMap<>();
-        _cartsRepo = new MemoryShoppingCartRepository();
-
-        // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
     }
 
-    public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
-        _cartsRepo = cartsRepo;
-        _guestsCarts = new HashMap<>();
-
-        // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
-    // Public method to provide access to the _shoppingCartFacade
-    public static synchronized ShoppingCartFacade getShoppingCartFacade() {
-        if (_shoppingCartFacade == null) {
-            _shoppingCartFacade = new ShoppingCartFacade();
-        }
-        return _shoppingCartFacade;
-    }
 
     // set shopping cart repository to be used in real system
     public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
-        _cartsRepo = cartsRepo;
+        _cartsRepository = cartsRepo;
     }
 
     // Add a cart for a guest by token.
     @Transactional
     public void addCartForGuest(String guestID) {
-        ShoppingCart cart = new ShoppingCart();
+        ShoppingCart cart = new ShoppingCart(guestID);
         _guestsCarts.put(guestID, cart);
     }
 
@@ -81,12 +57,15 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addCartForUser(String guestID, User user) {
-        if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
-            _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
+        ShoppingCart cart = _cartsRepository.getCartByUsername(user.getUserName());
+        if (cart == null) {
+            _cartsRepository.save(new ShoppingCart(guestID));
+            //_cartsRepository.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
+
         }
-        System.out.println("test"+_cartsRepo.getCartByUsername(user.getUserName()));
+        System.out.println("test"+_cartsRepository.getCartByUsername(user.getUserName()));
         // add the user to the cart
-        _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
+        _cartsRepository.getCartByUsername(user.getUserName()).SetUser(user);
     }
 
     /*
@@ -95,7 +74,7 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addProductToUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
-        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
+        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
         if (cart != null) {
             cart.addProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
@@ -125,7 +104,7 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
-        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
+        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
         if (cart != null) {
             cart.removeProduct(productID, shopID);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
@@ -170,7 +149,7 @@ public class ShoppingCartFacade {
             allBaskets.add(i);
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepository.getUniqueOrderID());
     }
 
     /*
@@ -179,7 +158,7 @@ public class ShoppingCartFacade {
     @Transactional
     public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        _cartsRepository.getCartByUsername(username).purchaseCart(details, _cartsRepository.getUniqueOrderID());
     }
 
     // Getters
@@ -195,10 +174,10 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public ShoppingCart getUserCart(String username) throws StockMarketException {
-        if (_cartsRepo.getCartByUsername(username) == null) {
+        if (_cartsRepository.getCartByUsername(username) == null) {
             throw new StockMarketException("user does not have a cart");
         }
-        return _cartsRepo.getCartByUsername(username);
+        return _cartsRepository.getCartByUsername(username);
     }
 
     /*
@@ -243,7 +222,7 @@ public class ShoppingCartFacade {
     // this function returns the cart of the user by username.
     @Transactional
     public Object getCartByUsername(String username) {
-        return _cartsRepo.getCartByUsername(username);
+        return _cartsRepository.getCartByUsername(username);
     }
 
     /*
@@ -256,7 +235,7 @@ public class ShoppingCartFacade {
         if (username == null) {
             cart = _guestsCarts.get(token);
         } else {
-            cart = _cartsRepo.getCartByUsername(username);
+            cart = _cartsRepository.getCartByUsername(username);
         }
         List<BasketDto> baskets = new ArrayList<>();
         for (ShoppingBasket basket : cart.getShoppingBaskets()) {
@@ -271,12 +250,12 @@ public class ShoppingCartFacade {
     }
 
     // function to initilaize data for UI testing
-    public void initUI() throws StockMarketException {
-        ShoppingCart cartUI = new ShoppingCart();
-        _cartsRepo.addCartForUser("tal", cartUI);
-        addProductToUserCart("tal", 0, 0, 1);
-        addProductToUserCart("tal", 0, 0, 1);
-        addProductToUserCart("tal", 1, 1, 1);
-        addProductToUserCart("tal", 2, 1, 1);    
-    }
+    // public void initUI() throws StockMarketException {
+    //     ShoppingCart cartUI = new ShoppingCart();
+    //     _cartsRepository.addCartForUser("tal", cartUI);
+    //     addProductToUserCart("tal", 0, 0, 1);
+    //     addProductToUserCart("tal", 0, 0, 1);
+    //     addProductToUserCart("tal", 1, 1, 1);
+    //     addProductToUserCart("tal", 2, 1, 1);    
+    // }
 }

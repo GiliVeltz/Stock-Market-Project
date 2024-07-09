@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,29 +17,30 @@ import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
-import Domain.Alerts.*;
 import Domain.Entities.Order;
+import Domain.Entities.Alerts.*;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class UserService {
+
     private UserFacade _userFacade;
     private TokenService _tokenService;
+    private NotificationHandler _notificationHandler;
+    private WebSocketServer _webSocketServer;
 
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
+    @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
-            ShoppingCartFacade shoppingCartFacade) {
+            ShoppingCartFacade shoppingCartFacade, NotificationHandler notificationHandler,
+            WebSocketServer webSocketServer) {
         _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
-    }
-
-    public UserService() {
-        _userFacade = UserFacade.getUserFacade();
-        _tokenService = TokenService.getTokenService();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _notificationHandler = notificationHandler;
+        _webSocketServer = webSocketServer;
     }
 
     // this function is responsible for logging in a user to the system by checking
@@ -59,7 +61,7 @@ public class UserService {
                 String newToken = _tokenService.generateUserToken(userName);
                 response.setReturnValue(newToken);
              
-                WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
+                _webSocketServer.replaceGuestTokenToUserToken(token, newToken, userName);
                 // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
                 // Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
                 // NotificationHandler.getInstance().sendMessage(userName, alert);
@@ -91,7 +93,7 @@ public class UserService {
                 logger.info("User successfully logged out: " + userName);
                 response.setReturnValue(newToken);
                 // close this session
-                 WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
+                 _webSocketServer.changeLoggedInSession(userName, newToken);
                 // Alert alert = new GeneralAlert("system Administrator", userName,
                 // "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
                 // NotificationHandler.getInstance().sendMessage(userName, alert);
@@ -145,7 +147,7 @@ public class UserService {
                     _shoppingCartFacade.purchaseCartUser(userName, details);
                     response.setReturnValue("User bought card succeed");
                     Alert alert = new PurchaseFromShopUserAlert(userName);
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                    _notificationHandler.sendMessage(userName, alert);
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

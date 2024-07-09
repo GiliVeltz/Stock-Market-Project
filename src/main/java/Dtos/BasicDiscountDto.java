@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.Date;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class BasicDiscountDto {
     public int productId;

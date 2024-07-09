@@ -8,14 +8,19 @@ import java.util.logging.Logger;
 
 import java.util.Map;
 
-import Domain.Policies.ProductPolicy;
+import Domain.Entities.Policies.ProductPolicy;
+import Domain.Entities.enums.Category;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import enums.Category;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
 @Entity
@@ -23,22 +28,45 @@ public class Product implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer _productId;
+
+    @Column(name = "productName", nullable = false)
     private String _productName;
+
+    @Column(name = "price", nullable = false)
     private double _price;
+
+    @Column(name = "quantity", nullable = false)
     private Integer _quantity;
-    private HashSet<String> _keywords;
-    private Double _productRating;
-    private Integer _productRatersCounter;
+
+    // TODO: create notation for keywords
     @Transient
+    private HashSet<String> _keywords;
+
+    @Column(name = "productRating", nullable = true)
+    private Double _productRating;
+
+    @Column(name = "productRatersCounter", nullable = true)
+    private Integer _productRatersCounter;
+
+    @Enumerated(EnumType.STRING)
     private Category _category;
+
+    //@OneToOne(mappedBy = "product")
     @Transient
     private ProductPolicy _productPolicy;
+
+    //@OneToMany(mappedBy = "product")
     @Transient
     private Map<String, String> _reviews; // usernames and reviews
+
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
+    // Default constructor
+    public Product() {
+    }
+
     // Constructor
-    public Product(Integer productId, String productName, Category category, double price) {
+    public Product(int productId, String productName, Category category, double price) {
         this._productId = productId;
         this._productName = productName;
         this._category = category;
@@ -143,7 +171,7 @@ public class Product implements Cloneable {
         return "Product ID: " + _productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
     }
 
-    public Integer getProductId() {
+    public int getProductId() {
         return _productId;
     }
 
@@ -183,7 +211,7 @@ public class Product implements Cloneable {
         return _reviews;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(int productId) {
         this._productId = productId;
     }
 

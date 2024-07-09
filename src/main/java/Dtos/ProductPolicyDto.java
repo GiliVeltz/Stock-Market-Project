@@ -2,9 +2,9 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.Policy;
-import Domain.Policies.ProductPolicy;
-import Domain.Rules.Rule;
+import Domain.Entities.Policy;
+import Domain.Entities.Policies.ProductPolicy;
+import Domain.Entities.Rules.Rule;
 
 public class ProductPolicyDto {
     private List<Rule<UserDto>> _rules;
