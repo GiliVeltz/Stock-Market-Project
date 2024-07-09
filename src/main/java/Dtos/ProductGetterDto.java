@@ -1,6 +1,7 @@
 package Dtos;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import Domain.Entities.Product;
@@ -24,6 +25,8 @@ public class ProductGetterDto {
     private CategoryDto _category;
     @SuppressWarnings("unused")
     private ProductPolicyDto _productPolicy;
+    @SuppressWarnings("unused")
+    private List<BasicDiscountDto> _productDiscounts;
     @SuppressWarnings("unused")
     private Map<String, String> _reviews; // usernames and reviews
 
@@ -54,5 +57,13 @@ public class ProductGetterDto {
         this._category = new CategoryDto(product.getCategory());
         this._productPolicy = new ProductPolicyDto(product.getProductPolicy());
         this._reviews = product.getReviews();
+    }
+
+    public void setProductDiscounts(List<BasicDiscountDto> productDiscounts) {
+        this._productDiscounts = productDiscounts;
+    }
+
+    public List<BasicDiscountDto> getProductDiscounts() {
+        return this._productDiscounts;
     }
 }

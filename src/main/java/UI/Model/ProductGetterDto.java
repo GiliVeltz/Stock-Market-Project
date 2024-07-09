@@ -1,6 +1,7 @@
 package UI.Model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class ProductGetterDto {
@@ -13,12 +14,13 @@ public class ProductGetterDto {
     private Integer _productRatersCounter;
     private CategoryDto _category;
     private ProductPolicyDto _productPolicy;
+    private List<BasicDiscountDto> _productDiscounts;
     private Map<String, String> _reviews; // usernames and reviews
 
     // Constructor
     public ProductGetterDto(Integer productId, String productName, double price, Integer productQuantity,
     HashSet<String> _keywords, Double _productRating, Integer _productRatersCounter, 
-    CategoryDto category, ProductPolicyDto _productPolicy, Map<String, String> _reviews) {
+    CategoryDto category, ProductPolicyDto _productPolicy, List<BasicDiscountDto> discountsList, Map<String, String> _reviews) {
         this._productId = productId;
         this._productName = productName;
         this._price = price;
@@ -28,6 +30,7 @@ public class ProductGetterDto {
         this._productRatersCounter = _productRatersCounter;
         this._category = category;
         this._productPolicy = _productPolicy;
+        this._productDiscounts = discountsList;
         this._reviews = _reviews;
     }
 
@@ -65,6 +68,10 @@ public class ProductGetterDto {
 
     public ProductPolicyDto getProductPolicy() {
         return _productPolicy;
+    }
+
+    public List<BasicDiscountDto> getProductDiscounts() {
+        return _productDiscounts;
     }
 
     public Map<String, String> getReviews() {
@@ -107,7 +114,12 @@ public class ProductGetterDto {
         this._productPolicy = productPolicy;
     }
 
+    public void setProductDiscounts(List<BasicDiscountDto> productDiscounts) {
+        this._productDiscounts = productDiscounts;
+    }
+
     public void setReviews(Map<String, String> reviews) {
         this._reviews = reviews;
     }
+
 }
