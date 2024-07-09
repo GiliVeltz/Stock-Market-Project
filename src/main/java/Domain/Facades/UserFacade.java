@@ -52,7 +52,7 @@ public class UserFacade {
     }
 
     // set the user repository to be used real time
-    public void setUserRepository(InterfaceUserRepository userRepository) {
+    public void setUserRepository(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository) {
         _userRepository = userRepository;
     }
 

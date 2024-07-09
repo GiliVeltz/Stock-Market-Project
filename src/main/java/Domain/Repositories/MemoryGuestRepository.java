@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -16,6 +17,10 @@ import Domain.Entities.Guest;
 @Repository
 public class MemoryGuestRepository implements InterfaceGuestRepository{
     private List<Guest> _guestIds;
+
+    public MemoryGuestRepository(){
+        _guestIds = new ArrayList<>();
+    } 
     
     @Override
     public boolean existsByGuestId(String guestId){

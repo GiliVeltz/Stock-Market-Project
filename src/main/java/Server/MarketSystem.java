@@ -22,9 +22,11 @@ import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
+import Domain.Repositories.MemoryGuestRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
@@ -191,7 +193,8 @@ public class MarketSystem {
             InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
             shopFacade.setShopRepository(shopRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
-            userFacade.setUserRepository(userRepository);
+            InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
+            userFacade.setUserRepository(userRepository, guestRepository);
         }
         else if (config.equals("database:tests_load_and_drop")){
             // load from test-db
