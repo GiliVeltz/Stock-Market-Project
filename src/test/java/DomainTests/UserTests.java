@@ -11,9 +11,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import Domain.Order;
-import Domain.ShoppingBasket;
-import Domain.User;
+
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Exceptions.StockMarketException;
 
 public class UserTests {

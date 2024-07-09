@@ -1,6 +1,6 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
 
 /**
@@ -36,5 +36,9 @@ public class MinBasketPriceRule implements Rule<ShoppingBasket> {
         } catch (StockMarketException e) {
             return false;
         }
+    }
+
+    public double getMinPrice() {
+        return _minPrice;
     }
 }

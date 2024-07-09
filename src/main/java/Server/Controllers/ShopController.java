@@ -23,8 +23,12 @@ import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductSearchDto;
 import Dtos.ShopDto;
+import Dtos.Rules.MinBasketPriceRuleDto;
+import Dtos.Rules.MinProductAmountRuleDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
+import enums.Category;
 
 @RestController
 @SuppressWarnings({"rawtypes" , "unchecked"})
@@ -123,6 +127,25 @@ public class ShopController {
             @RequestParam Integer productId, @RequestParam Integer quantity) {
         return _shopService.updateProductQuantity(token, shopId, productId, quantity);
     }
+
+    @PostMapping("/updateProductName")
+    public ResponseEntity<Response>updateProductName(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam String name) {
+        return _shopService.updateProductName(token, shopId, productId, name);
+    }
+
+    @PostMapping("/updateProductPrice")
+    public ResponseEntity<Response>updateProductPrice(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam Double price) {
+        return _shopService.updateProductPrice(token, shopId, productId, price);
+    }
+
+    @PostMapping("/updateProductCategory")
+    public ResponseEntity<Response>updateProductCategory(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer productId, @RequestParam Category category) {
+        return _shopService.updateProductCategory(token, shopId, productId, category);
+    }
+
 
     @PostMapping("/addShopOwner")
     public ResponseEntity<Response>addShopOwner(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> request) {
@@ -288,6 +311,23 @@ public class ShopController {
         Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.updatePermissions(token, shopId, managerUsername, permissions);
     }
+
+    @GetMapping("/getShopPolicy")
+    public ResponseEntity<Response> getShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopPolicy(token, shopId);
+    }
+
+    @PostMapping("/updateShopPolicy")
+    public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+                                                @RequestBody List<ShoppingBasketRuleDto> request) {
+        List<ShoppingBasketRuleDto> rules = request;
+        // List<MinBasketPriceRuleDto> minBasketRules = (List<MinBasketPriceRuleDto>) request.get("minBasketRules");
+        // List<MinProductAmountRuleDto> minProductRules = (List<MinProductAmountRuleDto>) request.get("minProductRules");
+        
+        //return _shopService.updateShopPolicy(token, shopId, minBasketRules, minProductRules);
+        return _shopService.updateShopPolicy(token, shopId, rules);
+    }
+    
     
     
 

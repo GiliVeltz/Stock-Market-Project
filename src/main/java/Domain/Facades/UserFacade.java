@@ -3,6 +3,8 @@ package Domain.Facades;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +12,11 @@ import Domain.Alerts.Alert;
 import Domain.Alerts.IntegrityRuleBreakAlert;
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
-import Domain.Order;
+import Domain.Entities.Order;
+import Domain.Entities.User;
 import Domain.Repositories.MemoryUserRepository;
+import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceUserRepository;
-import Domain.User;
 import Dtos.OrderDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
@@ -23,37 +26,18 @@ import Server.notifications.NotificationHandler;
 @Service
 public class UserFacade {
     private static UserFacade _UserFacade;
+    @Autowired
+    private DbUserRepository repository;
     private InterfaceUserRepository _userRepository;
     private List<String> _guestIds;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
 
-    public UserFacade() {
-        _userRepository = new MemoryUserRepository(new ArrayList<>());
-        _guestIds = new ArrayList<>();
-        _EmailValidator = new EmailValidator();
-        _passwordEncoder = new PasswordEncoderUtil();
-
-        // // //For testing UI
-        // initUI();
-    }
-
-    public UserFacade(List<User> registeredUsers, List<String> guestIds) {
+    public UserFacade( List<User> registeredUsers, List<String> guestIds) {
         _userRepository = new MemoryUserRepository(registeredUsers);
         _guestIds = guestIds;
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
-
-        // // //For testing UI
-        // initUI();
-    }
-
-    public UserFacade(InterfaceUserRepository userRepository) {
-        _userRepository = userRepository;
-        _guestIds = new ArrayList<>();
-        _EmailValidator = new EmailValidator();
-        _passwordEncoder = new PasswordEncoderUtil();
-
         // // //For testing UI
         // initUI();
     }
@@ -65,6 +49,7 @@ public class UserFacade {
         }
         return _UserFacade;
     }
+
 
     // set the user repository to be used real time
     public void setUserRepository(InterfaceUserRepository userRepository) {
@@ -122,7 +107,6 @@ public class UserFacade {
     }
 
     // this function is used to register a new user to the system.
-    @Transactional
     public void register(UserDto userDto) throws StockMarketException {
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
@@ -139,7 +123,8 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            _userRepository.addUser(new User(userDto));
+            this._userRepository.addUser(new User(userDto));
+            // this.repository.save(new User(userDto));
         } else {
             throw new StockMarketException("Username already exists.");
         }

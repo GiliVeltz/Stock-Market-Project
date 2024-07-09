@@ -1,15 +1,27 @@
-package Domain;
+package Domain.Entities;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
 
 // calss that represents an order for the user
+@Entity
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer _orderId;
-    private Map<Integer ,ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> 
+
+    // Transient because it's not persisted in the database, just used in memory
+    @Transient
+    private Map<Integer, ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> 
+    
     private double _totalOrderAmount;
     private int paymentId;
     private int SupplyId;

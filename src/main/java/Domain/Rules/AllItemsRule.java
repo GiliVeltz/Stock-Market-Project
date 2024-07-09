@@ -2,7 +2,7 @@ package Domain.Rules;
 
 import java.util.List;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 
 /**
  * Represents a rule that checks if all the items in a list of product IDs are

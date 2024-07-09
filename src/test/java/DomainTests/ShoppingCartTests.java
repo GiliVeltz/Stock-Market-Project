@@ -21,8 +21,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import Domain.*;
-import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
-import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
+import Domain.Entities.Product;
+import Domain.Entities.Shop;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.ShoppingCart;
+import Domain.Entities.User;
+import Domain.ExternalServices.PaymentService.AdapterPayment;
+import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.ShopFacade;
 import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;

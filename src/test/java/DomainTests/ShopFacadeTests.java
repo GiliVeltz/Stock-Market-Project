@@ -28,11 +28,11 @@ import static org.mockito.Mockito.when;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Domain.Product;
-import Domain.Shop;
-import Domain.ShopOrder;
-import Domain.ShoppingBasket;
-import Domain.User;
+import Domain.Entities.Product;
+import Domain.Entities.Shop;
+import Domain.Entities.ShopOrder;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Exceptions.StockMarketException;

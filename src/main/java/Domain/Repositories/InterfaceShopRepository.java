@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import Domain.Shop;
+import Domain.Entities.Shop;
 
 @Repository
 public interface InterfaceShopRepository {

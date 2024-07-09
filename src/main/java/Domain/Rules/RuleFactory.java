@@ -1,7 +1,7 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
-import Domain.User;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Dtos.Rules.AllItemsRuleDto;
 import Dtos.Rules.AndRuleDto;
 import Dtos.Rules.ConditionRuleDto;
@@ -31,6 +31,24 @@ public class RuleFactory {
         
         throw new IllegalArgumentException("Unknown shopping basket rule dto type: " + dto.getClass().getName());
     }
+
+    public static ShoppingBasketRuleDto createShoppingBasketRuleDto(Rule<ShoppingBasket> rule) {
+        if (rule instanceof MinBasketPriceRule)
+            return createShoppingBasketRuleDto((MinBasketPriceRule) rule);
+        if (rule instanceof MinProductAmountRule)
+            return createShoppingBasketRuleDto((MinProductAmountRule) rule);
+
+        throw new IllegalArgumentException("Unknown shopping basket rule type: " + rule.getClass().getName());
+    }
+
+    private static ShoppingBasketRuleDto createShoppingBasketRuleDto(MinBasketPriceRule rule) {
+        return new MinBasketPriceRuleDto(rule.getMinPrice());
+    }
+
+    private static ShoppingBasketRuleDto createShoppingBasketRuleDto(MinProductAmountRule rule) {
+        return new MinProductAmountRuleDto(rule.getProductId(), rule.getMinAmount());
+    }
+
 
     private static Rule<ShoppingBasket> createShoppingBasketRule(MinBasketPriceRuleDto dto) {
         return new MinBasketPriceRule(dto.minPrice);
@@ -133,4 +151,6 @@ public class RuleFactory {
 
         throw new IllegalArgumentException("ConditionRule: conditionRule and thenRule should be of the same type");
     }
+
+
 }

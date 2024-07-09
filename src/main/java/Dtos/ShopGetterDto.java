@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.Map;
 
-import Domain.Shop;
+import Domain.Entities.Shop;
 
 public class ShopGetterDto {
     public int shopId;

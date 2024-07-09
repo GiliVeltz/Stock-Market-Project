@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Level;
 
-import Domain.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PaymentInfoDto;
@@ -20,6 +19,7 @@ import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
 import Domain.Alerts.*;
+import Domain.Entities.Order;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service

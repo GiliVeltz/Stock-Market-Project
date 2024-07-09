@@ -2,7 +2,7 @@ package Dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import Domain.Shop;
+import Domain.Entities.Shop;
 @JsonInclude
 public class ShopDto {
     public String shopName;
@@ -12,6 +12,9 @@ public class ShopDto {
     public Double shopRating;
     public Integer shopRatersCounter;
     public boolean isShopClosed;
+
+    public ShopDto() {
+    }
 
     public ShopDto(String shopName, String bankDetails, String shopAddress) {
         this.shopName = shopName;

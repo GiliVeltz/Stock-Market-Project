@@ -1,6 +1,6 @@
 package Domain.Rules;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 
 /**
  * Represents a rule that checks if a shopping basket contains a minimum amount of a specific product.
@@ -24,5 +24,13 @@ public class MinProductAmountRule implements Rule<ShoppingBasket> {
     @Override
     public boolean predicate(ShoppingBasket basket) {
         return basket.getProductCount(_productId) >= _minAmount;
+    }
+
+    public int getProductId() {
+        return _productId;
+    }
+
+    public int getMinAmount() {
+        return _minAmount;
     }
 }

@@ -33,6 +33,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import Domain.*;
 import Domain.Alerts.PurchaseFromShopUserAlert;
 import Domain.Authenticators.*;
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.ShoppingCart;
+import Domain.Entities.User;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.*;
 import Dtos.ExternalServiceDto;
@@ -42,6 +46,8 @@ import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
 import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
+import Dtos.Rules.MinBasketPriceRuleDto;
+import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
@@ -827,7 +833,10 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
+        // List<MinBasketPriceRuleDto> policy1 = new ArrayList<>();
+        // List<MinProductAmountRuleDto> policy2 = new ArrayList<>();
         List<ShoppingBasketRuleDto> policy = new ArrayList<>();
+        
 
         if(newPolicy.equals("fail")) {
             return false;
