@@ -19,7 +19,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "[user]")
@@ -45,15 +44,12 @@ public class User {
     private Date birthDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Transient
     private List<Order> purchaseHistory;
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
 
     // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
-
-    // Default constructor for JPA
     public User(){}
 
     // Constructor
@@ -76,7 +72,7 @@ public class User {
     }
 
     public boolean isCurrUser(String username, String password) {
-        if (username == username & password == password) {
+        if (this.username == username & this.password == password) {
             return true;
         }
         return false;
@@ -146,11 +142,11 @@ public class User {
     }
 
     public void setEmail(String email) {
-        email = email;
+        this.email = email;
     }
 
     public void setPassword(String password) {
-        password = password;
+        this.password = password;
     }
 
     public Date getBirthDate() {
@@ -158,7 +154,7 @@ public class User {
     }
 
     public void setBirthDate(Date birthDate) {
-        birthDate = birthDate;
+        this.birthDate = birthDate;
     }
 
     public String toString() {

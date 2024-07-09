@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
-import Domain.Repositories.MemoryUserRepository;
+import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.OrderDto;
 import Dtos.UserDto;
@@ -26,7 +27,7 @@ import Server.notifications.NotificationHandler;
 @Service
 public class UserFacade {
     private InterfaceUserRepository _userRepository;
-    private List<String> _guestIds;
+    private InterfaceGuestRepository _guestRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
     
@@ -34,8 +35,8 @@ public class UserFacade {
     private NotificationHandler notificationHandler;
 
     @Autowired
-    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository) {
-        _guestIds = guestIds;
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo) {
+        _guestRepository = guestRepo;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
@@ -44,7 +45,7 @@ public class UserFacade {
     }
 
     // set the user repository to be used real time
-    public void setUserRepository(InterfaceUserRepository userRepository) {
+    public void setUserRepository(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository) {
         _userRepository = userRepository;
     }
 
@@ -124,6 +125,7 @@ public class UserFacade {
     public void addOrderToUser(String username, Order order) throws StockMarketException {
         User user = getUserByUsername(username);
         user.addOrder(order);
+        _userRepository.save(user);
     }
 
     // function that check if a given user is an admin
@@ -136,7 +138,7 @@ public class UserFacade {
     // function to check if a given user is a guest
     @Transactional
     private boolean isGuestExists(String id) {
-        return _guestIds.contains(id);
+        return _guestRepository.existsByGuestId(id);
     }
 
     // function to add a new guest to the system
@@ -145,7 +147,7 @@ public class UserFacade {
         if (isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
         }
-        _guestIds.add(id);
+        _guestRepository.save(new Guest(id));
     }
 
     // function to remove a guest from the system
@@ -154,7 +156,7 @@ public class UserFacade {
         if (!isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
         }
-        _guestIds.remove(String.valueOf(id));
+        _guestRepository.deleteByGuestId(String.valueOf(id));
     }
 
     // function to get all the registered users
@@ -185,6 +187,7 @@ public class UserFacade {
             throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
+        _userRepository.save(user);
     }
 
     // getting the user personal details
@@ -213,6 +216,7 @@ public class UserFacade {
         } else {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
+            _userRepository.save(user);
         }
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }

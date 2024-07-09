@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
@@ -26,10 +28,12 @@ public class Order {
     
     private double _totalOrderAmount;
 
+    @ManyToOne
+
     // Default constructor
     public Order() {
     }
-
+    
     // Constructor
     public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
         _orderId = orderId;

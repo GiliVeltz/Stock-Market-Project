@@ -1,9 +1,7 @@
 package Domain.Repositories;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -15,36 +13,35 @@ import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuer
 import org.springframework.stereotype.Repository;
 
 import Domain.Entities.Guest;
-import Domain.Entities.User;
 
 @Repository
-public class MemoryUserRepository implements InterfaceUserRepository {
-    private Map<String, User> _registeredUsers;
+public class MemoryGuestRepository implements InterfaceGuestRepository{
+    private List<Guest> _guestIds;
 
-    public MemoryUserRepository(List<User> registeredUsers) {
-        _registeredUsers = new HashMap<>();
-        for (User user : registeredUsers)
-            _registeredUsers.put(user.getUserName(), user);
+    public MemoryGuestRepository(){
+        _guestIds = new ArrayList<>();
+    } 
+    
+    @Override
+    public boolean existsByGuestId(String guestId){
+        for (Guest guest : _guestIds) {
+            if (guest.getGuestId().equals(guestId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public boolean existsByusername(String username) {
-        return username != null && _registeredUsers.containsKey(username);
+    public void deleteByGuestId(String guestId){
+        _guestIds.removeIf(guest -> guest.getGuestId().equals(guestId));
     }
 
     @Override
-    public User findByusername(String username) {
-        return _registeredUsers.get(username);
-    }
-
-    @Override
-    public List<User> findAll() {
-        return new ArrayList<User>(_registeredUsers.values());
-    }
-
-    @Override
-    public <S extends User> S save(S entity) {
-        _registeredUsers.put(entity.getUserName(), entity);
+    public <S extends Guest> S save(S entity) {
+        if (!existsByGuestId(entity.getGuestId())) {
+            _guestIds.add(entity);
+        }
         return entity;
     }
 
@@ -55,25 +52,19 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public <S extends User> List<S> findAll(Example<S> example) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
-
-    @Override
-    public <S extends User> S saveAndFlush(S entity) {
+    public <S extends Guest> S saveAndFlush(S entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAndFlush'");
     }
 
     @Override
-    public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
+    public <S extends Guest> List<S> saveAllAndFlush(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAllAndFlush'");
     }
 
     @Override
-    public void deleteAllInBatch(Iterable<User> entities) {
+    public void deleteAllInBatch(Iterable<Guest> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
     }
@@ -91,48 +82,57 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public User getOne(Long id) {
+    public Guest getOne(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public User getById(Long id) {
+    public Guest getById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public User getReferenceById(Long id) {
+    public Guest getReferenceById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
-    public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends Guest> List<S> findAll(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Guest> List<S> findAll(Example<S> example, Sort sort) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+    @Override
+    public <S extends Guest> List<S> saveAll(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
     }
 
+    @Override
+    public List<Guest> findAll() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
 
     @Override
-    public List<User> findAllById(Iterable<Long> ids) {
+    public List<Guest> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
-
-
     @Override
-    public Optional<User> findById(Long id) {
-        User user = _registeredUsers.values().stream().filter(u -> Long.valueOf(u.getId()).equals(id)).findFirst().orElse(null);
-        return Optional.ofNullable(user);
+    public Optional<Guest> findById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
@@ -154,7 +154,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public void delete(User entity) {
+    public void delete(Guest entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
@@ -166,7 +166,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public void deleteAll(Iterable<? extends User> entities) {
+    public void deleteAll(Iterable<? extends Guest> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
     }
@@ -178,43 +178,43 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public List<User> findAll(Sort sort) {
+    public List<Guest> findAll(Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
+    public Page<Guest> findAll(Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> Optional<S> findOne(Example<S> example) {
+    public <S extends Guest> Optional<S> findOne(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findOne'");
     }
 
     @Override
-    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Guest> Page<S> findAll(Example<S> example, Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> long count(Example<S> example) {
+    public <S extends Guest> long count(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'count'");
     }
 
     @Override
-    public <S extends User> boolean exists(Example<S> example) {
+    public <S extends Guest> boolean exists(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'exists'");
     }
 
     @Override
-    public <S extends User, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Guest, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }

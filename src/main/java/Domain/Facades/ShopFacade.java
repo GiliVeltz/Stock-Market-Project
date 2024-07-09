@@ -66,8 +66,6 @@ public class ShopFacade {
         // }
     }
 
-    // for tests
-
     // set shop repository to be used in real system
     public void setShopRepository(InterfaceShopRepository shopRepository) {
         _shopRepository = shopRepository;
