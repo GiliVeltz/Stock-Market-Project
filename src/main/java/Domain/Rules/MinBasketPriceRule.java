@@ -37,4 +37,8 @@ public class MinBasketPriceRule implements Rule<ShoppingBasket> {
             return false;
         }
     }
+
+    public double getMinPrice() {
+        return _minPrice;
+    }
 }

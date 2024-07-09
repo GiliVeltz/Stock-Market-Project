@@ -1,7 +1,9 @@
 package UI.Presenter;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +17,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
@@ -26,6 +35,11 @@ import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.ProductPolicy.UserRuleDto;
+import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
+import UI.Model.ShopPolicy.MinProductAmountRuleDto;
+import UI.Model.ShopPolicy.ShopPolicyRulesList;
+import UI.Model.ShopPolicy.ShoppingBasketRuleDto;
 import UI.View.ShopManagerView;
 import UI.Model.Category;
 
@@ -629,6 +643,132 @@ public class ShopManagerPresenter {
                 });
 
     }
+
+
+    public void fetchShopPolicy(Consumer<List<ShoppingBasketRuleDto>> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopPolicy?shopId="+view.getShopId(),
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Shop Policy loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<ShoppingBasketRuleDto> rules = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, ShoppingBasketRuleDto.class));
+                                    callback.accept(rules);
+                                }else {
+                                    view.showErrorMessage("Shop Policy loading failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Shop Policy loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to load shop policy: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+
+    public void updateShopPolicy(List<ShoppingBasketRuleDto> newRules, Consumer<Boolean> callback) {
+    RestTemplate restTemplate = new RestTemplate();
+    UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+            .then(String.class, token -> {
+                if (token != null && !token.isEmpty()) {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Authorization", token);
+                    headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+
+                    // Prepare the request body with permissions
+                    ShopPolicyRulesList requestBody = new ShopPolicyRulesList();
+                    for(ShoppingBasketRuleDto rule : newRules){
+                        requestBody.add(rule);
+                    }
+                    //requestBody.put("shopId", view.getShopId());
+                    //requestBody.put("rules", (MinBasketPriceRuleDto)newRules.get(0));
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    // DEBUG: Log request body before serialization
+                    try {
+                        String requestBodyJson = objectMapper.writeValueAsString(requestBody);
+                        System.out.println("Request Body JSON: " + requestBodyJson);
+                    } catch (JsonProcessingException e) {
+                        System.err.println("Failed to convert request body to JSON: " + e.getMessage());
+                    }
+
+                    //HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+                    HttpEntity<ShopPolicyRulesList> requestEntity = new HttpEntity<>(requestBody, headers);
+
+
+                    try {
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/updateShopPolicy?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                String.class
+                        );
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            ObjectMapper objectMapper2 = new ObjectMapper();
+                            JsonNode responseJson = objectMapper2.readTree(response.getBody());
+
+                            if (responseJson.get("errorMessage").isNull()) {
+                                view.showSuccessMessage("Shop policy changed successfully");
+                                callback.accept(true);
+                            } else {
+                                view.showErrorMessage("Failed to change shop policy: " + responseJson.get("errorMessage").asText());
+                                callback.accept(false);
+                            }
+                        } else {
+                            view.showErrorMessage("Failed to change shop policy with status code: " + response.getStatusCodeValue());
+                            callback.accept(false);
+                        }
+                    } catch (HttpClientErrorException e) {
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        callback.accept(false);
+                    } catch (Exception e) {
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage("Failed to change shop policy: " + e.getMessage().substring(startIndex, endIndex));
+                        callback.accept(false);
+                        e.printStackTrace();
+                    }
+                } else {
+                    view.showErrorMessage("Authorization token not found. Please log in.");
+                    callback.accept(false);
+                }
+            });
+}
+
+
+    public void fetchProdcutPolicy(Consumer<List<UserRuleDto>> callback){
+        
+    }
+
+
 
     public void updateProductQuantity(Integer shopId, Integer productId, Integer quantity)
     {
