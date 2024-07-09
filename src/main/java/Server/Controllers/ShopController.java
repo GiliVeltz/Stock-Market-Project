@@ -26,6 +26,7 @@ import Dtos.ShopDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import enums.Category;
@@ -317,16 +318,26 @@ public class ShopController {
         return _shopService.getShopPolicy(token, shopId);
     }
 
+    @GetMapping("/getProductPolicy")
+    public ResponseEntity<Response> getProductPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId) {
+        return _shopService.getProductPolicy(token, shopId, productId);
+    }
+    
+
     @PostMapping("/updateShopPolicy")
     public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
                                                 @RequestBody List<ShoppingBasketRuleDto> request) {
         List<ShoppingBasketRuleDto> rules = request;
-        // List<MinBasketPriceRuleDto> minBasketRules = (List<MinBasketPriceRuleDto>) request.get("minBasketRules");
-        // List<MinProductAmountRuleDto> minProductRules = (List<MinProductAmountRuleDto>) request.get("minProductRules");
-        
-        //return _shopService.updateShopPolicy(token, shopId, minBasketRules, minProductRules);
         return _shopService.updateShopPolicy(token, shopId, rules);
     }
+
+    @PostMapping("/updateProductPolicy")
+    public ResponseEntity<Response> updateProductPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId,
+                                                @RequestBody List<UserRuleDto> request) {
+        List<UserRuleDto> rules = request;
+        return _shopService.updateProductPolicy(token, shopId, productId, rules);
+    }
+    
     
     
     
