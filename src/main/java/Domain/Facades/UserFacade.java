@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
@@ -144,7 +145,7 @@ public class UserFacade {
     // function to check if a given user is a guest
     @Transactional
     private boolean isGuestExists(String id) {
-        return _guestIds.contains(id);
+        return _guestRepository.existsByGuestId(id);
     }
 
     // function to add a new guest to the system
@@ -153,7 +154,7 @@ public class UserFacade {
         if (isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
         }
-        _guestIds.add(id);
+        _guestRepository.save(new Guest(id));
     }
 
     // function to remove a guest from the system
@@ -162,7 +163,7 @@ public class UserFacade {
         if (!isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
         }
-        _guestIds.remove(String.valueOf(id));
+        _guestRepository.deleteByGuestId(String.valueOf(id));
     }
 
     // function to get all the registered users
@@ -193,6 +194,7 @@ public class UserFacade {
             throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
+        _userRepository.save(user);
     }
 
     // getting the user personal details
@@ -221,6 +223,7 @@ public class UserFacade {
         } else {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
+            _userRepository.save(user);
         }
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }

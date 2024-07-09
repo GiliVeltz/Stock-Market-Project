@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Repository;
 
+import Domain.Entities.Guest;
 import Domain.Entities.User;
 
 @Repository
@@ -37,9 +38,26 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
+    public List<User> findAll() {
+        return new ArrayList<User>(_registeredUsers.values());
+    }
+
+    @Override
+    public <S extends User> S save(S entity) {
+        _registeredUsers.put(entity.getUserName(), entity);
+        return entity;
+    }
+
+    @Override
     public void flush() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'flush'");
+    }
+
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
@@ -91,12 +109,6 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public <S extends User> List<S> findAll(Example<S> example) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
-
-    @Override
     public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
@@ -108,11 +120,6 @@ public class MemoryUserRepository implements InterfaceUserRepository {
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
     }
 
-    @Override
-    public List<User> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
 
     @Override
     public List<User> findAllById(Iterable<Long> ids) {
@@ -120,11 +127,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
-    @Override
-    public <S extends User> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
-    }
+
 
     @Override
     public Optional<User> findById(Long id) {

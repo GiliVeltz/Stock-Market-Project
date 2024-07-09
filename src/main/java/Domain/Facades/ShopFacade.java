@@ -69,7 +69,7 @@ public class ShopFacade {
     // for tests
     public ShopFacade(List<Shop> shops) {
         _shopRepository = new MemoryShopRepository(shops);
-        _userFacade = new UserFacade(new MemoryUserRepository(new ArrayList<>()), new ArrayList<>());
+        _userFacade = null;
     }
 
 

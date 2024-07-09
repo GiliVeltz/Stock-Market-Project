@@ -15,21 +15,29 @@ import Domain.Entities.Guest;
 
 @Repository
 public class MemoryGuestRepository implements InterfaceGuestRepository{
-    private List<String> _guestIds;
+    private List<Guest> _guestIds;
     
     @Override
     public boolean existsByGuestId(String guestId){
-        return _guestIds.contains(guestId);
+        for (Guest guest : _guestIds) {
+            if (guest.getGuestId().equals(guestId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void deleteByGuestId(String guestId){
-        
+        _guestIds.removeIf(guest -> guest.getGuestId().equals(guestId));
     }
 
     @Override
-    public void deleteByGuestId(String guestId){
-        
+    public <S extends Guest> S save(S entity) {
+        if (!existsByGuestId(entity.getGuestId())) {
+            _guestIds.add(entity);
+        }
+        return entity;
     }
 
     @Override
@@ -114,12 +122,6 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
     public List<Guest> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
-    }
-
-    @Override
-    public <S extends Guest> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
