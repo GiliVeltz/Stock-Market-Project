@@ -2,6 +2,7 @@ package Domain.Facades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import Domain.Authenticators.EmailValidator;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Entities.Guest;
 import Domain.Entities.Order;
+import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
@@ -31,8 +33,9 @@ public class UserFacade {
     private InterfaceGuestRepository _guestRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
-    
     private NotificationHandler _notificationHandler;
+
+    private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     @Autowired
     public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo, NotificationHandler notificationHandler) {
@@ -52,6 +55,7 @@ public class UserFacade {
 
     // logIn function
     public void logIn(String userName, String password) throws StockMarketException{
+        logger.info("User " + userName + " tries to log in to the system.");
         if (!AreCredentialsCorrect(userName, password)){
             throw new StockMarketException("User Name Is Not Registered Or Password Is Incorrect.");
         }
@@ -62,16 +66,19 @@ public class UserFacade {
         }
         user.logIn();
         _userRepository.save(user);
+        logger.info("User " + userName + " logged in to the system.");
     }
 
     // logOut function
     public void logOut(String userName) throws StockMarketException{
+        logger.info("User " + userName + " tries to log out from the system.");
         User user = getUserByUsername(userName);
         if (!user.isLoggedIn()){
                 throw new StockMarketException("User is not logged in.");
         }
         user.logOut();
         _userRepository.save(user);
+        logger.info("User " + userName + " logged out from the system.");
     }
 
     // function to check if a user exists in the system
