@@ -250,6 +250,33 @@ public class ShopService {
     }
 
     /**
+     * Receive the product details.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @param productId the product id
+     * @return the product details.
+     */
+    @Transactional
+    public ResponseEntity<Response> getAllProductDetailes(String token, Integer shopId, Integer productId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                response.setReturnValue(_shopFacade.getProductDetaildDtoById(shopId, productId));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get product details. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
+
+    /**
      * Edits a product in the specified shop.
      * 
      * @param shopId     The ID of the shop to which the product will be edited.

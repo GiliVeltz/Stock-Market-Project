@@ -1,14 +1,22 @@
 package UI.View;
 
+import java.util.Map;
+
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import UI.Model.BasicDiscountDto;
 import UI.Model.ProductDto;
+import UI.Model.ProductGetterDto;
 import UI.Presenter.ProductPresenter;
 
 @PageTitle("Product Page")
@@ -17,17 +25,31 @@ public class ProductView extends BaseView{
 
     private ProductPresenter presenter;
     private String productName = "";
-    private String productId;
-    private String shopId;
+    private Integer productId;
+    private Integer shopId;
+    private boolean _isGuest;
 
 
     public ProductView(){
 
         // Initialize presenter
-        presenter = new ProductPresenter(this);
+        presenter = new ProductPresenter(this, this.getServerPort());
 
-        shopId = (String) VaadinSession.getCurrent().getAttribute("shopId");
-        productId = (String) VaadinSession.getCurrent().getAttribute("productId");
+        // Create the header component
+        Header guestHeader = new BrowsePagesHeaderGuest("8080");
+        Header userHeader = new BrowsePagesHeader("8080");
+
+        _isGuest = isGuest();
+
+        if (_isGuest) {
+            add(guestHeader);
+        } else {
+            add(userHeader);
+        }
+
+
+        shopId = (Integer) VaadinSession.getCurrent().getAttribute("shopId");
+        productId = (Integer) VaadinSession.getCurrent().getAttribute("productId");
         productName = (String) VaadinSession.getCurrent().getAttribute("productName");
         // Create welcome message
         H1 headline = new H1(productName + " Information");
@@ -58,14 +80,72 @@ public class ProductView extends BaseView{
         add(header, titleLayout, buttonLayout);
 
         if (shopId != null && productId != null) {
-            presenter.productInfo(shopId, productId);
+            presenter.getDetailedProduct(shopId, productId);
         } else {
             showErrorMessage("Shop ID or Product ID is missing.");
         }
 
     }
 
-    public void displayProductInfo(ProductDto product) {
+    public void displayAllProductDetails(ProductGetterDto product) {
+        removeAll(); // Clear previous content
+
+        // Product Name
+    H2 productName = new H2("Product Name: " + product.getProductName());
+
+    // Product Price
+    H3 productPrice = new H3("Price: $" + product.getPrice());
+
+    // Product Quantity
+    H3 productQuantity = new H3("Available Quantity: " + product.getProductQuantity());
+
+    // Product Keywords
+    H3 productKeywords = new H3("Keywords: " + String.join(", ", product.getKeywords()));
+
+    // Product Rating
+    H3 productRating = new H3("Rating: " + product.getProductRating() + " (" + product.getProductRatersCounter() + " raters)");
+
+    // Product Category
+    H3 productCategory = new H3("Category: " + product.getCategory().toString());
+
+    // Product Policy
+    H3 productPolicyHeader = new H3("Product Policies:");
+    VerticalLayout productPolicyLayout = new VerticalLayout(productPolicyHeader);
+    // Placeholder for product policy rules
+
+    // Product Discounts in a Grid
+    H3 productDiscountHeader = new H3("Discounts:");
+    Grid<BasicDiscountDto> discountGrid = new Grid<>(BasicDiscountDto.class, false);
+    discountGrid.addColumn(BasicDiscountDto::getId).setHeader("ID");
+    discountGrid.addColumn(discount -> discount.isPrecentage() ? "Percentage" : "Amount").setHeader("Type");
+    discountGrid.addColumn(BasicDiscountDto::getDiscountAmount).setHeader("Discount");
+    discountGrid.addColumn(discount -> discount.getExpirationDate().toString()).setHeader("Expiration Date");
+    discountGrid.setItems(product.getProductDiscounts());
+    VerticalLayout productDiscountLayout = new VerticalLayout(productDiscountHeader, discountGrid);
+    
+
+    // Product Reviews
+    H3 productReviewsHeader = new H3("Reviews:");
+    VerticalLayout productReviewsLayout = new VerticalLayout(productReviewsHeader);
+    for (Map.Entry<String, String> review : product.getReviews().entrySet()) {
+        productReviewsLayout.add(new Paragraph(review.getKey() + ": " + review.getValue()));
+    }
+
+    // Add all components to the main layout
+    add(
+        productName,
+        productPrice,
+        productQuantity,
+        productKeywords,
+        productRating,
+        productCategory,
+        productPolicyLayout,
+        productDiscountLayout,
+        productReviewsLayout
+    );
+    }
+
+    public void displayProductStringInfo(ProductDto product) {
         removeAll(); // Clear previous content
 
         // // Display product details
