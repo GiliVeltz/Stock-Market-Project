@@ -14,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import Domain.Entities.Product;
+import Domain.Entities.ShopOrder;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
-import Domain.Product;
-import Domain.ShopOrder;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;

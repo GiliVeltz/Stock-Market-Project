@@ -3,7 +3,7 @@ package Domain.Discounts;
 import java.util.Date;
 import java.util.SortedMap;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
 public class ProductPercentageDiscount extends BaseDiscount {

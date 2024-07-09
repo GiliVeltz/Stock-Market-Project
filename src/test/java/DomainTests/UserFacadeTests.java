@@ -23,11 +23,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import Domain.Authenticators.PasswordEncoderUtil;
+import Domain.Entities.Order;
+import Domain.Entities.Shop;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Domain.Facades.UserFacade;
-import Domain.Order;
-import Domain.Shop;
-import Domain.ShoppingBasket;
-import Domain.User;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 import Exceptions.UserException;

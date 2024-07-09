@@ -206,6 +206,10 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         reopenDialog.open();
     });
 
+     // Add Edit Product button
+     Button editProductBtn = createButtonWithIcon("Edit Product", VaadinIcon.EDIT, event -> createEditProductDialog().open());
+
+
 
         // Here we create a set of permissions from the strings.
         _permissions = permissions.stream()
@@ -252,7 +256,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         for (Button button : Arrays.asList(
                 appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn,
                 addProductsBtn, viewProductsBtn, viewPurchasesBtn, addDiscountsBtn,
-                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn)) {
+                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn, editProductBtn)) {
             row.add(button);
             count++;
             if (count % 4 == 0) {
@@ -272,6 +276,154 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
+    }
+
+    private Dialog createEditProductDialog() {
+        Dialog editProductDialog = new Dialog();
+        TextField productIdField = new TextField("Enter Product ID");
+
+        Button fetchProductBtn = new Button("Fetch Product", event -> {
+            String productId = productIdField.getValue();
+            // Logic to fetch product details using the product ID
+
+            // Create buttons for editing product details
+            Button updateQuantityBtn = new Button("Update Quantity", e -> createUpdateQuantityDialog(productId).open());
+            Button updatePriceBtn = new Button("Update Price", e -> createUpdatePriceDialog(productId).open());
+            Button updateNameBtn = new Button("Update Name", e -> createUpdateNameDialog(productId).open());
+            Button updateCategoryBtn = new Button("Update Category", e -> createUpdateCategoryDialog(productId).open());
+
+            VerticalLayout editOptionsLayout = new VerticalLayout(updateQuantityBtn, updatePriceBtn, updateNameBtn, updateCategoryBtn);
+            editProductDialog.add(editOptionsLayout);
+        });
+
+        editProductDialog.add(productIdField, fetchProductBtn);
+        return editProductDialog;
+    }
+
+    private Dialog createUpdateQuantityDialog(String productId) {
+        Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
+        TextField quantityField = new TextField("New Quantity");
+        quantityField.setPlaceholder("Enter quantity");
+    
+        // Add a value change listener to validate input
+        quantityField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                quantityField.setInvalid(true);
+                quantityField.setErrorMessage("Please enter a valid number");
+            }
+        });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = quantityField.getValue();
+            try {
+                Integer newQuantity = Integer.parseInt(value);
+                // Logic to update the product quantity using the product ID and new quantity
+                presenter.updateProductQuantity(getShopId(), Integer.parseInt(productId), newQuantity);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid number");
+            }
+        });
+    
+        dialog.add(quantityField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdatePriceDialog(String productId) {
+        Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
+        TextField priceField = new TextField("New Price");
+        priceField.setPlaceholder("Enter price");
+    
+        // Add a value change listener to validate input
+        priceField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Double.parseDouble(value);
+                priceField.setInvalid(false);
+                priceField.setErrorMessage(null);
+            } catch (NumberFormatException e) {
+                priceField.setInvalid(true);
+                priceField.setErrorMessage("Please enter a valid price");
+            }
+        });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = priceField.getValue();
+            try {
+                Double newPrice = Double.parseDouble(value);
+                // Logic to update the product price using the product ID and new price
+                presenter.updateProductPrice(getShopId(), Integer.parseInt(productId), newPrice);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid price");
+            }
+        });
+    
+        dialog.add(priceField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateNameDialog(String productId) {
+        Dialog dialog = new Dialog();
+        TextField nameField = new TextField("New Name");
+        nameField.setPlaceholder("Enter name");
+    
+        // Disable the save button initially
+        Button saveBtn = new Button("Save");
+        saveBtn.setEnabled(false);
+    
+        // Add a value change listener to validate input
+        nameField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            if (value == null || value.trim().isEmpty()) {
+                nameField.setInvalid(true);
+                nameField.setErrorMessage("Name cannot be empty");
+                saveBtn.setEnabled(false);
+            } else {
+                nameField.setInvalid(false);
+                nameField.setErrorMessage(null);
+                saveBtn.setEnabled(true);
+            }
+        });
+    
+        // Add click listener to the save button
+        saveBtn.addClickListener(event -> {
+            String newName = nameField.getValue();
+            if (newName != null && !newName.trim().isEmpty()) {
+                presenter.updateProductName(getShopId(), Integer.parseInt(productId), newName);
+                dialog.close();
+                Notification.show("Name updated");
+            } else {
+                Notification.show("Please enter a valid name");
+            }
+        });
+    
+        dialog.add(nameField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateCategoryDialog(String productId) {
+        Dialog dialog = new Dialog();
+        ComboBox<String> categoryField = new ComboBox<>("New Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
+        Button saveBtn = new Button("Save", event -> {
+            Category category = parseCategory(categoryField.getValue());
+                if (category == Category.DEFAULT_VAL) {
+                    Notification.show("Invalid category");
+                    return;
+                }
+            presenter.updateProductCategory(getShopId(), Integer.parseInt(productId), category);
+            dialog.close();
+        });
+        dialog.add(categoryField, saveBtn);
+        return dialog;
     }
 
     public int getShopId() {

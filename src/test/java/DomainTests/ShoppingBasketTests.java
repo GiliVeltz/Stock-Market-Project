@@ -21,10 +21,10 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import Domain.Product;
-import Domain.Shop;
-import Domain.ShoppingBasket;
-import Domain.User;
+import Domain.Entities.Product;
+import Domain.Entities.Shop;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Exceptions.ProdcutPolicyException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ShopPolicyException;

@@ -2,7 +2,7 @@ package Dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import Domain.Shop;
+import Domain.Entities.Shop;
 @JsonInclude
 public class ShopDto {
     public String shopName;

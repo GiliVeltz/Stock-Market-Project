@@ -1,8 +1,8 @@
 package Domain.Repositories;
 
-import Domain.ShoppingCart;
-
 import org.springframework.stereotype.Repository;
+
+import Domain.Entities.ShoppingCart;
 
 @Repository
 public interface InterfaceShoppingCartRepository {

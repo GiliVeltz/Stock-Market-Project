@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import Domain.ShoppingBasket;
 import Domain.Discounts.ConditionalDiscount;
 import Domain.Discounts.ProductFixedDiscount;
 import Domain.Discounts.ProductPercentageDiscount;
+import Domain.Entities.ShoppingBasket;
 
 public class DiscountTests {
     /***************** Precentage Discount Tests *****************/

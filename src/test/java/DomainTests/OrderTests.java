@@ -13,11 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import Domain.Order;
-import Domain.Product;
-import Domain.Shop;
-import Domain.ShoppingBasket;
-import Domain.User;
+import Domain.Entities.Order;
+import Domain.Entities.Product;
+import Domain.Entities.Shop;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import enums.Category;
