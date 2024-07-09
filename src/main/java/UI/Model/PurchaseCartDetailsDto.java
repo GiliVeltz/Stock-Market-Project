@@ -3,14 +3,14 @@ package UI.Model;
 import java.util.List;
 
 public class PurchaseCartDetailsDto {
+    public PaymentInfoDto paymentInfo;
+    public SupplyInfoDto supplyInfo;
     public List<Integer> basketsToBuy;
-    public String cardNumber;
-    public String address;
 
-    public PurchaseCartDetailsDto(List<Integer> basketsToBuy, String cardNumber, String address) {
+    public PurchaseCartDetailsDto(PaymentInfoDto paymentInfo, SupplyInfoDto supplyInfo, List<Integer> basketsToBuy) {
+        this.paymentInfo = paymentInfo;
+        this.supplyInfo = supplyInfo;
         this.basketsToBuy = basketsToBuy;
-        this.cardNumber = cardNumber;
-        this.address = address;
     }
 
     public List<Integer> getBasketsToBuy() {
@@ -21,19 +21,19 @@ public class PurchaseCartDetailsDto {
         this.basketsToBuy = basketsToBuy;
     }
 
-    public String getCardNumber() {
-        return cardNumber;
+    public PaymentInfoDto getPaymentInfo() {
+        return paymentInfo;
     }
 
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
+    public void setPaymentInfo(PaymentInfoDto paymentInfo) {
+        this.paymentInfo = paymentInfo;
     }
 
-    public String getAddress() {
-        return address;
+    public SupplyInfoDto getSupplyInfo() {
+        return supplyInfo;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setSupplyInfo(SupplyInfoDto supplyInfo) {
+        this.supplyInfo = supplyInfo;
     }
 }

@@ -35,7 +35,6 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
         // System.out.println("Server port: " + port);
         SpringApplication app = new SpringApplication(Application.class);
         app.run(args);
-
     }
 
 
