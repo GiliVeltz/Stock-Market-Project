@@ -640,10 +640,41 @@ public class SearchProductsResultsView extends BaseView {
         }
         dialogContent.add(new Div());
 
+        // Div priceAndControls = new Div();
+        // priceAndControls.add(new H3("Price: $" + product.getPrice()));
 
-        Button addToCartButton = new Button("Add To Cart", event -> addToCart(product, shopId));
+        // // Number field for quantity
+        // NumberField quantityField = new NumberField();
+        // quantityField.setValue(1.0);
+        // quantityField.setStep(1); // Adds increment and decrement buttons
+        // quantityField.setMin(1); // Minimum value
+        // quantityField.setWidth("100px"); // Set a fixed width for better alignment
+
+        // // Add value change listener to ensure quantity is not less than 1
+        // quantityField.addValueChangeListener(event -> {
+        //     if (event.getValue() < 1) {
+        //         quantityField.setValue(1.0);
+        //     }
+        // });
+
+        // // Plus and minus buttons for quantity
+        // Button plusButton = new Button("+", event -> {
+        //     quantityField.setValue(quantityField.getValue() + 1);
+        // });
+        // Button minusButton = new Button("-", event -> {
+        //     if (quantityField.getValue() > 1) {
+        //         quantityField.setValue(quantityField.getValue() - 1);
+        //     }
+        // });
+
+        // // Div for quantity controls including the number field
+        // Div quantityControls = new Div(minusButton, quantityField, plusButton);
+        // priceAndControls.add(quantityControls);
+
+        // Add to cart button
+        Button addToCartButton = new Button("Add To Cart", event -> addToCart(product, shopId, 1));
         addToCartButton.addClassName("pointer-cursor");
-        addToCartButton.setWidth("150px");
+        addToCartButton.setWidth("150px");                
 
         Button produtPageButton = new Button("Product Page", event -> {
             dialog.close();
@@ -664,10 +695,10 @@ public class SearchProductsResultsView extends BaseView {
         dialog.open();
     }
 
-    private void addToCart(ProductDto product, Integer shopId) {
+    private void addToCart(ProductDto product, Integer shopId, Integer quantity) {
         // Implement logic to add the product to the cart (not shown here)
         // Example: presenter.addToCart(product);
-        presenter.addProductToCart(shopId, product.getProductId());
+        presenter.addProductToCart(shopId, product.getProductId(), quantity);
         Notification.show(product.getProductName() + " added to cart");
     }
 

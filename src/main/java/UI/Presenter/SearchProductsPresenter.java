@@ -129,7 +129,7 @@ public class SearchProductsPresenter {
         }
     }
 
-    public void addProductToCart(int shopId, int productId) {
+    public void addProductToCart(int shopId, int productId, int quantity) {
         RestTemplate restTemplate = new RestTemplate();
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -144,7 +144,7 @@ public class SearchProductsPresenter {
 
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + _serverPort + "/api/user/addProductToShoppingCart?productID=" + productId +
-                                 "&shopID=" + shopId + "&quantity=" + 1,
+                                 "&shopID=" + shopId + "&quantity=" + quantity,
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);

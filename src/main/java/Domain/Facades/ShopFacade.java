@@ -38,6 +38,7 @@ import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
+import Dtos.ProductGetterDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
@@ -46,6 +47,7 @@ import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import enums.Permission;
@@ -1102,6 +1104,17 @@ public class ShopFacade {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             return new ShopDto(shopId, shop.getShopName(), shop.getBankDetails(), shop.getShopAddress(), shop.getShopRating());
+        }
+        return null;
+    }
+
+    public ProductGetterDto getProductDtoById(int shopId, int productId) throws ProductDoesNotExistsException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            Product product = shop.getProductById(productId);
+            if (product != null) {
+                return new ProductGetterDto(product);
+            }
         }
         return null;
     }
