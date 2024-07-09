@@ -28,7 +28,8 @@ public class Order {
     
     private double _totalOrderAmount;
 
-    @ManyToOne
+    @ManyToOne()
+    User user;
 
     // Default constructor
     public Order() {

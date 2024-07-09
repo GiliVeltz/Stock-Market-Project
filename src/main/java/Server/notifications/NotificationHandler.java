@@ -11,11 +11,11 @@ import Domain.Entities.Alerts.Alert;
 @Component
 public class NotificationHandler {
 
-    @Autowired
-    private static WebSocketServer wServer;
+    private WebSocketServer wServer;
 
-    private NotificationHandler() {
-        // Initialization code
+    @Autowired
+    private NotificationHandler(WebSocketServer wServer) {
+        this.wServer = wServer;
     }
     
      /**

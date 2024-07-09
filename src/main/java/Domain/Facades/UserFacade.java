@@ -3,6 +3,7 @@ package Domain.Facades;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,15 +32,15 @@ public class UserFacade {
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
     
-    @Autowired
-    private NotificationHandler notificationHandler;
+    private NotificationHandler _notificationHandler;
 
     @Autowired
-    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo) {
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo, NotificationHandler notificationHandler) {
         _guestRepository = guestRepo;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
+        _notificationHandler = notificationHandler;
         // // //For testing UI
         // initUI();
     }
@@ -225,7 +226,7 @@ public class UserFacade {
     @Transactional
     public boolean notifyUser(String targetUser, Alert alert) {
         try {
-            notificationHandler.sendMessage(targetUser, alert);
+            _notificationHandler.sendMessage(targetUser, alert);
             return true;
         } catch (Exception e) {
             return false;
