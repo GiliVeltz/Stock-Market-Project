@@ -28,8 +28,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
 
@@ -38,31 +40,43 @@ import Exceptions.ShopPolicyException;
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
 @Entity
+@Table(name = "[shopping_cart]")
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer _shoppingCartId;
+    private Integer shoppingCartId;
 
     // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @Transient
-    private List<ShoppingBasket> _shoppingBaskets;
+    private List<ShoppingBasket> shoppingBaskets;
 
     @Transient
-    private AdapterPayment _paymentMethod;
+    private AdapterPayment paymentMethod;
 
     @Transient
-    private AdapterSupply _supplyMethod;
+    private AdapterSupply supplyMethod;
 
     @Transient
     @Autowired
-    private ShopFacade _shopFacade;
+    private ShopFacade shopFacade;
 
-    @Column(name = "username", nullable = false)
-    private String _username; // or guestToken string
+    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = User.class)
+    //@Column(name = "username", nullable = false)
+    
+    //@OneToOne
+    //@JoinColumn(name = "user_name", nullable = false)
+    @Column(name = "user_or_guest_name")
+    private String user_or_guest_name; // or guestToken string
 
-    @Transient
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "_shoppingCart", optional = true, targetEntity = User.class)
-    private User _user; // if the user is null, the cart is for a guest.
+    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
+    //@Column(name = "guest_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "guest_id")
+    private Guest guest; // or guestToken string
+
+    @OneToOne
+    @JoinColumn(name = "user_name")
+    private User user; // if the user is null, the cart is for a guest.
 
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
@@ -71,22 +85,31 @@ public class ShoppingCart {
     }
 
     // Constructor
-    public ShoppingCart(String username) {
-        _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = AdapterPayment.getAdapterPayment();
-        _supplyMethod = AdapterSupply.getAdapterSupply();
-        _username = username;
-        _user = null;
+    public ShoppingCart(User user) {
+        shoppingBaskets = new ArrayList<>();
+        paymentMethod = AdapterPayment.getAdapterPayment();
+        supplyMethod = AdapterSupply.getAdapterSupply();
+        guest = null;
+        this.user = user;
+    }
+
+    // Constructor
+    public ShoppingCart(Guest guest) {
+        shoppingBaskets = new ArrayList<>();
+        paymentMethod = AdapterPayment.getAdapterPayment();
+        supplyMethod = AdapterSupply.getAdapterSupply();
+        guest = guest;
+        user = null;
     }
 
     // for tests
     public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
-        _shoppingBaskets = new ArrayList<>();
-        _paymentMethod = paymentMethod;
-        _supplyMethod = supplyMethod;
-        _shopFacade = shopFacade;
-        _username = null;
-        _user = null;
+        shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
+        this.shopFacade = shopFacade;
+        user_or_guest_name = null;
+        user = null;
     }
 
     /*
@@ -110,29 +133,29 @@ public class ShoppingCart {
         double overallPrice = 0;
 
         for (Integer basketNum : details.getBasketsToBuy()) {
-            ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+            ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
             double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
             overallPrice += amountToPay;
             priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
         }
 
         try {
-            _paymentMethod.checkIfPaymentOk(details.cardNumber);
-            _supplyMethod.checkIfDeliverOk(details.address);
+            paymentMethod.checkIfPaymentOk(details.cardNumber);
+            supplyMethod.checkIfDeliverOk(details.address);
 
-            _paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
+            paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
 
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
             for (Integer basketNum : details.getBasketsToBuy()) {
-                ShoppingBasket shoppingBasket = _shoppingBaskets.get(basketNum);
+                ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
-                _supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
+                supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
                                                                                          // deliver too.
             }
 
-            if (_user != null) {
+            if (user != null) {
                 Order order = new Order(ordersId, shoppingBasketsForOrder);
-                _user.addOrder(order);
+                user.addOrder(order);
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
@@ -147,13 +170,13 @@ public class ShoppingCart {
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
             cancelPurchaseEditStock(details.basketsToBuy);
-            _paymentMethod.refound(details.cardNumber, overallPrice);
+            paymentMethod.refound(details.cardNumber, overallPrice);
             throw new ShippingFailedException("Shipping failed");
         }
     }
     
     public String getUsernameString() {
-        return _username;
+        return user_or_guest_name;
     }
 
     /*
@@ -168,7 +191,7 @@ public class ShoppingCart {
 
         for (Integer basketId : busketsToBuy) {
             try {
-                if (!_shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
+                if (!shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {
@@ -176,7 +199,7 @@ public class ShoppingCart {
                         + basketId + ". Exception: " + e.getMessage(), e);
                 logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
                 for (Integer basket : boughtBasketList) {
-                    _shoppingBaskets.get(basket).cancelPurchase();
+                    shoppingBaskets.get(basket).cancelPurchase();
                 }
                 throw e;
             } catch (ShopPolicyException e) {
@@ -184,7 +207,7 @@ public class ShoppingCart {
                         "ShoppingCart - purchaseCart - Basket " + basketId + " Validated the policy of the shop.");
                 logger.log(Level.FINE, "ShoppingCart - purchaseCart - Canceling purchase of all baskets.");
                 for (Integer basket : boughtBasketList) {
-                    _shoppingBaskets.get(basket).cancelPurchase();
+                    shoppingBaskets.get(basket).cancelPurchase();
                 }
                 throw e;
             }
@@ -203,12 +226,12 @@ public class ShoppingCart {
     }
 
     public int getCartSize() {
-        return _shoppingBaskets.size();
+        return shoppingBaskets.size();
     }
 
     public String toString() {
         StringBuilder output = new StringBuilder();
-        for (ShoppingBasket shoppingBasket : _shoppingBaskets) {
+        for (ShoppingBasket shoppingBasket : shoppingBaskets) {
             output.append(shoppingBasket.toString()).append("\n");
         }
         return output.toString(); // Convert StringBuilder to String
@@ -225,13 +248,13 @@ public class ShoppingCart {
      */
     public void addProduct(int productID, int shopID, int quantity) throws StockMarketException {
         // Check if the product exists in the shop.
-        if (_shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
+        if (shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
             throw new ProductDoesNotExistsException("Product does not exists in shop: " + shopID);
         }
 
         // basketOptional is the basket of the user for the shop.
-        Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
+        Optional<ShoppingBasket> basketOptional = shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         // create a new basket if the user does not have a basket for this shop.
@@ -239,18 +262,18 @@ public class ShoppingCart {
         if (basketOptional.isPresent()) {
             basket = basketOptional.get();
         } else {
-            basket = new ShoppingBasket(_shopFacade.getShopByShopId(shopID));
-            _shoppingBaskets.add(basket);
+            basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
+            shoppingBaskets.add(basket);
         }
 
         // add the product to the basket.
-        basket.addProductToShoppingBasket(_user, productID, quantity);
+        basket.addProductToShoppingBasket(user, productID, quantity);
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 
     // Remove a product from the shopping cart of a user.
     public void removeProduct(int productID, int shopID) throws StockMarketException {
-        Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
+        Optional<ShoppingBasket> basketOptional = shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         if (basketOptional.isPresent()) {
@@ -258,7 +281,7 @@ public class ShoppingCart {
             basket.removeProductFromShoppingBasket(productID);
             logger.log(Level.INFO, "Product removed from shopping basket: " + productID + " in shop: " + shopID);
             if (basket.isEmpty()) {
-                _shoppingBaskets.remove(basket);
+                shoppingBaskets.remove(basket);
                 logger.log(Level.INFO, "Shopping basket for shop: " + shopID + " is empty and has been removed.");
             }
         } else {
@@ -269,14 +292,16 @@ public class ShoppingCart {
     }
 
     // Set the user of the cart.
+    @Transient
     public void SetUser(User user) {
-        _user = user;
-        _username = user.getUserName();
+        guest = null;
+        this.user = user;
+        user_or_guest_name = user.getUserName();
     }
 
     // Get shopping baskets of the cart.
     public List<ShoppingBasket> getShoppingBaskets() {
-        return _shoppingBaskets;
+        return shoppingBaskets;
     }
 
     // Get a shopping basket by index.
@@ -286,13 +311,13 @@ public class ShoppingCart {
 
     // for tests
     public void addShoppingBasket(ShoppingBasket basket) {
-        _shoppingBaskets.add(basket);
+        shoppingBaskets.add(basket);
     }
 
     // return all the products in the cart
     public Map<Integer, Product> getProducts() throws StockMarketException {
         Map<Integer, Product> products = new HashMap<Integer, Product>();
-        for (ShoppingBasket basket : _shoppingBaskets) {
+        for (ShoppingBasket basket : shoppingBaskets) {
             for (Product product : basket.getProductsList()) {
                 products.put(product.getProductId(), product);
             }
@@ -303,7 +328,7 @@ public class ShoppingCart {
     // return all the purchases in the cart
     public Map<String, ShoppingBasket> getPurchases() {
         Map<String, ShoppingBasket> purchases = new HashMap<String, ShoppingBasket>();
-        for (ShoppingBasket basket : _shoppingBaskets) {
+        for (ShoppingBasket basket : shoppingBaskets) {
             purchases.put(basket.getShop().getShopName(), basket);
         }
         return purchases;
@@ -311,7 +336,7 @@ public class ShoppingCart {
 
     // return true if the cart has a basket with the given shopID
     public boolean containsKey(int shopID) {
-        for (ShoppingBasket basket : _shoppingBaskets) {
+        for (ShoppingBasket basket : shoppingBaskets) {
             if (basket.getShop().getShopId() == shopID) {
                 return true;
             }

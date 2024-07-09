@@ -65,4 +65,9 @@ public class ProductFixedDiscount extends BaseDiscount {
     public BasicDiscountDto getDto() {
         return new BasicDiscountDto(_productId, false, _discountTotal, getExpirationDate(), null, getId());
     }
+
+    @Override
+    public int getDiscountId() {
+        return getId();
+    }
 }

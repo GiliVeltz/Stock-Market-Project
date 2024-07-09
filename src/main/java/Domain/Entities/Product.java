@@ -19,6 +19,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
@@ -27,9 +30,9 @@ import jakarta.persistence.Transient;
 public class Product implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer _productId;
+    private Integer productId;
 
-    @Column(name = "productName", nullable = false)
+    @Column(name = "product_name", nullable = false)
     private String _productName;
 
     @Column(name = "price", nullable = false)
@@ -38,36 +41,40 @@ public class Product implements Cloneable {
     @Column(name = "quantity", nullable = false)
     private Integer _quantity;
 
-    // TODO: create notation for keywords
     @Transient
     private HashSet<String> _keywords;
 
-    @Column(name = "productRating", nullable = true)
+    @Column(name = "product_rating", nullable = true)
     private Double _productRating;
 
-    @Column(name = "productRatersCounter", nullable = true)
+    @Column(name = "product_raters_counter", nullable = true)
     private Integer _productRatersCounter;
 
-    @Enumerated(EnumType.STRING)
+    @Transient
     private Category _category;
 
-    //@OneToOne(mappedBy = "product")
     @Transient
     private ProductPolicy _productPolicy;
 
-    //@OneToMany(mappedBy = "product")
     @Transient
     private Map<String, String> _reviews; // usernames and reviews
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+    @ManyToOne
+    @JoinColumn(name = "shopping_basket_id", nullable = false)
+    private ShoppingBasket shoppingBasket;
 
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Default constructor
-    public Product() {
-    }
+    public Product() { }
 
     // Constructor
     public Product(int productId, String productName, Category category, double price) {
-        this._productId = productId;
+        this.productId = productId;
         this._productName = productName;
         this._category = category;
         this._price = price;
@@ -84,7 +91,7 @@ public class Product implements Cloneable {
     // this function responsible for adding a rating to the product
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
-            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
+            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", productId));
         Double newRating = Double.valueOf(rating);
         if (_productRating == -1.0) {
             _productRating = newRating;
@@ -97,18 +104,18 @@ public class Product implements Cloneable {
     // this function responsible for purchasing a product: decrease the quantity of the product by 1 and add the product to the user's cart
     public synchronized void purchaseProduct() throws StockMarketException {
         if (_quantity == 0) {
-            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");
             throw new ProductOutOfStockExepction("Product is out of stock");
         }
         _quantity--;
-        logger.log(Level.FINE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+        logger.log(Level.FINE, "Product - purchaseProduct - Product " + _productName + " with id: " + productId
                 + " had been purchased -- -1 to stock.");
     }
 
     public synchronized void cancelPurchase() {
         _quantity++;
-        logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId
+        logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + productId
                 + " had been purchased cancel -- +1 to stock.");
     }
 
@@ -152,7 +159,7 @@ public class Product implements Cloneable {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + _productId +
+                "id=" + productId +
                 ", name='" + _productName + '\'' +
                 ", category=" + _category +
                 ", price=" + _price +
@@ -168,11 +175,11 @@ public class Product implements Cloneable {
     }
 
     public String getProductGeneralInfo() {
-        return "Product ID: " + _productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
+        return "Product ID: " + productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
     }
 
     public int getProductId() {
-        return _productId;
+        return productId;
     }
 
     public String getProductName() {
@@ -212,7 +219,7 @@ public class Product implements Cloneable {
     }
 
     public void setProductId(int productId) {
-        this._productId = productId;
+        this.productId = productId;
     }
 
     public void setProductName(String productName) {

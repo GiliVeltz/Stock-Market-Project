@@ -539,9 +539,9 @@ public class ShoppingCartTests {
         assertEquals(product3.getProductQuantity(), 9);
         assertEquals(product4.getProductQuantity(), 9);
         assertEquals(shop.getPurchaseHistory().size(), 1);
-        assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
+        assertEquals(shop.getPurchaseHistory().get(0).getShopOrderId(), 0);
         assertEquals(shop2.getPurchaseHistory().size(), 1);
-        assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
+        assertEquals(shop2.getPurchaseHistory().get(0).getShopOrderId(), 0);
     }
 
     @Test
@@ -588,9 +588,9 @@ public class ShoppingCartTests {
         assertEquals(product3.getProductQuantity(), 9);
         assertEquals(product4.getProductQuantity(), 9);
         assertEquals(shop.getPurchaseHistory().size(), 1);
-        assertEquals(shop.getPurchaseHistory().get(0).getOrderId(), 0);
+        assertEquals(shop.getPurchaseHistory().get(0).getShopOrderId(), 0);
         assertEquals(shop2.getPurchaseHistory().size(), 1);
-        assertEquals(shop2.getPurchaseHistory().get(0).getOrderId(), 0);
+        assertEquals(shop2.getPurchaseHistory().get(0).getShopOrderId(), 0);
         assertEquals(user.getPurchaseHistory().size(), 1);
         assertEquals(user.getPurchaseHistory().get(0).getOrderId(), 0);
     }

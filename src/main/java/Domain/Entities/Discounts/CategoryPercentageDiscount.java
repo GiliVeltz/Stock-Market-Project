@@ -25,12 +25,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
         _percentage = percentage;
         _category = category;
         _rule = (basket) -> {
-            try {
-                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
-            } catch (StockMarketException e) {
-                e.printStackTrace();
-                return false;
-            }
+            return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
     }
@@ -72,5 +67,10 @@ public class CategoryPercentageDiscount extends BaseDiscount {
     @Override
     public BasicDiscountDto getDto() {
         return new BasicDiscountDto(-1, true, _percentage, getExpirationDate(), _category, getId());
+    }
+
+    @Override
+    public int getDiscountId() {
+        return getId();
     }
 }

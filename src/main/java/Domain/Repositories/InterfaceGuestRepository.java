@@ -5,4 +5,5 @@ import Domain.Entities.Guest;
 public interface InterfaceGuestRepository extends JpaRepository<Guest, Long> {
     boolean existsByGuestId(String guestId);
     void deleteByGuestId(String guestId);
+    Guest findByGuestId(String id);
 }

@@ -25,12 +25,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
             _discountTotal = discountTotal;
         _category = category;
         _rule = (basket) -> {
-            try {
-                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
-            } catch (StockMarketException e) {
-                e.printStackTrace();
-                return false;
-            }
+            return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
     }
@@ -73,5 +68,10 @@ public class CategoryFixedDiscount extends BaseDiscount {
     @Override
     public BasicDiscountDto getDto() {
         return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), _category, getId());
+    }
+
+    @Override
+    public int getDiscountId() {
+        return getId();
     }
 }

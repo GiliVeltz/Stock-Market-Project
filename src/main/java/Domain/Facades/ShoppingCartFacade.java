@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
@@ -26,13 +27,15 @@ import jakarta.transaction.Transactional;
 @Service
 public class ShoppingCartFacade {
     private static ShoppingCartFacade instance;
+    private UserFacade userFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     InterfaceShoppingCartRepository _cartsRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
-    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository) {
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, UserFacade userFacade) {
         _cartsRepository = cartsRepository;
+        this.userFacade = userFacade;
         _guestsCarts = new HashMap<>();
     }
 
@@ -45,7 +48,8 @@ public class ShoppingCartFacade {
     // Add a cart for a guest by token.
     @Transactional
     public void addCartForGuest(String guestID) {
-        ShoppingCart cart = new ShoppingCart(guestID);
+        Guest g = userFacade.getGuestById(guestID);
+        ShoppingCart cart = new ShoppingCart(g);
         _guestsCarts.put(guestID, cart);
     }
 
@@ -59,7 +63,15 @@ public class ShoppingCartFacade {
     public void addCartForUser(String guestID, User user) {
         ShoppingCart cart = _cartsRepository.getCartByUsername(user.getUserName());
         if (cart == null) {
-            _cartsRepository.save(new ShoppingCart(guestID));
+            ShoppingCart existCart = _cartsRepository.getCartByUsername(guestID);
+            if(existCart == null) {
+                ShoppingCart newCart = new ShoppingCart(user);
+                _cartsRepository.save(newCart);
+            }
+            else {
+                existCart.SetUser(user);
+                _cartsRepository.save(existCart);
+            }
             //_cartsRepository.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
 
         }
@@ -239,7 +251,7 @@ public class ShoppingCartFacade {
         }
         List<BasketDto> baskets = new ArrayList<>();
         for (ShoppingBasket basket : cart.getShoppingBaskets()) {
-            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdList(), basket.calculateShoppingBasketPrice()));
+            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdsList(), basket.calculateShoppingBasketPrice()));
         }
         return baskets;
     }

@@ -1,10 +1,17 @@
 package Domain.Entities;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,10 +22,16 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "guest_id", nullable = false, unique = true)
     private String guestId;
 
+    @Column(name = "created_at", nullable = false)
+    //@Temporal(TemporalType.DATE)
     private LocalDateTime createdAt;
 
+    @OneToOne(mappedBy = "guest")
+    private ShoppingCart shoppingCart;
+    
     public Guest() {}
 
     public Guest(String guestId) {

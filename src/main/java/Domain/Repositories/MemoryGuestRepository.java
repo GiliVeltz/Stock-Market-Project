@@ -46,6 +46,16 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
     }
 
     @Override
+    public Guest findByGuestId(String id) {
+        for (Guest guest : _guestIds) {
+            if (guest.getGuestId().equals(id)) {
+                return guest;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void flush() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'flush'");

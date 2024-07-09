@@ -11,7 +11,7 @@ import Domain.Entities.User;
 @NoRepositoryBean
 public interface InterfaceShoppingCartRepository extends JpaRepository<ShoppingCart, Integer> {
 
-    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM ShoppingCart c WHERE c._username = ?1")
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM ShoppingCart c WHERE c.user_or_guest_name = ?1")
     ShoppingCart getCartByUsername(String username);
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Order c")

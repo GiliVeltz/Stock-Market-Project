@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
+import Exceptions.StockMarketException;
 
 public class ShopFixedDiscount extends BaseDiscount {
     private double _discountTotal;
@@ -38,12 +39,13 @@ public class ShopFixedDiscount extends BaseDiscount {
      * The price and amount of the product are updated based on the discount.
      *
      * @param basket The shopping basket to apply the discount to.
+     * @throws StockMarketException 
      */
     @Override
-    protected void applyDiscountLogic(ShoppingBasket basket) {
+    protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (!_rule.predicate(basket))
             return;
-        for (int product_id : basket.getProductIdList()) {
+        for (int product_id : basket.getProductIdsList()) {
             SortedMap<Double, Integer> newpriceToAmount = new TreeMap<>();
             SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(product_id);
             for (Map.Entry<Double, Integer> entry : priceToAmount.entrySet()) {
@@ -57,6 +59,11 @@ public class ShopFixedDiscount extends BaseDiscount {
     @Override
     public BasicDiscountDto getDto() {
         return new BasicDiscountDto(-1, false, _discountTotal, getExpirationDate(), null, getId());
+    }
+
+    @Override
+    public int getDiscountId() {
+        return getId();
     }
 }
 

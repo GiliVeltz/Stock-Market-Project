@@ -14,7 +14,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
@@ -34,7 +36,7 @@ public class User {
     private String username;
 
     @Column(name = "isAdmin", nullable = true)
-    private boolean isAdmin=false;
+    private boolean isAdmin = false;
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -49,7 +51,9 @@ public class User {
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
 
-    // private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ShoppingCart shoppingCart;
+    
     public User(){}
 
     // Constructor

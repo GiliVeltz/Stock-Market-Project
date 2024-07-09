@@ -256,6 +256,11 @@ public class UserFacade {
        notifyUser(targetUser, alert);
     }
 
+    // get guest oblect by guest id from the repository
+    public Guest getGuestById(String id) {
+        return _guestRepository.findByGuestId(id);
+    }
+
     // // // function to initilaize data for UI testing
     // public void initUI() {
     //     _userRepository.addUser(new User("tal", 

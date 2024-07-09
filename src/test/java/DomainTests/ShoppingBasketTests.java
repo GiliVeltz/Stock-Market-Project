@@ -69,7 +69,7 @@ public class ShoppingBasketTests {
         }
         
         // Assert
-        assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
+        assertTrue(shoppingBasketUnderTest.getProductsList().contains(1));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class ShoppingBasketTests {
         }
         
         // Assert
-        assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
-        assertTrue(shoppingBasketUnderTest.getProductIdList().size() == 2);
+        assertTrue(shoppingBasketUnderTest.getProductsList().contains(1));
+        assertTrue(shoppingBasketUnderTest.getProductsList().size() == 2);
         assertTrue(shoppingBasketUnderTest.getProductsList().size() == 2);
     }
 
@@ -139,7 +139,7 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest.removeProductFromShoppingBasket(1);
         
         // Assert
-        assertTrue(!shoppingBasketUnderTest.getProductIdList().contains(1));
+        assertTrue(!shoppingBasketUnderTest.getProductsList().contains(1));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ShoppingBasketTests {
         }
         
         // Assert
-        assertTrue(shoppingBasketUnderTest.getProductIdList().contains(1));
+        assertTrue(shoppingBasketUnderTest.getProductsList().contains(1));
     }
 
     @Test
@@ -382,7 +382,7 @@ public class ShoppingBasketTests {
         shoppingBasketUnderTest = new ShoppingBasket(shopMock);
 
         // Act
-        int actual = shoppingBasketUnderTest.getProductIdList().size();
+        int actual = shoppingBasketUnderTest.getProductsList().size();
         
         // Assert
         assertTrue(actual == 0);
@@ -407,7 +407,7 @@ public class ShoppingBasketTests {
         }
 
         // Act
-        int actual = shoppingBasketUnderTest.getProductIdList().size();
+        int actual = shoppingBasketUnderTest.getProductsList().size();
         
         // Assert
         assertTrue(actual == 2);

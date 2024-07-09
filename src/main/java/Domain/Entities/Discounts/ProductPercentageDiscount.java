@@ -67,4 +67,9 @@ public class ProductPercentageDiscount extends BaseDiscount {
     public BasicDiscountDto getDto() {
         return new BasicDiscountDto(_productId, true, _percentage, getExpirationDate(), null, getId());
     }
+
+    @Override
+    public int getDiscountId() {
+        return getId();
+    }
 }

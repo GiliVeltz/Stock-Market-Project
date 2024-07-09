@@ -3,6 +3,7 @@ package Domain.Entities.Discounts;
 import java.util.Date;
 
 import Domain.Entities.Product;
+import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.Rules.Rule;
 import Dtos.BasicDiscountDto;
@@ -11,6 +12,8 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.*;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "discount_type")
 public abstract class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +25,12 @@ public abstract class Discount {
     @Transient
     protected Rule<Product> _specialRule;
 
-    @Column(name = "expirationDate", nullable = false)
+    @Column(name = "expiration_date", nullable = false)
     private Date _expirationDate;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
 
     public Discount(Date expirationDate, int id) {
         _expirationDate = expirationDate;
@@ -63,4 +70,6 @@ public abstract class Discount {
     public abstract BasicDiscountDto getDto();
 
     protected abstract void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException;
+
+    public abstract int getDiscountId();
 }

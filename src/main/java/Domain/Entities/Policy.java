@@ -14,22 +14,28 @@ import jakarta.persistence.*;
  *
  * @param <T> the type of the rules that define the policy
  */
-@Entity
+// @Entity
+// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+// @DiscriminatorColumn(name = "policy_type")
 public abstract class Policy<T> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer _id;
+    private Integer id;
+
+    // @OneToOne
+    // @JoinColumn(name = "shop_id", nullable = false)
+    // private Shop shop;
     
     @Transient
-    private List<Rule<T>> _rules;
+    private List<Rule<T>> rules;
 
     /**
      * Constructs a new Policy object.
      * Initializes an empty list of rules.
      */
     public Policy() {
-        _rules = new ArrayList<>();
+        rules = new ArrayList<>();
     }
 
     /**
@@ -38,8 +44,8 @@ public abstract class Policy<T> {
      * @param rule the rule to be added
      */
     public void addRule(Rule<T> rule) {
-        if(!_rules.contains(rule))
-            _rules.add(rule);
+        if(!rules.contains(rule))
+            rules.add(rule);
     }
 
      /**
@@ -48,8 +54,8 @@ public abstract class Policy<T> {
      * @param rule the rule to remove
      */
     public void deleteRule(Rule<T> rule) {
-        if(_rules.contains(rule))
-            _rules.remove(rule);
+        if(rules.contains(rule))
+            rules.remove(rule);
     }
 
     /**
@@ -61,7 +67,7 @@ public abstract class Policy<T> {
      * @return true if the policy evaluation succeeds, false otherwise
      */
     public boolean evaluate(T context) {
-        for (Rule<T> rule : _rules)
+        for (Rule<T> rule : rules)
             if (!rule.predicate(context))
                 return false;
         return true;
@@ -71,7 +77,7 @@ public abstract class Policy<T> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Policy{").append("\n");
-        for (Rule<T> rule : _rules)
+        for (Rule<T> rule : rules)
             sb.append(rule.toString()).append(",\n ");
         sb.append('}');
         return sb.toString();
@@ -79,13 +85,13 @@ public abstract class Policy<T> {
     
     // Getters
     public List<Rule<T>> getRules() {
-        return _rules;
+        return rules;
     }
 
     @SuppressWarnings("unchecked")
     public List<Rule<ShoppingBasketDto>> getShoppingBasketRulesDto() {
         List<Rule<ShoppingBasketDto>> _rules = new ArrayList<>();
-        for (Rule<T> rule : this._rules) {
+        for (Rule<T> rule : this.rules) {
             _rules.add((Rule<ShoppingBasketDto>) rule);
         }
         return _rules;
@@ -94,7 +100,7 @@ public abstract class Policy<T> {
     @SuppressWarnings("unchecked")
     public List<Rule<UserDto>> getUsersRulesDto() {
         List<Rule<UserDto>> _rules = new ArrayList<>();
-        for (Rule<T> rule : this._rules) {
+        for (Rule<T> rule : this.rules) {
             _rules.add((Rule<UserDto>) rule);
         }
         return _rules;
