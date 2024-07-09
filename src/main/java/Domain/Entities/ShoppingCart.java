@@ -43,7 +43,8 @@ import Exceptions.ShopPolicyException;
 @Table(name = "[shopping_cart]")
 public class ShoppingCart {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
     // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
@@ -71,18 +72,18 @@ public class ShoppingCart {
     //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
     //@Column(name = "guest_id", nullable = false)
     @OneToOne
-    @JoinColumn(name = "guest_id")
+    @JoinColumn(name = "guest_id", nullable=true)
     private Guest guest; // or guestToken string
 
-    @OneToOne
-    @JoinColumn(name = "user_name")
+    // @OneToOne
+    // @JoinColumn(name = "user_id")
+    @Transient
     private User user; // if the user is null, the cart is for a guest.
 
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
     // Default constructor for hibernate
-    public ShoppingCart() {
-    }
+    public ShoppingCart() {}
 
     // Constructor
     public ShoppingCart(User user) {
@@ -91,6 +92,7 @@ public class ShoppingCart {
         supplyMethod = AdapterSupply.getAdapterSupply();
         guest = null;
         this.user = user;
+        this.user_or_guest_name = user.getUserName();
     }
 
     // Constructor
@@ -98,7 +100,8 @@ public class ShoppingCart {
         shoppingBaskets = new ArrayList<>();
         paymentMethod = AdapterPayment.getAdapterPayment();
         supplyMethod = AdapterSupply.getAdapterSupply();
-        guest = guest;
+        this.guest = guest;
+        this.user_or_guest_name = guest.getGuestId();
         user = null;
     }
 
@@ -342,5 +345,9 @@ public class ShoppingCart {
             }
         }
         return false;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

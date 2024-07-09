@@ -18,8 +18,10 @@ import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
 import Domain.Repositories.DbGuestRepository;
+import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceGuestRepository;
+import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.OrderDto;
 import Dtos.UserDto;
@@ -31,6 +33,7 @@ import Server.notifications.NotificationHandler;
 public class UserFacade {
     private InterfaceUserRepository _userRepository;
     private InterfaceGuestRepository _guestRepository;
+    private InterfaceShoppingCartRepository _shoppingCartRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
     private NotificationHandler _notificationHandler;
@@ -38,12 +41,14 @@ public class UserFacade {
     private static final Logger logger = Logger.getLogger(UserFacade.class.getName());
 
     @Autowired
-    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo, NotificationHandler notificationHandler) {
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, 
+    DbUserRepository repository, DbGuestRepository guestRepo, DbShoppingCartRepository shoppingCartRepository, NotificationHandler notificationHandler) {
         _guestRepository = guestRepo;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
         _notificationHandler = notificationHandler;
+        _shoppingCartRepository = shoppingCartRepository;
         // // //For testing UI
         // initUI();
     }
@@ -122,7 +127,15 @@ public class UserFacade {
         String encodedPass = this._passwordEncoder.encodePassword(userDto.password);
         userDto.password = encodedPass;
         if (!doesUserExist(userDto.username)) {
-            _userRepository.save(new User(userDto));
+            User user = new User();
+            user.setUserName(userDto.username);
+            user.setPassword(userDto.password);
+            user.setEmail(userDto.email);
+            user.setBirthDate(userDto.birthDate);
+            ShoppingCart shoppingCart = new ShoppingCart();
+            shoppingCart.setUser(user);
+            user.setShoppingCart(shoppingCart);
+            _userRepository.save(user);
         } else {
             throw new StockMarketException("Username already exists.");
         }

@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.usertype.UserType;
+
 import Dtos.UserDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -21,6 +23,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "[user]")
@@ -50,8 +53,9 @@ public class User {
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
-
-    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    
+    //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
     private ShoppingCart shoppingCart;
     
     public User(){}
@@ -141,6 +145,10 @@ public class User {
         return username;
     }
 
+    public void setUserName(String username) {
+        this.username = username;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -195,5 +203,9 @@ public class User {
 
     public long getId(){
         return id;
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart2) {
+        this.shoppingCart = shoppingCart2;
     }
 }
