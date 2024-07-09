@@ -1,6 +1,8 @@
 package UI.Model;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BasketDto {
     int _shopID;
@@ -41,5 +43,10 @@ public class BasketDto {
 
     public void setTotalPrice(double totalPrice) {
         _totalPrice = totalPrice;
+    }
+
+    public Map<Integer, Long> getProductIDsCount() {
+        return getProductIDs().stream()
+                .collect(Collectors.groupingBy(productId -> productId, Collectors.counting()));
     }
 }
