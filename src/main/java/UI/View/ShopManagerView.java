@@ -267,26 +267,70 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
     private Dialog createUpdateQuantityDialog(String productId) {
         Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
         TextField quantityField = new TextField("New Quantity");
-        Button saveBtn = new Button("Save", event -> {
-            String newQuantity = quantityField.getValue();
-            // Logic to update the product quantity using the product ID and new quantity
-            dialog.close();
-            Notification.show("Quantity updated");
+        quantityField.setPlaceholder("Enter quantity");
+    
+        // Add a value change listener to validate input
+        quantityField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                quantityField.setInvalid(true);
+                quantityField.setErrorMessage("Please enter a valid number");
+            }
         });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = quantityField.getValue();
+            try {
+                Integer newQuantity = Integer.parseInt(value);
+                // Logic to update the product quantity using the product ID and new quantity
+                presenter.updateProductQuantity(getShopId(), Integer.parseInt(productId), newQuantity);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid number");
+            }
+        });
+    
         dialog.add(quantityField, saveBtn);
         return dialog;
     }
 
     private Dialog createUpdatePriceDialog(String productId) {
         Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
         TextField priceField = new TextField("New Price");
-        Button saveBtn = new Button("Save", event -> {
-            String newPrice = priceField.getValue();
-            // Logic to update the product price using the product ID and new price
-            dialog.close();
-            Notification.show("Price updated");
+        priceField.setPlaceholder("Enter price");
+    
+        // Add a value change listener to validate input
+        priceField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Double.parseDouble(value);
+                priceField.setInvalid(false);
+                priceField.setErrorMessage(null);
+            } catch (NumberFormatException e) {
+                priceField.setInvalid(true);
+                priceField.setErrorMessage("Please enter a valid price");
+            }
         });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = priceField.getValue();
+            try {
+                Double newPrice = Double.parseDouble(value);
+                // Logic to update the product price using the product ID and new price
+                presenter.updateProductPrice(getShopId(), Integer.parseInt(productId), newPrice);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid price");
+            }
+        });
+    
         dialog.add(priceField, saveBtn);
         return dialog;
     }
@@ -294,12 +338,38 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog createUpdateNameDialog(String productId) {
         Dialog dialog = new Dialog();
         TextField nameField = new TextField("New Name");
-        Button saveBtn = new Button("Save", event -> {
-            String newName = nameField.getValue();
-            // Logic to update the product name using the product ID and new name
-            dialog.close();
-            Notification.show("Name updated");
+        nameField.setPlaceholder("Enter name");
+    
+        // Disable the save button initially
+        Button saveBtn = new Button("Save");
+        saveBtn.setEnabled(false);
+    
+        // Add a value change listener to validate input
+        nameField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            if (value == null || value.trim().isEmpty()) {
+                nameField.setInvalid(true);
+                nameField.setErrorMessage("Name cannot be empty");
+                saveBtn.setEnabled(false);
+            } else {
+                nameField.setInvalid(false);
+                nameField.setErrorMessage(null);
+                saveBtn.setEnabled(true);
+            }
         });
+    
+        // Add click listener to the save button
+        saveBtn.addClickListener(event -> {
+            String newName = nameField.getValue();
+            if (newName != null && !newName.trim().isEmpty()) {
+                presenter.updateProductName(getShopId(), Integer.parseInt(productId), newName);
+                dialog.close();
+                Notification.show("Name updated");
+            } else {
+                Notification.show("Please enter a valid name");
+            }
+        });
+    
         dialog.add(nameField, saveBtn);
         return dialog;
     }
@@ -309,10 +379,13 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         ComboBox<String> categoryField = new ComboBox<>("New Category");
         categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
         Button saveBtn = new Button("Save", event -> {
-            String newCategory = categoryField.getValue();
-            // Logic to update the product category using the product ID and new category
+            Category category = parseCategory(categoryField.getValue());
+                if (category == Category.DEFAULT_VAL) {
+                    Notification.show("Invalid category");
+                    return;
+                }
+            presenter.updateProductCategory(getShopId(), Integer.parseInt(productId), category);
             dialog.close();
-            Notification.show("Category updated to " + newCategory);
         });
         dialog.add(categoryField, saveBtn);
         return dialog;
