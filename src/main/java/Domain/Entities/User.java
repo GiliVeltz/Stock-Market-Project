@@ -51,7 +51,7 @@ public class User {
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
     private ShoppingCart shoppingCart;
     
     public User(){}

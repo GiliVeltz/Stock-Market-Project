@@ -75,9 +75,11 @@ public class ShoppingCartFacade {
             //_cartsRepository.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
 
         }
-        System.out.println("test"+_cartsRepository.getCartByUsername(user.getUserName()));
-        // add the user to the cart
-        _cartsRepository.getCartByUsername(user.getUserName()).SetUser(user);
+        else {
+            // add the user to the cart
+            cart.SetUser(user);
+        }
+        //System.out.println("test"+_cartsRepository.getCartByUsername(user.getUserName()));
     }
 
     /*
