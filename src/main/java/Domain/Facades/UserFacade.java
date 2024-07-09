@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,9 @@ import Domain.Entities.Order;
 import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
-import Domain.Repositories.MemoryUserRepository;
+import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.OrderDto;
 import Dtos.UserDto;
@@ -26,15 +26,15 @@ import Server.notifications.NotificationHandler;
 @Service
 public class UserFacade {
     private InterfaceUserRepository _userRepository;
-    private List<String> _guestIds;
+    private InterfaceGuestRepository _guestRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
     @Autowired
     private NotificationHandler notificationHandler;
 
     @Autowired
-    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository) {
-        _guestIds = guestIds;
+    public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, DbUserRepository repository, DbGuestRepository guestRepo) {
+        _guestRepository = guestRepo;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
@@ -43,9 +43,9 @@ public class UserFacade {
     }
 
     // for tests
-    public UserFacade(InterfaceUserRepository userRepository, List<String> guestIds) {
+    public UserFacade(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository) {
         _userRepository = userRepository;
-        _guestIds = guestIds;
+        _guestRepository = guestRepository;
         _EmailValidator = new EmailValidator();
         _passwordEncoder = new PasswordEncoderUtil();
     }
@@ -131,6 +131,7 @@ public class UserFacade {
     public void addOrderToUser(String username, Order order) throws StockMarketException {
         User user = getUserByUsername(username);
         user.addOrder(order);
+        _userRepository.save(user);
     }
 
     // function that check if a given user is an admin
