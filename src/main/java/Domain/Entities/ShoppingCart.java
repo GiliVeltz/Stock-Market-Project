@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
 import Domain.Facades.ShopFacade;
 import Dtos.PurchaseCartDetailsDto;
 
@@ -46,9 +48,13 @@ public class ShoppingCart {
     private List<ShoppingBasket> shoppingBaskets;
 
     @Transient
-    private AdapterPaymentImp paymentMethod;
+    @Autowired
+    private AdapterPaymentInterface paymentMethod;
+
     @Transient
-    private AdapterSupplyImp supplyMethod;
+    @Autowired
+    private AdapterSupplyInterface supplyMethod;
+
     @Transient
     @Autowired
     private ShopFacade shopFacade;
@@ -78,7 +84,7 @@ public class ShoppingCart {
     // Default constructor for hibernate
     public ShoppingCart() {
         shoppingBaskets = new ArrayList<>();
-        paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        paymentMethod = AdapterPaymentImp.getRealAdapterPayment();
         supplyMethod = AdapterSupplyImp.getAdapterSupply();
         user = null;
     }
@@ -86,7 +92,7 @@ public class ShoppingCart {
     // Constructor
     public ShoppingCart(User user) {
         this.shoppingBaskets = new ArrayList<>();
-        this.paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        this.paymentMethod = AdapterPaymentImp.getRealAdapterPayment();
         this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
         this.guest = null;
         this.user = user;
@@ -96,7 +102,7 @@ public class ShoppingCart {
     // Constructor
     public ShoppingCart(Guest guest) {
         this.shoppingBaskets = new ArrayList<>();
-        this.paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        this.paymentMethod = AdapterPaymentImp.getRealAdapterPayment();
         this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
         this.guest = guest;
         this.user_or_guest_name = guest.getGuestId();

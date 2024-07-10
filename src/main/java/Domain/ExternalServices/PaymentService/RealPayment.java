@@ -7,11 +7,11 @@ import org.springframework.web.client.RestTemplate;
 
 import Dtos.PaymentInfoDto;
 
-public class ProxyPayment {
+public class RealPayment{
     private String externalSystemUrl = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     RestTemplate restTemplate;
 
-    public ProxyPayment() {
+    public RealPayment() {
         restTemplate = new RestTemplate();
     }
     

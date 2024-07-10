@@ -9,13 +9,18 @@ public class AdapterSupplyImp extends ExternalService implements AdapterSupplyIn
 
     // private fields
     private static AdapterSupplyImp _AdapterSupply;
-    private ProxySupply _supplyService;
+    private RealSupply _supplyService;
     private static final Logger logger = Logger.getLogger(AdapterSupplyImp.class.getName());
 
     private AdapterSupplyImp(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
         super(id, newSerivceName, informationPersonName, informationPersonPhone);
         _AdapterSupply = this;
-        _supplyService = new ProxySupply();
+        _supplyService = new RealSupply();
+    }
+
+    public AdapterSupplyImp() {
+        super(-1, "SupplyService", "Tal", "123456789");
+        _supplyService = new RealSupply();
     }
 
     public static AdapterSupplyImp getAdapterSupply() {

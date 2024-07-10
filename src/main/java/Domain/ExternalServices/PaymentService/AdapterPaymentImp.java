@@ -9,16 +9,16 @@ public class AdapterPaymentImp extends ExternalService implements AdapterPayment
 
     // private fields
     private static AdapterPaymentImp _adapterPayment;
-    private ProxyPayment _paymentService;
+    private RealPayment _paymentService;
     private static final Logger logger = Logger.getLogger(AdapterPaymentImp.class.getName());
 
     public AdapterPaymentImp(int id, String newSerivceName, String informationPersonName, String informationPersonPhone) {
         super(id, newSerivceName, informationPersonName, informationPersonPhone); // Explicitly invoke the constructor of the superclass
         _adapterPayment = this;
-        _paymentService = new ProxyPayment();
+        _paymentService = new RealPayment();
     }
 
-    public static AdapterPaymentImp getAdapterPayment() {
+    public static AdapterPaymentImp getRealAdapterPayment() {
         if (_adapterPayment == null)
             _adapterPayment = new AdapterPaymentImp(-1, "PaymentService", "Tal", "123456789");
         return _adapterPayment;

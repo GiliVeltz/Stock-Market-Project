@@ -17,7 +17,11 @@ import org.springframework.stereotype.Service;
 import Domain.Entities.User;
 import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
+import Domain.ExternalServices.PaymentService.ProxyApyment;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
@@ -42,8 +46,8 @@ public class MarketSystem {
     public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
-    private AdapterPaymentImp payment_adapter;
-    private AdapterSupplyImp supply_adapter;
+    private AdapterPaymentInterface payment_adapter;
+    private AdapterSupplyInterface supply_adapter;
 
     // not in used
     public static boolean test_flag = false;
@@ -55,10 +59,13 @@ public class MarketSystem {
     private ShoppingCartFacade shoppingCartFacade;
 
     @Autowired
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,
+            AdapterPaymentImp adapterPaymentImp, AdapterSupplyImp adapterSupplyImp) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
+        this.payment_adapter = adapterPaymentImp;
+        this.supply_adapter = adapterSupplyImp;
         this.init_market(system_config_path);
     }
 
@@ -73,13 +80,6 @@ public class MarketSystem {
         connect_to_external_services();
         String database_instruction = instructions[1];
         set_database(database_instruction);
-    }
-
-    public AdapterPaymentImp getPayment_adapter() {
-        return payment_adapter;
-    }
-    public AdapterSupplyImp getSupply_adapter() {
-        return supply_adapter;
     }
 
     /**
@@ -134,41 +134,13 @@ public class MarketSystem {
     public void set_external_services(String config) throws StockMarketException {
         if (config.equals("external_services:tests")){
             logger.info("Set Tests External Services");
-            payment_adapter = AdapterPaymentImp.getAdapterPayment();
-            supply_adapter = AdapterSupplyImp.getAdapterSupply();
-            // this.payment_adapter = new PaymentAdapterTests();
-            // this.supply_adapter = new SupplyAdapterTests();
-            // NotificationHandler.setTestsHandler();
-        }
-        else if (config.equals("external_services:fail_tests")){
-            logger.info("Set Denied Tests External Services");
-            payment_adapter = AdapterPaymentImp.getAdapterPayment();
-            supply_adapter = AdapterSupplyImp.getAdapterSupply();
-            // this.payment_adapter = new PaymentAdapter() {
-            //     @Override
-            //     public boolean handshake() {
-            //         return false;
-            //     }
-
-            //     @Override
-            //     public int payment(PaymentInfo paymentInfo, double price) {
-            //         return -1;
-            //     }
-
-            //     @Override
-            //     public int cancel_pay(int transaction_id) {
-            //         return -1;
-            //     }
-            // };
-            // this.supply_adapter = new SupplyAdapterTests();
-            // NotificationHandler.setTestsHandler();
+            payment_adapter = ProxyApyment.getProxyApymentPayment();
+            supply_adapter = ProxySupply.getProxySupply();
         }
         else if (config.equals("external_services:real")){
             logger.info("Set Real External Services");
-            payment_adapter = AdapterPaymentImp.getAdapterPayment();
+            payment_adapter = AdapterPaymentImp.getRealAdapterPayment();
             supply_adapter = AdapterSupplyImp.getAdapterSupply();
-            // this.payment_adapter = new PaymentAdapterImpl();
-            // this.supply_adapter = new SupplyAdapterImpl();
         }
         else {
             throw new StockMarketException("System Config File - Illegal External Services Data.");
@@ -199,36 +171,6 @@ public class MarketSystem {
             InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
             userFacade.setUserRepository(userRepository, guestRepository);
         }
-        else if (config.equals("database:tests_load_and_drop")){
-            // load from test-db
-                logger.info("Init & Drop Data For Tests From Exist Database");
-                // HibernateUtils.set_load_tests_mode();
-        }
-        else if (config.equals("database:tests_init")){
-            // for demo tests in configuration tests.
-            logger.info("Init Data For Tests From Empty Database");
-            // HibernateUtils.set_init_test_config();
-            // InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
-            // InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
-            // DbUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
-        }
-        else if (config.equals("database:tests_load")){
-            logger.info("Init Data For Tests From Exist Database");
-            // HibernateUtils.set_tests_load_config();
-        }
-        else if (config.equals("database:real_load")){
-            try
-            {
-                // HibernateUtils.set_normal_use();
-                // SystemLogger.getInstance().add_log("Init Data From Database");
-                // StoreController.get_instance().load(true);
-                // UserController.get_instance().load(true);
-                // QuestionController.getInstance().load();
-            }
-            catch (Exception e){
-                throw new StockMarketException("Cant Connect To Database.");
-            }
-        }
         else if (config.equals(("database:real_init"))){            
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
         }
@@ -248,13 +190,10 @@ public class MarketSystem {
      */
     public void init_data_to_market(String instructions_config_path){ 
         logger.info("Start to Init Data From Instructions File");
-        // HashMap<String, MarketFacade> facades = new HashMap<>();
         try{
             File file = new File(instructions_config_path);
             @SuppressWarnings("resource")
             Scanner scanner = new Scanner(file);
-            // HibernateUtils.beginTransaction();
-            // HibernateUtils.setBegin_transaction(false);
             while (scanner.hasNextLine()){
                 String instruction = scanner.nextLine();
                 if (!instruction.equals("")){
@@ -262,17 +201,8 @@ public class MarketSystem {
                     run_instruction(instruction_params);
                 }
             }
-            // HibernateUtils.setBegin_transaction(true);
-            // HibernateUtils.commit();
         } catch (Exception e) {
-            // HibernateUtils.setBegin_transaction(true);
-            // HibernateUtils.rollback();
             logger.info("Init Data Demo Fail, The System Run With No Data :" + e.getMessage());
-            // have to reset all the data of the market and stop the method.
-            // for (MarketFacade marketFacade : facades.values()){
-            //     marketFacade.clear();
-            // }
-            // facades.clear();
         }
     }
 
