@@ -12,37 +12,36 @@ import org.springframework.stereotype.Service;
 
 import Domain.Entities.Guest;
 import Domain.Entities.Order;
+import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
-import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
-import Domain.Repositories.InterfaceUserRepository;
 import Dtos.BasketDto;
-import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
-import Dtos.SupplyInfoDto;
 import Exceptions.StockMarketException;
 import jakarta.transaction.Transactional;
 
+@SuppressWarnings("unused")
 @Service
 public class ShoppingCartFacade {
-    private static ShoppingCartFacade instance;
     private UserFacade userFacade;
+    private ShopFacade shopFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     InterfaceShoppingCartRepository _cartsRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
-    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, UserFacade userFacade) {
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, UserFacade userFacade, ShopFacade shopFacade) {
         _cartsRepository = cartsRepository;
         this.userFacade = userFacade;
+        this.shopFacade = shopFacade;
         _guestsCarts = new HashMap<>();
     }
 
 
-    // set shopping cart repository to be used in real system
+    // set shopping cart repository to be used in test system
     public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
         _cartsRepository = cartsRepo;
     }
@@ -120,8 +119,10 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
+        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
         if (cart != null) {
-            cart.removeProduct(productID, shopID, quantity);
+            Product product = ShopFacade.getProductById(productID);
+            cart.removeProduct(product, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -136,7 +137,8 @@ public class ShoppingCartFacade {
     public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.removeProduct(productID, shopID, quantity);
+            Product product = ShopFacade.getProductById(productID);
+            cart.removeProduct(product, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -159,7 +161,7 @@ public class ShoppingCartFacade {
      @Transactional
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
     }
 
     /*
@@ -168,7 +170,7 @@ public class ShoppingCartFacade {
     @Transactional
     public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+        _cartsRepository.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
     }
 
     // Getters

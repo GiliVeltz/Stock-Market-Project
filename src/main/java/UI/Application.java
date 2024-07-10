@@ -24,6 +24,7 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
     // @Autowired
     // private WebSocketClient webSocketClient;
 
+    @SuppressWarnings("unused")
     private static int port;
     // Static variable to store the token
     public static String token;

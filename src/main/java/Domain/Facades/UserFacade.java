@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import Exceptions.StockMarketException;
 import Exceptions.UserException;
 import Server.notifications.NotificationHandler;
 
+@SuppressWarnings("unused")
 @Service
 public class UserFacade {
     private InterfaceUserRepository _userRepository;

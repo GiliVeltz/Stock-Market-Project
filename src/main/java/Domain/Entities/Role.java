@@ -11,8 +11,6 @@ import jakarta.persistence.*;
 /** 
  * This class represents the role of a user in a specific shop.
  */
-//TODO: ADD TESTS
-//TODO: MODIFY MODEL CLASS IF NEEDED.
 @Entity
 public class Role {
     /** 

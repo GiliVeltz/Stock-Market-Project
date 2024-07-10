@@ -19,7 +19,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -95,15 +94,15 @@ public class ShoppingBasket implements Cloneable {
         }
     }
 
-    public void removeProductFromShoppingBasket(Integer productId, int quantity) throws StockMarketException {
+    public void removeProductFromShoppingBasket(Product product, int quantity) throws StockMarketException {
         // check if the product is in the basket
         for (int i = 0; i < quantity; i++) {
-            if (!_productIdList.contains(productId)) {
+            if (!getProductIdsList().contains(product.getProductId())) {
                 logger.log(Level.SEVERE,
-                        "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + productId + " is not in the basket of shop with id " + _shop.getShopId());
-                throw new ProductDoesNotExistsException("Product with id " + productId + " is not in the basket");
+                        "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + product.getProductId() + " is not in the basket of shop with id " + shop.getShopId());
+                throw new ProductDoesNotExistsException("Product with id " + product.getProductId() + " is not in the basket");
             }
-            _productIdList.remove(productId);
+            productsList.remove(product);
         }
     }
 

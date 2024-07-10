@@ -3,8 +3,6 @@ package UI.Model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import enums.Category;
-
 public class CategoryDto {
     public String _categoryName;
 

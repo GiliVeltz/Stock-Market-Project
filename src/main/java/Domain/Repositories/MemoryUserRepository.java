@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Repository;
 
-import Domain.Entities.Guest;
 import Domain.Entities.User;
 
 @Repository

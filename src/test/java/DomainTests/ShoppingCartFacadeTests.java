@@ -2,15 +2,18 @@ package DomainTests;
 
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
+import Domain.Facades.UserFacade;
 import Domain.Authenticators.PasswordEncoderUtil;
 import Domain.Entities.Order;
+import Domain.Entities.Product;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
-import Domain.Repositories.InterfaceShoppingCartRepository;
+import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Exceptions.StockMarketException;
 import org.junit.jupiter.api.AfterEach;
@@ -43,6 +46,9 @@ public class ShoppingCartFacadeTests {
     private ShopFacade _shopFacadeMock;
 
     @Mock
+    private UserFacade _userFacadeMock;
+
+    @Mock
     private AdapterPaymentImp _AdapterPaymentMock;
 
     @Mock
@@ -69,7 +75,7 @@ public class ShoppingCartFacadeTests {
     public void setUp() throws StockMarketException {
         MockitoAnnotations.openMocks(this);
         _guestsCarts = new HashMap<>();
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
         shoppingCartFacadeUnderTest.setShoppingCartRepository(new MemoryShoppingCartRepository());
     }
 
@@ -154,8 +160,9 @@ public class ShoppingCartFacadeTests {
         String userName = "username";
         int shopID = 1;
         int productID = 1;
+        Product product = new Product(productID, "productName", Category.BOOKS, 10.0);
         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).removeProduct(productID, shopID, 1);
+        doNothing().when(_cartMock).removeProduct(product, shopID, 1);
 
         // Act & Assert
         try {
@@ -187,7 +194,7 @@ public class ShoppingCartFacadeTests {
         shoppingBasketMap.put(productID, _basketMock);
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
         // Act & Assert
         try {
@@ -218,7 +225,7 @@ public class ShoppingCartFacadeTests {
         shoppingBasketMap.put(productID, _basketMock);
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {
@@ -244,7 +251,7 @@ public class ShoppingCartFacadeTests {
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {

@@ -126,7 +126,12 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public Optional<ShoppingCart> findById(Integer id) {
-        return Optional.ofNullable(_shoppingCarts.get(id));
+        for (ShoppingCart cart : _shoppingCarts.values()) {
+            if (cart.getId() == id) {
+                return Optional.of(cart);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

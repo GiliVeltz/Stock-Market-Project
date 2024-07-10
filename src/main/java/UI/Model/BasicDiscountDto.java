@@ -2,8 +2,6 @@ package UI.Model;
 
 import java.util.Date;
 
-import enums.Category;
-
 public class BasicDiscountDto {
     public int productId;
     public boolean isPrecentage;

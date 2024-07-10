@@ -54,8 +54,6 @@ public class SystemAdminPresenter {
     }
 
     public void getShopPurchaseHistory(String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getShopPurchaseHistory'");
     }
 
  

@@ -15,17 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.User;
+import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
-import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceGuestRepository;
-import Domain.Repositories.InterfaceShopRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryGuestRepository;
+import Domain.Repositories.MemoryProductRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
@@ -93,6 +93,7 @@ public class MarketSystem {
         int counter = 0;
         try {
             File file = new File(config_path);
+            @SuppressWarnings("resource")
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String instruction = scanner.nextLine();
@@ -190,8 +191,10 @@ public class MarketSystem {
             test_flag = true;
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
-            InterfaceShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
+            MemoryShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
             shopFacade.setShopRepository(shopRepository);
+            MemoryProductRepository productRepository = new MemoryProductRepository();
+            shopFacade.setProductRepository(productRepository);
             InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
             InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
             userFacade.setUserRepository(userRepository, guestRepository);
@@ -248,6 +251,7 @@ public class MarketSystem {
         // HashMap<String, MarketFacade> facades = new HashMap<>();
         try{
             File file = new File(instructions_config_path);
+            @SuppressWarnings("resource")
             Scanner scanner = new Scanner(file);
             // HibernateUtils.beginTransaction();
             // HibernateUtils.setBegin_transaction(false);

@@ -1,6 +1,5 @@
 package Domain.Entities.enums;
 
-//TODO >> remove to service shop
 public enum Category {
     ELECTRONICS,
     BOOKS,

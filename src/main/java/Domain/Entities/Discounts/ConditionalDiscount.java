@@ -1,10 +1,8 @@
 package Domain.Entities.Discounts;
 
-import java.util.Date;
 import java.util.List;
 
 import Domain.Entities.ShoppingBasket;
-import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Exceptions.StockMarketException;
@@ -61,8 +59,7 @@ public class ConditionalDiscount extends Discount {
 
     @Override
     public BasicDiscountDto getDto() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not implemented yet");
+        return _discount.getDto();
     }
 
     @Override

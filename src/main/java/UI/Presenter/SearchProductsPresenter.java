@@ -129,6 +129,7 @@ public class SearchProductsPresenter {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public void addProductToCart(int shopId, int productId, int quantity) {
         RestTemplate restTemplate = new RestTemplate();
 

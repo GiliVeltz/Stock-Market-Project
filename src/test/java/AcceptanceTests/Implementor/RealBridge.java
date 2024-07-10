@@ -40,8 +40,6 @@ import Domain.Entities.User;
 import Domain.Entities.Alerts.PurchaseFromShopUserAlert;
 import Domain.Entities.enums.Category;
 import Domain.ExternalServices.ExternalServiceHandler;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
 import Domain.Facades.*;
 import Domain.Repositories.*;
 import Dtos.ExternalServiceDto;

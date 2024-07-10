@@ -68,10 +68,6 @@ public class ShoppingGuestAcceptanceTests {
                                                                                       // and one not
         assertFalse(_bridge.testGetProductInfoUsingKeywordsAsGuest(List.of("keyword2"))); // fail - non exist key word
     }
-
-    // TODO: VERSION 2: add tests for filter out products by there price range,
-    // rating, category, and store rating.
-    // TODO: GILI
     
     // Test search product information in a specific shop, according to product name as a guest in the system.
     @Test
@@ -108,7 +104,6 @@ public class ShoppingGuestAcceptanceTests {
     }
 
     // Test the buying senerio of a shopping cart (all or nothing) as a guest.
-    // TODO: TAL
     @Test
     public void testBuyingShoppingCartAsGuest() {
         assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest("success", new ArrayList<Integer>(), "123456789", "address")); // success - all products are available to buy them

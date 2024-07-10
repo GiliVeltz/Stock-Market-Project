@@ -22,20 +22,14 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
-
-//TODO: TAL: add pay and ship methods to this class.
 
 // This class represents a shopping cart that contains a list of shopping baskets.
 // The shopping cart connected to one user at any time.
@@ -86,38 +80,37 @@ public class ShoppingCart {
         shoppingBaskets = new ArrayList<>();
         paymentMethod = AdapterPaymentImp.getAdapterPayment();
         supplyMethod = AdapterSupplyImp.getAdapterSupply();
-        shopFacade = ShopFacade.getShopFacade();
         user = null;
     }
 
     // Constructor
     public ShoppingCart(User user) {
-        shoppingBaskets = new ArrayList<>();
-        paymentMethod = AdapterPaymentImp.getAdapterPayment();
-        supplyMethod = AdapterSupplyImp.getAdapterSupply();
-        guest = null;
+        this.shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
+        this.guest = null;
         this.user = user;
         this.user_or_guest_name = user.getUserName();
     }
 
     // Constructor
     public ShoppingCart(Guest guest) {
-        shoppingBaskets = new ArrayList<>();
-        paymentMethod = AdapterPayment.getAdapterPayment();
-        supplyMethod = AdapterSupply.getAdapterSupply();
+        this.shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
         this.guest = guest;
         this.user_or_guest_name = guest.getGuestId();
-        user = null;
+        this.user = null;
     }
 
     // for tests
     public ShoppingCart(ShopFacade shopFacade, AdapterPaymentImp paymentMethod, AdapterSupplyImp supplyMethod) {
-        shoppingBaskets = new ArrayList<>();
-        paymentMethod = paymentMethod;
-        supplyMethod = supplyMethod;
+        this.shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
         this.shopFacade = shopFacade;
-        user_or_guest_name = null;
-        user = null;
+        this.user_or_guest_name = null;
+        this.user = null;
     }
 
     /*
@@ -141,6 +134,7 @@ public class ShoppingCart {
         double overallPrice = 0;
 
         for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
+            ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
             double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
             overallPrice += amountToPay;
             priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
@@ -150,18 +144,21 @@ public class ShoppingCart {
         int supplyTransactionId = -1;
 
         try {
-            if (!_paymentMethod.handshake())
+            if (!paymentMethod.handshake())
 
-            paymentTransactionId = _paymentMethod.payment(purchaseCartDetailsDto.getPaymentInfo(), overallPrice);
+            paymentTransactionId = paymentMethod.payment(purchaseCartDetailsDto.getPaymentInfo(), overallPrice);
             if (paymentTransactionId == -1)
                 throw new PaymentFailedException("Payment failed");
 
-            supplyTransactionId = _supplyMethod.supply(purchaseCartDetailsDto.getSupplyInfo());
+            supplyTransactionId = supplyMethod.supply(purchaseCartDetailsDto.getSupplyInfo());
             if (supplyTransactionId == -1)
                 throw new ShippingFailedException("Shipping failed");
                 
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
             for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
+                ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
+                shoppingBasketsForOrder.add(shoppingBasket);
+                //_supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
@@ -277,13 +274,14 @@ public class ShoppingCart {
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID, int quantity) throws StockMarketException {
+    public void removeProduct(Product product, int shopID, int quantity) throws StockMarketException {
+        Optional<ShoppingBasket> basketOptional = shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         if (basketOptional.isPresent()) {
             ShoppingBasket basket = basketOptional.get();
-            basket.removeProductFromShoppingBasket(productID, quantity);
-            logger.log(Level.INFO, "Product removed from shopping basket: " + productID + " in shop: " + shopID);
+            basket.removeProductFromShoppingBasket(product, quantity);
+            logger.log(Level.INFO, "Product removed from shopping basket: " + product.getProductId() + " in shop: " + shopID);
             if (basket.isEmpty()) {
                 shoppingBaskets.remove(basket);
                 logger.log(Level.INFO, "Shopping basket for shop: " + shopID + " is empty and has been removed.");
@@ -350,5 +348,9 @@ public class ShoppingCart {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Integer getId() {
+        return shoppingCartId;
     }
 }

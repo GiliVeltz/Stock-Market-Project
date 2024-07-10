@@ -74,9 +74,6 @@ public class ShoppingUserAcceptanceTests{
         assertFalse(_bridge.testGetProductInfoUsingKeywordsAsUser(List.of("keyword2"))); // fail - non exist key word
     }
     
-    // TODO: VERSION 2: add tests for filter out products by there price range, rating, category, and store rating.
-    // TODO: GILI - need to implement this test
-    
     // Test search product information in a specific shop, according to product name as a User in the system.
     @Test
     public void testGetProductInfoUsingProductNameInShopAsUser() {
@@ -182,7 +179,6 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
     @Disabled("FOR VERSOIN 2 ~ This test is disabled cuase needs to implement in real bridge")
-    // TODO: METAR - need to implement this test
     @Test
     public void TestUserReportSystemManagerOnBreakingIntegrityRules() {
         assertTrue(_bridge.TestUserReportSystemManagerOnBreakingIntegrityRules("bob","bobspassword", "message1") ); // success - the user secceeded to send the message

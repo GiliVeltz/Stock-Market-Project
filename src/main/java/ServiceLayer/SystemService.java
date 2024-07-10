@@ -11,13 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.GeneralAlert;
-import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
-import Domain.Entities.Alerts.PurchaseFromShopAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.ExternalServiceDto;
-import Server.notifications.NotificationHandler;
 
 // Class that represents the system service and enables users (probably admins) to control the system.
 
@@ -38,7 +35,6 @@ public class SystemService {
         _tokenService = tokenService;
         _userFacade = userFacade;
         _shoppingCartFacade = shoppingCartFacade;
-        // TODO: create it as a singleton
         _externalServiceHandler = externalServiceHandler;
     }
 

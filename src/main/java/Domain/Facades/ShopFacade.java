@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import Domain.Entities.Product;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.AppointedManagerAlert;
 import Domain.Entities.Alerts.AppointedOwnerAlert;
@@ -30,21 +31,22 @@ import Domain.Entities.Discounts.ProductFixedDiscount;
 import Domain.Entities.Discounts.ProductPercentageDiscount;
 import Domain.Entities.Discounts.ShopFixedDiscount;
 import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.Rules.Rule;
+import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
+import Domain.Repositories.DbShopRepository;
+import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceShopRepository;
+import Domain.Repositories.MemoryProductRepository;
 import Domain.Repositories.MemoryShopRepository;
-import Domain.Repositories.MemoryUserRepository;
-import Domain.Rules.Rule;
 import Dtos.BasicDiscountDto;
-import Dtos.BasketDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductGetterDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
 import Dtos.ShopOrderDto;
-import Dtos.Rules.MinBasketPriceRuleDto;
-import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
@@ -53,14 +55,14 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 @Service
 public class ShopFacade {
-    private static ShopFacade instance;
-
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
+    private static InterfaceProductRepository _productRepository;
 
     @Autowired
-    public ShopFacade(DbShopRepository shopRepository, UserFacade userFacade) {
+    public ShopFacade(DbShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade) {
         _shopRepository = shopRepository;
+        _productRepository = productRepository;
         _userFacade = userFacade;
 
         //For testing UI
@@ -72,9 +74,14 @@ public class ShopFacade {
         // }
     }
 
-    // set shop repository to be used in real system
-    public void setShopRepository(InterfaceShopRepository shopRepository) {
+    // set shop repository to be used in test system
+    public void setShopRepository(MemoryShopRepository shopRepository) {
         _shopRepository = shopRepository;
+    }
+
+    // set product repository to be used in test system
+    public void setProductRepository(MemoryProductRepository productRepository) {
+        _productRepository = productRepository;
     }
 
     public Shop getShopByShopId(Integer shopId) {
@@ -1140,7 +1147,8 @@ public class ShopFacade {
         return null;
     }
 
-
-
-    
+    @SuppressWarnings("deprecation")
+    public static Product getProductById(int productID) {
+        return _productRepository.getById(productID);
+    }
 }

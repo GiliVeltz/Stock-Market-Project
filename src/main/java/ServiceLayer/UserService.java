@@ -9,19 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.PurchaseFromShopUserAlert;
 import Domain.Entities.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
-import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
-import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
-import Domain.Entities.Order;
 import Domain.Entities.Alerts.*;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})

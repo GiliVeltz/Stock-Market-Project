@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 //class that represents an order for the shop
 @Entity
@@ -35,7 +34,6 @@ public class ShopOrder {
     public ShopOrder() { }
 
     // Constructor
-    //TODO - Metar: check why not applying the clone method of ShoppingBasket
     public ShopOrder(int orderId, int shopId, ShoppingBasket shoppingBasket) throws StockMarketException {
         this.shopOrderId = orderId;
         shoppingBasket = shoppingBasket.clone();
