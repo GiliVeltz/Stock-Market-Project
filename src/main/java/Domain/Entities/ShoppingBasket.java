@@ -74,14 +74,16 @@ public class ShoppingBasket implements Cloneable {
         }
     }
 
-    public void removeProductFromShoppingBasket(Integer productId) throws StockMarketException {
+    public void removeProductFromShoppingBasket(Integer productId, int quantity) throws StockMarketException {
         // check if the product is in the basket
-        if (!_productIdList.contains(productId)) {
-            logger.log(Level.SEVERE,
-                    "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + productId + " is not in the basket of shop with id " + _shop.getShopId());
-            throw new ProductDoesNotExistsException("Product with id " + productId + " is not in the basket");
+        for (int i = 0; i < quantity; i++) {
+            if (!_productIdList.contains(productId)) {
+                logger.log(Level.SEVERE,
+                        "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + productId + " is not in the basket of shop with id " + _shop.getShopId());
+                throw new ProductDoesNotExistsException("Product with id " + productId + " is not in the basket");
+            }
+            _productIdList.remove(productId);
         }
-        _productIdList.remove(productId);
     }
 
 

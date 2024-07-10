@@ -32,6 +32,24 @@ public class RuleFactory {
         throw new IllegalArgumentException("Unknown shopping basket rule dto type: " + dto.getClass().getName());
     }
 
+    public static ShoppingBasketRuleDto createShoppingBasketRuleDto(Rule<ShoppingBasket> rule) {
+        if (rule instanceof MinBasketPriceRule)
+            return createShoppingBasketRuleDto((MinBasketPriceRule) rule);
+        if (rule instanceof MinProductAmountRule)
+            return createShoppingBasketRuleDto((MinProductAmountRule) rule);
+
+        throw new IllegalArgumentException("Unknown shopping basket rule type: " + rule.getClass().getName());
+    }
+
+    private static ShoppingBasketRuleDto createShoppingBasketRuleDto(MinBasketPriceRule rule) {
+        return new MinBasketPriceRuleDto(rule.getMinPrice());
+    }
+
+    private static ShoppingBasketRuleDto createShoppingBasketRuleDto(MinProductAmountRule rule) {
+        return new MinProductAmountRuleDto(rule.getProductId(), rule.getMinAmount());
+    }
+
+
     private static Rule<ShoppingBasket> createShoppingBasketRule(MinBasketPriceRuleDto dto) {
         return new MinBasketPriceRule(dto.minPrice);
     }
@@ -53,6 +71,17 @@ public class RuleFactory {
             return createUserRule((MinAgeRuleDto) dto);
 
         throw new IllegalArgumentException("Unknown user rule dto type: " + dto.getClass().getName());
+    }
+
+    public static UserRuleDto createProductRule(Rule<User> rule) {
+        if (rule instanceof MinAgeRule)
+            return createUserRuleDto((MinAgeRule) rule);
+
+        throw new IllegalArgumentException("Unknown user rule type: " + rule.getClass().getName());
+    }
+
+    private static UserRuleDto createUserRuleDto(MinAgeRule rule) {
+        return new MinAgeRuleDto(rule.getMinAge());
     }
 
     private static Rule<User> createUserRule(MinAgeRuleDto dto) {
@@ -133,4 +162,6 @@ public class RuleFactory {
 
         throw new IllegalArgumentException("ConditionRule: conditionRule and thenRule should be of the same type");
     }
+
+
 }

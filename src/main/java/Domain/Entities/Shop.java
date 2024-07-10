@@ -1383,4 +1383,13 @@ public class Shop {
     public String getShopStringForSearch() {
         return " */Id/* " + getShopId() + " */Name/* " + getShopName() + " */Rating/* " + getShopRating();
     }
+
+    public Map<Integer, Discount> getProductDiscounts(Integer productId) throws StockMarketException {
+        // TODO: implement after getDiscountsByProduct is implemented
+        if (isProductExist(productId)) {
+            return getDiscountsOfProduct(productId);
+        } else {
+            return null;
+        }
+    }
 }
