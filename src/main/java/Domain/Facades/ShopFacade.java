@@ -37,16 +37,20 @@ import Domain.Alerts.FireManagerAlert;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.User;
 import Dtos.BasicDiscountDto;
+import Dtos.BasketDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
+import Dtos.ProductGetterDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import enums.Category;
 import enums.Permission;
@@ -278,6 +282,18 @@ public class ShopFacade {
             purchaseHistory = shop.getPurchaseHistory();
         }
         return purchaseHistory;
+    }
+
+    // Retrieves the purchase history for a shop by its ID.
+    @Transactional
+    public List<ShopOrderDto> getPurchaseHistoryDto(Integer shopId) throws StockMarketException {
+        List<ShopOrder> purchaseHistory = getPurchaseHistory(shopId);
+        List<ShopOrderDto> purchaseHistoryDto = new ArrayList<>();
+
+         for (ShopOrder purchase : purchaseHistory) {
+            purchaseHistoryDto.add(new ShopOrderDto(purchase));
+        }
+        return purchaseHistoryDto;
     }
 
     // Checks if a user is the owner of a shop.
@@ -1118,6 +1134,17 @@ public class ShopFacade {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             return new ShopDto(shopId, shop.getShopName(), shop.getBankDetails(), shop.getShopAddress(), shop.getShopRating());
+        }
+        return null;
+    }
+
+    public ProductGetterDto getProductDtoById(int shopId, int productId) throws ProductDoesNotExistsException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            Product product = shop.getProductById(productId);
+            if (product != null) {
+                return new ProductGetterDto(product);
+            }
         }
         return null;
     }

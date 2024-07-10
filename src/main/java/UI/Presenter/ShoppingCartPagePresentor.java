@@ -7,6 +7,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import UI.Model.Response; // Add this import statement
+import UI.Model.SupplyInfoDto;
+
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.UI;
 
 import UI.Model.PurchaseCartDetailsDto;
 import UI.Model.BasketDto;
+import UI.Model.PaymentInfoDto;
 import UI.View.ShoppingCartPageView;
 
 public class ShoppingCartPagePresentor {
@@ -71,9 +74,9 @@ public class ShoppingCartPagePresentor {
     }
 
     @SuppressWarnings("rawtypes")
-    public void purchaseCart(List<Integer> selectedIndexes, String cardNumber, String address) {
+    public void purchaseCart(PaymentInfoDto paymentInfoDto, SupplyInfoDto supplyInfoDto ,List<Integer> selectedIndexes) {
         RestTemplate restTemplate = new RestTemplate();
-        PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(selectedIndexes, cardNumber, address);
+        PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, selectedIndexes);
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {

@@ -16,7 +16,9 @@ import Domain.Entities.User;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Dtos.BasketDto;
+import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
+import Dtos.SupplyInfoDto;
 import Exceptions.StockMarketException;
 import jakarta.transaction.Transactional;
 
@@ -163,23 +165,18 @@ public class ShoppingCartFacade {
      * This method called when a user leave the system.
      */
      @Transactional
-    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details) throws StockMarketException {
-        ArrayList<Integer> allBaskets = new ArrayList<Integer>();
-
-        for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
-            allBaskets.add(i);
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     /*
      * Purchase the cart of a user.
      */
     @Transactional
-    public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     // Getters

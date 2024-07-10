@@ -74,7 +74,7 @@ public class SystemAdminPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/user/getUserPurchaseHistory?username="
+                                "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
                                         + username,
                                 HttpMethod.GET,
                                 requestEntity,

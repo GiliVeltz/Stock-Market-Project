@@ -1,23 +1,25 @@
 package ServiceLayer;
 
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.logging.Level;
-
+import Domain.Alerts.Alert;
+import Domain.Alerts.PurchaseFromShopUserAlert;
+import Domain.Entities.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
+import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
-import Domain.Alerts.*;
-import Domain.Entities.Order;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
@@ -131,18 +133,18 @@ public class UserService {
     // by checking the token and the user type and then calling the purchaseCart
     // function
     @Transactional
-    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
+    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto purchaseCartDetails) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, details);
+                    _shoppingCartFacade.purchaseCartGuest(_tokenService.extractGuestId(token), purchaseCartDetails);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, details);
+                    _shoppingCartFacade.purchaseCartUser(userName, purchaseCartDetails);
                     response.setReturnValue("User bought card succeed");
                     Alert alert = new PurchaseFromShopUserAlert(userName);
                     NotificationHandler.getInstance().sendMessage(userName, alert);
@@ -280,6 +282,30 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // @Transactional
+    // public ResponseEntity<Response> addProductToShoppingCartByShopName(String token, int productID, int shopName, int quantity) {
+    //     Response response = new Response();
+    //     try {
+    //         if (_tokenService.validateToken(token)) {
+    //             int shopID = _userFacade.getShopIdByName(shopName);
+    //             if (_tokenService.isGuest(token)) {
+    //                 _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID, quantity);
+    //             } else if (_tokenService.isUserAndLoggedIn(token)) {
+    //                 _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID, quantity);
+    //             } else {
+    //                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //             }
+    //             return new ResponseEntity<>(response, HttpStatus.OK);
+    //         } else {
+    //             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    //         }
+    //     } catch (Exception e) {
+    //         response.setErrorMessage("Failed to add product: " + e.getMessage());
+    //         logger.log(Level.SEVERE, "Failed to add product: " + e.getMessage(), e);
+    //         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     // this function is responsible for removing a product from the shopping cart.
     @Transactional
