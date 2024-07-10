@@ -15,19 +15,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Entities.Product;
-import Domain.Entities.ShopOrder;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductGetterDto;
+import Dtos.Rules.ProductPolicyRuleList;
 import Dtos.Rules.ShopPolicyRulesList;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopDto;
 import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -564,7 +565,7 @@ public class ShopService {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 } else {
                     // get purchase history of a shop
-                    List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
+                    List<ShopOrderDto> purchasHistory = _shopFacade.getPurchaseHistoryDto(shopId);
                     response.setReturnValue(purchasHistory);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
@@ -2196,6 +2197,47 @@ public class ShopService {
         }
     }
 
+    /**
+     * Receive the shop policy
+     * @param token the users session token
+     * @param shopId the shop id
+     * @param productId the product id
+     * @return the shop policy.
+     */
+    @Transactional
+    public ResponseEntity<Response> getProductPolicy(String token, Integer shopId, Integer productId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                String username = _tokenService.extractUsername(token);
+                if (_userFacade.doesUserExist(username)) {
+                    if (!_tokenService.isUserAndLoggedIn(token)){
+                        response.setErrorMessage("User is not logged in.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                    List<UserRuleDto> rules = _shopFacade.getProductPolicy(shopId, productId);
+                    ProductPolicyRuleList productPolicyRulesList = new ProductPolicyRuleList();
+                    for (UserRuleDto rule : rules) {
+                        productPolicyRulesList.add(rule);
+                    }
+                    response.setReturnValue(productPolicyRulesList);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }else {
+                    response.setErrorMessage(String.format("User name %s does not exist.", username));
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get policy for product with id %d. Error: %s",productId, e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+
 
     /**
      * Update the shop policy.
@@ -2238,6 +2280,50 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Update the product policy.
+     * 
+     * @param token              The session token of the user performing the
+     *                           update.
+     * @param shopId             The ID of the shop where the policy is changed.
+     * @param productId          The ID of the product where the policy is changed.
+     * @param rules              The new policy.
+     * @return A Response object indicating the success or failure of the operation.
+     */
+    @Transactional
+    public ResponseEntity<Response> updateProductPolicy(String token, Integer shopId, Integer productId, List<UserRuleDto> rules) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String username = _tokenService.extractUsername(token);
+                    if (_userFacade.doesUserExist(username)) {
+                        _shopFacade.changeProductPolicy(username, shopId, productId, rules);
+                        response.setReturnValue(true);
+                        logger.info(String.format("Policy of product with id %d updated in Shop ID: %d", productId, shopId));
+                        return new ResponseEntity<>(response, HttpStatus.OK);
+                    } else {
+                        response.setErrorMessage("User does not exist.");
+                        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                    }
+                } else {
+                    response.setErrorMessage("User is not logged in.");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to update policy of product with id %d in shopID %d. Error: %s", productId, shopId,
+                            e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 
 
 }
