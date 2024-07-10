@@ -248,13 +248,13 @@ public class ShoppingCart {
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID) throws StockMarketException {
+    public void removeProduct(int productID, int shopID, int quantity) throws StockMarketException {
         Optional<ShoppingBasket> basketOptional = _shoppingBaskets.stream()
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         if (basketOptional.isPresent()) {
             ShoppingBasket basket = basketOptional.get();
-            basket.removeProductFromShoppingBasket(productID);
+            basket.removeProductFromShoppingBasket(productID, quantity);
             logger.log(Level.INFO, "Product removed from shopping basket: " + productID + " in shop: " + shopID);
             if (basket.isEmpty()) {
                 _shoppingBaskets.remove(basket);

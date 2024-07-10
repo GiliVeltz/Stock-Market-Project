@@ -154,11 +154,11 @@ public class ShoppingCartFacadeTests {
         int shopID = 1;
         int productID = 1;
         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).removeProduct(productID, shopID);
+        doNothing().when(_cartMock).removeProduct(productID, shopID, 1);
 
         // Act & Assert
         try {
-            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID);
+            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID, 1);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception thrown when not expected: " + e.getMessage());

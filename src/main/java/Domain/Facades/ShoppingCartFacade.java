@@ -126,10 +126,10 @@ public class ShoppingCartFacade {
      * This method called when a user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
+    public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            cart.removeProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -141,10 +141,10 @@ public class ShoppingCartFacade {
      * This method called when a guest user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
+    public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            cart.removeProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
