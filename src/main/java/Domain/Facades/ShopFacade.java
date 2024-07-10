@@ -300,10 +300,15 @@ public class ShopFacade {
     @Transactional
     public Boolean isShopOwner(Integer shopId, String userId) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (shop != null) {
-            return shop.isOwnerOrFounderOwner(userId);
+        try{
+            if (shop != null) {
+                return shop.isOwnerOrFounderOwner(userId);
+            }
+            return false;
         }
-        return false;
+        catch(Exception e){
+            return false;
+        }
     }
 
     // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
