@@ -20,4 +20,12 @@ public class CategoryDto {
     public CategoryDto(Category categoryName) {
         this._categoryName = categoryName.toString();
     }
+
+    public String getCategoryName() {
+        return _categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this._categoryName = categoryName;
+    }
 }

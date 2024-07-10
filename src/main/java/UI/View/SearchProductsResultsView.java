@@ -711,7 +711,7 @@ public class SearchProductsResultsView extends BaseView {
         VaadinSession.getCurrent().setAttribute("productName", product.getProductName());
         UI.getCurrent().navigate(address);
         resultsDialog.close();
-        Notification.show(product.getProductName() + " Nevigating to Product Page is not Implemented yet");
+        Notification.show(product.getProductName() + " - Nevigated to Product Page succssefully.");
     }
 
 

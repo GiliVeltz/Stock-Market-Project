@@ -120,6 +120,44 @@ public class ProductPresenter {
                         _view.showErrorMessage("Failed to present products");
                     }
                 });
+    }
 
+    public void addProductToCart(int shopId, int productId, int quantity) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + _serverPort + "/api/user/addProductToShoppingCart?productID=" + productId +
+                                 "&shopID=" + shopId + "&quantity=" + quantity,
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                _view.showSuccessMessage("Product added to cart successfully");
+                            }
+                            else {
+                                _view.showErrorMessage("Failed to parse JSON response");
+                            }                       
+                        } else {
+                            _view.showErrorMessage("Failed to add product to cart");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        _view.showErrorMessage("Failed to add product to cart");
+                    }
+                });
     }
 }
