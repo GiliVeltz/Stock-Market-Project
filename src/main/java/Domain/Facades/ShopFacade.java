@@ -317,7 +317,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (discountDto.isPrecentage){
@@ -345,7 +345,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
 
         ConditionalDiscount discount = new ConditionalDiscount(discountDto);
@@ -356,7 +356,7 @@ public class ShopFacade {
     @Transactional
     public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException(
                     "User " + username + " has no permission to remove discount from shop " + shopId);
         shop.removeDiscount(discountId);
@@ -957,7 +957,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, false);
         List<ShopManagerDto> managers = new ArrayList<>();
         for (Map.Entry<String, Role> entry : roles.entrySet()) {
             Set<Permission> permissions = entry.getValue().getPermissions();
@@ -982,7 +982,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, true);
         Role manager = shop.getRole(username);
         Set<String> subordinates = manager.getAppointments();
         List<ShopManagerDto> managers = new ArrayList<>();
