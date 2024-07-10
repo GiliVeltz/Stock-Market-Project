@@ -54,7 +54,9 @@ public class User {
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
     
-    //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @OneToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "shopping_cart_id")
     @Transient
     private ShoppingCart shoppingCart;
     

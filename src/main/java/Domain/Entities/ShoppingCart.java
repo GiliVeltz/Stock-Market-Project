@@ -71,13 +71,14 @@ public class ShoppingCart {
 
     //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
     //@Column(name = "guest_id", nullable = false)
-    @OneToOne
-    @JoinColumn(name = "guest_id", nullable=true)
+    //@OneToOne(mappedBy = "shoppingCart")
+    @Transient
     private Guest guest; // or guestToken string
 
     // @OneToOne
     // @JoinColumn(name = "user_id")
     @Transient
+    //@OneToOne(mappedBy = "shoppingCart")
     private User user; // if the user is null, the cart is for a guest.
 
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());

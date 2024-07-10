@@ -11,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +30,9 @@ public class Guest {
     //@Temporal(TemporalType.DATE)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "guest")
+    //@OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "shopping_cart_id")
+    @Transient
     private ShoppingCart shoppingCart;
     
     public Guest() {}
