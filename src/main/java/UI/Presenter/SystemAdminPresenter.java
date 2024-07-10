@@ -13,6 +13,7 @@ import java.util.List;
 
 import UI.Model.OrderDto;
 import UI.Model.ShopDto;
+import UI.Model.ShopOrderDto;
 import UI.View.SystemAdminPageView;
 import UI.Model.Response;
 public class SystemAdminPresenter {
@@ -54,8 +55,47 @@ public class SystemAdminPresenter {
     }
 
     public void getShopPurchaseHistory(String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getShopPurchaseHistory'");
+       RestTemplate restTemplate = new RestTemplate();
+
+    UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+            .then(String.class, token -> {
+                if (token != null && !token.isEmpty()) {
+                    System.out.println("Token: " + token);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Authorization", token);
+
+                    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                    ResponseEntity<Response> response = restTemplate.exchange(
+                            "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
+                                    + shopId,
+                            HttpMethod.GET,
+                            requestEntity,
+                            Response.class);
+
+                    if (response.getStatusCode().is2xxSuccessful()) {
+                        Response responseBody = response.getBody();
+
+                        if (responseBody.getErrorMessage() == null) {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
+                                    responseBody.getReturnValue(),
+                                    TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                            ShopOrderDto.class));
+                            view.showShopOrders(orderDtoList);
+                            view.showSuccessMessage("Orders Showed successfully");
+                        } else {
+                            view.showErrorMessage(responseBody.getErrorMessage());
+                        }
+                    } else {
+                        view.showErrorMessage("Failed to show Orders");
+                    }
+                } else {
+                    System.out.println("Token not found in local storage.");
+                    view.showErrorMessage("Failed to show Orders");
+                }
+            });
     }
 
  
