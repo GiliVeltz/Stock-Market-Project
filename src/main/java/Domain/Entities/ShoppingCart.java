@@ -44,7 +44,7 @@ import Exceptions.ShopPolicyException;
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "shopping_cart_id", nullable = false, updatable = false)
+    @Column(name = "_shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
     // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)

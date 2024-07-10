@@ -30,6 +30,7 @@ import jakarta.persistence.Transient;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "_id", nullable = false)
     private Long id;
 
     @Column(name = "password", nullable = false)
