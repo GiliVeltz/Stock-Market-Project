@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import UI.Model.Response; // Add this import statement
 import UI.Model.SupplyInfoDto;
 
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,28 +44,38 @@ public class ShoppingCartPagePresentor {
 
                         String username = (String) UI.getCurrent().getSession().getAttribute("username");
                         
-                        ResponseEntity<Response> response = restTemplate.exchange(
+                        try {
+                            ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/user/viewShoppingCart?username=" + username,
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                List<BasketDto> basketDtoList = objectMapper.convertValue(
-                                        responseBody.getReturnValue(),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class, BasketDto.class));
-                                view.showBaskets(basketDtoList);
-                                view.showSuccessMessage("Cart opened successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<BasketDto> basketDtoList = objectMapper.convertValue(
+                                            responseBody.getReturnValue(),
+                                            TypeFactory.defaultInstance().constructCollectionType(List.class, BasketDto.class));
+                                    view.showBaskets(basketDtoList);
+                                    view.showSuccessMessage("Cart opened successfully");
+                                }
+                                else {
+                                    view.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                view.showErrorMessage("Failed to open cart");
                             }
-                            else {
-                                view.showErrorMessage("Failed to parse JSON response");
-                            }                       
-                        } else {
-                            view.showErrorMessage("Failed to open cart");
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to open cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -88,29 +99,38 @@ public class ShoppingCartPagePresentor {
 
                         HttpEntity<PurchaseCartDetailsDto> requestEntity = new HttpEntity<>(details, headers);
 
-                        ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/user/purchaseCart?details=" + details,
-                                HttpMethod.POST,
-                                requestEntity,
-                                Response.class);
+                        try{
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/user/purchaseCart?details=" + details,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                view.showSuccessMessage("Cart purchased successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    view.showSuccessMessage("Cart purchased successfully");
+                                }
+                                else {
+                                    view.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                view.showErrorMessage("Failed to purchase cart");
                             }
-                            else {
-                                view.showErrorMessage("Failed to parse JSON response");
-                            }                       
-                        } else {
-                            view.showErrorMessage("Failed to purchase cart");
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to purchase cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to purchase cart");
                     }
-                });
+            });
     }
 
     @SuppressWarnings("rawtypes")
@@ -127,23 +147,33 @@ public class ShoppingCartPagePresentor {
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<Response> response = restTemplate.exchange(
+                        try {
+                            ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/user/removeProductFromShoppingCart?productID=" + productID + "&shopID=" + shopID + "&quantity=" + quantity,
                                 HttpMethod.POST,
                                 requestEntity,
                                 Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                view.showSuccessMessage("Product removed successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    view.showSuccessMessage("Product removed successfully");
+                                }
+                                else {
+                                    view.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                view.showErrorMessage("Failed to remove product from cart");
                             }
-                            else {
-                                view.showErrorMessage("Failed to parse JSON response");
-                            }                       
-                        } else {
-                            view.showErrorMessage("Failed to remove product from cart");
+                        }
+                        catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to remove product from cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
