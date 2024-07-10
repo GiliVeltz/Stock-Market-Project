@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -28,7 +30,6 @@ import UI.Presenter.ShoppingCartPagePresentor;
 @Route(value = "user_cart")
 public class ShoppingCartPageView extends BaseView {
     private ShoppingCartPagePresentor presenter;
-    // private H1 _title;
     private Grid<BasketDto> grid = new Grid<>(BasketDto.class);
     private Map<BasketDto, Boolean> selectedItems = new HashMap<>();
     private boolean isGuest;
@@ -97,12 +98,82 @@ public class ShoppingCartPageView extends BaseView {
         grid.addColumn(BasketDto::getTotalPrice)
                 .setHeader("Total Price")
                 .setKey("_totalPrice");
+
+        // Add Remove button column
+        grid.addColumn(new ComponentRenderer<>(basketDto -> {
+            Button removeButton = new Button("Remove", event -> openRemoveItemDialog(basketDto));
+            return removeButton;
+        })).setHeader("Remove");
     }
 
     private Renderer<BasketDto> createProductIDsRenderer() {
-        return new TextRenderer<>(basketDto -> basketDto.getProductIDs().stream()
-                .map(String::valueOf)
+        return new TextRenderer<>(basketDto -> basketDto.getProductIDsCount().entrySet().stream()
+                .map(entry -> entry.getKey() + " (" + entry.getValue() + ")")
                 .collect(Collectors.joining(", ")));
+    }
+
+    private void openRemoveItemDialog(BasketDto basketDto) {
+        Dialog dialog = new Dialog();
+        FormLayout formLayout = new FormLayout();
+
+        H3 removeItemHeader = new H3("Remove Item from Basket:");
+
+        // ComboBox for Product ID
+        ComboBox<Integer> productIDComboBox = new ComboBox<>("Product ID");
+        productIDComboBox.setItems(basketDto.getProductIDsCount().keySet());
+
+        // Number field for quantity
+        NumberField quantityField = new NumberField("Quantity");
+        quantityField.setMin(1);
+
+        // Set max based on selected product ID
+        productIDComboBox.addValueChangeListener(event -> {
+            Integer selectedProductID = event.getValue();
+            if (selectedProductID != null) {
+                long maxQuantity = basketDto.getProductIDsCount().getOrDefault(selectedProductID, 1L);
+                quantityField.setMax(maxQuantity);
+                quantityField.setValue(1.0); // Set default value
+            }
+        });
+
+        formLayout.add(removeItemHeader, productIDComboBox, quantityField);
+
+        Button submitButton = new Button("Submit", event -> {
+            // Validate and get input values
+            Integer productID = productIDComboBox.getValue();
+            Double quantityValue = quantityField.getValue();
+        
+            if (productID != null && quantityValue != null) {
+                long maxQuantity = basketDto.getProductIDsCount().getOrDefault(productID, 1L);
+                int quantity = Math.min(quantityValue.intValue(), (int) maxQuantity);
+        
+                // Adjust the quantity field if it exceeds the maximum allowed
+                if (quantity != quantityValue.intValue()) {
+                    quantityField.setValue((double) quantity);
+                }
+        
+                // Call the presenter to remove the item
+                presenter.removeItemFromCart(basketDto.getShopID(), productID, quantity);
+        
+                // Close the dialog
+                dialog.close();
+
+                // Refresh the cart view
+                presenter.viewCart();
+            } else {
+                // Handle invalid input
+                if (productID == null) {
+                    productIDComboBox.setInvalid(true);
+                }
+                if (quantityValue == null) {
+                    quantityField.setInvalid(true);
+                }
+            }
+        });
+
+        formLayout.add(submitButton);
+        dialog.add(formLayout);
+        dialog.open();
     }
 
     public boolean isGuest() {

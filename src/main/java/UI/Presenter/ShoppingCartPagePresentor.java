@@ -112,4 +112,43 @@ public class ShoppingCartPagePresentor {
                     }
                 });
     }
+
+    @SuppressWarnings("rawtypes")
+    public void removeItemFromCart(int shopID, int productID, int quantity) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/user/removeProductFromShoppingCart?productID=" + productID + "&shopID=" + shopID + "&quantity=" + quantity,
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                view.showSuccessMessage("Product removed successfully");
+                            }
+                            else {
+                                view.showErrorMessage("Failed to parse JSON response");
+                            }                       
+                        } else {
+                            view.showErrorMessage("Failed to remove product from cart");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to remove product from cart");
+                    }
+                });
+    }
 }

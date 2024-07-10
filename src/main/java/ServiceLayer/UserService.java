@@ -309,16 +309,16 @@ public class UserService {
 
     // this function is responsible for removing a product from the shopping cart.
     @Transactional
-    public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID, int quantity) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID,
-                            shopID);
+                            shopID, quantity);
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
                     _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID,
-                            shopID);
+                            shopID, quantity);
                 } else {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
