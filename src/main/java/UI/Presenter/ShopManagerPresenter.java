@@ -379,12 +379,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void addNewProduct(String productName, String category, double price)
-    {
-
-    }
-
-
     public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -811,7 +805,6 @@ public class ShopManagerPresenter {
                         }
 
                         HttpEntity<ProductPolicyRuleList> requestEntity = new HttpEntity<>(requestBody, headers);
-
 
                         try {
                             ResponseEntity<String> response = restTemplate.exchange(

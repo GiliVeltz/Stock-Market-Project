@@ -4,6 +4,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,24 +29,34 @@ public class SystemAdminPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/closeShop?shopId=" + shopId ,
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/closeShop?shopId=" + shopId ,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("The shop has been closed successfully.");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Failed to close the shop");
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The shop has been closed successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to close the shop");
+                            }
+                        }  catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to close the shop: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -60,36 +71,46 @@ public class SystemAdminPresenter {
     UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
             .then(String.class, token -> {
                 if (token != null && !token.isEmpty()) {
-                    System.out.println("Token: " + token);
+                    try
+                    {
+                        System.out.println("Token: " + token);
 
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                    ResponseEntity<Response> response = restTemplate.exchange(
-                            "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
-                                    + shopId,
-                            HttpMethod.GET,
-                            requestEntity,
-                            Response.class);
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
+                                        + shopId,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
 
-                    if (response.getStatusCode().is2xxSuccessful()) {
-                        Response responseBody = response.getBody();
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
 
-                        if (responseBody.getErrorMessage() == null) {
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
-                                    responseBody.getReturnValue(),
-                                    TypeFactory.defaultInstance().constructCollectionType(List.class,
-                                            ShopOrderDto.class));
-                            view.showShopOrders(orderDtoList);
-                            view.showSuccessMessage("Orders Showed successfully");
+                            if (responseBody.getErrorMessage() == null) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                ShopOrderDto.class));
+                                view.showShopOrders(orderDtoList);
+                                view.showSuccessMessage("Orders Showed successfully");
+                            } else {
+                                view.showErrorMessage(responseBody.getErrorMessage());
+                            }
                         } else {
-                            view.showErrorMessage(responseBody.getErrorMessage());
+                            view.showErrorMessage("Failed to show Orders");
                         }
-                    } else {
-                        view.showErrorMessage("Failed to show Orders");
+                    } catch (HttpClientErrorException e) {
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                    } catch (Exception e) {
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
+                        e.printStackTrace();
                     }
                 } else {
                     System.out.println("Token not found in local storage.");
@@ -106,36 +127,46 @@ public class SystemAdminPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
-                                        + username,
-                                HttpMethod.GET,
-                                requestEntity,
-                                Response.class);
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
+                                            + username,
+                                    HttpMethod.GET,
+                                    requestEntity,
+                                    Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                List<OrderDto> orderDtoList = objectMapper.convertValue(
-                                        responseBody.getReturnValue(),
-                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
-                                                OrderDto.class));
-                                view.showUserOrders(orderDtoList);
-                                view.showSuccessMessage("Orders Showed successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<OrderDto> orderDtoList = objectMapper.convertValue(
+                                            responseBody.getReturnValue(),
+                                            TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                    OrderDto.class));
+                                    view.showUserOrders(orderDtoList);
+                                    view.showSuccessMessage("Orders Showed successfully");
+                                } else {
+                                    view.showErrorMessage(responseBody.getErrorMessage());
+                                }
                             } else {
-                                view.showErrorMessage(responseBody.getErrorMessage());
+                                view.showErrorMessage("Failed to show Orders");
                             }
-                        } else {
-                            view.showErrorMessage("Failed to show Orders");
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");

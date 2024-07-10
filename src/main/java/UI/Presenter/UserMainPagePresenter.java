@@ -67,6 +67,7 @@ public class UserMainPagePresenter {
                             view.showErrorMessage("Failed to open shop: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
+                        
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to open shop");
@@ -194,9 +195,14 @@ public void getUserInfo() {
                                 view.showErrorMessage("Failed to parse JSON response");
                             }
                         } else {
-                            view.showErrorMessage("Failed to submit report ");
+                            view.showErrorMessage("Failed to submit report");
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (HttpClientErrorException e) {
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                    } catch (Exception e) {
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage("Failed to submit report: " + e.getMessage().substring(startIndex, endIndex));
                         e.printStackTrace();
                     }
                     } else {
