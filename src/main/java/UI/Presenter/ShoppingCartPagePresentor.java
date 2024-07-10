@@ -12,6 +12,7 @@ import UI.Model.SupplyInfoDto;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
@@ -51,6 +52,8 @@ public class ShoppingCartPagePresentor {
                                 requestEntity,
                                 Response.class);
 
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
 
@@ -105,10 +108,34 @@ public class ShoppingCartPagePresentor {
                                     HttpMethod.POST,
                                     requestEntity,
                                     Response.class);
+                        try{
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/user/purchaseCart?details=" + details,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    Response.class);
 
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
+                                if (responseBody.getErrorMessage() == null) {
+                                    view.showSuccessMessage("Cart purchased successfully");
+                                }
+                                else {
+                                    view.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                view.showErrorMessage("Failed to purchase cart");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to purchase cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                                 if (responseBody.getErrorMessage() == null) {
                                     view.showSuccessMessage("Cart purchased successfully");
                                 }
@@ -140,12 +167,14 @@ public class ShoppingCartPagePresentor {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         try {
                             ResponseEntity<Response> response = restTemplate.exchange(
@@ -154,6 +183,8 @@ public class ShoppingCartPagePresentor {
                                 requestEntity,
                                 Response.class);
 
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
 
