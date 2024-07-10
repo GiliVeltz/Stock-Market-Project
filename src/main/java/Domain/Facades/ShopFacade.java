@@ -35,6 +35,7 @@ import Domain.Alerts.AppointedManagerAlert;
 import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Dtos.BasicDiscountDto;
 import Dtos.BasketDto;
 import Dtos.ConditionalDiscountDto;
@@ -659,6 +660,21 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
+
+    // this function returns the shop policy
+    @Transactional
+    public List<UserRuleDto> getProductPolicy(Integer shopId, Integer productId) throws StockMarketException {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            Product product = shop.getProductById(productId);
+            List<Rule<User>> rules = product.getProductPolicy().getRules();
+            List<UserRuleDto> rulesDto = rules.stream().map(rule -> RuleFactory.createProductRule(rule)).toList();
+            return rulesDto;
+        } else {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+    
 
 
 
