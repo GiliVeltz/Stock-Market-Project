@@ -952,7 +952,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, false);
         List<ShopManagerDto> managers = new ArrayList<>();
         for (Map.Entry<String, Role> entry : roles.entrySet()) {
             Set<Permission> permissions = entry.getValue().getPermissions();
@@ -977,7 +977,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, true);
         Role manager = shop.getRole(username);
         Set<String> subordinates = manager.getAppointments();
         List<ShopManagerDto> managers = new ArrayList<>();

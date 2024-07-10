@@ -63,7 +63,7 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<String> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagerPermissions?shopId="+view.getShopId(),
                                 HttpMethod.GET,
@@ -72,7 +72,7 @@ public class ShopManagerPresenter {
 
                         ObjectMapper objectMapper = new ObjectMapper();
 
-                        try{
+                        
                             JsonNode responseJson = objectMapper.readTree(response.getBody());
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 view.showSuccessMessage("User permissions loaded successfully");
@@ -177,14 +177,14 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagers?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Managers loaded successfully");
@@ -205,9 +205,10 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
-                            //view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
                     } else {
                         view.showErrorMessage("Authorization token not found. Please log in.");
@@ -225,14 +226,14 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getMySubordinates?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Subordinates loaded successfully");
@@ -252,7 +253,9 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
