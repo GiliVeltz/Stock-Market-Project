@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.ProductDto;
 import UI.Model.ShopDto;
@@ -678,7 +680,7 @@ public class SearchProductsResultsView extends BaseView {
 
         Button produtPageButton = new Button("Product Page", event -> {
             dialog.close();
-            navigateToProductDetails(product);
+            navigateToProductDetails(product, shopId);
         });
         produtPageButton.addClassName("pointer-cursor");
         produtPageButton.setWidth("150px");
@@ -702,7 +704,13 @@ public class SearchProductsResultsView extends BaseView {
         Notification.show(product.getProductName() + " added to cart");
     }
 
-    public void navigateToProductDetails(ProductDto product) {
+    public void navigateToProductDetails(ProductDto product, Integer shopId) {
+        String address = "product_page/" + shopId + "_" + product.getProductId();
+        VaadinSession.getCurrent().setAttribute("shopId", shopId);
+        VaadinSession.getCurrent().setAttribute("productId", product.getProductId());
+        VaadinSession.getCurrent().setAttribute("productName", product.getProductName());
+        UI.getCurrent().navigate(address);
+        resultsDialog.close();
         Notification.show(product.getProductName() + " Nevigating to Product Page is not Implemented yet");
     }
 

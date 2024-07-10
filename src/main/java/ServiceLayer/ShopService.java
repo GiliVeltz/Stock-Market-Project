@@ -21,6 +21,7 @@ import Domain.Facades.UserFacade;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
+import Dtos.ProductGetterDto;
 import Dtos.Rules.ShopPolicyRulesList;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
@@ -261,7 +262,8 @@ public class ShopService {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
-                response.setReturnValue(_shopFacade.getProductDetaildDtoById(shopId, productId));
+                ProductGetterDto productGetterDto = _shopFacade.getProductDetaildDtoById(shopId, productId);
+                response.setReturnValue(productGetterDto);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);

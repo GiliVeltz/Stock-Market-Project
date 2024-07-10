@@ -1,13 +1,21 @@
 package Dtos;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import enums.Category;
 
 public class CategoryDto {
     public String _categoryName;
 
-    public CategoryDto(String categoryName) {
+   @JsonCreator
+    public CategoryDto(@JsonProperty("categoryName") String categoryName) {
         this._categoryName = categoryName;
     }
+
+    // public CategoryDto(String categoryName) {
+    //     this._categoryName = categoryName;
+    // }
     
     public CategoryDto(Category categoryName) {
         this._categoryName = categoryName.toString();

@@ -10,6 +10,8 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -19,34 +21,51 @@ import UI.Model.ProductDto;
 import UI.Model.ProductGetterDto;
 import UI.Presenter.ProductPresenter;
 
-@PageTitle("Product Page")
-@Route(value = "product")
-public class ProductView extends BaseView{
+@PageTitle("product_page")
+@Route(value = "product_page")
+public class ProductView extends BaseView implements HasUrlParameter<String>{
 
     private ProductPresenter presenter;
-    private String productName = "";
+    private String productName;
     private Integer productId;
     private Integer shopId;
-    private boolean _isGuest;
+
+    
+    @Override
+    public void setParameter(BeforeEvent event, String parameter) {
+        if (parameter != null) {
+            String[] parts = parameter.split("_");
+            
+            if (parts.length == 2) {
+                try {
+                    int shopId = Integer.parseInt(parts[0]);
+                    int productId = Integer.parseInt(parts[1]);
+                    
+                    System.out.println("Shop ID: " + shopId);
+                    System.out.println("Product ID: " + productId);
+                    
+                    VaadinSession.getCurrent().setAttribute("shopId", shopId);
+                    VaadinSession.getCurrent().setAttribute("productId", productId);
+                    
+                } catch (NumberFormatException e) {
+                    // Handle parsing errors if necessary
+                    e.printStackTrace();
+                }
+            } else {
+                // Handle incorrect parameter format (should be shopId/productId)
+                System.err.println("Invalid parameter format: " + parameter);
+            }
+        } else {
+            // Handle null parameter case if needed
+            System.err.println("Parameter is null");
+        }
+    }
 
 
     public ProductView(){
 
         // Initialize presenter
         presenter = new ProductPresenter(this, this.getServerPort());
-
-        // Create the header component
-        Header guestHeader = new BrowsePagesHeaderGuest("8080");
-        Header userHeader = new BrowsePagesHeader("8080");
-
-        _isGuest = isGuest();
-
-        if (_isGuest) {
-            add(guestHeader);
-        } else {
-            add(userHeader);
-        }
-
 
         shopId = (Integer) VaadinSession.getCurrent().getAttribute("shopId");
         productId = (Integer) VaadinSession.getCurrent().getAttribute("productId");

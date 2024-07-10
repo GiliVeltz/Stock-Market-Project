@@ -326,9 +326,10 @@ public class ShopController {
         return _shopService.updateShopPolicy(token, shopId, rules);
     }
 
-    @GetMapping("/getShopDiscounts")
+    @GetMapping("/getDetailedProduct")
     public ResponseEntity<Response>getDetailedProduct(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId) {
-        return _shopService.getShopDiscounts(token, shopId);
+        ResponseEntity<Response> response = _shopService.getAllProductDetailes(token, shopId, productId);
+        return response;
     }
     
     

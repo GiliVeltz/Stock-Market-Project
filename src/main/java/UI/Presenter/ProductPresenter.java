@@ -95,8 +95,8 @@ public class ProductPresenter {
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
                         ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/getDetailedProduct?shopID=" + shopId +
-                                 "&productID=" + productId,
+                                "http://localhost:" + _serverPort + "/api/shop/getDetailedProduct?shopId=" + shopId +
+                                 "&productId=" + productId,
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
