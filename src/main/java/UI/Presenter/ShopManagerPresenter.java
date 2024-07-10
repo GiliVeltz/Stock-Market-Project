@@ -35,6 +35,7 @@ import UI.Model.Response;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.ShopOrderDto;
 import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
 import UI.Model.ShopPolicy.MinProductAmountRuleDto;
@@ -989,5 +990,50 @@ public class ShopManagerPresenter {
                     }
                 });
     }
+
+    @SuppressWarnings("rawtypes")
+public void getShopPurchaseHistory(Integer shopId) {
+    RestTemplate restTemplate = new RestTemplate();
+
+    UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+            .then(String.class, token -> {
+                if (token != null && !token.isEmpty()) {
+                    System.out.println("Token: " + token);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Authorization", token);
+
+                    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                    ResponseEntity<Response> response = restTemplate.exchange(
+                            "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
+                                    + shopId,
+                            HttpMethod.GET,
+                            requestEntity,
+                            Response.class);
+
+                    if (response.getStatusCode().is2xxSuccessful()) {
+                        Response responseBody = response.getBody();
+
+                        if (responseBody.getErrorMessage() == null) {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
+                                    responseBody.getReturnValue(),
+                                    TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                            ShopOrderDto.class));
+                            view.showShopOrders(orderDtoList);
+                            view.showSuccessMessage("Orders Showed successfully");
+                        } else {
+                            view.showErrorMessage(responseBody.getErrorMessage());
+                        }
+                    } else {
+                        view.showErrorMessage("Failed to show Orders");
+                    }
+                } else {
+                    System.out.println("Token not found in local storage.");
+                    view.showErrorMessage("Failed to show Orders");
+                }
+            });
+}
     
 }

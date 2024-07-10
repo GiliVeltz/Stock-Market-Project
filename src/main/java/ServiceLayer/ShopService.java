@@ -24,6 +24,7 @@ import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShopPolicyRulesList;
@@ -537,7 +538,7 @@ public class ShopService {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 } else {
                     // get purchase history of a shop
-                    List<ShopOrder> purchasHistory = _shopFacade.getPurchaseHistory(shopId);
+                    List<ShopOrderDto> purchasHistory = _shopFacade.getPurchaseHistoryDto(shopId);
                     response.setReturnValue(purchasHistory);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
