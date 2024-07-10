@@ -73,6 +73,17 @@ public class RuleFactory {
         throw new IllegalArgumentException("Unknown user rule dto type: " + dto.getClass().getName());
     }
 
+    public static UserRuleDto createProductRule(Rule<User> rule) {
+        if (rule instanceof MinAgeRule)
+            return createUserRuleDto((MinAgeRule) rule);
+
+        throw new IllegalArgumentException("Unknown user rule type: " + rule.getClass().getName());
+    }
+
+    private static UserRuleDto createUserRuleDto(MinAgeRule rule) {
+        return new MinAgeRuleDto(rule.getMinAge());
+    }
+
     private static Rule<User> createUserRule(MinAgeRuleDto dto) {
         return new MinAgeRule(dto.minAge);
     }

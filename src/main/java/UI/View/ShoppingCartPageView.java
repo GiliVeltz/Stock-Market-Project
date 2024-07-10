@@ -30,6 +30,7 @@ import UI.Presenter.ShoppingCartPagePresentor;
 @Route(value = "user_cart")
 public class ShoppingCartPageView extends BaseView {
     private ShoppingCartPagePresentor presenter;
+    //private H1 _title;
     private Grid<BasketDto> grid = new Grid<>(BasketDto.class);
     private Map<BasketDto, Boolean> selectedItems = new HashMap<>();
     private boolean isGuest;
@@ -96,19 +97,14 @@ public class ShoppingCartPageView extends BaseView {
 
         // Total Price column
         grid.addColumn(BasketDto::getTotalPrice)
-                .setHeader("Total Price")
-                .setKey("_totalPrice");
-
-        // Add Remove button column
-        grid.addColumn(new ComponentRenderer<>(basketDto -> {
-            Button removeButton = new Button("Remove", event -> openRemoveItemDialog(basketDto));
-            return removeButton;
-        })).setHeader("Remove");
+            .setHeader("Total Price")
+            .setKey("_totalPrice");
     }
 
     private Renderer<BasketDto> createProductIDsRenderer() {
-        return new TextRenderer<>(basketDto -> basketDto.getProductIDsCount().entrySet().stream()
-                .map(entry -> entry.getKey() + " (" + entry.getValue() + ")")
+        return new TextRenderer<>(basketDto -> 
+            basketDto.getProductIDs().stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining(", ")));
     }
 

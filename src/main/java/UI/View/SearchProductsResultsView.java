@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -30,7 +29,7 @@ import UI.Presenter.SearchProductsPresenter;
 @PageTitle("Search Products Results Page")
 @Route(value = "products_search_results")
 public class SearchProductsResultsView extends BaseView {
-    //private SearchProductsPresenter presenter;
+    private SearchProductsPresenter presenter;
     Dialog resultsDialog;
     VerticalLayout resultLayout;
     private final List<VerticalLayout> shopLayoutsList;
@@ -41,7 +40,7 @@ public class SearchProductsResultsView extends BaseView {
 
     public SearchProductsResultsView(SearchProductsPresenter presenter) {
         // Initialize presenter
-        //this.presenter = presenter;
+        this.presenter = presenter;
         this.shopLayoutsList = new ArrayList<>();
         resultsDialog = new Dialog();
         resultsDialog.setWidth("1000px");
@@ -434,7 +433,7 @@ public class SearchProductsResultsView extends BaseView {
         HorizontalLayout rowLayout = new HorizontalLayout();
         int count = 0;
 
-        createProductButtonMap(productsList);
+        createProductButtonMap(productsList, shop.getShopId());
 
         for (ProductDto product : productsList) {
             rowLayout.add(productButtonMap.get(product));
@@ -453,13 +452,13 @@ public class SearchProductsResultsView extends BaseView {
     /*
      * Create a map of productDto to button
      */
-    private void createProductButtonMap (List<ProductDto> productsList) {
+    private void createProductButtonMap (List<ProductDto> productsList, Integer shopId) {
         for (ProductDto product : productsList) {
             Button productButton = new Button(product.getProductName());  // Display product name
             productButton.addClassName("product-button");
             productButton.addClassName("pointer-cursor");
             productButton.addClickListener(event -> {
-            showProductDialog(product);  // Open a dialog with product details
+            showProductDialog(product, shopId);  // Open a dialog with product details
             });
             productButtonMap.put(product, productButton);
         }
@@ -622,7 +621,7 @@ public class SearchProductsResultsView extends BaseView {
     }
 
 
-    public void showProductDialog(ProductDto product) {
+    public void showProductDialog(ProductDto product, Integer shopId) {
         // Create a dialog with shop details
         Dialog dialog = new Dialog();
         dialog.setModal(true);
@@ -641,10 +640,41 @@ public class SearchProductsResultsView extends BaseView {
         }
         dialogContent.add(new Div());
 
+        // Div priceAndControls = new Div();
+        // priceAndControls.add(new H3("Price: $" + product.getPrice()));
 
-        Button addToCartButton = new Button("Add To Cart", event -> addToCart(product));
+        // // Number field for quantity
+        // NumberField quantityField = new NumberField();
+        // quantityField.setValue(1.0);
+        // quantityField.setStep(1); // Adds increment and decrement buttons
+        // quantityField.setMin(1); // Minimum value
+        // quantityField.setWidth("100px"); // Set a fixed width for better alignment
+
+        // // Add value change listener to ensure quantity is not less than 1
+        // quantityField.addValueChangeListener(event -> {
+        //     if (event.getValue() < 1) {
+        //         quantityField.setValue(1.0);
+        //     }
+        // });
+
+        // // Plus and minus buttons for quantity
+        // Button plusButton = new Button("+", event -> {
+        //     quantityField.setValue(quantityField.getValue() + 1);
+        // });
+        // Button minusButton = new Button("-", event -> {
+        //     if (quantityField.getValue() > 1) {
+        //         quantityField.setValue(quantityField.getValue() - 1);
+        //     }
+        // });
+
+        // // Div for quantity controls including the number field
+        // Div quantityControls = new Div(minusButton, quantityField, plusButton);
+        // priceAndControls.add(quantityControls);
+
+        // Add to cart button
+        Button addToCartButton = new Button("Add To Cart", event -> addToCart(product, shopId, 1));
         addToCartButton.addClassName("pointer-cursor");
-        addToCartButton.setWidth("150px");
+        addToCartButton.setWidth("150px");                
 
         Button produtPageButton = new Button("Product Page", event -> {
             dialog.close();
@@ -665,8 +695,11 @@ public class SearchProductsResultsView extends BaseView {
         dialog.open();
     }
 
-    private void addToCart(ProductDto product) {
-        Notification.show(product.getProductName() + " Add To Cart is not Implemented yet");
+    private void addToCart(ProductDto product, Integer shopId, Integer quantity) {
+        // Implement logic to add the product to the cart (not shown here)
+        // Example: presenter.addToCart(product);
+        presenter.addProductToCart(shopId, product.getProductId(), quantity);
+        Notification.show(product.getProductName() + " added to cart");
     }
 
     public void navigateToProductDetails(ProductDto product) {

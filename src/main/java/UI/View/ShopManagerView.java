@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -49,8 +50,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
+import UI.Model.ProductDto;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.ProductPolicy.MinAgeRuleDto;
+import UI.Model.ShopOrderDto;
 import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
 import UI.Model.ShopPolicy.MinProductAmountRuleDto;
@@ -65,6 +69,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private ShopManagerPresenter presenter;
     private String _username;
     private Set<Permission> _permissions;
+    private ProductDto _currentProductDto;
     private List<ShoppingBasketRuleDto> _shopRules;
     private List<UserRuleDto> _productRules;
     private H1 _title;
@@ -78,7 +83,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _managePermissionsDialog;
     private Dialog _changeShopPolicyDialog;
     private Dialog _changeProductPolicyDialog;
+    private Dialog _chooseProductToChangePolicyDialog;
     private Dialog _addShopRuleDialog;
+    private Dialog _addProductRuleDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
@@ -87,6 +94,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Grid<ShopDiscountDto> _viewDiscountsGrid;
     private Grid<ShoppingBasketRuleDto> _changeShopPolicyGrid;
     private Grid<UserRuleDto> _changeProductPolicyGrid;
+    private Grid<ShopOrderDto> shopOrderGrid;
+    private List<String> _permissionsList;
+    private VerticalLayout contentLayout;
     
     public ShopManagerView(){
 
@@ -120,11 +130,17 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     }
 
     public void createPermissionButtons(List<String> permissions) {
+        _permissionsList = permissions;
         if(permissions.isEmpty()){
             add(new Paragraph("No permissions found"));
             return;
         }
 
+        initializeLayout(permissions);
+    }
+
+    private void initializeLayout(List<String> permissions) {
+        // Recreate the initial layout, including buttons and other components
         // Create a vertical layout
         VerticalLayout buttonsLayout = new VerticalLayout();
         buttonsLayout.setAlignItems(Alignment.CENTER);
@@ -139,10 +155,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             });
         });
         Button changeProductPolicyBtn = createButtonWithIcon("Change Product Policy", VaadinIcon.EDIT, event -> {
-            presenter.fetchProdcutPolicy(rules -> {
-                _productRules = rules;
-                _changeProductPolicyDialog = createChangeProdcutPolicyDialog();
-                _changeProductPolicyDialog.open();
+            presenter.fetchShopProducts(products -> {
+                _chooseProductToChangePolicyDialog = createChangeProductsPolicyDialog(products);
+                _chooseProductToChangePolicyDialog.open();
             });
         });
         Button changeShopPolicyBtn = createButtonWithIcon("Change Shop Policy", VaadinIcon.COGS, event -> {
@@ -168,7 +183,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 _viewRolesDialog.open();
             });
         });
-        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> presenter.viewPurchases());
+        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> {
+            presenter.getShopPurchaseHistory(getShopId());
+        });
         Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> presenter.viewProducts());
         Button closeShopBtn = createButtonWithIcon("Close Shop", VaadinIcon.CLOSE, event -> {
         Dialog closeDialog = new Dialog();
@@ -1248,70 +1265,304 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;  
     }
 
-    public Dialog createChangeProdcutPolicyDialog(){
+    public Dialog createChangeProductsPolicyDialog(List<ProductDto> products){
         // Create a dialog
         Dialog dialog = new Dialog();
 
         // Title for the dialog
-        H3 title = new H3("Product Policy");
+        H3 title = new H3("Products Policy");
 
         // Create a vertical layout to hold the title and the grid
         VerticalLayout content = new VerticalLayout();
         content.add(title);
+
+        // Create List of names of products
+        List<String> productNames = new ArrayList<>();
+        for (ProductDto product : products) {
+            productNames.add(product.getProductName()+" - "+product.getProductId());
+        }
+        // Type choose
+        Select<String> selectProduct = new Select<>();
+        selectProduct.setLabel("Product");
+        selectProduct.setItems(productNames);
+
+        content.add(selectProduct);
+
+        Button viewPolicyBtn = new Button("View Policy", e -> {
+            String selectedProduct = selectProduct.getValue();
+            String[] parts = selectedProduct.split(" - ");
+            int productId = Integer.parseInt(parts[1]);
+            ProductDto selectedProductDto = null;
+            for (ProductDto product : products) {
+                if(product.getProductId() == productId){
+                    selectedProductDto = product;
+                    break;
+                }
+            }
+            if(selectedProductDto != null){
+                _currentProductDto = selectedProductDto;
+                presenter.fetchProductPolicy(selectedProductDto, rules -> {
+                    _productRules = rules;
+                    _changeProductPolicyDialog = createViewAndChangeProdcutPolicyDialog(_currentProductDto);
+                    _changeProductPolicyDialog.open();
+                });
+            }
+        });
+
+        content.add(viewPolicyBtn);
+        dialog.add(content);
         return dialog;
-        // // Create a grid
-        
-        // _changeShopPolicyGrid = new Grid<>(ShoppingBasketRuleDto.class, false);
-        // _changeShopPolicyGrid.addColumn(ShoppingBasketRuleDto::getRuleString).setHeader("Rules");
-        
-        
-        // _changeShopPolicyGrid.addItemClickListener(event -> {
-        //     ShoppingBasketRuleDto rule = event.getItem();
-        //     Dialog confirmationDialog = new Dialog();
-        //     Span confirmationText = new Span("Are you sure you want to delete this rule?");
-            
-        //     // Create Yes and No buttons
-        //     Button yesButton = new Button("Yes", e -> {
-        //         // Remove the rule from the data source
-        //         ListDataProvider<ShoppingBasketRuleDto> dataProvider = (ListDataProvider<ShoppingBasketRuleDto>) _changeShopPolicyGrid.getDataProvider();
-        //         dataProvider.getItems().remove(rule);
-        //         dataProvider.refreshAll();
-        //         confirmationDialog.close();
-        //     });
-            
-        //     Button noButton = new Button("No", e -> confirmationDialog.close());
-
-        //     // Add the buttons to a HorizontalLayout
-        //     Span spacer = new Span();
-        //     HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
-        //     buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
-        //     buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
-            
-        //     // Create a layout for the dialog
-        //     VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
-        //     confirmationDialog.add(dialogLayout);
-        //     confirmationDialog.open();
-        // });
-
-        // // Set items to the grid if available
-        // if (_shopRules != null) {
-        //     _changeShopPolicyGrid.setItems(_shopRules);
-        // }
-
-        // content.add(_changeShopPolicyGrid);
-        
-        // Button addShopRule = new Button("Add Rule", e -> {
-        //     _addShopRuleDialog.open();
-        // });
-        // dialog.setWidth("900px"); // Set the desired width of the dialog
-        // dialog.setHeight("700px"); // Set the desired height of the dialog
-
-        // _addShopRuleDialog = createAddShopRuleDialog();
-        // content.add(addShopRule);
-        // dialog.add(content);
-        
-        // return dialog;
     }
+    public Dialog createViewAndChangeProdcutPolicyDialog(ProductDto product){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Product "+product.getProductName()+" Policy");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create the new rules data structure
+        List<UserRuleDto> newRules = new ArrayList<>();
+        if(_productRules != null){
+            for (UserRuleDto rule : _productRules) {
+                newRules.add(rule.createCopy(rule));
+            }
+        }
+        // Create a grid
+        _changeProductPolicyGrid = new Grid<>(UserRuleDto.class, false);
+        _changeProductPolicyGrid.addColumn(UserRuleDto::getRuleString).setHeader("Rules");
+        
+        
+        _changeProductPolicyGrid.addItemClickListener(event -> {
+            UserRuleDto rule = event.getItem();
+            Dialog confirmationDialog = new Dialog();
+            Span confirmationText = new Span("Are you sure you want to delete this rule?");
+            
+            // Create Yes and No buttons
+            Button yesButton = new Button("Yes", e -> {
+                // Remove the rule from the data source
+                ListDataProvider<UserRuleDto> dataProvider = (ListDataProvider<UserRuleDto>) _changeProductPolicyGrid.getDataProvider();
+                dataProvider.getItems().remove(rule);
+                dataProvider.refreshAll();
+                newRules.remove(rule);
+                confirmationDialog.close();
+            });
+            
+            Button noButton = new Button("No", e -> confirmationDialog.close());
+
+            // Add the buttons to a HorizontalLayout
+            Span spacer = new Span();
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
+            buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
+            buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
+            
+            // Create a layout for the dialog
+            VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
+            confirmationDialog.add(dialogLayout);
+            confirmationDialog.open();
+        });
+
+        _changeProductPolicyGrid.setItems(newRules);
+
+        content.add(_changeProductPolicyGrid);
+
+        //Save button
+        Button saveChanges = new Button("Save", e-> {
+            // Handle save logic here
+            _productRules = newRules;
+            presenter.updateProductPolicy(_productRules, product, isSuccess -> {
+                if(isSuccess){
+                    Notification.show("Product policy updated successfully");
+                }else{
+                    Notification.show("Failed to update product policy");
+                }
+            });
+            dialog.close();
+        
+        });
+        Button addShopRule = new Button("Add Rule", e -> {
+            _addShopRuleDialog.open();
+        });
+        dialog.setWidth("900px"); // Set the desired width of the dialog
+        dialog.setHeight("700px"); // Set the desired height of the dialog
+
+        _addShopRuleDialog = createAddProductRuleDialog(newRules);
+        HorizontalLayout buttonsLayout = new HorizontalLayout(addShopRule, saveChanges);
+        content.add(buttonsLayout);
+        dialog.add(content);
+        
+        return dialog;
+    }
+
+    public Dialog createAddProductRuleDialog(List<UserRuleDto> newRules){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add New Product Rule");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        // Type choose
+        Select<String> selectRuleType = new Select<>();
+        selectRuleType.setLabel("Rule Type");
+        selectRuleType.setItems("Min Age Rule");
+        selectRuleType.setValue("Min Age Rule");
+        
+        //for min age rule
+        IntegerField minAge = new IntegerField("Value");
+        minAge.setErrorMessage("Please enter a valid value for the age");
+        minAge.setRequired(true);
+
+
+        // Add fields to the form layout
+        formLayout.add(selectRuleType, minAge);
+
+        // Listener to handle showing/hiding additional fields based on rule type
+        selectRuleType.addValueChangeListener(event -> {
+            String selectedType = event.getValue();
+            if ("Min Age Rule".equals(selectedType)) {
+                minAge.clear();
+                formLayout.add(minAge);
+            } else {
+                //do nothing for now
+            }
+        });
+
+        // Create buttons
+        Button submitButton = new Button("Add", event -> {
+            // Handle form submission
+            String ruleType = selectRuleType.getValue();
+            UserRuleDto rule = null;
+            if("Min Age Rule".equals(ruleType)){
+                if(minAge.getValue() <= 0){
+                    Notification.show("Please enter a valid age");
+                    return;
+                }
+                rule = new MinAgeRuleDto(minAge.getValue());
+                newRules.add(rule);
+            }else{
+                //do nothing for now
+            }
+            
+            ListDataProvider<UserRuleDto> dataProvider = (ListDataProvider<UserRuleDto>) _changeProductPolicyGrid.getDataProvider();
+            dataProvider.refreshAll();
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
+        dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                selectRuleType.clear();
+                minAge.clear();
+            }
+        });
+
+        return dialog;  
+    }
+
+    public void showShopOrders(List<ShopOrderDto> orders) {
+        Dialog orderDialog = new Dialog();
+        orderDialog.setWidth("80%");
+        orderDialog.setHeight("80%");
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        orderDialog.add(dialogLayout);
+
+        Grid<ShopOrderDto> shopOrderGrid = new Grid<>(ShopOrderDto.class, false);
+        shopOrderGrid.addColumn(ShopOrderDto::getOrderId).setHeader("Order ID");
+        shopOrderGrid.addColumn(ShopOrderDto::getTotalOrderAmount).setHeader("Total Amount");
+
+        // Add a button to expand each order and show details
+        shopOrderGrid.addComponentColumn(orderDto -> {
+            Button detailsButton = new Button("Show Details");
+            detailsButton.addClickListener(e -> showOrderDetails(orderDto));
+            return detailsButton;
+        }).setHeader("Actions");
+
+        dialogLayout.add(shopOrderGrid);
+        shopOrderGrid.setItems(orders);
+
+        Button closeButton = new Button("Close", e -> orderDialog.close());
+        dialogLayout.add(closeButton);
+
+        orderDialog.open();
+    }
+
+    
+    private void createBackButton() {
+        Button backButton = new Button("Back", e -> restoreInitialState());
+        add(backButton);
+    }
+
+    private void restoreInitialState() {
+        removeAll(); // Clear the current layout
+        initializeLayout(_permissionsList); // Re-add the initial layout
+    }
+    
+
+    private void showOrderDetails(ShopOrderDto order) {
+        Dialog dialog = new Dialog();
+        dialog.setWidth("400px");
+        dialog.setHeight("300px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Order ID: " + order.getOrderId()));
+        dialogLayout.add(new Text("Total Amount: " + order.getTotalOrderAmount()));
+    
+        Button viewProductsButton = new Button("View Products", e -> showProductIds(order.getShoppingBasketDto().getProductIdList()));
+        dialogLayout.add(viewProductsButton);
+    
+        Button closeButton = new Button("Close", e -> dialog.close());
+        dialogLayout.add(closeButton);
+    
+        dialog.open();
+    }
+
+    private void showProductIds(List<Integer> productIds) {
+        Dialog productDialog = new Dialog();
+        productDialog.setWidth("300px");
+        productDialog.setHeight("200px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        productDialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Product IDs:"));
+    
+        productIds.forEach(productId -> dialogLayout.add(new Text(productId.toString())));
+    
+        Button closeButton = new Button("Close", e -> productDialog.close());
+        dialogLayout.add(closeButton);
+    
+        productDialog.open();
+    }
+
 
     
 }
