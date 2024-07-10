@@ -295,7 +295,7 @@ public class ShoppingCartTests {
 
         // Act
         try {
-            shoppingCartUnderTest.removeProduct(1, 1);
+            shoppingCartUnderTest.removeProduct(1, 1, 1);
             fail("Expected StockMarketException");
         } catch (StockMarketException e) {
             // Assert
@@ -323,7 +323,7 @@ public class ShoppingCartTests {
 
         // Act
         try {
-            shoppingCartUnderTest.removeProduct(1, 1);
+            shoppingCartUnderTest.removeProduct(1, 1, 1);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Unexpected StockMarketException");

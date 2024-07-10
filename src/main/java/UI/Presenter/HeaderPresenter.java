@@ -1,20 +1,21 @@
 package UI.Presenter;
 
 
+import java.util.Date;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
-import java.util.Date;
+import UI.Model.Response;
 import UI.Model.UserDto;
 import UI.View.Header;
-import UI.Model.Response;
 // import ServiceLayer.Response;
 public class HeaderPresenter {
 
