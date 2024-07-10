@@ -31,23 +31,22 @@ public class UserOrderHistoryPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        try
-                        {
-                            System.out.println("Token: " + token);
+                        System.out.println("Token: " + token);
 
-                            HttpHeaders headers = new HttpHeaders();
-                            headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                            String username = (String) UI.getCurrent().getSession().getAttribute("username");
-
+                        String username = (String) UI.getCurrent().getSession().getAttribute("username");
+                        
+                        try{
                             ResponseEntity<Response> response = restTemplate.exchange(
-                                    "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
-                                            + username,
-                                    HttpMethod.GET,
-                                    requestEntity,
-                                    Response.class);
+                                "http://localhost:" + view.getServerPort() + "/api/user/viewOrderHistory?username="
+                                        + username,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
 
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
@@ -66,7 +65,8 @@ public class UserOrderHistoryPresenter {
                             } else {
                                 view.showErrorMessage("Failed to show Orders");
                             }
-                        } catch (HttpClientErrorException e) {
+                        }
+                        catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
                             int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
@@ -74,6 +74,7 @@ public class UserOrderHistoryPresenter {
                             view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
+                        
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to show Orders");

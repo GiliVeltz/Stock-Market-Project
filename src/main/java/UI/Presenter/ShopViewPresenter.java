@@ -107,14 +107,9 @@ public class ShopViewPresenter {
                         } else {
                             _view.showErrorMessage("Failed to open complaint");
                         }
-                    } catch (HttpClientErrorException e) {
-                            _view.showErrorMessage("HTTP error: " + e.getStatusCode());
-                        } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage("Failed to open complaint: " + e.getMessage().substring(startIndex, endIndex));
-                            e.printStackTrace();
-                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     } else {
                         System.out.println("Token not found in local storage.");
                         _view.showErrorMessage("Failed to open complaint");
@@ -129,21 +124,20 @@ public class ShopViewPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        try
-                        {
-                            System.out.println("Token: " + token);
+                        System.out.println("Token: " + token);
 
-                            HttpHeaders headers = new HttpHeaders();
-                            headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
+                        try{
                             ResponseEntity<Response> response = restTemplate.exchange(
-                                    "http://localhost:" + _view.getServerPort() + "/api/user/addProductToShoppingCart?productID=" + productId +
-                                    "&shopID=" + shopId + "&quantity=" + quantity,
-                                    HttpMethod.POST,
-                                    requestEntity,
-                                    Response.class);
+                                "http://localhost:" + _view.getServerPort() + "/api/user/addProductToShoppingCart?productID=" + productId +
+                                 "&shopID=" + shopId + "&quantity=" + quantity,
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
 
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
@@ -157,14 +151,17 @@ public class ShopViewPresenter {
                             } else {
                                 _view.showErrorMessage("Failed to add product to cart");
                             }
-                        } catch (HttpClientErrorException e) {
+                        }
+                        catch (HttpClientErrorException e) {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
                             int endIndex = e.getMessage().indexOf("\",", startIndex);
                             _view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
+                        
                     } else {
                         System.out.println("Token not found in local storage.");
                         _view.showErrorMessage("Failed to add product to cart");
