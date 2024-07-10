@@ -312,7 +312,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (discountDto.isPrecentage){
@@ -340,7 +340,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
 
         ConditionalDiscount discount = new ConditionalDiscount(discountDto);
@@ -351,7 +351,7 @@ public class ShopFacade {
     @Transactional
     public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException(
                     "User " + username + " has no permission to remove discount from shop " + shopId);
         shop.removeDiscount(discountId);
