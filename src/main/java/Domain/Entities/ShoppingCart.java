@@ -248,7 +248,8 @@ public class ShoppingCart {
         // add the product to the basket.
         try {
             basket.addProductToShoppingBasket(_user, productID, quantity);
-            _shoppingBaskets.add(basket);
+            if (!basketOptional.isPresent())
+                _shoppingBaskets.add(basket);
         }
         catch (ProductOutOfStockExepction e) {
             logger.log(Level.SEVERE, "Product out of stock in shop: " + shopID);
