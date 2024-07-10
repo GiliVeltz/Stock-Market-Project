@@ -1,15 +1,18 @@
 package UI.View;
 
 import java.util.List;
-import java.util.Map; // Add this import statement
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.button.Button; // Add this import statement
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import UI.Model.OrderDto;
-import UI.Model.ShoppingBasketDto; // Add this import statement
+import UI.Model.ShoppingBasketDto;
 import UI.Presenter.UserOrderHistoryPresenter;
 
 public class UserOrderHistoryView extends BaseView {
@@ -49,20 +52,45 @@ public class UserOrderHistoryView extends BaseView {
     private void showOrderDetails(OrderDto orderDto) {
         // Create a layout to hold the order details
         VerticalLayout detailsLayout = new VerticalLayout();
-        detailsLayout.add("Order ID: " + orderDto.getOrderId());
-        detailsLayout.add("Total Order Amount: " + orderDto.getTotalOrderAmount());
+
+        // Add details with bold labels
+        detailsLayout.add(createDetailSpan("Order ID: ", orderDto.getOrderId().toString()));
+        detailsLayout.add(createDetailSpan("Total Order Amount: ", String.valueOf(orderDto.getTotalOrderAmount())));
 
         // Add the shopping baskets for this order
         for (Map.Entry<Integer, ShoppingBasketDto> entry : orderDto.getShoppingBasketMap().entrySet()) {
             ShoppingBasketDto basketDto = entry.getValue();
-            detailsLayout.add("Shop ID: " + entry.getKey());
-            detailsLayout.add("Shop Name: " + basketDto.getShop().getShopName());
-            detailsLayout.add("Basket Total Amount: " + basketDto.getBasketTotalAmount());
-            detailsLayout.add("Product IDs: " + basketDto.getProductIdList().toString());
+            detailsLayout.add(createDetailSpan("Shop ID: ", entry.getKey().toString()));
+            detailsLayout.add(createDetailSpan("Shop Name: ", basketDto.getShop().getShopName()));
+            detailsLayout.add(createDetailSpan("Basket Total Amount: ", String.valueOf(basketDto.getBasketTotalAmount())));
+
+            // Format the product IDs with quantities
+            String formattedProductIds = basketDto.getProductIdList().stream()
+                .collect(Collectors.groupingBy(id -> id, Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> e.getKey() + " (" + e.getValue() + ")")
+                .collect(Collectors.joining(", "));
+
+            detailsLayout.add(createDetailSpan("Product IDs: ", formattedProductIds));
         }
 
-        // Display the order details in the ordersDiv
-        ordersDiv.removeAll();
-        ordersDiv.add(detailsLayout);
+        // Create a dialog to display the details
+        Dialog dialog = new Dialog();
+        dialog.add(detailsLayout);
+        dialog.setWidth("400px");
+        dialog.setHeight("300px");
+
+        // Add a close button to the dialog
+        Button closeButton = new Button("Close", e -> dialog.close());
+        detailsLayout.add(closeButton);
+
+        // Open the dialog
+        dialog.open();
+    }
+
+    private Span createDetailSpan(String label, String value) {
+        Span span = new Span();
+        span.getElement().setProperty("innerHTML", "<b>" + label + "</b>" + value);
+        return span;
     }
 }
