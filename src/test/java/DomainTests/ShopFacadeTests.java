@@ -867,7 +867,7 @@ public class ShopFacadeTests {
         when(_tokenServiceMock.extractUsername(token)).thenReturn(userName);
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-        when(_userFacadeMock.isAdmin(userName)).thenReturn(true);
+        when(_userFacadeMock.isAdmin(userName)).thenReturn(false);
 
         // Act - try to get the purchase history for the shop owner
         Object result = shopService.getShopPurchaseHistory(token, shopId).getBody().getErrorMessage();
