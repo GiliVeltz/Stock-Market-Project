@@ -1313,7 +1313,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
 
         // Create the new rules data structure
         List<UserRuleDto> newRules = new ArrayList<>();
-        if(_shopRules != null){
+        if(_productRules != null){
             for (UserRuleDto rule : _productRules) {
                 newRules.add(rule.createCopy(rule));
             }
