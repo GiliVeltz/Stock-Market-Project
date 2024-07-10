@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -51,6 +52,7 @@ import UI.Model.Permission;
 import UI.Model.PermissionMapper;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.ShopOrderDto;
 import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
 import UI.Model.ShopPolicy.MinProductAmountRuleDto;
@@ -87,6 +89,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Grid<ShopDiscountDto> _viewDiscountsGrid;
     private Grid<ShoppingBasketRuleDto> _changeShopPolicyGrid;
     private Grid<UserRuleDto> _changeProductPolicyGrid;
+    private Grid<ShopOrderDto> shopOrderGrid;
+    private List<String> _permissionsList;
+    private VerticalLayout contentLayout;
     
     public ShopManagerView(){
 
@@ -120,11 +125,17 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     }
 
     public void createPermissionButtons(List<String> permissions) {
+        _permissionsList = permissions;
         if(permissions.isEmpty()){
             add(new Paragraph("No permissions found"));
             return;
         }
 
+        initializeLayout(permissions);
+    }
+
+    private void initializeLayout(List<String> permissions) {
+        // Recreate the initial layout, including buttons and other components
         // Create a vertical layout
         VerticalLayout buttonsLayout = new VerticalLayout();
         buttonsLayout.setAlignItems(Alignment.CENTER);
@@ -168,7 +179,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 _viewRolesDialog.open();
             });
         });
-        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> presenter.viewPurchases());
+        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> {
+            presenter.getShopPurchaseHistory(getShopId());
+        });
         Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> presenter.viewProducts());
         Button closeShopBtn = createButtonWithIcon("Close Shop", VaadinIcon.CLOSE, event -> {
         Dialog closeDialog = new Dialog();
@@ -1312,6 +1325,85 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         
         // return dialog;
     }
+
+    public void showShopOrders(List<ShopOrderDto> orders) {
+        Dialog orderDialog = new Dialog();
+        orderDialog.setWidth("80%");
+        orderDialog.setHeight("80%");
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        orderDialog.add(dialogLayout);
+
+        Grid<ShopOrderDto> shopOrderGrid = new Grid<>(ShopOrderDto.class, false);
+        shopOrderGrid.addColumn(ShopOrderDto::getOrderId).setHeader("Order ID");
+        shopOrderGrid.addColumn(ShopOrderDto::getTotalOrderAmount).setHeader("Total Amount");
+
+        // Add a button to expand each order and show details
+        shopOrderGrid.addComponentColumn(orderDto -> {
+            Button detailsButton = new Button("Show Details");
+            detailsButton.addClickListener(e -> showOrderDetails(orderDto));
+            return detailsButton;
+        }).setHeader("Actions");
+
+        dialogLayout.add(shopOrderGrid);
+        shopOrderGrid.setItems(orders);
+
+        Button closeButton = new Button("Close", e -> orderDialog.close());
+        dialogLayout.add(closeButton);
+
+        orderDialog.open();
+    }
+
+    
+    private void createBackButton() {
+        Button backButton = new Button("Back", e -> restoreInitialState());
+        add(backButton);
+    }
+
+    private void restoreInitialState() {
+        removeAll(); // Clear the current layout
+        initializeLayout(_permissionsList); // Re-add the initial layout
+    }
+    
+
+    private void showOrderDetails(ShopOrderDto order) {
+        Dialog dialog = new Dialog();
+        dialog.setWidth("400px");
+        dialog.setHeight("300px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Order ID: " + order.getOrderId()));
+        dialogLayout.add(new Text("Total Amount: " + order.getTotalOrderAmount()));
+    
+        Button viewProductsButton = new Button("View Products", e -> showProductIds(order.getShoppingBasketDto().getProductIdList()));
+        dialogLayout.add(viewProductsButton);
+    
+        Button closeButton = new Button("Close", e -> dialog.close());
+        dialogLayout.add(closeButton);
+    
+        dialog.open();
+    }
+
+    private void showProductIds(List<Integer> productIds) {
+        Dialog productDialog = new Dialog();
+        productDialog.setWidth("300px");
+        productDialog.setHeight("200px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        productDialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Product IDs:"));
+    
+        productIds.forEach(productId -> dialogLayout.add(new Text(productId.toString())));
+    
+        Button closeButton = new Button("Close", e -> productDialog.close());
+        dialogLayout.add(closeButton);
+    
+        productDialog.open();
+    }
+
 
     
 }

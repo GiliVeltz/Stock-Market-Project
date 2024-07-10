@@ -36,10 +36,12 @@ import Domain.Alerts.AppointedOwnerAlert;
 import Domain.Alerts.FireManagerAlert;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
+import Dtos.BasketDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
@@ -277,6 +279,18 @@ public class ShopFacade {
             purchaseHistory = shop.getPurchaseHistory();
         }
         return purchaseHistory;
+    }
+
+    // Retrieves the purchase history for a shop by its ID.
+    @Transactional
+    public List<ShopOrderDto> getPurchaseHistoryDto(Integer shopId) throws StockMarketException {
+        List<ShopOrder> purchaseHistory = getPurchaseHistory(shopId);
+        List<ShopOrderDto> purchaseHistoryDto = new ArrayList<>();
+
+         for (ShopOrder purchase : purchaseHistory) {
+            purchaseHistoryDto.add(new ShopOrderDto(purchase));
+        }
+        return purchaseHistoryDto;
     }
 
     // Checks if a user is the owner of a shop.
