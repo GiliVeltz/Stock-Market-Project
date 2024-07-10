@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Domain.ExternalServices.PaymentService.AdapterPayment;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Facades.ShopFacade;
 import Dtos.PurchaseCartDetailsDto;
 
@@ -52,11 +52,9 @@ public class ShoppingCart {
     private List<ShoppingBasket> shoppingBaskets;
 
     @Transient
-    private AdapterPayment paymentMethod;
-
+    private AdapterPaymentImp paymentMethod;
     @Transient
-    private AdapterSupply supplyMethod;
-
+    private AdapterSupplyImp supplyMethod;
     @Transient
     @Autowired
     private ShopFacade shopFacade;
@@ -84,13 +82,19 @@ public class ShoppingCart {
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
 
     // Default constructor for hibernate
-    public ShoppingCart() {}
+    public ShoppingCart() {
+        shoppingBaskets = new ArrayList<>();
+        paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        supplyMethod = AdapterSupplyImp.getAdapterSupply();
+        shopFacade = ShopFacade.getShopFacade();
+        user = null;
+    }
 
     // Constructor
     public ShoppingCart(User user) {
         shoppingBaskets = new ArrayList<>();
-        paymentMethod = AdapterPayment.getAdapterPayment();
-        supplyMethod = AdapterSupply.getAdapterSupply();
+        paymentMethod = AdapterPaymentImp.getAdapterPayment();
+        supplyMethod = AdapterSupplyImp.getAdapterSupply();
         guest = null;
         this.user = user;
         this.user_or_guest_name = user.getUserName();
@@ -107,10 +111,10 @@ public class ShoppingCart {
     }
 
     // for tests
-    public ShoppingCart(ShopFacade shopFacade, AdapterPayment paymentMethod, AdapterSupply supplyMethod) {
+    public ShoppingCart(ShopFacade shopFacade, AdapterPaymentImp paymentMethod, AdapterSupplyImp supplyMethod) {
         shoppingBaskets = new ArrayList<>();
-        this.paymentMethod = paymentMethod;
-        this.supplyMethod = supplyMethod;
+        paymentMethod = paymentMethod;
+        supplyMethod = supplyMethod;
         this.shopFacade = shopFacade;
         user_or_guest_name = null;
         user = null;
@@ -124,10 +128,10 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto details, int ordersId)
+    public void purchaseCart(PurchaseCartDetailsDto purchaseCartDetailsDto, int ordersId)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         try {
-            purchaseCartEditStock(details.basketsToBuy);
+            purchaseCartEditStock(purchaseCartDetailsDto.getBasketsToBuy());
         } catch (StockMarketException e) {
             logger.log(Level.SEVERE, "StockMarketException has been thrown: " + e.getMessage(), e);
             throw e;
@@ -136,30 +140,28 @@ public class ShoppingCart {
         Map<Double, String> priceToShopDetails = new HashMap<>();
         double overallPrice = 0;
 
-        for (Integer basketNum : details.getBasketsToBuy()) {
-            ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
+        for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
             double amountToPay = shoppingBasket.calculateShoppingBasketPrice();
             overallPrice += amountToPay;
             priceToShopDetails.put(amountToPay, shoppingBasket.getShopBankDetails());
         }
 
+        int paymentTransactionId = -1;
+        int supplyTransactionId = -1;
+
         try {
-            paymentMethod.checkIfPaymentOk(details.cardNumber);
-            supplyMethod.checkIfDeliverOk(details.address);
+            if (!_paymentMethod.handshake())
 
-            paymentMethod.pay(details.cardNumber, priceToShopDetails, overallPrice);
+            paymentTransactionId = _paymentMethod.payment(purchaseCartDetailsDto.getPaymentInfo(), overallPrice);
+            if (paymentTransactionId == -1)
+                throw new PaymentFailedException("Payment failed");
 
+            supplyTransactionId = _supplyMethod.supply(purchaseCartDetailsDto.getSupplyInfo());
+            if (supplyTransactionId == -1)
+                throw new ShippingFailedException("Shipping failed");
+                
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
-            for (Integer basketNum : details.getBasketsToBuy()) {
-                ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
-                shoppingBasketsForOrder.add(shoppingBasket);
-                supplyMethod.deliver(details.address, shoppingBasket.getShopAddress()); // May add list of products to
-                                                                                         // deliver too.
-            }
-
-            if (user != null) {
-                Order order = new Order(ordersId, shoppingBasketsForOrder);
-                user.addOrder(order);
+            for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
@@ -169,12 +171,11 @@ public class ShoppingCart {
 
         } catch (PaymentFailedException e) {
             logger.log(Level.SEVERE, "Payment has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(details.basketsToBuy);
+            cancelPurchaseEditStock(purchaseCartDetailsDto.getBasketsToBuy());
             throw new PaymentFailedException("Payment failed");
         } catch (ShippingFailedException e) {
             logger.log(Level.SEVERE, "Shipping has been failed with exception: " + e.getMessage(), e);
-            cancelPurchaseEditStock(details.basketsToBuy);
-            paymentMethod.refound(details.cardNumber, overallPrice);
+            cancelPurchaseEditStock(purchaseCartDetailsDto.getBasketsToBuy());
             throw new ShippingFailedException("Shipping failed");
         }
     }
@@ -276,13 +277,12 @@ public class ShoppingCart {
     }
 
     // Remove a product from the shopping cart of a user.
-    public void removeProduct(int productID, int shopID) throws StockMarketException {
-        Optional<ShoppingBasket> basketOptional = shoppingBaskets.stream()
+    public void removeProduct(int productID, int shopID, int quantity) throws StockMarketException {
                 .filter(basket -> basket.getShop().getShopId() == shopID).findFirst();
 
         if (basketOptional.isPresent()) {
             ShoppingBasket basket = basketOptional.get();
-            basket.removeProductFromShoppingBasket(productID);
+            basket.removeProductFromShoppingBasket(productID, quantity);
             logger.log(Level.INFO, "Product removed from shopping basket: " + productID + " in shop: " + shopID);
             if (basket.isEmpty()) {
                 shoppingBaskets.remove(basket);

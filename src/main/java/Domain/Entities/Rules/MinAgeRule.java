@@ -18,6 +18,10 @@ public class MinAgeRule implements Rule<User> {
         _minAge = minAge;
     }
 
+    public int getMinAge() {
+        return _minAge;
+    }
+
     @Override
     public boolean predicate(User user) {
         return user.getAge() >= _minAge;

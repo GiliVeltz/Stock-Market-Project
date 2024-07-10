@@ -8,9 +8,8 @@ import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
-import Domain.Repositories.DbShoppingCartRepository;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Exceptions.StockMarketException;
@@ -44,10 +43,10 @@ public class ShoppingCartFacadeTests {
     private ShopFacade _shopFacadeMock;
 
     @Mock
-    private AdapterPayment _AdapterPaymentMock;
+    private AdapterPaymentImp _AdapterPaymentMock;
 
     @Mock
-    private AdapterSupply _AdapterSupplyMock;
+    private AdapterSupplyImp _AdapterSupplyMock;
 
     @Mock
     private ShoppingCart _cartMock;
@@ -156,11 +155,11 @@ public class ShoppingCartFacadeTests {
         int shopID = 1;
         int productID = 1;
         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).removeProduct(productID, shopID);
+        doNothing().when(_cartMock).removeProduct(productID, shopID, 1);
 
         // Act & Assert
         try {
-            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID);
+            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID, 1);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception thrown when not expected: " + e.getMessage());

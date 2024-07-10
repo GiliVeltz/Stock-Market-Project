@@ -26,7 +26,6 @@ import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
 import Dtos.DiscountDto;
-import Dtos.ShopDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Exceptions.DiscountExpiredException;
@@ -47,13 +46,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-///
-
-//TODO: ADD ALERT SYSTEM WHEN APPOINTING MANAGER/OWNER
 @Entity
 @Table(name = "[shop]")
 public class Shop {
@@ -499,7 +494,6 @@ public class Shop {
                     "User " + username + " didn't appoint role " + managerUserName + ". Can't fire him.");
         }
         // All constraints checked
-        // TODO: maybe when firing need to add some special logic?
         Set<String> appointed = getAllAppointed(managerUserName);
         for (String user : appointed) {
             userToRole.remove(user);
@@ -806,18 +800,18 @@ public class Shop {
     public void applyDiscounts(ShoppingBasket basket) throws StockMarketException {
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot apply discounts.");
-        List<Integer> expiredDiscounts = new ArrayList<>();
+        List<Discount> expiredDiscounts = new ArrayList<>();
         basket.resetProductToPriceToAmount();
         for (Discount discount : discounts) {
             try {
                 discount.applyDiscount(basket);
             } catch (DiscountExpiredException e) {
                 logger.info("Shop - applyDiscounts: discount: " + discount.getDiscountId() + " has expired, removing it.");
-                expiredDiscounts.add(discount.getDiscountId());
+                expiredDiscounts.add(discount);
             }
         }
-        for (Integer discountId : expiredDiscounts) {
-            discounts.remove(discountId);
+        for (Discount discountToRemove : expiredDiscounts) {
+            discounts.remove(discountToRemove);
         }
     }
 
@@ -1139,7 +1133,6 @@ public class Shop {
     }
 
     public String getProductDiscountsInfo(int productId) throws StockMarketException {
-        // TODO: implement after getDiscountsByProduct is implemented
         if (isProductExist(productId)) {
             StringBuilder discountsBuilder = new StringBuilder();
             for (Map.Entry<Integer, Discount> entry : getDiscountsOfProduct(productId).entrySet()) {
@@ -1327,7 +1320,7 @@ public class Shop {
     }
 
     public void setShopName(String shopName) {
-        shopName = shopName;
+        this.shopName = shopName;
     }
 
     public String getFounderName() {
@@ -1335,7 +1328,7 @@ public class Shop {
     }
 
     public void setShopFounder(String shopFounder) {
-        shopFounder = shopFounder;
+        this.shopFounder = shopFounder;
     }
 
     public Map<Integer, Product> getShopProducts() {
@@ -1413,5 +1406,13 @@ public class Shop {
     // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
     public String getShopStringForSearch() {
         return " */Id/* " + getShopId() + " */Name/* " + getShopName() + " */Rating/* " + getShopRating();
+    }
+
+    public Map<Integer, Discount> getProductDiscounts(Integer productId) throws StockMarketException {
+        if (isProductExist(productId)) {
+            return getDiscountsOfProduct(productId);
+        } else {
+            return null;
+        }
     }
 }

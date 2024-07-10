@@ -23,6 +23,8 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductSearchDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
@@ -308,6 +310,39 @@ public class ShopController {
         Set<String> permissions = new HashSet<>((List<String>) request.get("permissions"));
         return _shopService.updatePermissions(token, shopId, managerUsername, permissions);
     }
+
+    @GetMapping("/getShopPolicy")
+    public ResponseEntity<Response> getShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId) {
+        return _shopService.getShopPolicy(token, shopId);
+    }
+
+    @GetMapping("/getProductPolicy")
+    public ResponseEntity<Response> getProductPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId) {
+        return _shopService.getProductPolicy(token, shopId, productId);
+    }
+    
+
+    @PostMapping("/updateShopPolicy")
+    public ResponseEntity<Response> updateShopPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+                                                @RequestBody List<ShoppingBasketRuleDto> request) {
+        List<ShoppingBasketRuleDto> rules = request;
+        return _shopService.updateShopPolicy(token, shopId, rules);
+    }
+
+    @GetMapping("/getDetailedProduct")
+    public ResponseEntity<Response>getDetailedProduct(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId) {
+        ResponseEntity<Response> response = _shopService.getAllProductDetailes(token, shopId, productId);
+        return response;
+    }
+
+    @PostMapping("/updateProductPolicy")
+    public ResponseEntity<Response> updateProductPolicy(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId,
+                                                @RequestBody List<UserRuleDto> request) {
+        List<UserRuleDto> rules = request;
+        return _shopService.updateProductPolicy(token, shopId, productId, rules);
+    }
+    
+    
     
     
 

@@ -20,7 +20,9 @@ import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.BasketDto;
+import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
+import Dtos.SupplyInfoDto;
 import Exceptions.StockMarketException;
 import jakarta.transaction.Transactional;
 
@@ -117,10 +119,9 @@ public class ShoppingCartFacade {
      * This method called when a user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
-        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
+    public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            cart.removeProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -132,10 +133,10 @@ public class ShoppingCartFacade {
      * This method called when a guest user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
+    public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            cart.removeProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -156,23 +157,18 @@ public class ShoppingCartFacade {
      * This method called when a user leave the system.
      */
      @Transactional
-    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details) throws StockMarketException {
-        ArrayList<Integer> allBaskets = new ArrayList<Integer>();
-
-        for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
-            allBaskets.add(i);
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepository.getUniqueOrderID());
+        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     /*
      * Purchase the cart of a user.
      */
     @Transactional
-    public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepository.getCartByUsername(username).purchaseCart(details, _cartsRepository.getUniqueOrderID());
+        _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
     }
 
     // Getters

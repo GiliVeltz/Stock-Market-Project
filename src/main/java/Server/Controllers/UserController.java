@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.UserDto;
-import ServiceLayer.*;
+import ServiceLayer.Response;
+import ServiceLayer.UserService;
 
 // Purpose: This class is mapping the user requests to the service layer functions.
 @RestController
@@ -138,13 +139,23 @@ public class UserController {
         return resp;
     }
 
+    // @PostMapping("/addProductToShoppingCartByShopName")
+    // public ResponseEntity<Response> addProductToShoppingCart(@RequestHeader(value = "Authorization") String token,
+    //         @RequestParam String productName, @RequestParam int shopID, @RequestParam int quantity) {
+    //     // example request:
+    //     // "http://localhost:8080/api/user/addProductToShoppingCart?productID=1&shopID=1"
+    //     // -H "Authorization": user_token_here"
+    //     ResponseEntity<Response> resp = _userService.addProductToShoppingCart(token, productID, shopID, quantity);
+    //     return resp;
+    // }
+
     @PostMapping("/removeProductFromShoppingCart")
     public ResponseEntity<Response> removeProductFromShoppingCart(@RequestHeader(value = "Authorization") String token,
-            @RequestParam int productID, @RequestParam int shopID) {
+            @RequestParam int productID, @RequestParam int shopID, @RequestParam int quantity) {
         // example request:
         // "http://localhost:8080/api/user/removeProductFromShoppingCart?productID=1&shopID=1"
         // -H "Authorization": user_token_here"
-        ResponseEntity<Response> resp = _userService.removeProductFromShoppingCart(token, productID, shopID);
+        ResponseEntity<Response> resp = _userService.removeProductFromShoppingCart(token, productID, shopID, quantity);
         return resp;
     }
 

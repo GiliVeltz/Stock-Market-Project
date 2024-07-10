@@ -25,4 +25,12 @@ public class MinProductAmountRule implements Rule<ShoppingBasket> {
     public boolean predicate(ShoppingBasket basket) {
         return basket.getProductCount(_productId) >= _minAmount;
     }
+
+    public int getProductId() {
+        return _productId;
+    }
+
+    public int getMinAmount() {
+        return _minAmount;
+    }
 }

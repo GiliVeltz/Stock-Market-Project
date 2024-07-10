@@ -29,6 +29,8 @@ public class Order {
 
     @Column(name = "totalOrderAmount", nullable = false)
     private double _totalOrderAmount;
+    private int paymentId;
+    private int SupplyId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -38,12 +40,14 @@ public class Order {
     public Order() { }
     
     // Constructor
-    public Order(int orderId, List<ShoppingBasket> shoppingBasket) throws StockMarketException {
+    public Order(int orderId, List<ShoppingBasket> shoppingBasket, int paymentId, int supplyId) throws StockMarketException {
         _orderId = orderId;
         this._shoppingBasketMap = new HashMap<>();
         setShoppingBasketMap(shoppingBasket);
         this._totalOrderAmount = 0.0;
         setTotalOrderAmount();
+        this.paymentId = paymentId;
+        this.SupplyId = supplyId;
     }
 
     public Integer getOrderId() {
@@ -94,6 +98,8 @@ public class Order {
                 "orderId=" + _orderId +
                 ", totalAmount=" + _totalOrderAmount +
                 ", products= \n" + printAllShopAndProducts() +
+                ", paymentId=" + paymentId +
+                ", SupplyId=" + SupplyId +
                 '}';
     }
 
@@ -111,6 +117,14 @@ public class Order {
 
     public Map<Integer, ShoppingBasket> getShoppingBasketMap() {
         return _shoppingBasketMap;
+    }
+
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public int getSupplyId() {
+        return SupplyId;
     }
 
     // for tests - get all product ids

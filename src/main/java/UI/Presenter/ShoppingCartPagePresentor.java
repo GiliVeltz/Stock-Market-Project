@@ -7,6 +7,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import UI.Model.Response; // Add this import statement
+import UI.Model.SupplyInfoDto;
+
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.UI;
 
 import UI.Model.PurchaseCartDetailsDto;
 import UI.Model.BasketDto;
+import UI.Model.PaymentInfoDto;
 import UI.View.ShoppingCartPageView;
 
 public class ShoppingCartPagePresentor {
@@ -71,9 +74,9 @@ public class ShoppingCartPagePresentor {
     }
 
     @SuppressWarnings("rawtypes")
-    public void purchaseCart(List<Integer> selectedIndexes, String cardNumber, String address) {
+    public void purchaseCart(PaymentInfoDto paymentInfoDto, SupplyInfoDto supplyInfoDto ,List<Integer> selectedIndexes) {
         RestTemplate restTemplate = new RestTemplate();
-        PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(selectedIndexes, cardNumber, address);
+        PurchaseCartDetailsDto details = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, selectedIndexes);
 
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
@@ -106,6 +109,45 @@ public class ShoppingCartPagePresentor {
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to purchase cart");
+                    }
+                });
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void removeItemFromCart(int shopID, int productID, int quantity) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        System.out.println("Token: " + token);
+
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/user/removeProductFromShoppingCart?productID=" + productID + "&shopID=" + shopID + "&quantity=" + quantity,
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
+
+                            if (responseBody.getErrorMessage() == null) {
+                                view.showSuccessMessage("Product removed successfully");
+                            }
+                            else {
+                                view.showErrorMessage("Failed to parse JSON response");
+                            }                       
+                        } else {
+                            view.showErrorMessage("Failed to remove product from cart");
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to remove product from cart");
                     }
                 });
     }
