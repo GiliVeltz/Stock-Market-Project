@@ -167,11 +167,11 @@ public class ProductPresenter {
                                 _view.showErrorMessage("Failed to add product to cart");
                             }
                         } catch (HttpClientErrorException e) {
-                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                            _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
                             int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
                             int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
