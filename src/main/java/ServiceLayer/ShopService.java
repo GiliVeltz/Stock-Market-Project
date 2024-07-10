@@ -15,22 +15,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Entities.Product;
-import Domain.Entities.ShopOrder;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
-import Dtos.ShopDto;
-import Dtos.ShopGetterDto;
-import Dtos.ShopManagerDto;
-import Dtos.ShopOrderDto;
-import Dtos.Rules.MinBasketPriceRuleDto;
-import Dtos.Rules.MinProductAmountRuleDto;
+import Dtos.ProductGetterDto;
 import Dtos.Rules.ProductPolicyRuleList;
 import Dtos.Rules.ShopPolicyRulesList;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
+import Dtos.ShopDto;
+import Dtos.ShopGetterDto;
+import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
 import Exceptions.StockMarketException;
 import enums.Category;
 
@@ -252,6 +250,34 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Receive the product details.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @param productId the product id
+     * @return the product details.
+     */
+    @Transactional
+    public ResponseEntity<Response> getAllProductDetailes(String token, Integer shopId, Integer productId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                ProductGetterDto productGetterDto = _shopFacade.getProductDetaildDtoById(shopId, productId);
+                response.setReturnValue(productGetterDto);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get product details. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
 
     /**
      * Edits a product in the specified shop.
@@ -2007,6 +2033,33 @@ public class ShopService {
         } catch (Exception e) {
             response.setErrorMessage(
                     String.format("Failed to delete shop discount. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Receive the product discounts.
+     * @param token the users session token
+     * @param shopId the shop id
+     * @param productId the product id
+     * @return the product discounts.
+     */
+    @Transactional
+    public ResponseEntity<Response> getProductDiscounts(String token, Integer shopId, Integer productId){
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                List<BasicDiscountDto> discounts = _shopFacade.getProductDiscounts(shopId, productId);
+                response.setReturnValue(discounts);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to get product discounts. Error: %s", e.getMessage()));
             logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

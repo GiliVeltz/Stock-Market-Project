@@ -22,11 +22,9 @@ import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductSearchDto;
-import Dtos.ShopDto;
-import Dtos.Rules.MinBasketPriceRuleDto;
-import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
+import Dtos.ShopDto;
 import ServiceLayer.Response;
 import ServiceLayer.ShopService;
 import enums.Category;
@@ -329,6 +327,12 @@ public class ShopController {
                                                 @RequestBody List<ShoppingBasketRuleDto> request) {
         List<ShoppingBasketRuleDto> rules = request;
         return _shopService.updateShopPolicy(token, shopId, rules);
+    }
+
+    @GetMapping("/getDetailedProduct")
+    public ResponseEntity<Response>getDetailedProduct(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId) {
+        ResponseEntity<Response> response = _shopService.getAllProductDetailes(token, shopId, productId);
+        return response;
     }
 
     @PostMapping("/updateProductPolicy")

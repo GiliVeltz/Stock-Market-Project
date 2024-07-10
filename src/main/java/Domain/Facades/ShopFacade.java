@@ -1081,6 +1081,21 @@ public class ShopFacade {
         shop.removeDiscount(discountDto.id);
     }
 
+    public List<BasicDiscountDto> getProductDiscounts(int shopId, int productId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<Integer, Discount> discounts = shop.getProductDiscounts(productId);
+        List<BasicDiscountDto> discounts_list = new ArrayList<>();
+        for (Map.Entry<Integer, Discount> entry : discounts.entrySet()) {
+            Discount discount = entry.getValue();
+            BasicDiscountDto discountDto = discount.getDto();
+            discounts_list.add(discountDto);
+        }
+        return discounts_list;
+    }
+
     // Update the permissins of manager in shop.
     @Transactional
     public void updatePermissions(String username, Integer shopId, String managerUsername, Set<String> permissions)
@@ -1095,6 +1110,8 @@ public class ShopFacade {
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
     }
+
+   
 
     // this function returns the shop id by its name and founder
     public int getShopIdByShopNameAndFounder(String founder, String shopName) {
@@ -1138,16 +1155,21 @@ public class ShopFacade {
         return null;
     }
 
-    public ProductGetterDto getProductDtoById(int shopId, int productId) throws ProductDoesNotExistsException {
+    // returns productGetterDto - a very detailed object including discounts
+    public ProductGetterDto getProductDetaildDtoById(int shopId, int productId) throws ProductDoesNotExistsException, StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             Product product = shop.getProductById(productId);
             if (product != null) {
-                return new ProductGetterDto(product);
+                ProductGetterDto productGetterDto = new ProductGetterDto(product);
+                productGetterDto.setProductDiscounts(getProductDiscounts(shopId, productId));
+                return productGetterDto;
             }
         }
         return null;
     }
+
+
 
     
 }
