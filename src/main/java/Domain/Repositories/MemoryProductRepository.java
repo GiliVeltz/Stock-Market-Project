@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -19,6 +20,15 @@ public class MemoryProductRepository implements InterfaceProductRepository {
     // TODO: Implement the methods of the InterfaceProductRepository
 
     List<Product> products;
+
+    public MemoryProductRepository(List<Product> products) {
+        this.products = products;
+    }
+
+    // empty constructor
+    public MemoryProductRepository() {
+        this.products = new ArrayList<Product>();
+    }
 
     @Override
     public void flush() {
@@ -64,8 +74,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public Product getById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+        return products.get(id);
     }
 
     @Override
@@ -106,8 +115,8 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public <S extends Product> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        products.add(entity);
+        return entity;
     }
 
     @Override

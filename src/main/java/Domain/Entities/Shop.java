@@ -104,11 +104,10 @@ public class Shop {
     private static final Logger logger = Logger.getLogger(Shop.class.getName());
 
     @Transient
-    @Autowired
     private NotificationHandler _notificationHandler;
 
     // Default constructor
-    public Shop(NotificationHandler notificationHandler) { 
+    public Shop() { 
         productMap = new HashMap<>(); // Initialize the product map
         orderHistory = new ArrayList<>();
         userToRole = new HashMap<>();
@@ -118,7 +117,6 @@ public class Shop {
         shopPolicy = new ShopPolicy();
         nextDiscountId = 0;
         isClosed = false;
-        _notificationHandler = notificationHandler;
     }
     
     // Constructor
@@ -624,7 +622,7 @@ public class Shop {
      */
     public void addProductToShop(String username, Product product) throws StockMarketException {
         // print logs to inform about the action
-        logger.log(Level.INFO, "Shop - addProductToShop: " + username + " trying get add product "
+        logger.log(Level.INFO, "Shop - addProductToShop: " + username + " trying add product "
                 + product.getProductName() + " in the shop with id " + shopId);
 
         // check if shop is closed
@@ -1432,5 +1430,9 @@ public class Shop {
         } else {
             return null;
         }
+    }
+
+    public void setNotificationHandler(NotificationHandler notificationHandler) {
+        _notificationHandler = notificationHandler;
     }
 }

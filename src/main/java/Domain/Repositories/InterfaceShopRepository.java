@@ -12,4 +12,6 @@ public interface InterfaceShopRepository extends JpaRepository<Shop, Integer> {
     int getUniqueProductID();
 
     Shop findByShopName(String shopName);
+
+    Shop findByShopId(Integer shopId);
 }

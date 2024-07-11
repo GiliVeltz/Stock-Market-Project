@@ -54,12 +54,11 @@ import Exceptions.PermissionException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
-import jakarta.persistence.Transient;
 @Service
 public class ShopFacade {
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
-    private static InterfaceProductRepository _productRepository;
+    private InterfaceProductRepository _productRepository;
     private NotificationHandler _notificationHandler;
 
     @Autowired
@@ -89,12 +88,12 @@ public class ShopFacade {
     }
 
     public Shop getShopByShopId(Integer shopId) {
-        return _shopRepository.findById(shopId).orElse(null);
+        return _shopRepository.findByShopId(shopId);
     }
 
     // Checks if a shop ID exists.
     public Boolean isShopIdExist(Integer shopId) {
-        return _shopRepository.findById(shopId).orElse(null) == null;
+        return _shopRepository.findByShopId(shopId) == null ? false : true;
     }
 
     // Open a new shop only if the user is not a manager or owner of another shop.
@@ -119,10 +118,11 @@ public class ShopFacade {
             throw new StockMarketException("Shop address is null or empty.");
         }
 
-        Shop shop = new Shop(_notificationHandler);
+        Shop shop = new Shop();
         shop.setShopName(shopDto.shopName);
         shop.setBankDetails(shopDto.bankDetails);
         shop.setShopAddress(shopDto.shopAddress);
+        shop.setNotificationHandler(_notificationHandler);
         _shopRepository.save(shop);
         shop.setShopFounder(userName);
         shop.notifyReOpenShop(userName);
@@ -184,8 +184,8 @@ public class ShopFacade {
         if (getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
                     productDto.productName, shopId));
-        int productId = _shopRepository.getUniqueProductID();
-        Product newProduct = new Product(productId, productDto.productName, productDto.category, productDto.price);
+        Product newProduct = new Product(productDto.productName, productDto.category, productDto.price);
+        newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
         getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
@@ -1157,7 +1157,7 @@ public class ShopFacade {
     }
 
     @SuppressWarnings("deprecation")
-    public static Product getProductById(int productID) {
+    public Product getProductById(int productID) {
         return _productRepository.getById(productID);
     }
 }

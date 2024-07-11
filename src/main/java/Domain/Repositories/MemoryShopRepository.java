@@ -224,4 +224,9 @@ public class MemoryShopRepository implements InterfaceShopRepository {
         }
         return null;
     }
+
+    @Override
+    public Shop findByShopId(Integer shopId) {
+        return _shops.get(shopId);
+    }
 }
