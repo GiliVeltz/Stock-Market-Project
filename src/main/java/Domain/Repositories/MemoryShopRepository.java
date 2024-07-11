@@ -34,11 +34,6 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     }
 
     @Override
-    public synchronized int getUniqueShopID() {
-        return _shopIdCounter++;
-    }
-
-    @Override
     public synchronized int getUniqueProductID() { return _productIdCounter++;}
 
     @Override
@@ -126,7 +121,8 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public <S extends Shop> S save(S entity) {
-        _shops.put(entity.getShopId(), entity);
+        _shops.put(_shopIdCounter, entity);
+        _shopIdCounter++;
         return entity;
     }
 
@@ -217,5 +213,15 @@ public class MemoryShopRepository implements InterfaceShopRepository {
     public <S extends Shop, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
+    }
+
+    @Override
+    public Shop findByShopName(String shopName) {
+        for (Shop shop : _shops.values()) {
+            if (shop.getShopName().equals(shopName)) {
+                return shop;
+            }
+        }
+        return null;
     }
 }

@@ -56,13 +56,10 @@ public class MarketSystem {
     private ShoppingCartFacade shoppingCartFacade;
 
     @Autowired
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,
-            AdapterPaymentImp adapterPaymentImp, AdapterSupplyImp adapterSupplyImp) throws StockMarketException {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
-        this.payment_adapter = adapterPaymentImp;
-        this.supply_adapter = adapterSupplyImp;
         this.init_market(real_system_config_path);
     }
 

@@ -55,12 +55,13 @@ public class Shop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "_shop_id", nullable = false)
     private Integer shopId;
 
-    @Column(name = "shop_name", unique = true, nullable = false)
+    @Column(name = "shopName", unique = true, nullable = false)
     private String shopName;
 
-    @Column(name = "shop_founder", unique = true, nullable = false)
+    @Column(name = "shopFounder", unique = false, nullable = true)
     private String shopFounder; // Shop founder username
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
@@ -69,6 +70,7 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<ShopOrder> orderHistory;
 
+    @Transient
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "username")
     private Map<String, Role> userToRole = new HashMap<>(); // <userName, Role>
@@ -76,26 +78,26 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<Discount> discounts;
 
-    @Column(name = "bank_details", nullable = false)
+    @Column(name = "bankDetails", nullable = false)
     private String bankDetails;
 
-    @Column(name = "shop_address", nullable = false)
+    @Column(name = "shopAddress", nullable = false)
     private String shopAddress;
 
-    @Column(name = "shop_rating", nullable = false)
+    @Column(name = "shopRating", nullable = false)
     private Double shopRating;
 
-    @Column(name = "shop_raters_counter", nullable = false)
+    @Column(name = "shopRatersCounter", nullable = false)
     private Integer shopRatersCounter;
 
     @Transient
     //@OneToOne(mappedBy = "shop", cascade = CascadeType.ALL)
     private ShopPolicy shopPolicy;
 
-    @Column(name = "next_discount_id", nullable = false)
+    @Column(name = "nextDiscountId", nullable = false)
     private int nextDiscountId;
 
-    @Column(name = "is_closed", nullable = false)
+    @Column(name = "isClosed", nullable = false)
     private boolean isClosed;
 
     @Transient
@@ -106,16 +108,25 @@ public class Shop {
     private NotificationHandler _notificationHandler;
 
     // Default constructor
-    public Shop() {
+    public Shop(NotificationHandler notificationHandler) { 
+        productMap = new HashMap<>(); // Initialize the product map
+        orderHistory = new ArrayList<>();
+        userToRole = new HashMap<>();
+        discounts = new ArrayList<>();
+        this.shopRating = -1.0;
+        this.shopRatersCounter = 0;
+        shopPolicy = new ShopPolicy();
+        nextDiscountId = 0;
+        isClosed = false;
+        _notificationHandler = notificationHandler;
     }
     
     // Constructor
-    public Shop(int shopId, String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
+    public Shop(String shopName, String shopFounderUserName, String bankDetails, String shopAddress)
             throws ShopException {
         try {
             logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id " + shopId
                     + " named " + shopName + ". The Founder of the shop is: " + shopFounderUserName);
-            this.shopId = shopId;
             this.shopName = shopName;
             shopFounder = shopFounderUserName;
             productMap = new HashMap<>(); // Initialize the product map
@@ -1327,8 +1338,15 @@ public class Shop {
         return shopFounder;
     }
 
-    public void setShopFounder(String shopFounder) {
-        this.shopFounder = shopFounder;
+    public void setShopFounder(String shopFounderUserName) {
+        this.shopFounder = shopFounderUserName;
+        try{
+            Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
+            userToRole.putIfAbsent(shopFounderUserName, founder);
+        }
+        catch (StockMarketException e){
+            logger.log(Level.SEVERE, "Shop - setShopFounder: Error while trying to set the founder of the shop with id: " + shopId);
+        }
     }
 
     public Map<Integer, Product> getShopProducts() {

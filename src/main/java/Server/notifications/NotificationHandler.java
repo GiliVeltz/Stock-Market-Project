@@ -2,13 +2,14 @@ package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import Domain.Entities.Alerts.Alert;
 
 /**
  * Handles notifications by sending messages through a WebSocket server.
  */
-@Component
+@Service
 public class NotificationHandler {
 
     private WebSocketServer wServer;

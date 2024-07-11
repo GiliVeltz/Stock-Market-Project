@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @SpringBootApplication
-@ComponentScan({ "Server", "ServiceLayer", "Domain.Facades", "Domain.Repositories", "Domain.ExternalServices", "Domain.Authenticators"})
+@ComponentScan({ "Server", "Server.notification", "ServiceLayer", "Domain.Facades", "Domain.Repositories", "Domain.ExternalServices", "Domain.Authenticators"})
 @EnableJpaRepositories("Domain.Repositories")
 @EntityScan("Domain.Entities")
 public class Server {

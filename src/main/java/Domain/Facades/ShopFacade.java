@@ -53,17 +53,21 @@ import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
+import Server.notifications.NotificationHandler;
+import jakarta.persistence.Transient;
 @Service
 public class ShopFacade {
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
     private static InterfaceProductRepository _productRepository;
+    private NotificationHandler _notificationHandler;
 
     @Autowired
-    public ShopFacade(DbShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade) {
+    public ShopFacade(DbShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _userFacade = userFacade;
+        _notificationHandler = notificationHandler;
 
         //For testing UI
         // try {
@@ -115,10 +119,15 @@ public class ShopFacade {
             throw new StockMarketException("Shop address is null or empty.");
         }
 
-        int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.save(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
-        getShopByShopId(shopId).notifyReOpenShop(userName);
-        return shopId;
+        Shop shop = new Shop(_notificationHandler);
+        shop.setShopName(shopDto.shopName);
+        shop.setBankDetails(shopDto.bankDetails);
+        shop.setShopAddress(shopDto.shopAddress);
+        _shopRepository.save(shop);
+        shop.setShopFounder(userName);
+        shop.notifyReOpenShop(userName);
+        _shopRepository.save(shop);
+        return shop.getShopId();
     }
 
     // Close shop only if the user is the founder of the shop
