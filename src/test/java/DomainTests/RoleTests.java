@@ -78,7 +78,7 @@ public class RoleTests {
 
         // Act
         @SuppressWarnings("null")
-        boolean hasPermission = role.hasPermission(Permission.ADD_DISCOUNT_POLICY);
+        boolean hasPermission = role.hasPermission(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Assert
         assertEquals(false, hasPermission);
@@ -89,7 +89,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
@@ -102,7 +102,7 @@ public class RoleTests {
 
         // Act
         @SuppressWarnings("null")
-        boolean hasPermission = role.hasPermission(Permission.ADD_DISCOUNT_POLICY);
+        boolean hasPermission = role.hasPermission(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Assert
         assertEquals(true, hasPermission);
@@ -124,7 +124,7 @@ public class RoleTests {
 
         // Act
         @SuppressWarnings("null")
-        boolean hasPermission = role.hasPermission(Permission.ADD_DISCOUNT_POLICY);
+        boolean hasPermission = role.hasPermission(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Assert
         assertEquals(false, hasPermission);
@@ -146,7 +146,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -161,7 +161,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
@@ -174,7 +174,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -200,7 +200,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -215,7 +215,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -227,7 +227,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -242,7 +242,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         permissions.add(Permission.CHANGE_PERMISSION);
 
         Role role = null;
@@ -255,7 +255,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -282,7 +282,7 @@ public class RoleTests {
 
         Set<Permission> permissionsToCheck = new HashSet<Permission>();
         permissionsToCheck.add(Permission.ADD_PRODUCT);
-        permissionsToCheck.add(Permission.ADD_DISCOUNT_POLICY);
+        permissionsToCheck.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         // Act
         @SuppressWarnings("null")
@@ -298,7 +298,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -326,7 +326,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -338,7 +338,7 @@ public class RoleTests {
 
         Set<Permission> newPermissions = new HashSet<Permission>();
         newPermissions.add(Permission.ADD_PRODUCT);
-        newPermissions.add(Permission.ADD_DISCOUNT_POLICY);
+        newPermissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         newPermissions.add(Permission.CHANGE_PERMISSION);
 
         User user2 = new User("appointedBy", "password", "email", new Date());
@@ -361,7 +361,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -387,7 +387,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -415,7 +415,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {
@@ -443,7 +443,7 @@ public class RoleTests {
         // Arrange
         Set<Permission> permissions = new HashSet<Permission>();
         permissions.add(Permission.ADD_PRODUCT);
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
 
         Role role = null;
         try {

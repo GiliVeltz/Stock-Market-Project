@@ -234,6 +234,9 @@ public class ShoppingCartPageView extends BaseView {
 
             presenter.purchaseCart(paymentInfo, supplyInfo, selectedIndexes);
             dialog.close();
+            
+            // Refresh the cart view
+            presenter.viewCart();
         });
 
         formLayout.add(submitButton);

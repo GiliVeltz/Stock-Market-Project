@@ -63,7 +63,7 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<String> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagerPermissions?shopId="+view.getShopId(),
                                 HttpMethod.GET,
@@ -72,7 +72,7 @@ public class ShopManagerPresenter {
 
                         ObjectMapper objectMapper = new ObjectMapper();
 
-                        try{
+                        
                             JsonNode responseJson = objectMapper.readTree(response.getBody());
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 view.showSuccessMessage("User permissions loaded successfully");
@@ -177,14 +177,14 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getShopManagers?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Managers loaded successfully");
@@ -205,9 +205,10 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
-                            //view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
                     } else {
                         view.showErrorMessage("Authorization token not found. Please log in.");
@@ -225,14 +226,14 @@ public class ShopManagerPresenter {
                         headers.add("Authorization", token);
 
                         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+                    try{
                         ResponseEntity<Response> response = restTemplate.exchange(
                                 "http://localhost:" + view.getServerPort() + "/api/shop/getMySubordinates?shopId="+view.getShopId(),
                                 HttpMethod.GET,
                                 requestEntity,
                                 Response.class);
 
-                        try{
+                        
                             if (response.getStatusCode().is2xxSuccessful()) {
                                 Response responseBody = response.getBody();
                                 view.showSuccessMessage("Subordinates loaded successfully");
@@ -252,7 +253,9 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
                             e.printStackTrace();
                         }
                     } else {
@@ -375,12 +378,6 @@ public class ShopManagerPresenter {
                     }
                 });
     }
-
-    public void addNewProduct(String productName, String category, double price)
-    {
-
-    }
-
 
     public void fetchShopDiscounts(Consumer<List<ShopDiscountDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
@@ -587,25 +584,36 @@ public class ShopManagerPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/closeShop?shopId=" + shopId ,
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/closeShop?shopId=" + shopId ,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("The shop has been closed successfully.");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Failed to close the shop");
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The shop has been closed successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to close the shop");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to close the shop: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
+                        
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to close the shop");
@@ -619,28 +627,38 @@ public class ShopManagerPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/reopenShop?shopId=" + shopId ,
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/reopenShop?shopId=" + shopId ,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("The shop has been closed successfully.");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Failed to close the shop");
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("The shop has been closed successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to reopen the shop");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to reopen the shop: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
-                        view.showErrorMessage("Failed to close the shop");
+                        view.showErrorMessage("Failed to reopen the shop");
                     }
                 });
 
@@ -787,7 +805,6 @@ public class ShopManagerPresenter {
                         }
 
                         HttpEntity<ProductPolicyRuleList> requestEntity = new HttpEntity<>(requestBody, headers);
-
 
                         try {
                             ResponseEntity<String> response = restTemplate.exchange(
@@ -1108,36 +1125,47 @@ public void getShopPurchaseHistory(Integer shopId) {
     UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
             .then(String.class, token -> {
                 if (token != null && !token.isEmpty()) {
-                    System.out.println("Token: " + token);
+                    try
+                    {
+                        System.out.println("Token: " + token);
 
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add("Authorization", token);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
 
-                    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                    ResponseEntity<Response> response = restTemplate.exchange(
-                            "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
-                                    + shopId,
-                            HttpMethod.GET,
-                            requestEntity,
-                            Response.class);
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/getShopPurchaseHistory?shopId="
+                                        + shopId,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
 
-                    if (response.getStatusCode().is2xxSuccessful()) {
-                        Response responseBody = response.getBody();
+                        if (response.getStatusCode().is2xxSuccessful()) {
+                            Response responseBody = response.getBody();
 
-                        if (responseBody.getErrorMessage() == null) {
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
-                                    responseBody.getReturnValue(),
-                                    TypeFactory.defaultInstance().constructCollectionType(List.class,
-                                            ShopOrderDto.class));
-                            view.showShopOrders(orderDtoList);
-                            view.showSuccessMessage("Orders Showed successfully");
+                            if (responseBody.getErrorMessage() == null) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                List<ShopOrderDto> orderDtoList = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class,
+                                                ShopOrderDto.class));
+                                view.showShopOrders(orderDtoList);
+                                view.showSuccessMessage("Orders Showed successfully");
+                            } else {
+                                view.showErrorMessage(responseBody.getErrorMessage());
+                            }
                         } else {
-                            view.showErrorMessage(responseBody.getErrorMessage());
+                            view.showErrorMessage("Failed to show Orders");
                         }
-                    } else {
-                        view.showErrorMessage("Failed to show Orders");
+                    }
+                    catch (HttpClientErrorException e) {
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                    } catch (Exception e) {
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
+                        e.printStackTrace();
                     }
                 } else {
                     System.out.println("Token not found in local storage.");

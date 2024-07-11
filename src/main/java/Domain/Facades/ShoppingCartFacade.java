@@ -167,7 +167,14 @@ public class ShoppingCartFacade {
      @Transactional
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+        try {
+            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+            _guestsCarts.get(guestID).emptyCart();
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
+            throw e;
+        }
     }
 
     /*
@@ -176,7 +183,14 @@ public class ShoppingCartFacade {
     @Transactional
     public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+        try {
+            _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
+            _cartsRepo.getCartByUsername(username).emptyCart();
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.WARNING, "Failed to purchase cart for user: " + username);
+            throw e;
+        }
     }
 
     // Getters

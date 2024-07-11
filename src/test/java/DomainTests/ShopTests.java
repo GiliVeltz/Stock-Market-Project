@@ -1238,7 +1238,7 @@ public class ShopTests {
         ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
 
         // Act
@@ -1256,7 +1256,7 @@ public class ShopTests {
         ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
-        permissions.add(Permission.ADD_DISCOUNT_POLICY);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
         shop.addDiscount(discount);
 
@@ -1272,7 +1272,7 @@ public class ShopTests {
         String username = "user1";
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
-        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
 
         // Act & Assert
@@ -1289,7 +1289,7 @@ public class ShopTests {
         ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
-        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
         shop.addDiscount(discount);
 
@@ -1308,7 +1308,7 @@ public class ShopTests {
         ProductPercentageDiscount discount = new ProductPercentageDiscount(new Date(2025, 10, 10), 0.2, 1, 1);
         Shop shop = new Shop(1, "shopName1", "user1", "bank1", "adderss1");
         Set<Permission> permissions = new HashSet<>();
-        permissions.add(Permission.REMOVE_DISCOUNT_METHOD);
+        permissions.add(Permission.CHANGE_DISCOUNT_POLICY);
         shop.AppointManager(username, "manager", permissions);
         shop.addDiscount(discount);
 
