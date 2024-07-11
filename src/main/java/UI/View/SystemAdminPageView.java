@@ -2,21 +2,18 @@ package UI.View;
 
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
@@ -35,34 +32,6 @@ public class SystemAdminPageView extends BaseView {
     public SystemAdminPageView() {
         presenter = new SystemAdminPresenter(this);
         initializeLayout();
-        // // Create the image buttons
-        // Button closeShopButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/closeShop.png?raw=true", "Close Shop", this::onCloseShopClick);
-        // Button unsubscribeUserButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/UnsubscribeUser.png?raw=true", "Unsubscribe User", this::onUnsubscribeUserClick);
-        // Button respondingComplaintsButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/RespondingComplaints.png?raw=true", "Responding to Complaints", this::onRespondingComplaintsClick);
-        // Button sendingMessagesButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SendingMessages.png?raw=true", "Sending Messages", this::onSendingMessagesClick);
-        // Button purchaseHistoryButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/PurchaseHistory.png?raw=true", "Purchase History", this::onPurchaseHistoryClick);
-        // Button systemInformationButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SystemInformation.png?raw=true", "System Information", this::onSystemInformationClick);
-        // Button externalServiceButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/ExternalService.png?raw=true", "External Service", this::externalServiceClick);
-
-        // // Create layouts for buttons
-        // HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton, externalServiceButton);
-        // firstRow.setSpacing(true); // Add spacing between buttons
-        // firstRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
-        // firstRow.getStyle().set("margin-bottom", "150px"); 
-
-        // HorizontalLayout secondRow = new HorizontalLayout(sendingMessagesButton, purchaseHistoryButton, systemInformationButton);
-        // secondRow.setSpacing(true); // Add spacing between buttons
-        // secondRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
-        // secondRow.getStyle().set("margin-bottom", "150px");
-
-        // VerticalLayout layout = new VerticalLayout(firstRow, secondRow);
-        // layout.setSpacing(true); // Add spacing between rows
-        // layout.setPadding(true); // Add padding around the layout
-        // layout.setDefaultHorizontalComponentAlignment(VerticalLayout.Alignment.CENTER); // Center rows in the layout
-        // layout.setSizeFull(); // Make the layout take the full size of the container
-        // layout.setJustifyContentMode(VerticalLayout.JustifyContentMode.CENTER); // Center the layout vertically
-
-        // add(layout);
 
         ordersDiv = new Div();
         ordersDiv.setId("orders-div");
@@ -162,9 +131,35 @@ public class SystemAdminPageView extends BaseView {
     }
 
     private void onSendingMessagesClick() {
-        Notification.show("Sending Messages clicked");
-        // Handle the sending messages action
-    }
+    Dialog dialog = new Dialog();
+
+    dialog.setCloseOnEsc(true);
+    dialog.setCloseOnOutsideClick(true);
+
+    VerticalLayout dialogLayout = new VerticalLayout();
+    dialogLayout.setSpacing(true);
+    dialogLayout.setPadding(true);
+    dialogLayout.setAlignItems(Alignment.CENTER);
+
+    H4 headline = new H4("Send Alert Notification");
+    dialogLayout.add(headline);
+
+    TextField targetUserField = new TextField("Enter Target Username");
+    TextArea messageField = new TextArea("Enter Message");
+
+    Button submitButton = new Button("Submit", event -> {
+        String targetUser = targetUserField.getValue();
+        String message = messageField.getValue();
+        presenter.sendAlertNotification(targetUser, message); // Call presenter method with targetUser and message
+        dialog.close();
+    });
+
+    Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+    dialogLayout.add(targetUserField, messageField, new HorizontalLayout(submitButton, cancelButton));
+    dialog.add(dialogLayout);
+    dialog.open();
+}
 
     private void onSystemInformationClick() {
         Notification.show("System Information clicked");
@@ -229,33 +224,6 @@ public class SystemAdminPageView extends BaseView {
         userDialog.add(dialogLayout);
         userDialog.open();
     }
-
-    // private void openShopPurchaseHistoryDialog() {
-    //     Dialog shopDialog = new Dialog();
-    //     shopDialog.setCloseOnEsc(true);
-    //     shopDialog.setCloseOnOutsideClick(true);
-
-    //     VerticalLayout dialogLayout = new VerticalLayout();
-    //     dialogLayout.setSpacing(true);
-    //     dialogLayout.setPadding(true);
-    //     dialogLayout.setAlignItems(Alignment.CENTER);
-        
-    //     H4 headline = new H4("Enter Shop ID for Shop Purchase History");
-    //     dialogLayout.add(headline);
-
-    //     TextField shopIdField = new TextField("Enter Shop ID");
-    //     Button submitButton = new Button("Submit", event -> {
-    //         String shopId = shopIdField.getValue();
-    //         presenter.getShopPurchaseHistory(shopId); // Call presenter method with shop ID
-    //         shopDialog.close();
-    //     });
-
-    //     Button cancelButton = new Button("Cancel", event -> shopDialog.close());
-
-    //     dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
-    //     shopDialog.add(dialogLayout);
-    //     shopDialog.open();
-    // }
 
 
     public void showUserOrders(List<OrderDto> orders) {

@@ -174,4 +174,46 @@ public class SystemAdminPresenter {
                     }
                 });
     }
+
+    public void sendAlertNotification(String targetUser, String message) {
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        try
+                        {
+                            System.out.println("Token: " + token);
+
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
+
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(headers);
+
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/system/sendAlertNotification?targetUser=" + targetUser + "&message=" + message ,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
+
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("Alert sent successfully.");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to send alert");
+                            }
+                        }  catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to send alert: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        view.showErrorMessage("Failed to send alert");
+                    }
+                });
+    }
+
 }
