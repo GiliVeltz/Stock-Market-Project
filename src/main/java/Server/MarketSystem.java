@@ -44,13 +44,10 @@ public class MarketSystem {
     public final static String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public final static String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
     public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
-    public final static String system_config_path = "src/main/java/Server/Configuration/system_config.txt";
+    public final static String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
     private AdapterSupplyInterface supply_adapter;
-
-    // not in used
-    public static boolean test_flag = false;
 
     private static final Logger logger = Logger.getLogger(MarketSystem.class.getName());
 
@@ -66,7 +63,7 @@ public class MarketSystem {
         this.shoppingCartFacade = shoppingCartFacade;
         this.payment_adapter = adapterPaymentImp;
         this.supply_adapter = adapterSupplyImp;
-        this.init_market(system_config_path);
+        this.init_market(real_system_config_path);
     }
 
     // initiate the system using the args config files
@@ -160,7 +157,6 @@ public class MarketSystem {
         if (config.equals("database:tests")){
             // no db
             logger.info("Init Data For Tests: No Database");
-            test_flag = true;
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             MemoryShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
