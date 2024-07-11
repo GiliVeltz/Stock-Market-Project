@@ -43,6 +43,11 @@ public class SystemController {
         return resp;
     }
 
-  
-
+    @PostMapping("/sendAlertNotification")
+    public ResponseEntity<Response> sendAlertNotification(
+        @RequestHeader(value = "Authorization", required = true) String token, @RequestParam String targetUser, @RequestParam String message) {
+        ResponseEntity<Response> resp = _systemService.sendAlertNotification(token, targetUser, message);
+        return resp;
+    }
+   
 }
