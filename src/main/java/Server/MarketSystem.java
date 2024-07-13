@@ -32,12 +32,14 @@ import Domain.Facades.UserFacade;
 import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryGuestRepository;
 import Domain.Repositories.MemoryOrderRepository;
 import Domain.Repositories.MemoryProductRepository;
+import Domain.Repositories.MemoryRoleRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
@@ -171,9 +173,10 @@ public class MarketSystem {
             InterfaceUserRepository userRepository = new MemoryUserRepository();
             InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
             InterfaceOrderRepository orderRepository = new MemoryOrderRepository();
+            InterfaceRoleRepository roleRepository = new MemoryRoleRepository();
 
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
-            shopFacade.setShopFacadeRepositories(shopRepository, productRepository);
+            shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
         }
         else if (config.equals(("database:real_init"))){            
@@ -332,7 +335,7 @@ public class MarketSystem {
                 UserDto userDto = new UserDto(instruction_params[1], instruction_params[2], instruction_params[3], birthdate);
                 userFacade.register(userDto);
                 User user = userFacade.getUserByUsername(instruction_params[1]);
-                user.setIsSystemAdmin(true);
+                userFacade.setSystemAdmin(user);
             } catch (Exception e) {
                 logger.info("[run_instruction] Add Admin Fail: " + e.getMessage());
             }

@@ -59,7 +59,7 @@ public class Product implements Cloneable {
     private Shop shop;
 
     @ManyToOne
-    @JoinColumn(name = "shopping_basket_id", nullable = false)
+    @JoinColumn(name = "shopping_basket_id", nullable = true)
     private ShoppingBasket shoppingBasket;
 
     private static final Logger logger = Logger.getLogger(Product.class.getName());
@@ -68,7 +68,7 @@ public class Product implements Cloneable {
     public Product() { }
 
     // Constructor
-    public Product(String productName, Category category, double price) {
+    public Product(String productName, Category category, double price, Shop shop) {
         this.productName = productName;
         this.category = category;
         this.price = price;
@@ -80,6 +80,7 @@ public class Product implements Cloneable {
         this.productRatersCounter = 0;
         this.productPolicy = new ProductPolicy();
         this.reviews = new HashMap<>();
+        this.shop = shop;
     }
 
     // this function responsible for adding a rating to the product

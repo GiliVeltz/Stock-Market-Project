@@ -36,8 +36,10 @@ import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
 import Domain.Repositories.DbProductRepository;
+import Domain.Repositories.DbRoleRepository;
 import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
@@ -53,17 +55,20 @@ import Exceptions.PermissionException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 @Service
 public class ShopFacade {
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
     private InterfaceProductRepository _productRepository;
+    private InterfaceRoleRepository _roleRepository;
     private NotificationHandler _notificationHandler;
 
     @Autowired
-    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
+    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
+        _roleRepository = roleRepository;
         _userFacade = userFacade;
         _notificationHandler = notificationHandler;
 
@@ -77,9 +82,10 @@ public class ShopFacade {
     }
 
     // set repositories to be used in test system
-    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository) {
+    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
+        _roleRepository = roleRepository;
     }
 
     public Shop getShopByShopId(Integer shopId) {
@@ -118,6 +124,7 @@ public class ShopFacade {
         shop.setBankDetails(shopDto.bankDetails);
         shop.setShopAddress(shopDto.shopAddress);
         shop.setNotificationHandler(_notificationHandler);
+        shop.setRoleRepository(_roleRepository);
         _shopRepository.save(shop);
         shop.setShopFounder(userName);
         shop.notifyReOpenShop(userName);
@@ -179,7 +186,8 @@ public class ShopFacade {
         if (getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
                     productDto.productName, shopId));
-        Product newProduct = new Product(productDto.productName, productDto.category, productDto.price);
+        Shop shop = getShopByShopId(shopId);
+        Product newProduct = new Product(productDto.productName, productDto.category, productDto.price, shop);
         newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
         getShopByShopId(shopId).addProductToShop(userName, newProduct);

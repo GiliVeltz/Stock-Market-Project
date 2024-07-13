@@ -22,22 +22,26 @@ public class Role {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer roleId;
 
+    @Column(name = "appointedBy")
     private final String appointedBy;
     
-    private final int storeId; // The store id that this role is connected to.
+    @Transient
+    private final Integer shopId; // The store id that this role is connected to.
 
+    @Column(name = "username")
     private final String username; // The username of the user in the system.
 
     /**
      * The permissions of this role in the shop.
      * @Constraint has to be at least one permission.
      */
-    @Transient
+    @ElementCollection
+    @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
     private Set<Permission> permissions;
     
     @ElementCollection
     @CollectionTable(name = "role_appointments", joinColumns = @JoinColumn(name = "role_id"))
-    @Column(name = "appointment")
+    //@Column(name = "appointment")
     private Set<String> appointments; // The appointments of this user in a specific shop.
 
     @ManyToOne
@@ -50,7 +54,7 @@ public class Role {
     // Default constructor for hibernate.
     public Role(){
         username = null;
-        storeId = -1;
+        shopId = -1;
         appointedBy = null;
         permissions = new HashSet<Permission>();
         appointments = new HashSet<String>();
@@ -59,13 +63,13 @@ public class Role {
     /**
      * Basic constructor with permission set.
      * @param username the username in the system that the role belongs to.
-     * @param storeId the shop id that the role belongs to.
+     * @param shop the shop that the role belongs to.
      * @param appointedBy the username that appointed this role.
      * @param permissions the permission given to this role.
      * @throws RoleException 
      */
-    public Role(String username, int storeId, String appointedBy, Set<Permission> permissions) throws StockMarketException{
-        logger.log(Level.INFO, "Role - constructor: Creating a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
+    public Role(String username, Shop shop, String appointedBy, Set<Permission> permissions) throws StockMarketException{
+        logger.log(Level.INFO, "Role - constructor: Creating a new role in shop with id "+shop.getShopId()+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
         if(username == null){
             logger.log(Level.SEVERE, "Role - constructor: Error while creating a new role because username is null.");
             throw new RoleException("Can't create a role with null username.");
@@ -96,12 +100,13 @@ public class Role {
         }
         
         this.username = username;
-        this.storeId = storeId;
+        this.shopId = shop.getShopId();
         this.appointedBy = appointedBy;
         appointments = new HashSet<String>();
         this.permissions = permissions;
+        this.shop = shop;
 
-        logger.log(Level.INFO, "Role - constructor: Successfuly created a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
+        logger.log(Level.INFO, "Role - constructor: Successfuly created a new role in shop with id "+shop.getShopId()+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
     }
 
     public boolean isFounder(){
@@ -159,7 +164,7 @@ public class Role {
      * @throws RoleException 
      */
     public void modifyPermissions(String username, Set<Permission> permissions) throws StockMarketException {
-        logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+username+" in the shop with id "+storeId);
+        logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+username+" in the shop with id "+shopId);
         if(isFounder() || isOwner()){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
             throw new RoleException("Username is a founder of owner. No need to manage permissions.");
@@ -200,7 +205,7 @@ public class Role {
 
 
     public void addAppointment(String username) throws StockMarketException{
-        logger.log(Level.INFO, "Role - addAppointment: "+username+" trying to appoint user "+username+" in the shop with id "+storeId);
+        logger.log(Level.INFO, "Role - addAppointment: "+username+" trying to appoint user "+username+" in the shop with id "+shopId);
         if(appointments.contains(username)){
             logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he was already appointed by "+username);
             throw new RoleException("Username "+username+" is already appointed.");
@@ -214,11 +219,11 @@ public class Role {
             throw new RoleException("Username "+username+" cannot appoint the user that appointed him.");
         }
         appointments.add(username);
-        logger.log(Level.INFO, "Role - addAppointment: "+username+" successfuly appointed user "+username+" in the shop with id "+storeId);
+        logger.log(Level.INFO, "Role - addAppointment: "+username+" successfuly appointed user "+username+" in the shop with id "+shopId);
     }
 
     public void deleteAppointment(String username) throws StockMarketException{
-        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" trying delete user "+username+" that was appointed by him in the shop with id "+storeId);
+        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" trying delete user "+username+" that was appointed by him in the shop with id "+shopId);
         if(!appointments.contains(username)){
             logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he is not appointed by "+username);
             throw new RoleException("Username "+username+" is not appointed.");
@@ -232,7 +237,7 @@ public class Role {
             throw new RoleException("Username "+username+" cannot delete appointment of the user that appointed him.");
         }
         appointments.remove(username);
-        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" successfuly deleted the user "+username+" that was appointed by him in the shop with id "+storeId);
+        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" successfuly deleted the user "+username+" that was appointed by him in the shop with id "+shopId);
     }
     
     // GETTERS
@@ -249,8 +254,8 @@ public class Role {
      * Gets the store id that this role is connected to.
      * @return the store id.
      */
-    public int getStoreId() {
-        return storeId;
+    public int getShopId() {
+        return shopId;
     }
 
     /**

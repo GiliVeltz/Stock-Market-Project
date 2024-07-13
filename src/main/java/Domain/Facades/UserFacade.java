@@ -287,6 +287,11 @@ public class UserFacade {
         return _guestRepository.findByGuestId(id);
     }
 
+    public void setSystemAdmin(User user) {
+        user.setIsSystemAdmin(true);
+        _userRepository.save(user);
+    }
+
     // // // function to initilaize data for UI testing
     // public void initUI() {
     //     _userRepository.addUser(new User("tal", 
