@@ -56,7 +56,7 @@ public class MarketSystem {
 
     public final static String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public final static String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config_inbar.txt";
+    public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public final static String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
