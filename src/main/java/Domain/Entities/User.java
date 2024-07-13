@@ -46,7 +46,7 @@ public class User {
     private Date birthDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> purchaseHistory;
+    private List<Order> purchaseHistory = new ArrayList<Order>();
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;

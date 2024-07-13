@@ -153,6 +153,38 @@ public class Shop {
         }
     }
 
+    // for testing
+    public Shop(String shopName, String shopFounderUserName, String bankDetails, String shopAddress, Integer shopId)
+            throws ShopException {
+        try {
+            logger.log(Level.INFO, "Shop - constructor: Creating a new shop with id " + shopId
+                    + " named " + shopName + ". The Founder of the shop is: " + shopFounderUserName);
+            this.shopId = shopId;
+            this.shopName = shopName;
+            shopFounder = shopFounderUserName;
+            productMap = new HashMap<>(); // Initialize the product map
+            orderHistory = new ArrayList<>();
+            userToRole = new HashMap<>();
+            this.bankDetails = bankDetails;
+            this.shopAddress = shopAddress;
+            discounts = new ArrayList<>();
+            this.shopRating = -1.0;
+            this.shopRatersCounter = 0;
+            shopPolicy = new ShopPolicy();
+            Role founder = new Role(shopFounderUserName, this, null, EnumSet.of(Permission.FOUNDER));
+            userToRole.putIfAbsent(shopFounderUserName, founder);
+            nextDiscountId = 0;
+            isClosed = false;
+            
+            logger.log(Level.FINE, "Shop - constructor: Successfully created a new shop with id " + shopId
+                    + ". The Founder of the shop is: " + shopFounderUserName);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Shop - constructor: Error while creating a new shop with id " + shopId
+                    + ". The Founder of the shop is: " + shopFounderUserName);
+            throw new ShopException("Error while creating shop.");
+        }
+    }
+
     public void setRoleRepository(InterfaceRoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
