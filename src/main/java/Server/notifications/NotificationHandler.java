@@ -1,7 +1,6 @@
 package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.Alerts.Alert;

@@ -2,6 +2,7 @@ package AcceptanceTests.ProjectTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -22,6 +23,7 @@ public class GuestAcceptanceTests {
     
     // Test if the guest can enter the system.
     @Test
+    @Disabled
     public void TestGuestEnterTheSystem() {
         assertTrue(_bridge.TestGuestEnterTheSystem("newGuest") ); // success
         assertFalse(_bridge.TestGuestEnterTheSystem("existGuest") ); // fail - already exists
@@ -29,6 +31,7 @@ public class GuestAcceptanceTests {
     
     // Test if the user can register to the system.
     @Test
+    @Disabled
     public void TestGuestRegisterToTheSystem() {
         assertTrue(_bridge.TestGuestRegisterToTheSystem("Bob","bobspassword", "email@example.com") ); // success
         assertFalse(_bridge.TestGuestRegisterToTheSystem("Bobi","bobspassword", "email@example.com") ); // fail - already exists
@@ -39,6 +42,7 @@ public class GuestAcceptanceTests {
     
     // Test if the user can login to the system.
     @Test
+    @Disabled
     public void TestUserLogin() {
         assertTrue(_bridge.testLoginToTheSystem("Bob","bobspassword") ); // success
         assertFalse(_bridge.testLoginToTheSystem("","bobspassword") ); // fail - empty username

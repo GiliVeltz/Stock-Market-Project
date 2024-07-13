@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.CloseShopAlert;
 import Domain.Entities.Alerts.CredentialsModifyAlert;
