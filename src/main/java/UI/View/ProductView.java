@@ -30,6 +30,7 @@ import UI.Model.ProductDto;
 import UI.Model.ProductGetterDto;
 import UI.Presenter.ProductPresenter;
 
+@SuppressWarnings("unused")
 @PageTitle("product_page")
 @Route(value = "product_page")
 public class ProductView extends BaseView implements HasUrlParameter<String>{

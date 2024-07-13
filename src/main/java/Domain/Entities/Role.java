@@ -4,18 +4,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Domain.Entities.enums.Permission;
 import Exceptions.*;
-import enums.Permission;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 /** 
  * This class represents the role of a user in a specific shop.
  */
-//TODO: ADD TESTS
-//TODO: MODIFY MODEL CLASS IF NEEDED.
+@Entity
 public class Role {
     /** 
      * The username that appointed this member in the shop.
@@ -24,24 +20,41 @@ public class Role {
      */
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long _roleId;
+    private Integer roleId;
 
-    private final String _appointedBy;
+    private final String appointedBy;
     
-    private final int _storeId; // The store id that this role is connected to.
+    private final int storeId; // The store id that this role is connected to.
 
-    private final String _username; // The username of the user in the system.
+    private final String username; // The username of the user in the system.
 
     /**
      * The permissions of this role in the shop.
      * @Constraint has to be at least one permission.
      */
     @Transient
-    private Set<Permission> _permissions;
+    private Set<Permission> permissions;
     
-    private Set<String> _appointments; // The appointments of this user in a specific shop.
+    @ElementCollection
+    @CollectionTable(name = "role_appointments", joinColumns = @JoinColumn(name = "role_id"))
+    @Column(name = "appointment")
+    private Set<String> appointments; // The appointments of this user in a specific shop.
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+    
     @Transient
     private static final Logger logger = Logger.getLogger(Role.class.getName());
+
+    // Default constructor for hibernate.
+    public Role(){
+        username = null;
+        storeId = -1;
+        appointedBy = null;
+        permissions = new HashSet<Permission>();
+        appointments = new HashSet<String>();
+    }
 
     /**
      * Basic constructor with permission set.
@@ -82,21 +95,21 @@ public class Role {
             throw new RoleException("Owner doesn't need other permissions.");
         }
         
-        _username = username;
-        _storeId = storeId;
-        _appointedBy = appointedBy;
-        _appointments = new HashSet<String>();
-        _permissions = permissions;
+        this.username = username;
+        this.storeId = storeId;
+        this.appointedBy = appointedBy;
+        appointments = new HashSet<String>();
+        this.permissions = permissions;
 
         logger.log(Level.INFO, "Role - constructor: Successfuly created a new role in shop with id "+storeId+" for username "+username+". Permissions are: "+permissions+". The role was appointed by: "+appointedBy);
     }
 
     public boolean isFounder(){
-        return _permissions.contains(Permission.FOUNDER) && _appointedBy == null;
+        return permissions.contains(Permission.FOUNDER) && appointedBy == null;
     }
 
     public boolean isOwner(){
-        return _permissions.contains(Permission.OWNER);
+        return permissions.contains(Permission.OWNER);
     }
 
     
@@ -109,7 +122,7 @@ public class Role {
         if(p == null){
             return false;
         }
-        return _permissions.contains(p);
+        return permissions.contains(p);
     }
 
     /**
@@ -121,7 +134,7 @@ public class Role {
         if(permissions == null || permissions.isEmpty()){
             return false;
         }
-        permissions.retainAll(_permissions);
+        permissions.retainAll(permissions);
         return !permissions.isEmpty();
     }
 
@@ -134,7 +147,7 @@ public class Role {
         if(permissions == null || permissions.isEmpty()){
             return false;
         }
-        return !permissions.retainAll(_permissions);
+        return !permissions.retainAll(permissions);
     }
 
     /**
@@ -146,22 +159,22 @@ public class Role {
      * @throws RoleException 
      */
     public void modifyPermissions(String username, Set<Permission> permissions) throws StockMarketException {
-        logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+_username+" in the shop with id "+_storeId);
+        logger.log(Level.INFO, "Role - addPermissions: "+username+" trying to add permissions "+permissions+" to user "+username+" in the shop with id "+storeId);
         if(isFounder() || isOwner()){
             logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to owner of founder. Can't add permissions for them.");
             throw new RoleException("Username is a founder of owner. No need to manage permissions.");
         }
-        if(!username.equals(_appointedBy)){
-            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because "+username+" is not his appointer.");
+        if(!username.equals(appointedBy)){
+            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+username+" because "+username+" is not his appointer.");
             throw new RoleException("Only the user that appointed this user can modify the permissions.");
         }
         if(permissions.contains(Permission.OWNER) || permissions.contains(Permission.FOUNDER)){
-            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+_username+" because we can't add founder of owner permissions.");
+            logger.log(Level.SEVERE, "Role - addPermissions: Error while adding permissions to "+username+" because we can't add founder of owner permissions.");
             throw new RoleException("Cannot add owner or founder permissions.");
         }
         //Delete all permissions and set the new ones.
-        _permissions.clear();
-        _permissions.addAll(permissions);
+        permissions.clear();
+        permissions.addAll(permissions);
     }
 
 
@@ -187,39 +200,39 @@ public class Role {
 
 
     public void addAppointment(String username) throws StockMarketException{
-        logger.log(Level.INFO, "Role - addAppointment: "+_username+" trying to appoint user "+username+" in the shop with id "+_storeId);
-        if(_appointments.contains(username)){
-            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he was already appointed by "+_username);
+        logger.log(Level.INFO, "Role - addAppointment: "+username+" trying to appoint user "+username+" in the shop with id "+storeId);
+        if(appointments.contains(username)){
+            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he was already appointed by "+username);
             throw new RoleException("Username "+username+" is already appointed.");
         }
-        if(username.equals(_username)){
+        if(username.equals(username)){
             logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he is trying to appoint himself.");
             throw new RoleException("Username "+username+" cannot appoint itself.");
         }
-        if(username.equals(_appointedBy)){
-            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he is trying to appoint his appointer "+_appointedBy);
-            throw new RoleException("Username "+_username+" cannot appoint the user that appointed him.");
+        if(username.equals(appointedBy)){
+            logger.log(Level.SEVERE, "Role - addAppointment: Error while appointing "+username+" because he is trying to appoint his appointer "+appointedBy);
+            throw new RoleException("Username "+username+" cannot appoint the user that appointed him.");
         }
-        _appointments.add(username);
-        logger.log(Level.INFO, "Role - addAppointment: "+_username+" successfuly appointed user "+username+" in the shop with id "+_storeId);
+        appointments.add(username);
+        logger.log(Level.INFO, "Role - addAppointment: "+username+" successfuly appointed user "+username+" in the shop with id "+storeId);
     }
 
     public void deleteAppointment(String username) throws StockMarketException{
-        logger.log(Level.INFO, "Role - deleteAppointment: "+_username+" trying delete user "+username+" that was appointed by him in the shop with id "+_storeId);
-        if(!_appointments.contains(username)){
-            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he is not appointed by "+_username);
+        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" trying delete user "+username+" that was appointed by him in the shop with id "+storeId);
+        if(!appointments.contains(username)){
+            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he is not appointed by "+username);
             throw new RoleException("Username "+username+" is not appointed.");
         }
-        if(username.equals(_username)){
+        if(username.equals(username)){
             logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because he trying to remove himself.");
-            throw new RoleException("Username "+_username+" cannot delete himself from his appointments.");
+            throw new RoleException("Username "+username+" cannot delete himself from his appointments.");
         }
-        if(username.equals(_appointedBy)){
-            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because "+_username+" didn't appoint him.");
-            throw new RoleException("Username "+_username+" cannot delete appointment of the user that appointed him.");
+        if(username.equals(appointedBy)){
+            logger.log(Level.SEVERE, "Role - deleteAppointment: Error while removing appointed "+username+" because "+username+" didn't appoint him.");
+            throw new RoleException("Username "+username+" cannot delete appointment of the user that appointed him.");
         }
-        _appointments.remove(username);
-        logger.log(Level.INFO, "Role - deleteAppointment: "+_username+" successfuly deleted the user "+username+" that was appointed by him in the shop with id "+_storeId);
+        appointments.remove(username);
+        logger.log(Level.INFO, "Role - deleteAppointment: "+username+" successfuly deleted the user "+username+" that was appointed by him in the shop with id "+storeId);
     }
     
     // GETTERS
@@ -229,7 +242,7 @@ public class Role {
      * @return the appointed username.
      */
     public String getAppointedBy() {
-        return _appointedBy;
+        return appointedBy;
     }
 
     /**
@@ -237,7 +250,7 @@ public class Role {
      * @return the store id.
      */
     public int getStoreId() {
-        return _storeId;
+        return storeId;
     }
 
     /**
@@ -245,7 +258,7 @@ public class Role {
      * @return the username.
      */
     public String getUsername() {
-        return _username;
+        return username;
     }
 
     /**
@@ -253,7 +266,7 @@ public class Role {
      * @return the set of permissions.
      */
     public Set<Permission> getPermissions() {
-        return _permissions;
+        return permissions;
     }
 
     /**
@@ -261,7 +274,7 @@ public class Role {
      * @return the set of appointed people by this role.
      */
     public Set<String> getAppointments() {
-        return _appointments;
+        return appointments;
     }
 
 }

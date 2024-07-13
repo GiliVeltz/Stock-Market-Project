@@ -9,12 +9,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Domain.Entities.Product;
+import Domain.Entities.enums.Category;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.UserFacade;
 import Dtos.BasicDiscountDto;
@@ -30,7 +32,6 @@ import Dtos.ShopGetterDto;
 import Dtos.ShopManagerDto;
 import Dtos.ShopOrderDto;
 import Exceptions.StockMarketException;
-import enums.Category;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
@@ -41,16 +42,11 @@ public class ShopService {
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
+    @Autowired
     public ShopService(ShopFacade shopFacade, TokenService tokenService, UserFacade userFacade) {
         _shopFacade = shopFacade;
         _tokenService = tokenService;
         _userFacade = userFacade;
-    }
-  
-    public ShopService() {
-        _shopFacade = ShopFacade.getShopFacade();
-        _tokenService = TokenService.getTokenService();
-        _userFacade = UserFacade.getUserFacade();
     }
 
     /**
@@ -1181,7 +1177,6 @@ public class ShopService {
      */
     @Transactional
     public ResponseEntity<Response> displayProductPolicyInfo(String token, Integer shopId, Integer productId) {
-        // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -1263,7 +1258,6 @@ public class ShopService {
      */
     @Transactional
     public ResponseEntity<Response> displayProductDiscountsInfo(String token, Integer shopId, Integer productId) {
-        // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
@@ -1344,7 +1338,6 @@ public class ShopService {
      */
     @Transactional
     public ResponseEntity<Response> displayProductGeneralInfo(String token, Integer shopId, Integer productId) {
-        // TODO: Decide on correct way to implement - Objects(discounts) or Strings(Policy)
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {

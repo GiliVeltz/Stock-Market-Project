@@ -29,4 +29,10 @@ public interface AdapterPaymentInterface {
      *  Output: 1 if the cancelation has been successful or -1 if the cancelation has failed.
      */
     int cancel_pay(int transactionId);
+
+    /**
+     * This method is used to connect to the payment service.
+     * @return true if the connection was successful, false otherwise.
+     */
+    boolean ConnectToService();
 }

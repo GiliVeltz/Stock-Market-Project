@@ -22,6 +22,7 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Model.ProductDto;
 import UI.Presenter.ShopViewPresenter;
 
+@SuppressWarnings("unused")
 @Route(value = "shop_page")
 public class ShopView extends BaseView implements HasUrlParameter<Integer> {
 

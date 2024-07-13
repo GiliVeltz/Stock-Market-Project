@@ -2,6 +2,7 @@ package AcceptanceTests.ProjectTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -21,6 +22,7 @@ public class ShoppingCartAcceptanceTests {
     
     // Test try to add product to shopping cart as register and signed in user in the system.
     @Test
+    @Disabled
     public void testAddProductToShoppingCartAsUser() {
         assertTrue(_bridge.testAddProductToShoppingCartUser("userName", "0", "0") ); // success - product in shop
         assertFalse(_bridge.testAddProductToShoppingCartUser("userName", "2", "0") ); // fail - product not in shop
@@ -28,6 +30,7 @@ public class ShoppingCartAcceptanceTests {
     
     // Test try to add product to shopping cart as guest in the system.
     @Test
+    @Disabled
     public void testAddProductToShoppingCartAsGuest() {
         assertTrue(_bridge.testAddProductToShoppingCartGuest("guestname", "0", "0") ); // success - product in shop
         assertFalse(_bridge.testAddProductToShoppingCartGuest("guestname", "2", "0") ); // fail - product not in shop

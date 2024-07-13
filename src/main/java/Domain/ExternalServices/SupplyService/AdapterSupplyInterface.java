@@ -30,4 +30,10 @@ public interface AdapterSupplyInterface {
      * Output: 1 if the cancelation has been successful or -1 if the cancelation has failed
      */
     int cancel_supply(int transaction_id);
+
+    /**
+     * This method is used to connect to the supply service.
+     * @return true if the connection was successful, false otherwise.
+     */
+    boolean ConnectToService();
 } 

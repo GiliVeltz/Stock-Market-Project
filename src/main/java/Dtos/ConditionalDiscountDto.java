@@ -3,7 +3,7 @@ package Dtos;
 import java.util.Date;
 import java.util.List;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class ConditionalDiscountDto extends BasicDiscountDto {
     public List<Integer> mustHaveProducts;

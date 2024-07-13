@@ -3,7 +3,7 @@ package Dtos;
 import java.util.List;
 import java.util.Locale;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class ProductSearchDto {
     private Integer shopId;

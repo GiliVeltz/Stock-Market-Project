@@ -12,11 +12,16 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
 
@@ -24,65 +29,80 @@ import Exceptions.ShopPolicyException;
 // The shopping basket can belongs to one and only shop and one user.
 
 @Entity
+@Table(name = "[shopping_basket]")
 public class ShoppingBasket implements Cloneable {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long _shoppingBasketId;
-    // @OneToOne(mappedBy = "shoppingBasket")
-    @Transient
-    private Shop _shop;
-    private List<Integer> _productIdList;
-    private double _basketTotalAmount;
-    @Transient
-    private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer shoppingBasketId;
+
+    @OneToOne(optional = false, orphanRemoval = true)
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+
+    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> productsList;
+
+    @Column(name = "total_basket_amount", nullable = false)
+    private double basketTotalAmount;
+
     @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
 
+    @OneToOne
+    @JoinColumn(name = "shop_order_id")
+    private ShopOrder shopOrder;
+
+    @Transient
+    private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
+
+    // Default constructor
+    public ShoppingBasket() { }
+
     // Constructor
     public ShoppingBasket(Shop shop) {
-        _shop = shop;
-        _productIdList = new ArrayList<>();
-        _basketTotalAmount = 0.0;
+        this.shop = shop;
+        productsList = new ArrayList<>();
+        basketTotalAmount = 0.0;
         _productToPriceToAmount = new HashMap<>();
     }
 
     // Adds a product to the shopping basket after validating the user doesn't violate the product policy.
-    public void addProductToShoppingBasket(User user, Integer productId, int quantity) throws StockMarketException {
+    public void addProductToShoppingBasket(User user, int productId, int quantity) throws StockMarketException {
         if (user == null) {
             logger.log(Level.FINE,
-                "ShoppingBasket - addProductToShoppingBasket - Check if a guest (null user in shopping basket) can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+                "ShoppingBasket - addProductToShoppingBasket - Check if a guest (null user in shopping basket) can add product with id "+productId+" to basket of shop with id " + shop.getShopId());
         }
         else{
             logger.log(Level.FINE,
-                "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+                "ShoppingBasket - addProductToShoppingBasket - Check if "+user.getUserName()+" can add product with id "+productId+" to basket of shop with id " + shop.getShopId());
         }
         
         // check if the product is in the shop and validate the user doesn't violate the product policy
-        _shop.ValidateProdcutPolicy(user, _shop.getProductById(productId));
+        shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
 
         // add the product to the basket
         for (int i = 0; i < quantity; i++)
-            _productIdList.add(productId);
+            productsList.add(shop.getProductById(productId));
         
         if (user == null) {
             logger.log(Level.FINE,
-                "ShoppingBasket - addProductToShoppingBasket - guest (null user in shopping basket) validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+                "ShoppingBasket - addProductToShoppingBasket - guest (null user in shopping basket) validated successfuly for product with id "+productId+" to basket of shop with id " + shop.getShopId());
         }
         else{
             logger.log(Level.FINE,
-                "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + _shop.getShopId());
+                "ShoppingBasket - addProductToShoppingBasket - User "+user.getUserName()+" validated successfuly for product with id "+productId+" to basket of shop with id " + shop.getShopId());
         }
     }
 
-    public void removeProductFromShoppingBasket(Integer productId, int quantity) throws StockMarketException {
+    public void removeProductFromShoppingBasket(Product product, int quantity) throws StockMarketException {
         // check if the product is in the basket
         for (int i = 0; i < quantity; i++) {
-            if (!_productIdList.contains(productId)) {
+            if (!getProductIdsList().contains(product.getProductId())) {
                 logger.log(Level.SEVERE,
-                        "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + productId + " is not in the basket of shop with id " + _shop.getShopId());
-                throw new ProductDoesNotExistsException("Product with id " + productId + " is not in the basket");
+                        "ShoppingBasket - removeProductFromShoppingBasket - Product with id " + product.getProductId() + " is not in the basket of shop with id " + shop.getShopId());
+                throw new ProductDoesNotExistsException("Product with id " + product.getProductId() + " is not in the basket");
             }
-            _productIdList.remove(productId);
+            productsList.remove(product);
         }
     }
 
@@ -90,8 +110,8 @@ public class ShoppingBasket implements Cloneable {
     // Calculate and return the total price of all products in the basket
     public double calculateShoppingBasketPrice() throws StockMarketException {
         resetProductToPriceToAmount();
-        _shop.applyDiscounts(this);
-        _basketTotalAmount = 0.0;
+        shop.applyDiscounts(this);
+        basketTotalAmount = 0.0;
 
         // // case where there are no discounts on the basket
         // if (_productToPriceToAmount.size() == 0) {
@@ -102,30 +122,30 @@ public class ShoppingBasket implements Cloneable {
             // iterate over the product to price to amount map and calculate the total price
             for (Map.Entry<Integer, SortedMap<Double, Integer>> entry : _productToPriceToAmount.entrySet()) {
                 for (Map.Entry<Double, Integer> priceToAmount : entry.getValue().entrySet()) {
-                    _basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
+                    basketTotalAmount += priceToAmount.getKey() * priceToAmount.getValue();
                 }
             }
         // }
-        return _basketTotalAmount;
+        return basketTotalAmount;
     }
     
     // Return the total price of all products in the basket
     public double getShoppingBasketPrice() throws StockMarketException{
-        if (_basketTotalAmount == 0.0)
+        if (basketTotalAmount == 0.0)
             return calculateShoppingBasketPrice();
-        return _basketTotalAmount;
-    }
-
-    // Return the list of product IDs in the basket
-    public List<Integer> getProductIdList() {
-        return _productIdList;
+        return basketTotalAmount;
     }
 
     // Return the list of products in the basket
-    public List<Product> getProductsList() throws StockMarketException {
-        List<Product> products = new ArrayList<>();
-        for (Integer productId : _productIdList) {
-            products.add(_shop.getProductById(productId));
+    public List<Product> getProductsList() {
+        return productsList;
+    }
+
+    // Return the list of product IDs in the basket
+    public List<Integer> getProductIdsList() throws StockMarketException {
+        List<Integer> products = new ArrayList<>();
+        for (Product product : productsList) {
+            products.add(product.getProductId());
         }
         return products;
     }
@@ -137,39 +157,39 @@ public class ShoppingBasket implements Cloneable {
      */
     public boolean purchaseBasket(String username) throws StockMarketException {
         logger.log(Level.FINE,
-                "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + _shop.getShopId());
+                "ShoppingBasket - purchaseBasket - Start purchasing basket from shodId: " + shop.getShopId());
         List<Integer> boughtProductIdList = new ArrayList<>();
 
         //HERE WE CHECK IF THE SHOP Policy is met.
         try{
         logger.log(Level.FINE,
-                "ShoppingBasket - purchaseBasket - Check if the shop policy is ok for shop: " + _shop.getShopId());
-        _shop.ValidateBasketMeetsShopPolicy(this);
+                "ShoppingBasket - purchaseBasket - Check if the shop policy is ok for shop: " + shop.getShopId());
+        shop.ValidateBasketMeetsShopPolicy(this);
         }catch (ShopPolicyException e){
             logger.log(Level.FINE,
                 "ShoppingBasket - purchaseBasket - Basket didn't meet the shop policy.");
             throw e;
         }
         
-        for (Integer productId : _productIdList) {
+        for (int productId : getProductIdsList()) {
             try {
-                _shop.getProductById(productId).purchaseProduct();
+                shop.getProductById(productId).purchaseProduct();
                 boughtProductIdList.add(productId);
             } catch (ProductOutOfStockExepction e) {
                 logger.log(Level.SEVERE,
                         "ShoppingBasket - purchaseBasket - Product out of stock in basket from shopId: "
-                                + _shop.getShopId() + ". Exception: " + e.getMessage(),
+                                + shop.getShopId() + ". Exception: " + e.getMessage(),
                         e);
                 logger.log(Level.FINE,
                         "ShoppingBasket - purchaseBasket - Canceling purchase of all products from basket from shopId: "
-                                + _shop.getShopId());
-                for (Integer boughtProductId : boughtProductIdList) {
-                    _shop.getProductById(boughtProductId).cancelPurchase();
+                                + shop.getShopId());
+                for (int boughtProductId : boughtProductIdList) {
+                    shop.getProductById(boughtProductId).cancelPurchase();
                 }
                 return false;
             }
         }
-        notfyPurchaseFromShop(username, _productIdList, _shop);
+        notfyPurchaseFromShop(username, getProductIdsList(), shop);
         System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
@@ -182,18 +202,18 @@ public class ShoppingBasket implements Cloneable {
     public void cancelPurchase() throws StockMarketException {
         logger.log(Level.FINE,
                 "ShoppingBasket - cancelPurchase - Canceling purchase of all products from basket from shodId: "
-                        + _shop.getShopId());
-        for (Integer productId : _productIdList) {
-            _shop.getProductById(productId).cancelPurchase();
+                        + shop.getShopId());
+        for (Product product : productsList) {
+            product.cancelPurchase();
         }
     }
 
     // Return the number of times a product appears in the basket
-    public int getProductCount(Integer productId) {
+    public int getProductCount(int productId) {
         int count = 0;
 
-        for (Integer product : _productIdList)
-            if (product == productId)
+        for (Product product : productsList)
+            if (product.getProductId() == productId)
                 count++;
 
         return count;
@@ -208,15 +228,15 @@ public class ShoppingBasket implements Cloneable {
     public void resetProductToPriceToAmount() throws StockMarketException {
         _productToPriceToAmount = new HashMap<>();
 
-        for (Integer productId : _productIdList) {
-            double price = _shop.getProductById(productId).getPrice();
-            if (!_productToPriceToAmount.containsKey(productId))
-                _productToPriceToAmount.put(productId, new TreeMap<>());
-            if (!_productToPriceToAmount.get(productId).containsKey(price))
-                _productToPriceToAmount.get(productId).put(price, 0);
+        for (Product product : productsList) {
+            double price = product.getPrice();
+            if (!_productToPriceToAmount.containsKey(product.getProductId()))
+                _productToPriceToAmount.put(product.getProductId(), new TreeMap<>());
+            if (!_productToPriceToAmount.get(product.getProductId()).containsKey(price))
+                _productToPriceToAmount.get(product.getProductId()).put(price, 0);
 
-            int oldAmount = _productToPriceToAmount.get(productId).get(price);
-            _productToPriceToAmount.get(productId).put(price, oldAmount + 1);
+            int oldAmount = _productToPriceToAmount.get(product.getProductId()).get(price);
+            _productToPriceToAmount.get(product.getProductId()).put(price, oldAmount + 1);
         }
     }
 
@@ -225,8 +245,8 @@ public class ShoppingBasket implements Cloneable {
     public ShoppingBasket clone() {
         try {
             ShoppingBasket cloned = (ShoppingBasket) super.clone();
-            cloned._shop = this._shop;
-            cloned._productIdList = new ArrayList<>(_productIdList);
+            cloned.shop = this.shop;
+            cloned.productsList = new ArrayList<>(productsList);
             cloned._productToPriceToAmount = cloneProductToPriceToAmount();
             return cloned;
         } catch (CloneNotSupportedException e) {
@@ -247,10 +267,10 @@ public class ShoppingBasket implements Cloneable {
     // Print all products in the basket
     public String printAllProducts() {
         StringBuilder sb = new StringBuilder();
-        for (Integer product : _productIdList) {
+        for (Product product : productsList) {
             try {
-                sb.append(_shop.getProductById(product).toString());
-            } catch (ProductDoesNotExistsException e) {
+                sb.append(product.toString());
+            } catch (Exception e) {
                 return "Error while printAllProduct: " + e.getMessage();
             }
             sb.append("\n");
@@ -270,30 +290,30 @@ public class ShoppingBasket implements Cloneable {
     @Override
     public String toString() {
         return "ShoppingBasket{" +
-                "ShopId=" + _shop.getShopId() +
+                "ShopId=" + shop.getShopId() +
                 ", products=" + printAllProducts() +
                 '}';
     }
 
     public boolean isEmpty() {
-        return this._productIdList.isEmpty(); 
+        return this.productsList.isEmpty(); 
     }
     
     // getters and setters
     
     public int getShopId() {
-        return _shop.getShopId();
+        return shop.getShopId();
     }
 
     public Shop getShop(){
-        return _shop;
+        return shop;
     }
 
     public String getShopBankDetails() {
-        return _shop.getBankDetails();
+        return shop.getBankDetails();
     }
 
     public String getShopAddress() {
-        return _shop.getShopAddress();
+        return shop.getShopAddress();
     }
 }

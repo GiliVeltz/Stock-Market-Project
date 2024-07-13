@@ -22,6 +22,7 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Message;
 import UI.Presenter.UserMessagesPagePresenter;
 
+@SuppressWarnings("unused")
 @PageTitle("User Messages Page")
 @Route(value = "user_messages")
 public class UserMessagesPageView extends VerticalLayout {

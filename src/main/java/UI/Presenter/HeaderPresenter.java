@@ -69,7 +69,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response for Login");
+                            view.showErrorMessage("Login failed: " + e.getMessage());
                             e.printStackTrace();
                         }
                     } else {

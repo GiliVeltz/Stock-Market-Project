@@ -15,6 +15,7 @@ import UI.Model.ProductGetterDto;
 import UI.Model.Response;
 import UI.View.ProductView;
 
+@SuppressWarnings("rawtypes")
 public class ProductPresenter {
 
     private final ProductView _view;
@@ -25,7 +26,6 @@ public class ProductPresenter {
         this._serverPort = serverPort;
     }
 
-    @SuppressWarnings("rawtypes")
     public void productInfo(String shopId, String productId) {
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -80,7 +80,6 @@ public class ProductPresenter {
                 });
     }
 
-    @SuppressWarnings("rawtypes")
     public void getDetailedProduct(int shopId, int productId) {
         RestTemplate restTemplate = new RestTemplate();
 

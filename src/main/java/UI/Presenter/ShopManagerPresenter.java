@@ -1,9 +1,7 @@
 package UI.Presenter;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,14 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
@@ -38,8 +31,6 @@ import UI.Model.ShopManagerDto;
 import UI.Model.ProductPolicy.ProductPolicyRuleList;
 import UI.Model.ShopOrderDto;
 import UI.Model.ProductPolicy.UserRuleDto;
-import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
-import UI.Model.ShopPolicy.MinProductAmountRuleDto;
 import UI.Model.ShopPolicy.ShopPolicyRulesList;
 import UI.Model.ShopPolicy.ShoppingBasketRuleDto;
 import UI.View.ShopManagerView;
@@ -1118,7 +1109,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    @SuppressWarnings("rawtypes")
 public void getShopPurchaseHistory(Integer shopId) {
     RestTemplate restTemplate = new RestTemplate();
 

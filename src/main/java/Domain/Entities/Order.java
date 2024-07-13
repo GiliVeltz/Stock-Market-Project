@@ -4,28 +4,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
 
-// calss that represents an order for the user
+// class that represents an order for the user
 @Entity
+@Table(name = "[order]")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer _orderId;
 
-    // Transient because it's not persisted in the database, just used in memory
     @Transient
-    private Map<Integer, ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop> 
-    
+    private Map<Integer, ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
+
+    @Column(name = "totalOrderAmount", nullable = false)
     private double _totalOrderAmount;
     private int paymentId;
     private int SupplyId;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // Default constructor
+    public Order() { }
+    
     // Constructor
     public Order(int orderId, List<ShoppingBasket> shoppingBasket, int paymentId, int supplyId) throws StockMarketException {
         _orderId = orderId;
@@ -115,10 +127,10 @@ public class Order {
     }
 
     // for tests - get all product ids
-    public List<Integer> getAllProductIds() {
+    public List<Integer> getAllProductIds() throws StockMarketException {
         List<Integer> allProductIds = new java.util.ArrayList<>();
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            allProductIds.addAll(entry.getValue().getProductIdList());
+            allProductIds.addAll(entry.getValue().getProductIdsList());
         }
         return allProductIds;
     }

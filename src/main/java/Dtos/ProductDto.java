@@ -3,7 +3,7 @@ package Dtos;
 import java.util.Set;
 
 import Domain.Entities.Product;
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class ProductDto {
 
