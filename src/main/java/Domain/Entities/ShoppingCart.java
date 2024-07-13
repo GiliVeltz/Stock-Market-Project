@@ -15,6 +15,7 @@ import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
 import Domain.Facades.ShopFacade;
+import Domain.Repositories.InterfaceOrderRepository;
 import Dtos.PurchaseCartDetailsDto;
 
 import java.util.Optional;
@@ -58,6 +59,9 @@ public class ShoppingCart {
     @Transient
     @Autowired
     private ShopFacade shopFacade;
+
+    @Transient
+    private InterfaceOrderRepository orderRepository;
 
     //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = User.class)
     //@Column(name = "username", nullable = false)
@@ -123,6 +127,10 @@ public class ShoppingCart {
         shoppingBaskets.clear();
     }
 
+    public void setOrderRepository(InterfaceOrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
     /*
      * This method is responsible for purchasing the cart.
      * It first calls the purchaseCart method of the shopping cart which reaponsible
@@ -176,7 +184,8 @@ public class ShoppingCart {
             }
 
             if (user != null) {
-                Order order = new Order(ordersId, shoppingBasketsForOrder, paymentTransactionId, supplyTransactionId);
+                Order order = new Order(shoppingBasketsForOrder, paymentTransactionId, supplyTransactionId);
+                orderRepository.save(order);
                 user.addOrder(order);
             }
 
@@ -383,5 +392,21 @@ public class ShoppingCart {
 
     public Integer getId() {
         return shoppingCartId;
+    }
+  
+    public double getTotalPrice() throws StockMarketException {
+        double totalPrice = 0;
+        for (ShoppingBasket basket : shoppingBaskets) {
+            totalPrice += basket.calculateShoppingBasketPrice();
+        }
+        return totalPrice;
+    }
+
+    public List<Integer> getShoppingBasketIdList() {
+        List<Integer> shoppingBasketIdList = new ArrayList<>();
+        for (ShoppingBasket basket : shoppingBaskets) {
+            shoppingBasketIdList.add(basket.getShoppingBasketId());
+        }
+        return shoppingBasketIdList;
     }
 }

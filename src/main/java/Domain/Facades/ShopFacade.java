@@ -35,11 +35,8 @@ import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
-import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceShopRepository;
-import Domain.Repositories.MemoryProductRepository;
-import Domain.Repositories.MemoryShopRepository;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
@@ -62,7 +59,7 @@ public class ShopFacade {
     private NotificationHandler _notificationHandler;
 
     @Autowired
-    public ShopFacade(DbShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
+    public ShopFacade(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _userFacade = userFacade;
@@ -77,13 +74,9 @@ public class ShopFacade {
         // }
     }
 
-    // set shop repository to be used in test system
-    public void setShopRepository(MemoryShopRepository shopRepository) {
+    // set repositories to be used in test system
+    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository) {
         _shopRepository = shopRepository;
-    }
-
-    // set product repository to be used in test system
-    public void setProductRepository(MemoryProductRepository productRepository) {
         _productRepository = productRepository;
     }
 

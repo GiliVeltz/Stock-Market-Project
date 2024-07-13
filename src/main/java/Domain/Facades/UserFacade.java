@@ -19,9 +19,11 @@ import Domain.Entities.User;
 import Domain.Entities.Alerts.Alert;
 import Domain.Entities.Alerts.IntegrityRuleBreakAlert;
 import Domain.Repositories.DbGuestRepository;
+import Domain.Repositories.DbOrderRepository;
 import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceGuestRepository;
+import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Dtos.OrderDto;
@@ -36,6 +38,7 @@ public class UserFacade {
     private InterfaceUserRepository _userRepository;
     private InterfaceGuestRepository _guestRepository;
     private InterfaceShoppingCartRepository _shoppingCartRepository;
+    private InterfaceOrderRepository _orderRepository;
     private EmailValidator _EmailValidator;
     private PasswordEncoderUtil _passwordEncoder;
     private NotificationHandler _notificationHandler;
@@ -44,13 +47,14 @@ public class UserFacade {
 
     @Autowired
     public UserFacade( List<User> registeredUsers, List<String> guestIds, PasswordEncoderUtil passwordEncoder, EmailValidator EmailValidator, 
-    DbUserRepository repository, DbGuestRepository guestRepo, DbShoppingCartRepository shoppingCartRepository, NotificationHandler notificationHandler) {
+    DbUserRepository repository, DbGuestRepository guestRepo, DbShoppingCartRepository shoppingCartRepository, DbOrderRepository orderRepository, NotificationHandler notificationHandler) {
         _guestRepository = guestRepo;
         _EmailValidator = EmailValidator;
         _passwordEncoder = passwordEncoder;
         _userRepository = repository;
         _notificationHandler = notificationHandler;
         _shoppingCartRepository = shoppingCartRepository;
+        _orderRepository = orderRepository;
         // // //For testing UI
         // initUI();
     }
@@ -58,9 +62,12 @@ public class UserFacade {
     public UserFacade() {
     }
 
-    // set the user repository to be used real time
-    public void setUserRepository(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository) {
+    // set the repositor ies to be used test time
+    public void setUserFacadeRepositories(InterfaceUserRepository userRepository, InterfaceGuestRepository guestRepository, InterfaceOrderRepository orderRepository, InterfaceShoppingCartRepository shoppingCartRepository) {
         _userRepository = userRepository;
+        _guestRepository = guestRepository;
+        _orderRepository = orderRepository;
+        _shoppingCartRepository = shoppingCartRepository;
     }
 
     // logIn function
@@ -138,6 +145,7 @@ public class UserFacade {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
             ShoppingCart shoppingCart = new ShoppingCart();
+            shoppingCart.setOrderRepository(_orderRepository);
             shoppingCart.setUser(user);
             user.setShoppingCart(shoppingCart);
             _userRepository.save(user);

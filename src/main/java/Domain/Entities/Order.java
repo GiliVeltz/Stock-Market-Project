@@ -21,13 +21,13 @@ import Exceptions.StockMarketException;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer _orderId;
+    private Integer orderId;
 
     @Transient
     private Map<Integer, ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
 
     @Column(name = "totalOrderAmount", nullable = false)
-    private double _totalOrderAmount;
+    private double totalOrderAmount;
     private int paymentId;
     private int SupplyId;
 
@@ -39,18 +39,17 @@ public class Order {
     public Order() { }
     
     // Constructor
-    public Order(int orderId, List<ShoppingBasket> shoppingBasket, int paymentId, int supplyId) throws StockMarketException {
-        _orderId = orderId;
+    public Order(List<ShoppingBasket> shoppingBasket, int paymentId, int supplyId) throws StockMarketException {
         this._shoppingBasketMap = new HashMap<>();
         setShoppingBasketMap(shoppingBasket);
-        this._totalOrderAmount = 0.0;
+        this.totalOrderAmount = 0.0;
         setTotalOrderAmount();
         this.paymentId = paymentId;
         this.SupplyId = supplyId;
     }
 
     public Integer getOrderId() {
-        return _orderId;
+        return orderId;
     }
 
     // This method is used to set the shoppingBasketMap when creating the order
@@ -62,17 +61,17 @@ public class Order {
 
     // This method is used to set the total order amount when creating the order
     private void setTotalOrderAmount() throws StockMarketException {
-        _totalOrderAmount = 0.0;
+        totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
+            totalOrderAmount += entry.getValue().getShoppingBasketPrice();
         }
     }
 
     // This method is used to calculate the total order amount
     public void calcTotalAmount() throws StockMarketException { 
-        _totalOrderAmount = 0.0;
+        totalOrderAmount = 0.0;
         for (Map.Entry<Integer, ShoppingBasket> entry : _shoppingBasketMap.entrySet()) {
-            _totalOrderAmount += entry.getValue().getShoppingBasketPrice();
+            totalOrderAmount += entry.getValue().getShoppingBasketPrice();
         }
     }
 
@@ -94,8 +93,8 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + _orderId +
-                ", totalAmount=" + _totalOrderAmount +
+                "orderId=" + orderId +
+                ", totalAmount=" + totalOrderAmount +
                 ", products= \n" + printAllShopAndProducts() +
                 ", paymentId=" + paymentId +
                 ", SupplyId=" + SupplyId +
@@ -109,9 +108,9 @@ public class Order {
     }
 
     public double getOrderTotalAmount() throws StockMarketException { 
-        if(_totalOrderAmount == 0.0)
+        if(totalOrderAmount == 0.0)
             calcTotalAmount();
-        return _totalOrderAmount; 
+        return totalOrderAmount; 
     }
 
     public Map<Integer, ShoppingBasket> getShoppingBasketMap() {

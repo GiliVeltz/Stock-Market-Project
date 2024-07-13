@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.Scanner;
 import java.util.Set;
@@ -14,6 +15,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
@@ -26,15 +30,22 @@ import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Domain.Repositories.InterfaceGuestRepository;
+import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceShopRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryGuestRepository;
+import Domain.Repositories.MemoryOrderRepository;
 import Domain.Repositories.MemoryProductRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
+import Dtos.PaymentInfoDto;
 import Dtos.ProductDto;
+import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
+import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
 
@@ -153,15 +164,17 @@ public class MarketSystem {
         if (config.equals("database:tests")){
             // no db
             logger.info("Init Data For Tests: No Database");
+
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
-            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
-            MemoryShopRepository shopRepository = new MemoryShopRepository(new ArrayList<>());
-            shopFacade.setShopRepository(shopRepository);
-            MemoryProductRepository productRepository = new MemoryProductRepository();
-            shopFacade.setProductRepository(productRepository);
-            InterfaceUserRepository userRepository = new MemoryUserRepository(new ArrayList<>());
+            InterfaceShopRepository shopRepository = new MemoryShopRepository();
+            InterfaceProductRepository productRepository = new MemoryProductRepository();
+            InterfaceUserRepository userRepository = new MemoryUserRepository();
             InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
-            userFacade.setUserRepository(userRepository, guestRepository);
+            InterfaceOrderRepository orderRepository = new MemoryOrderRepository();
+
+            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
+            shopFacade.setShopFacadeRepositories(shopRepository, productRepository);
+            userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
         }
         else if (config.equals(("database:real_init"))){            
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
@@ -207,13 +220,23 @@ public class MarketSystem {
     private void run_instruction(String[] instruction_params) throws Exception {
         String instruction = instruction_params[0];
 
-        // handle instructions :
+        // handle instructions : User Facade ----------------------------------------------------------------------------------------------------------------------------------------
+
         if (instruction.equals("logIn")){
             //logIn#user_name#password
             try {
                 userFacade.logIn(instruction_params[1], instruction_params[2]);
             } catch (Exception e) {
                 logger.info("[run_instruction] LogIn Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("logOut")){
+            //logOut#user_name
+            try {
+                userFacade.logOut(instruction_params[1]);    
+            } catch (Exception e) {
+                logger.info("[run_instruction] LogOut Fail: " + e.getMessage());
             }
         }
         
@@ -227,6 +250,76 @@ public class MarketSystem {
                 userFacade.register(userDto);
             } catch (Exception e) {
                 logger.info("[run_instruction] Register Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("add_order_to_user")){
+            //add_order_to_user#???
+            try {
+                List<ShoppingBasket> shoppingBasket = new ArrayList<>();
+                Order order = new Order(shoppingBasket, Integer.parseInt(instruction_params[0]), Integer.parseInt(instruction_params[0]));
+                userFacade.addOrderToUser(instruction_params[1], order);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add order to user Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("add_new_guest")){
+            //add_new_guest#string_guest_id
+            try {
+                userFacade.addNewGuest(instruction_params[1]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add new guest Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("remove_guest")){
+            //remove_guest#string_guest_id
+            try {
+                userFacade.removeGuest(instruction_params[1]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] remove guest Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("change_email")){
+            //change_email#user_name#new_email
+            try {
+                userFacade.changeEmail(instruction_params[1], instruction_params[2]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] change email Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("set_user_details")){
+            //set_user_details#user_name#new_name#new_password#new_email#new_birthdate
+            try {
+                LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
+                @SuppressWarnings("deprecation")
+                Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
+                UserDto userDto = new UserDto(instruction_params[2], instruction_params[3], instruction_params[4], birthdate);
+                userFacade.setUserDetails(instruction_params[1], userDto);
+            } catch (Exception e) {
+                logger.info("[run_instruction] set user details Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("notify_user")){
+            //notify_user#target_user_name#???
+            try {
+                // Alert alert = new Alert("New User Details", "Your details has been changed");
+                // userFacade.notifyUser(instruction_params[1], null)
+            } catch (Exception e) {
+                logger.info("[run_instruction] set user details Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("report_to_admin")){
+            //report_to_admin#user_name#message
+            try {
+                userFacade.reportToAdmin(instruction_params[1], instruction_params[2]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] report to admin Fail: " + e.getMessage());
             }
         }
 
@@ -245,39 +338,47 @@ public class MarketSystem {
             }
         }
 
-        else if (instruction.equals("logOut")){
-            //logOut#user_name
-            try {
-                userFacade.logOut(instruction_params[1]);    
-            } catch (Exception e) {
-                logger.info("[run_instruction] LogOut Fail: " + e.getMessage());
-            }
-        }
+        // handle instructions : Shopping Cart Facade -------------------------------------------------------------------------------------------------------------------------------
 
         else if (instruction.equals("add_product_to_cart")){
-            //add_product_to_cart#user_name#product_name#shop_name
+            //add_product_to_cart#user_name#product_name#shop_name#quantity
             try {
                 int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
                 int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
-                shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId, 1);
+                shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId, Integer.parseInt(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] Add Product To Cart Fail: " + e.getMessage());
             }
         }
 
-        else if (instruction.equals("edit_quantity_product")){
-            //edit_quantity_product#user_name#shop_name#product_name#quantity
+        else if (instruction.equals("remove_product_from_cart")){
+            //remove_product_from_cart#user_name#product_name#shop_name#quantity
             try {
                 int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
                 int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
-                shopFacade.updateProductQuantity(instruction_params[1], shopId, productId, Integer.parseInt(instruction_params[4]));
+                shoppingCartFacade.removeProductFromUserCart(instruction_params[1], productId, shopId, Integer.parseInt(instruction_params[4]));
             } catch (Exception e) {
-                logger.info("[run_instruction] Add Product To Cart Fail: " + e.getMessage());
+                logger.info("[run_instruction] Remove Product From Cart Fail: " + e.getMessage());
             }
         }
 
-        else if (instruction.equals("buy_cart")){
+        else if (instruction.equals("purchase_cart")){
+            //purchase_cart#user_name#card_number#month#year#holder#cvv#user_id#address#city#country#zip
+            try {
+                ShoppingCart shoppingCart = (ShoppingCart) shoppingCartFacade.getCartByUsername(instruction_params[1]);
+                //String currency, String cardNumber, String month, String year, String holder, String cvv, String id
+                PaymentInfoDto paymentInfo = new PaymentInfoDto("" + shoppingCart.getTotalPrice(), instruction_params[2], instruction_params[3], instruction_params[4], instruction_params[5], instruction_params[6], instruction_params[7]);
+                //String name ,String address,String city,String country,String zip
+                SupplyInfoDto supplyInfo = new SupplyInfoDto(instruction_params[1], instruction_params[8], instruction_params[9], instruction_params[10], instruction_params[11]);
+                List<Integer> basketsToBuy = shoppingCart.getShoppingBasketIdList();
+                PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfo, supplyInfo, basketsToBuy);
+                shoppingCartFacade.purchaseCartUser(instruction_params[1], purchaseCartDetailsDto);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Purchase Cart Fail: " + e.getMessage());
+            }
         }
+
+        // handle instructions : Shop Facade ----------------------------------------------------------------------------------------------------------------------------------------
 
         else if (instruction.equals("open_shop")){
             //open_shop#user_name#shop_name#bank_details#shop_address
@@ -286,55 +387,6 @@ public class MarketSystem {
                 shopFacade.openNewShop(instruction_params[1], shopDto);
             } catch (Exception e) {
                 logger.info("[run_instruction] Open New Shop Fail: " + e.getMessage());
-            }
-        }
-
-        else if (instruction.equals("rate_product")){
-        }
-
-        else if (instruction.equals("rate_shop")){
-            //rate_shop#user_name#shop_name#rating
-            try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
-                shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
-            } catch (Exception e) {
-                logger.info("[run_instruction] Add Shop Rating Fail: " + e.getMessage());
-            }
-        }
-        
-        else if (instruction.equals("add_product_to_shop")){
-            //add_product_to_shop#user_name#shop_name#category#product_name#price#quantity
-            try {
-                ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
-                shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
-            } catch (Exception e) {
-                logger.info("[run_instruction] Add Product To Shop Fail: " + e.getMessage());
-            }
-        }
-        
-        else if (instruction.equals("appoint_shop_owner")){
-            //appoint_shop_owner#founder_user_name#shop_name#owner_user_name
-            try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
-                shopFacade.addShopOwner(instruction_params[1], shopId, instruction_params[3]);
-            } catch (Exception e) {
-                logger.info("[run_instruction] Appoint Shop Owner Fail: " + e.getMessage());
-            }
-
-        }
-
-        else if (instruction.equals("appoint_shop_manager")){
-            //appoint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
-            try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
-                Set<String> permissions = new HashSet<>();
-                for (int i = 4; i < instruction_params.length; i++){
-                    permissions.add(instruction_params[i]);
-                }
-                shopFacade.addShopManager(instruction_params[1], shopId, instruction_params[3], permissions);
-            } catch (Exception e) {
-                logger.info("[run_instruction] Add Shop Manager Fail: " + e.getMessage());
             }
         }
 
@@ -358,8 +410,279 @@ public class MarketSystem {
             }
         }
         
+        else if (instruction.equals("add_product_to_shop")){
+            //add_product_to_shop#user_name#shop_name#category#product_name#price#quantity
+            try {
+                ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
+                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Add Product To Shop Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("remove_product_from_shop")){
+            //remove_product_from_shop#user_name#shop_name#category#product_name#price#quantity
+            try {
+                ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
+                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                shopFacade.removeProductFromShop(shopId, productDto, instruction_params[1]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Remove Product From Shop Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("open_complaint")){
+            //open_complaint#???
+            try {
+                // shopFacade.openComplaint(Integer shopId, String userName,String message)
+            } catch (Exception e) {
+                logger.info("[run_instruction] Open Complint Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("edit_quantity_product")){
+            //edit_quantity_product#user_name#shop_name#product_name#quantity
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.updateProductQuantity(instruction_params[1], shopId, productId, Integer.parseInt(instruction_params[4]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] edit quantity product Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("edit_price_product")){
+            //edit_price_product#user_name#shop_name#product_name#new_price
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.updateProductPrice(instruction_params[1], shopId, productId, Double.parseDouble(instruction_params[4]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] edit price product Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("edit_name_product")){
+            //edit_name_product#user_name#shop_name#product_name#new_name
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.updateProductName(instruction_params[1], shopId, productId, instruction_params[4]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] edit name product Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("edit_category_product")){
+            //edit_category_product#user_name#shop_name#product_name#new_category
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.updateProductCategory(instruction_params[1], shopId, productId, Category.valueOf(instruction_params[4]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] edit category product Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("add_basic_dicsount_to_shop")){
+            //add_basic_dicsount_to_shop#???
+            try {
+                // shopFacade.addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
+            } catch (Exception e) {
+                logger.info("[run_instruction] add basic dicsount to shop Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("add_conditional_dicsount_to_shop")){
+            //add_vasic_dicsount_to_shop#???
+            try {
+                // shopFacade.addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto)
+            } catch (Exception e) {
+                logger.info("[run_instruction] add conditional dicsount to shop Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("remove_discount_from_shop")){
+            //remove_discount_from_shop#???
+            try {
+                // shopFacade.removeDiscountFromShop(int shopId, int discountId, String username)
+            } catch (Exception e) {
+                logger.info("[run_instruction] remove discount from shop Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("appoint_shop_owner")){
+            //appoint_shop_owner#founder_user_name#shop_name#owner_user_name
+            try {
+                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                shopFacade.addShopOwner(instruction_params[1], shopId, instruction_params[3]);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Appoint Shop Owner Fail: " + e.getMessage());
+            }
+
+        }
+
+        else if (instruction.equals("notify_appint_shop_owner")){
+            //notify_appint_shop_owner#???
+            try {
+                // shopFacade.notifyAppointOwner(String username, String targetUser, int shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] notiffy appint shop owner Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("appoint_shop_manager")){
+            //appoint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
+            try {
+                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                Set<String> permissions = new HashSet<>();
+                for (int i = 4; i < instruction_params.length; i++){
+                    permissions.add(instruction_params[i]);
+                }
+                shopFacade.addShopManager(instruction_params[1], shopId, instruction_params[3], permissions);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Add Shop Manager Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("notify_appint_shop_manager")){
+            //notify_appint_shop_manager#???
+            try {
+                // shopFacade.notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] notiffy appint shop manager Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("fire_shop_manager")){
+            //fire_shop_manager#???
+            try {
+                // shopFacade.fireShopManager(String username, Integer shopId, String managerUsername)
+            } catch (Exception e) {
+                logger.info("[run_instruction] fire shop manager Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("notify_fire_shop_manager")){
+            //notify_fire_shop_manager#???
+            try {
+                // shopFacade.notifyFireUser(String targetUser, String manager, int shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] notify fire shop manager Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("resign_from_role")){
+            //resign_from_role#???
+            try {
+                // shopFacade.resignFromRole(String username, Integer shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] resign from role Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("modify_namager_permissions")){
+            //modify_namager_permissions#???
+            try {
+                // shopFacade.modifyManagerPermissions(String username, Integer shopId, String managerUsername, Set<String> permissions)
+            } catch (Exception e) {
+                logger.info("[run_instruction] modify namager permissions Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("add_product_rating")){
+            //add_product_rating#user_name#shop_name#product_name#product_rating
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.addProductRating(shopId, productId, Integer.parseInt(instruction_params[4]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] add product rating Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("add_shop_rating")){
+            //add_shop_rating#user_name#shop_name#shop_rating
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] add shop rating Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("rate_shop")){
+            //rate_shop#user_name#shop_name#rating
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] Add Shop Rating Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("change_shop_policy")){
+            //change_shop_policy#???
+            try {
+                // shopFacade.changeShopPolicy(String username, int shopId,  List<ShoppingBasketRuleDto> rules)
+            } catch (Exception e) {
+                logger.info("[run_instruction] change_shop_policy Fail: " + e.getMessage());
+            }
+        }
+        
+
+        else if (instruction.equals("change_product_policy")){
+            //change_product_policy#???
+            try {
+                // shopFacade.changeProductPolicy(String username, int shopId, int productId, List<UserRuleDto> productRules)
+            } catch (Exception e) {
+                logger.info("[run_instruction] change_product_policy Fail: " + e.getMessage());
+            }
+        }
+        
+
+        else if (instruction.equals("add_key_word_to_product")){
+            //add_key_word_to_product#???
+            try {
+                // shopFacade.addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords)
+            } catch (Exception e) {
+                logger.info("[run_instruction] add_key_word_to_product Fail: " + e.getMessage());
+            }
+        }
+        
+
+        else if (instruction.equals("add_shop_discount")){
+            //add_shop_discount#???
+            try {
+                // shopFacade.addShopDiscount(BasicDiscountDto discountDto, Integer shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] add_shop_discount Fail: " + e.getMessage());
+            }
+        }
+        
+
+        else if (instruction.equals("delete_shop_discount")){
+            //delete_shop_discount#???
+            try {
+                // shopFacade.deleteShopDiscount(BasicDiscountDto discountDto, Integer shopId)
+            } catch (Exception e) {
+                logger.info("[run_instruction] delete_shop_discount Fail: " + e.getMessage());
+            }
+        }
+        
+
+        else if (instruction.equals("update_user_permissions")){
+            //update_user_permissions#???
+            try {
+                // shopFacade.updatePermissions(String username, Integer shopId, String managerUsername, Set<String> permissions)
+            } catch (Exception e) {
+                logger.info("[run_instruction] update_user_permissions Fail: " + e.getMessage());
+            }
+        }
+        
         else{
-            throw new Exception("Illegal Instruction Input");
+            throw new Exception("Illegal Instruction Input: " + instruction_params[1]);
         }
     }
 }
