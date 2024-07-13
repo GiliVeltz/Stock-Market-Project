@@ -119,6 +119,10 @@ public class ShoppingCart {
         this.user = null;
     }
 
+    public void emptyCart() {
+        _shoppingBaskets.clear();
+    }
+
     /*
      * This method is responsible for purchasing the cart.
      * It first calls the purchaseCart method of the shopping cart which reaponsible
@@ -270,12 +274,24 @@ public class ShoppingCart {
         if (basketOptional.isPresent()) {
             basket = basketOptional.get();
         } else {
-            basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
-            shoppingBaskets.add(basket);
+            basket = new ShoppingBasket(_shopFacade.getShopByShopId(shopID));
         }
 
         // add the product to the basket.
-        basket.addProductToShoppingBasket(user, productID, quantity);
+        try {
+            basket.addProductToShoppingBasket(_user, productID, quantity);
+            if (!basketOptional.isPresent())
+                _shoppingBaskets.add(basket);
+        }
+        catch (ProductOutOfStockExepction e) {
+            logger.log(Level.SEVERE, "Product out of stock in shop: " + shopID);
+            throw e;
+        }
+        catch (ShopPolicyException e) {
+            logger.log(Level.SEVERE, "Shop policy exception in shop: " + shopID);
+            throw e;
+        }
+        
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
     }
 

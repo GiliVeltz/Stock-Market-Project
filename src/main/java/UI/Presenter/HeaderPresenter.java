@@ -203,13 +203,5 @@ public class HeaderPresenter {
                 });
     }
 
-
-
-    public void searchShop(String shopName, String shopId) {
-
-                
-    }
-
-
 }
 

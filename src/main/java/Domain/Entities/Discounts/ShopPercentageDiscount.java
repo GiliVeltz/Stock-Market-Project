@@ -1,6 +1,7 @@
 package Domain.Entities.Discounts;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;

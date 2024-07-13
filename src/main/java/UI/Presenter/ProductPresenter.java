@@ -86,33 +86,43 @@ public class ProductPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/shop/getDetailedProduct?shopId=" + shopId +
-                                 "&productId=" + productId,
-                                HttpMethod.GET,
-                                requestEntity,
-                                Response.class);
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + _serverPort + "/api/shop/getDetailedProduct?shopId=" + shopId +
+                                    "&productId=" + productId,
+                                    HttpMethod.GET,
+                                    requestEntity,
+                                    Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                ProductGetterDto productGetterDto = objectMapper.convertValue(responseBody.getReturnValue(), ProductGetterDto.class);
-                                _view.displayAllProductDetails(productGetterDto);
-                                _view.showSuccessMessage("product details are displayed successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    ProductGetterDto productGetterDto = objectMapper.convertValue(responseBody.getReturnValue(), ProductGetterDto.class);
+                                    _view.displayAllProductDetails(productGetterDto);
+                                    _view.showSuccessMessage("product details are displayed successfully");
+                                } else {
+                                    _view.showErrorMessage("Failed to parse JSON response");
+                                }
                             } else {
-                                _view.showErrorMessage("Failed to parse JSON response");
+                                _view.showErrorMessage("Failed to display product's details");
                             }
-                        } else {
-                            _view.showErrorMessage("Failed to display product's details");
+                        } catch (HttpClientErrorException e) {
+                            _view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            _view.showErrorMessage("Failed to display product's details: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -127,31 +137,41 @@ public class ProductPresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-                        ResponseEntity<Response> response = restTemplate.exchange(
-                                "http://localhost:" + _serverPort + "/api/user/addProductToShoppingCart?productID=" + productId +
-                                 "&shopID=" + shopId + "&quantity=" + quantity,
-                                HttpMethod.POST,
-                                requestEntity,
-                                Response.class);
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + _serverPort + "/api/user/addProductToShoppingCart?productID=" + productId +
+                                    "&shopID=" + shopId + "&quantity=" + quantity,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    Response.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            Response responseBody = response.getBody();
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-                            if (responseBody.getErrorMessage() == null) {
-                                _view.showSuccessMessage("Product added to cart successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    _view.showSuccessMessage("Product added to cart successfully");
+                                }
+                                else {
+                                    _view.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                _view.showErrorMessage("Failed to add product to cart");
                             }
-                            else {
-                                _view.showErrorMessage("Failed to parse JSON response");
-                            }                       
-                        } else {
-                            _view.showErrorMessage("Failed to add product to cart");
+                        } catch (HttpClientErrorException e) {
+                            _view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            _view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Token not found in local storage.");

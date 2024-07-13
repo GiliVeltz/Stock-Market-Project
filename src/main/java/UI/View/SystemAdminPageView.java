@@ -11,10 +11,11 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
-
+import UI.Model.ShopOrderDto;
 import UI.Model.OrderDto;
 import UI.Model.ShoppingBasketDto;
 import UI.Presenter.SystemAdminPresenter;
@@ -29,34 +30,6 @@ public class SystemAdminPageView extends BaseView {
     public SystemAdminPageView() {
         presenter = new SystemAdminPresenter(this);
         initializeLayout();
-        // // Create the image buttons
-        // Button closeShopButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/closeShop.png?raw=true", "Close Shop", this::onCloseShopClick);
-        // Button unsubscribeUserButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/UnsubscribeUser.png?raw=true", "Unsubscribe User", this::onUnsubscribeUserClick);
-        // Button respondingComplaintsButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/RespondingComplaints.png?raw=true", "Responding to Complaints", this::onRespondingComplaintsClick);
-        // Button sendingMessagesButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SendingMessages.png?raw=true", "Sending Messages", this::onSendingMessagesClick);
-        // Button purchaseHistoryButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/PurchaseHistory.png?raw=true", "Purchase History", this::onPurchaseHistoryClick);
-        // Button systemInformationButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/SystemInformation.png?raw=true", "System Information", this::onSystemInformationClick);
-        // Button externalServiceButton = createImageButton("https://github.com/inbarbc/StockMarket_Project/blob/main/ExternalService.png?raw=true", "External Service", this::externalServiceClick);
-
-        // // Create layouts for buttons
-        // HorizontalLayout firstRow = new HorizontalLayout(closeShopButton, unsubscribeUserButton, respondingComplaintsButton, externalServiceButton);
-        // firstRow.setSpacing(true); // Add spacing between buttons
-        // firstRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
-        // firstRow.getStyle().set("margin-bottom", "150px"); 
-
-        // HorizontalLayout secondRow = new HorizontalLayout(sendingMessagesButton, purchaseHistoryButton, systemInformationButton);
-        // secondRow.setSpacing(true); // Add spacing between buttons
-        // secondRow.setJustifyContentMode(HorizontalLayout.JustifyContentMode.CENTER); // Center buttons in the row
-        // secondRow.getStyle().set("margin-bottom", "150px");
-
-        // VerticalLayout layout = new VerticalLayout(firstRow, secondRow);
-        // layout.setSpacing(true); // Add spacing between rows
-        // layout.setPadding(true); // Add padding around the layout
-        // layout.setDefaultHorizontalComponentAlignment(VerticalLayout.Alignment.CENTER); // Center rows in the layout
-        // layout.setSizeFull(); // Make the layout take the full size of the container
-        // layout.setJustifyContentMode(VerticalLayout.JustifyContentMode.CENTER); // Center the layout vertically
-
-        // add(layout);
 
         ordersDiv = new Div();
         ordersDiv.setId("orders-div");
@@ -156,9 +129,35 @@ public class SystemAdminPageView extends BaseView {
     }
 
     private void onSendingMessagesClick() {
-        Notification.show("Sending Messages clicked");
-        // Handle the sending messages action
-    }
+    Dialog dialog = new Dialog();
+
+    dialog.setCloseOnEsc(true);
+    dialog.setCloseOnOutsideClick(true);
+
+    VerticalLayout dialogLayout = new VerticalLayout();
+    dialogLayout.setSpacing(true);
+    dialogLayout.setPadding(true);
+    dialogLayout.setAlignItems(Alignment.CENTER);
+
+    H4 headline = new H4("Send Alert Notification");
+    dialogLayout.add(headline);
+
+    TextField targetUserField = new TextField("Enter Target Username");
+    TextArea messageField = new TextArea("Enter Message");
+
+    Button submitButton = new Button("Submit", event -> {
+        String targetUser = targetUserField.getValue();
+        String message = messageField.getValue();
+        presenter.sendAlertNotification(targetUser, message); // Call presenter method with targetUser and message
+        dialog.close();
+    });
+
+    Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+    dialogLayout.add(targetUserField, messageField, new HorizontalLayout(submitButton, cancelButton));
+    dialog.add(dialogLayout);
+    dialog.open();
+}
 
     private void onSystemInformationClick() {
         Notification.show("System Information clicked");
@@ -174,32 +173,29 @@ public class SystemAdminPageView extends BaseView {
         Dialog purchaseHistoryDialog = new Dialog();
         purchaseHistoryDialog.setCloseOnEsc(true);
         purchaseHistoryDialog.setCloseOnOutsideClick(true);
-
+    
         VerticalLayout dialogLayout = new VerticalLayout();
         dialogLayout.setSpacing(true);
         dialogLayout.setPadding(true);
         dialogLayout.setAlignItems(Alignment.CENTER);
-        
+    
         H4 headline = new H4("Choose Purchase History Type");
         dialogLayout.add(headline);
-
-        // Button to view user purchase history
+    
         Button userPurchaseHistoryButton = new Button("User Purchase History", event -> {
             purchaseHistoryDialog.close();
             openUserPurchaseHistoryDialog();
         });
-        
-        // Button to view shop purchase history
+    
         Button shopPurchaseHistoryButton = new Button("Shop Purchase History", event -> {
             purchaseHistoryDialog.close();
             openShopPurchaseHistoryDialog();
         });
-
+    
         dialogLayout.add(userPurchaseHistoryButton, shopPurchaseHistoryButton);
         purchaseHistoryDialog.add(dialogLayout);
         purchaseHistoryDialog.open();
     }
-
     private void openUserPurchaseHistoryDialog() {
         Dialog userDialog = new Dialog();
         userDialog.setCloseOnEsc(true);
@@ -225,33 +221,6 @@ public class SystemAdminPageView extends BaseView {
         dialogLayout.add(usernameField, new HorizontalLayout(submitButton, cancelButton));
         userDialog.add(dialogLayout);
         userDialog.open();
-    }
-
-    private void openShopPurchaseHistoryDialog() {
-        Dialog shopDialog = new Dialog();
-        shopDialog.setCloseOnEsc(true);
-        shopDialog.setCloseOnOutsideClick(true);
-
-        VerticalLayout dialogLayout = new VerticalLayout();
-        dialogLayout.setSpacing(true);
-        dialogLayout.setPadding(true);
-        dialogLayout.setAlignItems(Alignment.CENTER);
-        
-        H4 headline = new H4("Enter Shop ID for Shop Purchase History");
-        dialogLayout.add(headline);
-
-        TextField shopIdField = new TextField("Enter Shop ID");
-        Button submitButton = new Button("Submit", event -> {
-            String shopId = shopIdField.getValue();
-            presenter.getShopPurchaseHistory(shopId); // Call presenter method with shop ID
-            shopDialog.close();
-        });
-
-        Button cancelButton = new Button("Cancel", event -> shopDialog.close());
-
-        dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
-        shopDialog.add(dialogLayout);
-        shopDialog.open();
     }
 
 
@@ -311,4 +280,100 @@ public class SystemAdminPageView extends BaseView {
         ordersDiv.removeAll(); // Clear the ordersDiv
         initializeLayout(); // Re-add the initial layout with buttons
     }
+
+    public void showShopOrders(List<ShopOrderDto> orders) {
+        Dialog shopOrderDialog = new Dialog();
+        shopOrderDialog.setWidth("80%");
+        shopOrderDialog.setHeight("80%");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        shopOrderDialog.add(dialogLayout);
+    
+        Grid<ShopOrderDto> shopOrderGrid = new Grid<>(ShopOrderDto.class, false);
+        shopOrderGrid.addColumn(ShopOrderDto::getOrderId).setHeader("Order ID");
+        shopOrderGrid.addColumn(ShopOrderDto::getTotalOrderAmount).setHeader("Total Amount");
+    
+        // Add a button to expand each order and show details
+        shopOrderGrid.addComponentColumn(orderDto -> {
+            Button detailsButton = new Button("Show Details");
+            detailsButton.addClickListener(e -> openShopOrderDetailsDialog(orderDto));
+            return detailsButton;
+        }).setHeader("Actions");
+    
+        dialogLayout.add(shopOrderGrid);
+        shopOrderGrid.setItems(orders);
+    
+        Button closeButton = new Button("Close", e -> shopOrderDialog.close());
+        dialogLayout.add(closeButton);
+    
+        shopOrderDialog.open();
+    }
+
+    private void openShopPurchaseHistoryDialog() {
+        Dialog shopDialog = new Dialog();
+        shopDialog.setCloseOnEsc(true);
+        shopDialog.setCloseOnOutsideClick(true);
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.setSpacing(true);
+        dialogLayout.setPadding(true);
+        dialogLayout.setAlignItems(Alignment.CENTER);
+    
+        H4 headline = new H4("Enter Shop ID for Shop Purchase History");
+        dialogLayout.add(headline);
+    
+        TextField shopIdField = new TextField("Enter Shop ID");
+        Button submitButton = new Button("Submit", event -> {
+            String shopId = shopIdField.getValue();
+            presenter.getShopPurchaseHistory(shopId); // Call presenter method with shop ID
+            shopDialog.close();
+        });
+    
+        Button cancelButton = new Button("Cancel", event -> shopDialog.close());
+    
+        dialogLayout.add(shopIdField, new HorizontalLayout(submitButton, cancelButton));
+        shopDialog.add(dialogLayout);
+        shopDialog.open();
+    }
+    
+   private void openShopOrderDetailsDialog(ShopOrderDto orderDto) {
+    Dialog dialog = new Dialog();
+    dialog.setWidth("400px");
+    dialog.setHeight("300px");
+
+    VerticalLayout dialogLayout = new VerticalLayout();
+    dialog.add(dialogLayout);
+
+    dialogLayout.add(new Text("Order ID: " + orderDto.getOrderId()));
+    dialogLayout.add(new Text("Total Amount: " + orderDto.getTotalOrderAmount()));
+
+    Button viewProductsButton = new Button("View Products", e -> showProductIds(orderDto.getShoppingBasketDto().getProductIdList()));
+    dialogLayout.add(viewProductsButton);
+
+    Button closeButton = new Button("Close", e -> dialog.close());
+    dialogLayout.add(closeButton);
+
+    dialog.open();
+}
+
+private void showProductIds(List<Integer> productIds) {
+    Dialog productDialog = new Dialog();
+    productDialog.setWidth("300px");
+    productDialog.setHeight("200px");
+
+    VerticalLayout dialogLayout = new VerticalLayout();
+    productDialog.add(dialogLayout);
+
+    dialogLayout.add(new Text("Product IDs:"));
+
+    for (Integer productId : productIds) {
+        dialogLayout.add(new Text(productId.toString()));
+    }
+
+    Button closeButton = new Button("Close", e -> productDialog.close());
+    dialogLayout.add(closeButton);
+
+    productDialog.open();
+}
+    
 }

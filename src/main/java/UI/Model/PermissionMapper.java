@@ -10,15 +10,8 @@ public class PermissionMapper {
         permissionNames.put(Permission.OWNER, "Owner");
         permissionNames.put(Permission.ADD_PRODUCT, "Add Product");
         permissionNames.put(Permission.DELETE_PRODUCT, "Delete Product");
-        permissionNames.put(Permission.PUBLISH_PRODUCT_FOR_SALE, "Publish Product for Sale");
-        permissionNames.put(Permission.REMOVE_PRODUCT_FROM_SALE, "Remove Product from Sale");
         permissionNames.put(Permission.EDIT_PRODUCT, "Edit Product");
-        permissionNames.put(Permission.CHANGE_PURCHASE_POLICY, "Change Purchase Policy");
         permissionNames.put(Permission.CHANGE_DISCOUNT_POLICY, "Change Discount Policy");
-        permissionNames.put(Permission.ADD_PURCHASE_METHOD, "Add Purchase Method");
-        permissionNames.put(Permission.REMOVE_PURCHASE_METHOD, "Remove Purchase Method");
-        permissionNames.put(Permission.ADD_DISCOUNT_POLICY, "Add Discount Policy");
-        permissionNames.put(Permission.REMOVE_DISCOUNT_METHOD, "Remove Discount Method");
         permissionNames.put(Permission.CHANGE_PRODUCT_POLICY, "Change Product Policy");
         permissionNames.put(Permission.CHANGE_SHOP_POLICY, "Change Shop Policy");
         permissionNames.put(Permission.APPOINT_MANAGER, "Appoint Manager");

@@ -240,7 +240,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             if(!_permissions.contains(Permission.ADD_PRODUCT)){
                 addProductsBtn.setEnabled(false);
             }
-            if(!_permissions.contains(Permission.ADD_DISCOUNT_POLICY)){
+            if(!_permissions.contains(Permission.CHANGE_DISCOUNT_POLICY)){
                 addDiscountsBtn.setEnabled(false);
             }
             if(!_permissions.contains(Permission.CHANGE_PRODUCT_POLICY)){
@@ -258,6 +258,15 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             if(!_permissions.contains(Permission.GET_PURCHASE_HISTORY)){
                 viewPurchasesBtn.setEnabled(false);
             }
+            // if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+            //     viewProductsBtn.setEnabled(false);
+            // }
+            if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+                editProductBtn.setEnabled(false);
+            }
+            // only for founder
+            closeShopBtn.setEnabled(false);
+            reopenShopBtn.setEnabled(false);
   
         }
 

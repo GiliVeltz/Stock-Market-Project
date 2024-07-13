@@ -152,7 +152,6 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
         // Implement logic to add the product to the cart (not shown here)
         // Example: presenter.addToCart(product);
         _presenter.addProductToCart(_shopId, product.getProductId(), quantity);
-        Notification.show(product.getProductName() + " added to cart");
     }
 
     private void openComplainDialog() {

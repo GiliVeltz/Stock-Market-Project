@@ -199,10 +199,9 @@ public class Shop {
      * @return a map of all the roles in the shop.
      * @throws StockMarketException
      */
-    public Map<String, Role> getUserToRoleMap(String username) throws StockMarketException {
+    public Map<String, Role> getUserToRoleMap(String username, boolean subordinates) throws StockMarketException {
         logger.log(Level.INFO,
                 "Shop - getUserToRoleMap: " + username + " trying get all roles info from the shop with id " + shopId);
-        if (!checkPermission(username, Permission.GET_ROLES_INFO)) {
             logger.log(Level.SEVERE, "Shop - getUserToRoleMap: user " + username
                     + " doesn't have permission to get roles info in shop with id " + shopId);
             throw new PermissionException(
@@ -212,6 +211,7 @@ public class Shop {
                 + " successfuly got all roles info from the shop with id " + shopId);
         return userToRole;
     }
+
 
     /**
      * Check if a user has a specific permission to do an action.
