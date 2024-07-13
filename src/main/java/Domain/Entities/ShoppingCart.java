@@ -393,7 +393,7 @@ public class ShoppingCart {
     public Integer getId() {
         return shoppingCartId;
     }
-
+  
     public double getTotalPrice() throws StockMarketException {
         double totalPrice = 0;
         for (ShoppingBasket basket : shoppingBaskets) {
