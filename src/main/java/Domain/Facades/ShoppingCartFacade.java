@@ -23,7 +23,6 @@ import Dtos.PurchaseCartDetailsDto;
 import Exceptions.StockMarketException;
 import jakarta.transaction.Transactional;
 
-@SuppressWarnings("unused")
 @Service
 public class ShoppingCartFacade {
     private UserFacade userFacade;
@@ -162,13 +161,13 @@ public class ShoppingCartFacade {
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
+            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
+            _guestsCarts.get(guestID).emptyCart();
         }
-            logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
         catch (StockMarketException e) {
+            logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
             throw e;
         }
-            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
-            _guestsCarts.get(guestID).emptyCart();
     }
 
     /*
@@ -178,8 +177,8 @@ public class ShoppingCartFacade {
     public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         try {
-            _cartsRepo.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepo.getUniqueOrderID());
-            _cartsRepo.getCartByUsername(username).emptyCart();
+            _cartsRepository.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
+            _cartsRepository.getCartByUsername(username).emptyCart();
         }
         catch (StockMarketException e) {
             logger.log(Level.WARNING, "Failed to purchase cart for user: " + username);

@@ -14,7 +14,6 @@ import java.util.List;
 
 import UI.Model.OrderDto;
 import UI.Model.ShopDto;
-import UI.Model.ShopOrderDto;
 import UI.View.SystemAdminPageView;
 import UI.Model.Response;
 public class SystemAdminPresenter {
@@ -66,7 +65,8 @@ public class SystemAdminPresenter {
     }
 
     public void getShopPurchaseHistory(String shopId) {
-       RestTemplate restTemplate = new RestTemplate();
+       @SuppressWarnings("unused")
+    RestTemplate restTemplate = new RestTemplate();
     }
 
  

@@ -120,7 +120,7 @@ public class ShoppingCart {
     }
 
     public void emptyCart() {
-        _shoppingBaskets.clear();
+        shoppingBaskets.clear();
     }
 
     /*
@@ -274,14 +274,14 @@ public class ShoppingCart {
         if (basketOptional.isPresent()) {
             basket = basketOptional.get();
         } else {
-            basket = new ShoppingBasket(_shopFacade.getShopByShopId(shopID));
+            basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
         }
 
         // add the product to the basket.
         try {
-            basket.addProductToShoppingBasket(_user, productID, quantity);
+            basket.addProductToShoppingBasket(user, productID, quantity);
             if (!basketOptional.isPresent())
-                _shoppingBaskets.add(basket);
+                shoppingBaskets.add(basket);
         }
         catch (ProductOutOfStockExepction e) {
             logger.log(Level.SEVERE, "Product out of stock in shop: " + shopID);
