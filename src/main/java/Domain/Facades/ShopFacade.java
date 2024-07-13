@@ -35,6 +35,8 @@ import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
+import Domain.Repositories.DbProductRepository;
+import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Dtos.BasicDiscountDto;
@@ -59,7 +61,7 @@ public class ShopFacade {
     private NotificationHandler _notificationHandler;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
+    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _userFacade = userFacade;

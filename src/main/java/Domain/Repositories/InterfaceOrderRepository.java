@@ -6,6 +6,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import Domain.Entities.Order;
 
 @NoRepositoryBean
-public interface InterfaceOrderRepository  extends JpaRepository<Order, Long>{
+public interface InterfaceOrderRepository  extends JpaRepository<Order, Integer>{
 
 }
