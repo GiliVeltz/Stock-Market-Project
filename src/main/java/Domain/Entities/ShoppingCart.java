@@ -155,6 +155,10 @@ public class ShoppingCart {
 
         try {
             if (!paymentMethod.handshake())
+                throw new PaymentFailedException("Payment service is not available");
+
+            if (!supplyMethod.handshake())
+                throw new ShippingFailedException("Shipping service is not available");
 
             paymentTransactionId = paymentMethod.payment(purchaseCartDetailsDto.getPaymentInfo(), overallPrice);
             if (paymentTransactionId == -1)
@@ -169,6 +173,11 @@ public class ShoppingCart {
                 ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
                 //_supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
+            }
+
+            if (user != null) {
+                Order order = new Order(ordersId, shoppingBasketsForOrder, paymentTransactionId, supplyTransactionId);
+                user.addOrder(order);
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {

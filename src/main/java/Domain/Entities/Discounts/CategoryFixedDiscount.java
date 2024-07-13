@@ -25,7 +25,12 @@ public class CategoryFixedDiscount extends BaseDiscount {
             _discountTotal = discountTotal;
         _category = category;
         _rule = (basket) -> {
-            return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
+            try {
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
     }

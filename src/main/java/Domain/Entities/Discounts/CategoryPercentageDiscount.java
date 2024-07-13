@@ -25,7 +25,12 @@ public class CategoryPercentageDiscount extends BaseDiscount {
         _percentage = percentage;
         _category = category;
         _rule = (basket) -> {
-            return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
+            try {
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
     }

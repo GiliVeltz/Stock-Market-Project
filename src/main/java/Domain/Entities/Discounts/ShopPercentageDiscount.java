@@ -46,6 +46,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
     protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (!_rule.predicate(basket))
             return;
+            
         for (int product_id : basket.getProductIdsList()) {
             SortedMap<Double, Integer> newpriceToAmount = new TreeMap<>();
             SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(product_id);
