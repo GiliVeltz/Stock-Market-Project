@@ -23,6 +23,7 @@ import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
+import Domain.Repositories.InterfaceRoleRepository;
 import Dtos.DiscountDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
@@ -42,7 +43,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKey;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -68,9 +71,8 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<ShopOrder> orderHistory;
 
-    @Transient
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKey(name = "username")
+    @MapKeyColumn(name = "username")
     private Map<String, Role> userToRole = new HashMap<>(); // <userName, Role>
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
@@ -104,6 +106,9 @@ public class Shop {
     @Transient
     private NotificationHandler _notificationHandler;
 
+    @Transient
+    private InterfaceRoleRepository roleRepository;
+
     // Default constructor
     public Shop() { 
         productMap = new HashMap<>(); // Initialize the product map
@@ -134,7 +139,7 @@ public class Shop {
             this.shopRating = -1.0;
             this.shopRatersCounter = 0;
             shopPolicy = new ShopPolicy();
-            Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
+            Role founder = new Role(shopFounderUserName, this, null, EnumSet.of(Permission.FOUNDER));
             userToRole.putIfAbsent(shopFounderUserName, founder);
             nextDiscountId = 0;
             isClosed = false;
@@ -146,6 +151,10 @@ public class Shop {
                     + ". The Founder of the shop is: " + shopFounderUserName);
             throw new ShopException("Error while creating shop.");
         }
+    }
+
+    public void setRoleRepository(InterfaceRoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
     public void closeShop() {
@@ -358,7 +367,7 @@ public class Shop {
         if (!isOwnerOrFounder(appointer)) {
             permissions.retainAll(appointer.getPermissions());
         }
-        Role manager = new Role(newManagerUserName, shopId, username, permissions);
+        Role manager = new Role(newManagerUserName, this, username, permissions);
 
         userToRole.putIfAbsent(newManagerUserName, manager);
         appointer.addAppointment(newManagerUserName);
@@ -395,7 +404,7 @@ public class Shop {
             throw new StockMarketException("Shop is closed, cannot appoint new owner.");
         // All constraints checked
         Role appointer = userToRole.get(username);
-        Role owner = new Role(newOwnerUserName, shopId, username, EnumSet.of(Permission.OWNER));
+        Role owner = new Role(newOwnerUserName, this, username, EnumSet.of(Permission.OWNER));
         userToRole.putIfAbsent(newOwnerUserName, owner);
         appointer.addAppointment(newOwnerUserName);
         logger.log(Level.INFO, "Shop - AppointOwner: " + username + " successfully appointed " + newOwnerUserName
@@ -1338,8 +1347,9 @@ public class Shop {
     public void setShopFounder(String shopFounderUserName) {
         this.shopFounder = shopFounderUserName;
         try{
-            Role founder = new Role(shopFounderUserName, shopId, null, EnumSet.of(Permission.FOUNDER));
+            Role founder = new Role(shopFounderUserName, this, null, EnumSet.of(Permission.FOUNDER));
             userToRole.putIfAbsent(shopFounderUserName, founder);
+            roleRepository.save(founder);
         }
         catch (StockMarketException e){
             logger.log(Level.SEVERE, "Shop - setShopFounder: Error while trying to set the founder of the shop with id: " + shopId);
