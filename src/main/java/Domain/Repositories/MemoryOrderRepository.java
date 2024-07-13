@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,6 +22,11 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
     // Constructor
     public MemoryOrderRepository(List<Order> order){
         this.order = order;
+    }
+
+    // empty constructor
+    public MemoryOrderRepository() {
+        order = new ArrayList<>();
     }
 
     @Override
@@ -109,8 +115,8 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public <S extends Order> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        order.add(entity);
+        return entity;
     }
 
     @Override

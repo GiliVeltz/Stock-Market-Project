@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,6 +22,11 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
     // constructor
     public MemoryShopOrderRepository(List<ShopOrder> shopOrders) {
         _shopOrders = shopOrders;
+    }
+
+    // empty constructor
+    public MemoryShopOrderRepository() {
+        _shopOrders = new ArrayList<>();
     }
 
     @Override

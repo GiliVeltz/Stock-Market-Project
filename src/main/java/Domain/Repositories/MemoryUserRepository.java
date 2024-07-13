@@ -26,6 +26,11 @@ public class MemoryUserRepository implements InterfaceUserRepository {
             _registeredUsers.put(user.getUserName(), user);
     }
 
+    // empty constructor
+    public MemoryUserRepository() {
+        _registeredUsers = new HashMap<>();
+    }
+
     @Override
     public boolean existsByusername(String username) {
         return username != null && _registeredUsers.containsKey(username);

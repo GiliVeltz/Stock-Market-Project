@@ -316,4 +316,8 @@ public class ShoppingBasket implements Cloneable {
     public String getShopAddress() {
         return shop.getShopAddress();
     }
+
+    public Integer getShoppingBasketId() {
+        return shoppingBasketId;
+    }
 }

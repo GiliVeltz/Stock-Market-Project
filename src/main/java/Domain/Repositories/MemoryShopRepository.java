@@ -33,6 +33,13 @@ public class MemoryShopRepository implements InterfaceShopRepository {
         }
     }
 
+    // empty constructor
+    public MemoryShopRepository() {
+        _shops = new HashMap<>();
+        _shopIdCounter = 0;
+        _productIdCounter = 0;
+    }
+
     @Override
     public synchronized int getUniqueProductID() { return _productIdCounter++;}
 

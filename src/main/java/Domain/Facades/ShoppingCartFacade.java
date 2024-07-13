@@ -16,7 +16,9 @@ import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.Repositories.DbOrderRepository;
 import Domain.Repositories.DbShoppingCartRepository;
+import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
@@ -29,11 +31,13 @@ public class ShoppingCartFacade {
     private ShopFacade shopFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     InterfaceShoppingCartRepository _cartsRepository;
+    InterfaceOrderRepository _orderRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
-    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, UserFacade userFacade, ShopFacade shopFacade) {
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, DbOrderRepository orderRepository, UserFacade userFacade, ShopFacade shopFacade) {
         _cartsRepository = cartsRepository;
+        _orderRepository = orderRepository;
         this.userFacade = userFacade;
         this.shopFacade = shopFacade;
         _guestsCarts = new HashMap<>();
@@ -50,6 +54,8 @@ public class ShoppingCartFacade {
     public void addCartForGuest(String guestID) {
         Guest g = userFacade.getGuestById(guestID);
         ShoppingCart cart = new ShoppingCart(g);
+        cart.setOrderRepository(_orderRepository);
+        cart.setOrderRepository(null);
         _guestsCarts.put(guestID, cart);
     }
 
@@ -66,6 +72,7 @@ public class ShoppingCartFacade {
             ShoppingCart existCart = _cartsRepository.getCartByUsername(guestID);
             if(existCart == null) {
                 ShoppingCart newCart = new ShoppingCart(user);
+                newCart.setOrderRepository(_orderRepository);
                 _cartsRepository.save(newCart);
             }
             else {
