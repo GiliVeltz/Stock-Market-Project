@@ -54,7 +54,6 @@ public class MarketSystem {
     private ShopFacade shopFacade;
     private UserFacade userFacade;
     private ShoppingCartFacade shoppingCartFacade;
-
     @Autowired
     public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
         this.shopFacade = shopFacade;
@@ -261,6 +260,17 @@ public class MarketSystem {
                 int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
                 int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
                 shoppingCartFacade.addProductToUserCart(instruction_params[1], productId, shopId, 1);
+            } catch (Exception e) {
+                logger.info("[run_instruction] Add Product To Cart Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("edit_quantity_product")){
+            //edit_quantity_product#user_name#shop_name#product_name#quantity
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                shopFacade.updateProductQuantity(instruction_params[1], shopId, productId, Integer.parseInt(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] Add Product To Cart Fail: " + e.getMessage());
             }
