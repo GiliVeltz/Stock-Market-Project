@@ -22,6 +22,10 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
         _guestIds = new ArrayList<>();
     } 
     
+    public MemoryGuestRepository(List<Guest> _guestIds2) {
+        _guestIds = _guestIds2;
+    }
+
     @Override
     public boolean existsByGuestId(String guestId){
         for (Guest guest : _guestIds) {
