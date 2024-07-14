@@ -1,30 +1,21 @@
 package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import Domain.Alerts.Alert;
+import Domain.Entities.Alerts.Alert;
 
 /**
  * Handles notifications by sending messages through a WebSocket server.
  */
-@Component
+@Service
 public class NotificationHandler {
 
-    private static NotificationHandler instance;
+    private WebSocketServer wServer;
+
     @Autowired
-    private static WebSocketServer wServer;
-
-    private NotificationHandler() {
-        // Initialization code
-        wServer = WebSocketServer.getInstance();
-    }
-
-    public static synchronized NotificationHandler getInstance() {
-        if (instance == null) {
-            instance = new NotificationHandler();
-        }
-        return instance;
+    private NotificationHandler(WebSocketServer wServer) {
+        this.wServer = wServer;
     }
     
      /**
@@ -38,6 +29,4 @@ public class NotificationHandler {
         String message = alert.getMessage();
         wServer.sendMessage(targetUsername, message);
     }
-
-
 }

@@ -1,9 +1,13 @@
 package Domain.Authenticators;
 
 import java.util.regex.Pattern;
+
+import org.springframework.stereotype.Component;
+
 import java.util.regex.Matcher;
 
 // This class is used to validate email addresses for the users.
+@Component
 public class EmailValidator {
     
     // Regular expression pattern for validating email addresses

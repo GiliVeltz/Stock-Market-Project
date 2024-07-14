@@ -1,5 +1,7 @@
 package ServiceLayer;
 
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,11 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.logging.Level;
-
-import Domain.Order;
-import Domain.User;
+import Domain.Entities.Order;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Dtos.PurchaseCartDetailsDto;
@@ -19,29 +17,29 @@ import Dtos.UserDto;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
 import jakarta.transaction.Transactional;
-import Domain.Alerts.*;
+import Domain.Entities.Alerts.*;
 
 @SuppressWarnings({"rawtypes" , "unchecked"})
 @Service
 public class UserService {
+
     private UserFacade _userFacade;
     private TokenService _tokenService;
+    private NotificationHandler _notificationHandler;
+    private WebSocketServer _webSocketServer;
 
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
-            ShoppingCartFacade shoppingCartFacade) {
+            ShoppingCartFacade shoppingCartFacade, NotificationHandler notificationHandler,
+            WebSocketServer webSocketServer) {
         _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
-    }
-
-    public UserService() {
-        _userFacade = UserFacade.getUserFacade();
-        _tokenService = TokenService.getTokenService();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
+        _notificationHandler = notificationHandler;
+        _webSocketServer = webSocketServer;
     }
 
     // this function is responsible for logging in a user to the system by checking
@@ -55,29 +53,20 @@ public class UserService {
                     response.setErrorMessage("Username or password is empty.");
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-                if (_userFacade.AreCredentialsCorrect(userName, password)) {
-                    User user = _userFacade.getUserByUsername(userName);
-                    if (user.isLoggedIn()){
-                        response.setErrorMessage("User is already logged in.");
-                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                    }
-                    user.logIn();
-                    _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), user);
-                    // update the new token for the user
-                    String newToken = _tokenService.generateUserToken(userName);
-                    response.setReturnValue(newToken);
+                _userFacade.logIn(userName, password);
+                
+                _shoppingCartFacade.addCartForUser(_tokenService.extractGuestId(token), _userFacade.getUserByUsername(userName));
+                // update the new token for the user
+                String newToken = _tokenService.generateUserToken(userName);
+                response.setReturnValue(newToken);
              
-                    WebSocketServer.getInstance().replaceGuestTokenToUserToken(token, newToken, userName);
-                    // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
-                    Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
+                _webSocketServer.replaceGuestTokenToUserToken(token, newToken, userName);
+                // WebSocketServer.getInstance().sendMessage(userName, "You have been logged in");
+                // Alert alert  = new GeneralAlert("system Administrator", userName, " welcome to out website! Enjoy your first time in the system!");
+                // NotificationHandler.getInstance().sendMessage(userName, alert);
 
-                    logger.info("User " + userName + " Logged In Succesfully");
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    response.setErrorMessage("User Name Is Not Registered Or Password Is Incorrect.");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                }
+                logger.info("User " + userName + " Logged In Succesfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -95,29 +84,19 @@ public class UserService {
         try {
             if (_tokenService.validateToken(token)) {
                 String userName = _tokenService.extractUsername(token);
-                if (_userFacade.doesUserExist(userName)) {
-                    User user = _userFacade.getUserByUsername(userName);
-                    if (!user.isLoggedIn()){
-                        response.setErrorMessage("User " + userName + " is not logged in!");
-                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                    }
-                    user.logOut();
-                    String newToken = _tokenService.generateGuestToken();
-                    String id = _tokenService.extractGuestId(newToken);
-                    _userFacade.addNewGuest(id);
-                    _shoppingCartFacade.addCartForGuest(id);
-                    logger.info("User successfully logged out: " + userName);
-                    response.setReturnValue(newToken);
-                    // close this session
-                    WebSocketServer.getInstance().changeLoggedInSession(userName, newToken);
-                    Alert alert = new GeneralAlert("system Administrator", userName,
-                    "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
-                    NotificationHandler.getInstance().sendMessage(userName, alert);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    response.setErrorMessage("A user with the username given in the token does not exist.");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                }
+                _userFacade.logOut(userName);
+                String newToken = _tokenService.generateGuestToken();
+                String id = _tokenService.extractGuestId(newToken);
+                _userFacade.addNewGuest(id);
+                _shoppingCartFacade.addCartForGuest(id);
+                logger.info("User successfully logged out: " + userName);
+                response.setReturnValue(newToken);
+                // close this session
+                 _webSocketServer.changeLoggedInSession(userName, newToken);
+                // Alert alert = new GeneralAlert("system Administrator", userName,
+                // "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
+                // NotificationHandler.getInstance().sendMessage(userName, alert);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
@@ -127,6 +106,7 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     // this function is responsible for registering a new user to the system
     @Transactional
@@ -152,19 +132,21 @@ public class UserService {
     // by checking the token and the user type and then calling the purchaseCart
     // function
     @Transactional
-    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto details) {
+    public ResponseEntity<Response> purchaseCart(String token, PurchaseCartDetailsDto purchaseCartDetails) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     logger.log(Level.INFO, "Start purchasing cart for guest.");
-                    _shoppingCartFacade.purchaseCartGuest(token, details);
+                    _shoppingCartFacade.purchaseCartGuest(_tokenService.extractGuestId(token), purchaseCartDetails);
                     response.setReturnValue("Guest bought card succeed");
                 } else {
                     String userName = _tokenService.extractUsername(token);
                     logger.log(Level.INFO, "Start purchasing cart for user: " + userName);
-                    _shoppingCartFacade.purchaseCartUser(userName, details);
+                    _shoppingCartFacade.purchaseCartUser(userName, purchaseCartDetails);
                     response.setReturnValue("User bought card succeed");
+                    Alert alert = new PurchaseFromShopUserAlert(userName);
+                    _notificationHandler.sendMessage(userName, alert);
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
@@ -179,9 +161,12 @@ public class UserService {
 
     // this function is responsible for checking if a user is a system admin
     @Transactional
-    public ResponseEntity<Response> isSystemAdmin(String userId) {
+    public ResponseEntity<Response> isSystemAdmin(String token, String userId) {
         Response response = new Response();
         try {
+            if (!_tokenService.validateToken(token))
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                
             if (_userFacade.isAdmin(userId)) {
                 logger.info("User is an admin: " + userId);
                 response.setReturnValue("User is an admin");
@@ -189,7 +174,7 @@ public class UserService {
             } else {
                 logger.info("User is not an admin: " + userId);
                 response.setReturnValue("User is not an admin");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             response.setErrorMessage("Failed to check if user is an admin: " + e.getMessage());
@@ -274,16 +259,15 @@ public class UserService {
         }
     }
 
-    // this function is responsible for getting the purchase history of a shop.
     @Transactional
-    public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> addProductToShoppingCart(String token, int productID, int shopID, int quantity) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
-                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID);
+                    _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID, quantity);
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
-                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID);
+                    _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID, quantity);
                 } else {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
@@ -298,18 +282,42 @@ public class UserService {
         }
     }
 
+    // @Transactional
+    // public ResponseEntity<Response> addProductToShoppingCartByShopName(String token, int productID, int shopName, int quantity) {
+    //     Response response = new Response();
+    //     try {
+    //         if (_tokenService.validateToken(token)) {
+    //             int shopID = _userFacade.getShopIdByName(shopName);
+    //             if (_tokenService.isGuest(token)) {
+    //                 _shoppingCartFacade.addProductToGuestCart(_tokenService.extractGuestId(token), productID, shopID, quantity);
+    //             } else if (_tokenService.isUserAndLoggedIn(token)) {
+    //                 _shoppingCartFacade.addProductToUserCart(_tokenService.extractUsername(token), productID, shopID, quantity);
+    //             } else {
+    //                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //             }
+    //             return new ResponseEntity<>(response, HttpStatus.OK);
+    //         } else {
+    //             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    //         }
+    //     } catch (Exception e) {
+    //         response.setErrorMessage("Failed to add product: " + e.getMessage());
+    //         logger.log(Level.SEVERE, "Failed to add product: " + e.getMessage(), e);
+    //         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
     // this function is responsible for removing a product from the shopping cart.
     @Transactional
-    public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID) {
+    public ResponseEntity<Response> removeProductFromShoppingCart(String token, int productID, int shopID, int quantity) {
         Response response = new Response();
         try {
             if (_tokenService.validateToken(token)) {
                 if (_tokenService.isGuest(token)) {
                     _shoppingCartFacade.removeProductFromGuestCart(_tokenService.extractGuestId(token), productID,
-                            shopID);
+                            shopID, quantity);
                 } else if (_tokenService.isUserAndLoggedIn(token)) {
                     _shoppingCartFacade.removeProductFromUserCart(_tokenService.extractUsername(token), productID,
-                            shopID);
+                            shopID, quantity);
                 } else {
                     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
                 }
@@ -412,7 +420,7 @@ public class UserService {
     }
 
     // this function is responsible for setting the user personal details.
-    @Transactional
+    // @Transactional
     public ResponseEntity<Response> setUserDetails(String token, UserDto userDto) {
         Response response = new Response();
         try {
@@ -453,6 +461,48 @@ public class UserService {
         } catch (Exception e) {
             response.setErrorMessage("Failed to view shopping cart: " + e.getMessage());
             logger.log(Level.SEVERE, "Failed to view shopping cart: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Response> viewOrderHistory(String token, String username) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token) && _tokenService.isUserAndLoggedIn(token)) {
+                response.setReturnValue(_userFacade.viewOrderHistory(username));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            response.setErrorMessage("Failed to view order history: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to view order history: " + e.getMessage(), e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Response> reportToAdmin(String token,String message) {
+        Response response = new Response();
+        try {
+            if (_tokenService.validateToken(token)) {
+                if (_tokenService.isUserAndLoggedIn(token)) {
+                    String user = _tokenService.extractUsername(token); 
+                    logger.info(String.format("New report created by user: %s", user));
+                    _userFacade.reportToAdmin(user, message);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setErrorMessage("Problem with posses Report please try again.");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            response.setErrorMessage(
+                    String.format("Failed to open Report. Error: %s", e.getMessage()));
+            logger.log(Level.SEVERE, e.getMessage(), e);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -1,18 +1,15 @@
 package Domain.Repositories;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-import Domain.User;
+import Domain.Entities.User;
 
-import org.springframework.stereotype.Repository;
+@NoRepositoryBean
+public interface InterfaceUserRepository extends JpaRepository<User, Long> {
+    boolean existsByusername(String username);
 
-@Repository
-public interface InterfaceUserRepository {
-    boolean doesUserExist(String username);
+    User findByusername(String username);
 
-    User getUserByUsername(String username);
-
-    void addUser(User user);
-
-    List<User> getAllUsers();
+    
 }

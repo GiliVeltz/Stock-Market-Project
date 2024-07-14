@@ -17,6 +17,7 @@ import com.vaadin.flow.component.UI;
 
 import UI.Model.ProductDto;
 import UI.Model.ProductSearchDto;
+import UI.Model.Response;
 import UI.Model.SearchProductResponseDto;
 import UI.View.Header;
 import UI.View.SearchProductsResultsView;
@@ -128,106 +129,54 @@ public class SearchProductsPresenter {
         }
     }
 
+    @SuppressWarnings("rawtypes")
+    public void addProductToCart(int shopId, int productId, int quantity) {
+        RestTemplate restTemplate = new RestTemplate();
 
-    // // Send shop name to id request
-    // @SuppressWarnings("deprecation")
-    // public boolean sendShopNameToIdRequest(String shopName) {
-    //     boolean[] isSuccess = {false};
-    //     RestTemplate restTemplate = new RestTemplate();
-    //     UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-    //             .then(String.class, token -> {
-    //                 if (token != null && !token.isEmpty()) {
-    //                     HttpHeaders headers = new HttpHeaders();
-    //                     headers.add("Authorization", token);
-    //                     headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-    //                     String url = "http://localhost:" + _serverPort + "/api/shop/getShopIdByName";
-    //                     HttpEntity<String> requestEntity = new HttpEntity<>(shopName, headers);
-    //                     ObjectMapper objectMapper = new ObjectMapper();
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-    //                     try {
-    //                         ResponseEntity<String> response = restTemplate.exchange(
-    //                             url,
-    //                             HttpMethod.POST,
-    //                             requestEntity,
-    //                             String.class);
+                            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-    //                         if (response.getStatusCode().is2xxSuccessful()) {
-    //                             // Parse JSON response to extract shop ID
-    //                             JsonNode rootNode = objectMapper.readTree(response.getBody());
-    //                             setShopId(rootNode.path("returnValue").asInt());
-    //                             isSuccess[0] = true;
-    //                         } else {
-    //                             searchProductsResultsView.displayResponseShopNotFound(shopName);
-    //                             headerView.showErrorMessage("Shop ID loading failed with status code: " + response.getStatusCode().value());
-    //                             isSuccess[0] = false;                            
-    //                         }
-    //                     }
-    //                     catch (HttpClientErrorException e) {
-    //                         if (e.getMessage().contains("not exist")) {
-    //                             searchProductsResultsView.displayResponseShopNotFound(shopName);
-    //                         }
-    //                         else {
-    //                             ResponseHandler.handleResponse(e.getStatusCode());
-    //                         }
-    //                         isSuccess[0] = false;
-    //                     }
-    //                     catch (Exception e) {
-    //                         headerView.showErrorMessage("Failed to parse response");
-    //                         e.printStackTrace();
-    //                         headerView.getUI().ifPresent(ui -> ui.navigate("user"));
-    //                         isSuccess[0] = false;
-    //                     }
-    //                 } else {
-    //                     headerView.showErrorMessage("Authorization token not found. Please log in.");
-    //                     isSuccess[0] = false;
-    //                 }
-    //             });
-    //             return isSuccess[0];
-    // }
+                            ResponseEntity<Response> response = restTemplate.exchange(
+                                    "http://localhost:" + _serverPort + "/api/user/addProductToShoppingCart?productID=" + productId +
+                                    "&shopID=" + shopId + "&quantity=" + quantity,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    Response.class);
 
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
 
-
-
-
-
-        // RestTemplate restTemplate = new RestTemplate();
-        // UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
-        //     .then(String.class, token -> {
-        //         if (token != null && !token.isEmpty()) {
-        //             HttpHeaders headers = new HttpHeaders();
-        //             headers.add("Authorization", token);
-        //             headers.setContentType(MediaType.APPLICATION_JSON); // Set content type
-        //             String url = "http://localhost:" + _serverPort + "/api/shop/getShopIdByName";
-        //             HttpEntity<String> requestEntity = new HttpEntity<>(shopName, headers);
-        //             ObjectMapper objectMapper = new ObjectMapper();
-        //             try {
-        //                 ResponseEntity<String> response = restTemplate.exchange(
-        //                     url,
-        //                     HttpMethod.POST,
-        //                     requestEntity,
-        //                     String.class);
-        //                 if (response.getStatusCode().is2xxSuccessful()) {
-        //                     // Parse JSON response to extract shop ID
-        //                     JsonNode rootNode = objectMapper.readTree(response.getBody());
-        //                     Integer shopId = rootNode.path("returnValue").asInt();
-        //                     return shopId;
-        //                 } else {
-        //                     headerView.showErrorMessage("Shop ID loading failed with status code: " + response.getStatusCode().value());
-        //                     return -1;
-        //                 }
-        //             }
-        //             catch (HttpClientErrorException e) {
-        //                 ResponseHandler.handleResponse(e.getStatusCode());
-        //                 return -1;
-        //             }
-        //             catch (Exception e) {
-        //                 headerView.showErrorMessage("Failed to parse response");
-        //                 e.printStackTrace();
-        //                 headerView.getUI().ifPresent(ui -> ui.navigate("user"));
-        //                 return -1;
-        //             }
-//     }
-// });
+                                if (responseBody.getErrorMessage() == null) {
+                                    searchProductsResultsView.showSuccessMessage("Product added to cart successfully");
+                                }
+                                else {
+                                    searchProductsResultsView.showErrorMessage("Failed to parse JSON response");
+                                }                       
+                            } else {
+                                searchProductsResultsView.showErrorMessage("Failed to add product to cart");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            searchProductsResultsView.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            searchProductsResultsView.showErrorMessage("Failed to purchase cart: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Token not found in local storage.");
+                        searchProductsResultsView.showErrorMessage("Failed to add product to cart");
+                    }
+                });
+    }
 }
 

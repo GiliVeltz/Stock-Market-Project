@@ -22,6 +22,21 @@
   padding: 10px; /* Optional: Add padding for better visual separation */
 }
 
+.filter-headline {
+  text-align: left;
+}
+
+.filter-container {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;  /* Optional: Add padding to avoid content touching the edges */
+  margin: 8px;   /* Optional: Add margin if needed */
+}
+
+.input-error-message {
+  color: rgb(194, 0, 0);
+  font-size: 12px;
+}
+
 /* General page styling */
 body {
   font-family: Arial, sans-serif;
@@ -138,4 +153,27 @@ body {
 
 .filter-button {
   margin-right: 10px; /* Add margin between filter buttons */
+}
+
+.product-display-component {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 8px;   /* Optional: Add margin if needed */
+  max-width: 800px;
+  max-height: 600px; /* Adjust max height as needed */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.product-picture-component {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;  /* Optional: Add padding to avoid content touching the edges */
+  margin: 8px;   /* Optional: Add margin if needed */
+  max-width: 300px;
+  max-height: 300px; /* Adjust max height as needed */
+  overflow-y: auto; /* Enable vertical scrolling */
 }

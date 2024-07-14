@@ -2,7 +2,7 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.ShoppingBasket;
+import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
 
 public class ShoppingBasketDto {
@@ -18,7 +18,7 @@ public class ShoppingBasketDto {
 
     public ShoppingBasketDto(ShoppingBasket shoppingBasket) throws StockMarketException {
         this._shop = new ShopDto(shoppingBasket.getShop());
-        this._productIdList = shoppingBasket.getProductIdList();
+        this._productIdList = shoppingBasket.getProductIdsList();
         this._basketTotalAmount = shoppingBasket.getShoppingBasketPrice();
     }
 

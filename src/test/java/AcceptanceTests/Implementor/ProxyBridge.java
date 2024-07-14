@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 // Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object.
 // A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
@@ -42,11 +42,6 @@ public class ProxyBridge implements BridgeInterface{
     @Override
     public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
         throw new UnsupportedOperationException("Unimplemented method 'TestGuestRegisterToTheSystem' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserEnterTheSystem(String SystemStatus) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserEnterTheSystem' in ProxyBridge class");
     }
 
     @Override
@@ -125,11 +120,6 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean testBuyingShoppingCartPoliciesGuest() {
-        throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesGuest' in ProxyBridge class");
-    }
-
-    @Override
     public boolean testSearchAndDisplayShopByIDAsUser(String shopId, boolean shopContainsProducts) {
         throw new UnsupportedOperationException("Unimplemented method 'testSearchAndDisplayShopByIDAsUser' in ProxyBridge class");
     }
@@ -188,11 +178,6 @@ public class ProxyBridge implements BridgeInterface{
     @Override
     public boolean testCheckBuyingShoppingCartUser(String username, String busketsToBuy, String cardNumber, String address) {
         throw new UnsupportedOperationException("Unimplemented method 'testCheckAllOrNothingBuyingShoppingCartUser' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean testBuyingShoppingCartPoliciesUser(String username, String password) {
-        throw new UnsupportedOperationException("Unimplemented method 'testBuyingShoppingCartPoliciesUser' in ProxyBridge class");
     }
 
     @Override

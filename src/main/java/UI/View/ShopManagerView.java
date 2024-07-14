@@ -2,15 +2,20 @@ package UI.View;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.Dial;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -21,6 +26,8 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,30 +35,37 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin.Horizontal;
-
 import UI.Model.Permission;
 import UI.Model.PermissionMapper;
+import UI.Model.ProductDto;
 import UI.Model.ShopDiscountDto;
 import UI.Model.ShopManagerDto;
+import UI.Model.ProductPolicy.MinAgeRuleDto;
+import UI.Model.ShopOrderDto;
+import UI.Model.ProductPolicy.UserRuleDto;
+import UI.Model.ShopPolicy.MinBasketPriceRuleDto;
+import UI.Model.ShopPolicy.MinProductAmountRuleDto;
+import UI.Model.ShopPolicy.ShoppingBasketRuleDto;
 import UI.Presenter.ShopManagerPresenter;
 import UI.Model.Category;
 
-
+@SuppressWarnings("unused")
 @Route(value = "user_shops")
 public class ShopManagerView extends BaseView implements HasUrlParameter<Integer>{
 
     private ShopManagerPresenter presenter;
     private String _username;
     private Set<Permission> _permissions;
+    private ProductDto _currentProductDto;
+    private List<ShoppingBasketRuleDto> _shopRules;
+    private List<UserRuleDto> _productRules;
     private H1 _title;
     private int _shopId;
     private Dialog _appointManagerDialog;
@@ -60,12 +74,23 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _viewSubordinatesDialog;
     private Dialog _viewDiscountsDialog;
     private Dialog _addDiscountDialog;
+    private Dialog _managePermissionsDialog;
+    private Dialog _changeShopPolicyDialog;
+    private Dialog _changeProductPolicyDialog;
+    private Dialog _chooseProductToChangePolicyDialog;
+    private Dialog _addShopRuleDialog;
+    private Dialog _addProductRuleDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
     private Grid<ShopManagerDto> _viewRolesGrid;
     private Grid<ShopManagerDto> _viewSubordinatesGrid;
     private Grid<ShopDiscountDto> _viewDiscountsGrid;
+    private Grid<ShoppingBasketRuleDto> _changeShopPolicyGrid;
+    private Grid<UserRuleDto> _changeProductPolicyGrid;
+    private Grid<ShopOrderDto> shopOrderGrid;
+    private List<String> _permissionsList;
+    private VerticalLayout contentLayout;
     
     public ShopManagerView(){
 
@@ -81,49 +106,121 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         presenter = new ShopManagerPresenter(this);
         presenter.fetchManagerPermissions(_username);
 
+        // // Initialize the shop rules map
+        // _shopRules = new HashMap<>();
+        // _shopRules.put("MinBasketPrice", new ArrayList<>());
+        // _shopRules.put("MinProductAmount", new ArrayList<>());
+
+    }
+
+     // Button creation helper method
+    Button createButtonWithIcon(String text, VaadinIcon icon, ComponentEventListener<ClickEvent<Button>> listener) {
+        Button button = new Button(text, new Icon(icon));
+        button.addClickListener(listener);
+        button.setWidth("300px");
+        button.setHeight("60px");
+        button.getElement().getStyle().set("font-size", "20px");
+        return button;
     }
 
     public void createPermissionButtons(List<String> permissions) {
+        _permissionsList = permissions;
         if(permissions.isEmpty()){
             add(new Paragraph("No permissions found"));
             return;
         }
 
+        initializeLayout(permissions);
+    }
+
+    private void initializeLayout(List<String> permissions) {
+        // Recreate the initial layout, including buttons and other components
         // Create a vertical layout
         VerticalLayout buttonsLayout = new VerticalLayout();
-        buttonsLayout.setAlignItems(Alignment.END);
+        buttonsLayout.setAlignItems(Alignment.CENTER);
 
         // Create buttons
-        Button addProductsbtn = new Button("Add Product");
-        Button addDiscountsBtn = new Button("View Discounts", e -> {
+        Button addProductsBtn = createButtonWithIcon("Add Product", VaadinIcon.PLUS, event -> createaddProductDialog().open());
+        Button addDiscountsBtn = createButtonWithIcon("View Discounts", VaadinIcon.GIFT, event -> {
             presenter.fetchShopDiscounts(discounts -> {
-            _discounts = discounts;
-            _viewDiscountsDialog = createViewDiscountsDialog();
-            _viewDiscountsDialog.open();
+                _discounts = discounts;
+                _viewDiscountsDialog = createViewDiscountsDialog();
+                _viewDiscountsDialog.open();
             });
         });
-        Button changeProductPolicyBtn = new Button("Change Product Policy", e -> presenter.changeProductPolicy());
-        Button changeShopPolicyBtn = new Button("Change Shop Policy", e -> presenter.changeProductPolicy());
-        Button appointManagerBtn = new Button("Appoint Manager", e -> _appointManagerDialog.open());
-        Button appointOwnerBtn = new Button("Appoint Owner", e -> _appointOwnerDialog.open());
-        Button viewSubordinateBtn = new Button("View Subordinates", e -> {
+        Button changeProductPolicyBtn = createButtonWithIcon("Change Product Policy", VaadinIcon.EDIT, event -> {
+            presenter.fetchShopProducts(products -> {
+                _chooseProductToChangePolicyDialog = createChangeProductsPolicyDialog(products);
+                _chooseProductToChangePolicyDialog.open();
+            });
+        });
+        Button changeShopPolicyBtn = createButtonWithIcon("Change Shop Policy", VaadinIcon.COGS, event -> {
+            presenter.fetchShopPolicy(rules -> {
+                _shopRules = rules;
+                _changeShopPolicyDialog = createChangeShopPolicyDialog();
+                _changeShopPolicyDialog.open();
+            });
+        });
+        Button appointManagerBtn = createButtonWithIcon("Appoint Manager", VaadinIcon.USER_STAR, event -> _appointManagerDialog.open());
+        Button appointOwnerBtn = createButtonWithIcon("Appoint Owner", VaadinIcon.USER_CHECK, event -> _appointOwnerDialog.open());
+        Button viewSubordinateBtn = createButtonWithIcon("View Subordinates", VaadinIcon.USERS, event -> {
             presenter.fetchMySubordinates(managers -> {
                 _subordinates = managers;
                 _viewSubordinatesDialog = createViewSubordinatesDialog();
                 _viewSubordinatesDialog.open();
-            
             });
         });
-        Button viewShopRolesBtn = new Button("View Shop Roles", e -> {
+        Button viewShopRolesBtn = createButtonWithIcon("View Shop Roles", VaadinIcon.USER_CHECK, event -> {
             presenter.fetchShopManagers(managers -> {
                 setManagers(managers);
                 _viewRolesDialog = createViewRolesDialog();
                 _viewRolesDialog.open();
-            
             });
         });
-        Button viewPurchasesBtn = new Button("View Purchases", e -> presenter.viewPurchases());
-        Button viewProductsbtn = new Button("View Products", e -> presenter.viewProducts());
+        Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> {
+            presenter.getShopPurchaseHistory(getShopId());
+        });
+        Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> presenter.viewProducts());
+        Button closeShopBtn = createButtonWithIcon("Close Shop", VaadinIcon.CLOSE, event -> {
+        Dialog closeDialog = new Dialog();
+        closeDialog.add(new Paragraph("Are you sure you want to close the shop?"));
+
+        Button yesButton = new Button("Yes", yesEvent -> {
+            // Logic to close the shop
+            presenter.closeShop(String.valueOf(getShopId()));
+            closeDialog.close();
+        });
+        yesButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        Button noButton = new Button("No", noEvent -> closeDialog.close());
+
+        HorizontalLayout dialogButtons = new HorizontalLayout(yesButton, noButton);
+        closeDialog.add(dialogButtons);
+        closeDialog.open();
+    });
+    
+    Button reopenShopBtn = createButtonWithIcon("Reopen Shop", VaadinIcon.SHOP, event -> {
+        Dialog reopenDialog = new Dialog();
+        reopenDialog.add(new Paragraph("Are you sure you want to reopen the shop?"));
+
+        Button yesButton = new Button("Yes", yesEvent -> {
+            // Logic to reopen the shop
+            presenter.reopenShop(String.valueOf(getShopId()));
+            reopenDialog.close();
+        });
+        yesButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+        Button noButton = new Button("No", noEvent -> reopenDialog.close());
+
+        HorizontalLayout dialogButtons = new HorizontalLayout(yesButton, noButton);
+        reopenDialog.add(dialogButtons);
+        reopenDialog.open();
+    });
+
+     // Add Edit Product button
+     Button editProductBtn = createButtonWithIcon("Edit Product", VaadinIcon.EDIT, event -> createEditProductDialog().open());
+
+
 
         // Here we create a set of permissions from the strings.
         _permissions = permissions.stream()
@@ -141,9 +238,9 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             appointOwnerBtn.setEnabled(false);
 
             if(!_permissions.contains(Permission.ADD_PRODUCT)){
-                addProductsbtn.setEnabled(false);
+                addProductsBtn.setEnabled(false);
             }
-            if(!_permissions.contains(Permission.ADD_DISCOUNT_POLICY)){
+            if(!_permissions.contains(Permission.CHANGE_DISCOUNT_POLICY)){
                 addDiscountsBtn.setEnabled(false);
             }
             if(!_permissions.contains(Permission.CHANGE_PRODUCT_POLICY)){
@@ -161,19 +258,192 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             if(!_permissions.contains(Permission.GET_PURCHASE_HISTORY)){
                 viewPurchasesBtn.setEnabled(false);
             }
+            // if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+            //     viewProductsBtn.setEnabled(false);
+            // }
+            if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+                editProductBtn.setEnabled(false);
+            }
+            // only for founder
+            closeShopBtn.setEnabled(false);
+            reopenShopBtn.setEnabled(false);
   
         }
 
-        // Create registration dialog
-        Dialog addProductDialog = createaddProductDialog();
-        addProductsbtn.addClickListener(event -> addProductDialog.open());
+        HorizontalLayout row = new HorizontalLayout();
+        row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        int count = 0;
+        for (Button button : Arrays.asList(
+                appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn,
+                addProductsBtn, viewProductsBtn, viewPurchasesBtn, addDiscountsBtn,
+                changeProductPolicyBtn, changeShopPolicyBtn, closeShopBtn, reopenShopBtn, editProductBtn)) {
+            row.add(button);
+            count++;
+            if (count % 4 == 0) {
+                row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+                buttonsLayout.add(row);
+                row = new HorizontalLayout();
+            }
+        }
+        // Add any remaining buttons
+        if (count % 4 != 0) {
+            row.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+            buttonsLayout.add(row);
+        }
 
-        buttonsLayout.add(appointOwnerBtn, appointManagerBtn, viewSubordinateBtn, viewShopRolesBtn, addProductsbtn, viewProductsbtn, viewPurchasesBtn, addDiscountsBtn, changeProductPolicyBtn, changeShopPolicyBtn);
         add(_title, buttonsLayout);
-
+    
         //After we have the permissions, we can create the dialog
         _appointManagerDialog = createAppointManagerDialog();
         _appointOwnerDialog = createAppointOwnerDialog();
+    }
+
+    private Dialog createEditProductDialog() {
+        Dialog editProductDialog = new Dialog();
+        TextField productIdField = new TextField("Enter Product ID");
+
+        Button fetchProductBtn = new Button("Fetch Product", event -> {
+            String productId = productIdField.getValue();
+            // Logic to fetch product details using the product ID
+
+            // Create buttons for editing product details
+            Button updateQuantityBtn = new Button("Update Quantity", e -> createUpdateQuantityDialog(productId).open());
+            Button updatePriceBtn = new Button("Update Price", e -> createUpdatePriceDialog(productId).open());
+            Button updateNameBtn = new Button("Update Name", e -> createUpdateNameDialog(productId).open());
+            Button updateCategoryBtn = new Button("Update Category", e -> createUpdateCategoryDialog(productId).open());
+
+            VerticalLayout editOptionsLayout = new VerticalLayout(updateQuantityBtn, updatePriceBtn, updateNameBtn, updateCategoryBtn);
+            editProductDialog.add(editOptionsLayout);
+        });
+
+        editProductDialog.add(productIdField, fetchProductBtn);
+        return editProductDialog;
+    }
+
+    private Dialog createUpdateQuantityDialog(String productId) {
+        Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
+        TextField quantityField = new TextField("New Quantity");
+        quantityField.setPlaceholder("Enter quantity");
+    
+        // Add a value change listener to validate input
+        quantityField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                quantityField.setInvalid(true);
+                quantityField.setErrorMessage("Please enter a valid number");
+            }
+        });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = quantityField.getValue();
+            try {
+                Integer newQuantity = Integer.parseInt(value);
+                // Logic to update the product quantity using the product ID and new quantity
+                presenter.updateProductQuantity(getShopId(), Integer.parseInt(productId), newQuantity);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid number");
+            }
+        });
+    
+        dialog.add(quantityField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdatePriceDialog(String productId) {
+        Dialog dialog = new Dialog();
+    
+        // Use a TextField to allow numeric input and add a value change listener
+        TextField priceField = new TextField("New Price");
+        priceField.setPlaceholder("Enter price");
+    
+        // Add a value change listener to validate input
+        priceField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            try {
+                Double.parseDouble(value);
+                priceField.setInvalid(false);
+                priceField.setErrorMessage(null);
+            } catch (NumberFormatException e) {
+                priceField.setInvalid(true);
+                priceField.setErrorMessage("Please enter a valid price");
+            }
+        });
+    
+        Button saveBtn = new Button("Save", event -> {
+            String value = priceField.getValue();
+            try {
+                Double newPrice = Double.parseDouble(value);
+                // Logic to update the product price using the product ID and new price
+                presenter.updateProductPrice(getShopId(), Integer.parseInt(productId), newPrice);
+                dialog.close();
+            } catch (NumberFormatException e) {
+                Notification.show("Please enter a valid price");
+            }
+        });
+    
+        dialog.add(priceField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateNameDialog(String productId) {
+        Dialog dialog = new Dialog();
+        TextField nameField = new TextField("New Name");
+        nameField.setPlaceholder("Enter name");
+    
+        // Disable the save button initially
+        Button saveBtn = new Button("Save");
+        saveBtn.setEnabled(false);
+    
+        // Add a value change listener to validate input
+        nameField.addValueChangeListener(event -> {
+            String value = event.getValue();
+            if (value == null || value.trim().isEmpty()) {
+                nameField.setInvalid(true);
+                nameField.setErrorMessage("Name cannot be empty");
+                saveBtn.setEnabled(false);
+            } else {
+                nameField.setInvalid(false);
+                nameField.setErrorMessage(null);
+                saveBtn.setEnabled(true);
+            }
+        });
+    
+        // Add click listener to the save button
+        saveBtn.addClickListener(event -> {
+            String newName = nameField.getValue();
+            if (newName != null && !newName.trim().isEmpty()) {
+                presenter.updateProductName(getShopId(), Integer.parseInt(productId), newName);
+                dialog.close();
+                Notification.show("Name updated");
+            } else {
+                Notification.show("Please enter a valid name");
+            }
+        });
+    
+        dialog.add(nameField, saveBtn);
+        return dialog;
+    }
+
+    private Dialog createUpdateCategoryDialog(String productId) {
+        Dialog dialog = new Dialog();
+        ComboBox<String> categoryField = new ComboBox<>("New Category");
+        categoryField.setItems("Electronics", "Books", "Clothing", "Home", "Kitchen", "Sports", "Grocery", "Pharmacy");
+        Button saveBtn = new Button("Save", event -> {
+            Category category = parseCategory(categoryField.getValue());
+                if (category == Category.DEFAULT_VAL) {
+                    Notification.show("Invalid category");
+                    return;
+                }
+            presenter.updateProductCategory(getShopId(), Integer.parseInt(productId), category);
+            dialog.close();
+        });
+        dialog.add(categoryField, saveBtn);
+        return dialog;
     }
 
     public int getShopId() {
@@ -373,6 +643,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                     toggleButton.setText("Details");
                 } else {
                     _viewSubordinatesGrid.setDetailsVisible(shopManager, true);
+
                     toggleButton.setText("Hide");
                 }
             });
@@ -386,6 +657,12 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
                 Span permissionSpan = new Span(PermissionMapper.getPermissionName(permission));
                 detailsLayout.add(permissionSpan);
             });
+            Button managePermissionsBtn = new Button("Manage Permissions", e -> {
+                createManagePermissionsDialog(shopManager).open();
+            });
+            if(!shopManager.getPermissions().contains(Permission.FOUNDER) && !shopManager.getPermissions().contains(Permission.OWNER)){
+                detailsLayout.add(managePermissionsBtn);   
+            }
             return detailsLayout;
         }));
 
@@ -591,7 +868,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Select<String> selectDiscountType = new Select<>();
         selectDiscountType.setLabel("Discount Type");
         selectDiscountType.setItems("Product Discount", "Shop Discount", "Category Discount");
-        selectDiscountType.setValue("ProductDiscount");
+        selectDiscountType.setValue("Product Discount");
         
         // Method choose
         Select<String> selectDiscountMethod = new Select<>();
@@ -713,4 +990,585 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Date convertToDate(LocalDate localDate) {
         return java.sql.Date.valueOf(localDate);
     }
+
+    public Dialog createManagePermissionsDialog(ShopManagerDto manager) {
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Manage Permissions");
+        headline.getStyle().set("margin", "0");
+        formLayout.add(headline);
+
+        // Create a set to store selected permissions
+        Set<Permission> selectedPermissions = new HashSet<>(manager.getPermissions());
+
+        // Create CheckboxGroup for permissions
+        CheckboxGroup<Permission> checkboxGroup = new CheckboxGroup<>();
+        checkboxGroup.setLabel("Permissions");
+        Set<Permission> allPermissions = new HashSet<>(Arrays.asList(Permission.values()));
+        allPermissions.remove(Permission.FOUNDER); // Founder cannot be assigned
+        allPermissions.remove(Permission.OWNER); // Owner cannot be assigned
+        checkboxGroup.setItems(allPermissions);
+
+        // If Founder or Owner, can select all permissions
+        if (_permissions.contains(Permission.FOUNDER) || _permissions.contains(Permission.OWNER)) {
+            checkboxGroup.setItemEnabledProvider(permission -> permission != Permission.FOUNDER && permission != Permission.OWNER);
+        } else {
+            checkboxGroup.setItemEnabledProvider(_permissions::contains);
+        }
+
+        checkboxGroup.setItemLabelGenerator(PermissionMapper::getPermissionName);
+        checkboxGroup.setValue(selectedPermissions);
+
+        checkboxGroup.addValueChangeListener(event -> {
+            selectedPermissions.clear();
+            selectedPermissions.addAll(event.getValue());
+        });
+
+        formLayout.add(checkboxGroup);
+
+        // Add form layout to dialog
+        dialog.add(formLayout);
+
+        Button saveButton = new Button("Save", e -> {
+            // Handle save logic here
+            if(selectedPermissions.isEmpty()){
+                Notification.show("Please select at least one permission");
+                return;
+            }
+            if(selectedPermissions.equals(manager.getPermissions())){
+                Notification.show("No changes made");
+                return;
+            }
+            presenter.updatePermissions(manager.getUsername(), selectedPermissions, isSuccess -> {
+                if(isSuccess){
+                    Notification.show("Permissions updated successfully");
+                    manager.setPermissions(selectedPermissions);
+                    _viewSubordinatesDialog.close();
+                    presenter.fetchMySubordinates(managers -> {
+                        _subordinates = managers;
+                        _viewSubordinatesDialog = createViewSubordinatesDialog();
+                        _viewSubordinatesDialog.open();
+                    });
+                }else{
+                    Notification.show("Failed to update permissions");
+                }
+            });
+            dialog.close();
+        });
+        Button cancelButton = new Button("Cancel", e -> dialog.close());
+        HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
+        formLayout.add(buttonsLayout);
+
+        return dialog;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dialog createChangeShopPolicyDialog(){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Shop Policy");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create the new rules data structure
+        List<ShoppingBasketRuleDto> newRules = new ArrayList<>();
+        if(_shopRules != null){
+            for (ShoppingBasketRuleDto rule : _shopRules) {
+                newRules.add(rule.createCopy(rule));
+            }
+        }
+        // Create a grid
+        _changeShopPolicyGrid = new Grid<>(ShoppingBasketRuleDto.class, false);
+        _changeShopPolicyGrid.addColumn(ShoppingBasketRuleDto::getRuleString).setHeader("Rules");
+        
+        
+        _changeShopPolicyGrid.addItemClickListener(event -> {
+            ShoppingBasketRuleDto rule = event.getItem();
+            Dialog confirmationDialog = new Dialog();
+            Span confirmationText = new Span("Are you sure you want to delete this rule?");
+            
+            // Create Yes and No buttons
+            Button yesButton = new Button("Yes", e -> {
+                // Remove the rule from the data source
+                ListDataProvider<ShoppingBasketRuleDto> dataProvider = (ListDataProvider<ShoppingBasketRuleDto>) _changeShopPolicyGrid.getDataProvider();
+                dataProvider.getItems().remove(rule);
+                dataProvider.refreshAll();
+                newRules.remove(rule);
+                confirmationDialog.close();
+            });
+            
+            Button noButton = new Button("No", e -> confirmationDialog.close());
+
+            // Add the buttons to a HorizontalLayout
+            Span spacer = new Span();
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
+            buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
+            buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
+            
+            // Create a layout for the dialog
+            VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
+            confirmationDialog.add(dialogLayout);
+            confirmationDialog.open();
+        });
+
+        _changeShopPolicyGrid.setItems(newRules);
+
+        content.add(_changeShopPolicyGrid);
+
+        //Save button
+        Button saveChanges = new Button("Save", e-> {
+            // Handle save logic here
+            _shopRules = newRules;
+            presenter.updateShopPolicy(_shopRules, isSuccess -> {
+                if(isSuccess){
+                    Notification.show("Shop policy updated successfully");
+                }else{
+                    Notification.show("Failed to update shop policy");
+                }
+            });
+            dialog.close();
+        
+        });
+        Button addShopRule = new Button("Add Rule", e -> {
+            _addShopRuleDialog.open();
+        });
+        dialog.setWidth("900px"); // Set the desired width of the dialog
+        dialog.setHeight("700px"); // Set the desired height of the dialog
+
+        _addShopRuleDialog = createAddShopRuleDialog(newRules);
+        HorizontalLayout buttonsLayout = new HorizontalLayout(addShopRule, saveChanges);
+        content.add(buttonsLayout);
+        dialog.add(content);
+        
+        return dialog;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dialog createAddShopRuleDialog(List<ShoppingBasketRuleDto> newRules){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add New Shop Rule");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        // Type choose
+        Select<String> selectRuleType = new Select<>();
+        selectRuleType.setLabel("Rule Type");
+        selectRuleType.setItems("Min Busket Price", "Min Product Amount");
+        selectRuleType.setValue("Min Busket Price");
+        
+        //for min busket price
+        NumberField minBasketPrice = new NumberField("Value");
+        minBasketPrice.setErrorMessage("Please enter a valid value for the price");
+        minBasketPrice.setRequired(true);
+
+        //for min product amount
+        IntegerField productIdField = new IntegerField("Product ID");
+        productIdField.setErrorMessage("Please enter a valid id");
+        productIdField.setRequired(true);
+        IntegerField minProductAmount = new IntegerField("Value");
+        minProductAmount.setErrorMessage("Please enter a valid value for the amount");
+        minProductAmount.setRequired(true);
+
+
+        // Add fields to the form layout
+        formLayout.add(selectRuleType, minBasketPrice);
+
+        // Listener to handle showing/hiding additional fields based on rule type
+        selectRuleType.addValueChangeListener(event -> {
+            String selectedType = event.getValue();
+            if ("Min Busket Price".equals(selectedType)) {
+                minBasketPrice.clear();
+                formLayout.remove(productIdField);
+                formLayout.remove(minProductAmount);
+                formLayout.add(minBasketPrice);
+            } else if ("Min Product Amount".equals(selectedType)) {
+                minProductAmount.clear();
+                formLayout.remove(minBasketPrice);
+                formLayout.add(productIdField);
+                formLayout.add(minProductAmount);
+            } else {
+                //do nothing for now
+            }
+        });
+
+        // Create buttons
+        Button submitButton = new Button("Add", event -> {
+            // Handle form submission
+            String ruleType = selectRuleType.getValue();
+            ShoppingBasketRuleDto rule = null;
+            if("Min Busket Price".equals(ruleType)){
+                if(minBasketPrice.getValue() < 0){
+                    Notification.show("Please enter a valid price");
+                    return;
+                }
+                rule = new MinBasketPriceRuleDto(minBasketPrice.getValue());
+                newRules.add(rule);
+            }else if("Min Product Amount".equals(ruleType)){
+                if(minProductAmount.getValue() < 0){
+                    Notification.show("Please enter a valid amount");
+                    return;
+                }
+                if(productIdField.getValue() < 0){
+                    Notification.show("Please enter a valid product id");
+                    return;
+                }
+                rule = new MinProductAmountRuleDto(productIdField.getValue(), minProductAmount.getValue());
+                newRules.add(rule);
+            }else{
+                //do nothing for now
+            }
+            
+            ListDataProvider<ShoppingBasketRuleDto> dataProvider = (ListDataProvider<ShoppingBasketRuleDto>) _changeShopPolicyGrid.getDataProvider();
+            dataProvider.refreshAll();
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
+        dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                selectRuleType.clear();
+                minBasketPrice.clear();
+                minProductAmount.clear();
+                productIdField.clear();
+            }
+        });
+
+        return dialog;  
+    }
+
+    public Dialog createChangeProductsPolicyDialog(List<ProductDto> products){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Products Policy");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create List of names of products
+        List<String> productNames = new ArrayList<>();
+        for (ProductDto product : products) {
+            productNames.add(product.getProductName()+" - "+product.getProductId());
+        }
+        // Type choose
+        Select<String> selectProduct = new Select<>();
+        selectProduct.setLabel("Product");
+        selectProduct.setItems(productNames);
+
+        content.add(selectProduct);
+
+        Button viewPolicyBtn = new Button("View Policy", e -> {
+            String selectedProduct = selectProduct.getValue();
+            String[] parts = selectedProduct.split(" - ");
+            int productId = Integer.parseInt(parts[1]);
+            ProductDto selectedProductDto = null;
+            for (ProductDto product : products) {
+                if(product.getProductId() == productId){
+                    selectedProductDto = product;
+                    break;
+                }
+            }
+            if(selectedProductDto != null){
+                _currentProductDto = selectedProductDto;
+                presenter.fetchProductPolicy(selectedProductDto, rules -> {
+                    _productRules = rules;
+                    _changeProductPolicyDialog = createViewAndChangeProdcutPolicyDialog(_currentProductDto);
+                    _changeProductPolicyDialog.open();
+                });
+            }
+        });
+
+        content.add(viewPolicyBtn);
+        dialog.add(content);
+        return dialog;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Dialog createViewAndChangeProdcutPolicyDialog(ProductDto product){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Product "+product.getProductName()+" Policy");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create the new rules data structure
+        List<UserRuleDto> newRules = new ArrayList<>();
+        if(_productRules != null){
+            for (UserRuleDto rule : _productRules) {
+                newRules.add(rule.createCopy(rule));
+            }
+        }
+        // Create a grid
+        _changeProductPolicyGrid = new Grid<>(UserRuleDto.class, false);
+        _changeProductPolicyGrid.addColumn(UserRuleDto::getRuleString).setHeader("Rules");
+        
+        
+        _changeProductPolicyGrid.addItemClickListener(event -> {
+            UserRuleDto rule = event.getItem();
+            Dialog confirmationDialog = new Dialog();
+            Span confirmationText = new Span("Are you sure you want to delete this rule?");
+            
+            // Create Yes and No buttons
+            Button yesButton = new Button("Yes", e -> {
+                // Remove the rule from the data source
+                ListDataProvider<UserRuleDto> dataProvider = (ListDataProvider<UserRuleDto>) _changeProductPolicyGrid.getDataProvider();
+                dataProvider.getItems().remove(rule);
+                dataProvider.refreshAll();
+                newRules.remove(rule);
+                confirmationDialog.close();
+            });
+            
+            Button noButton = new Button("No", e -> confirmationDialog.close());
+
+            // Add the buttons to a HorizontalLayout
+            Span spacer = new Span();
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
+            buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
+            buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
+            
+            // Create a layout for the dialog
+            VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
+            confirmationDialog.add(dialogLayout);
+            confirmationDialog.open();
+        });
+
+        _changeProductPolicyGrid.setItems(newRules);
+
+        content.add(_changeProductPolicyGrid);
+
+        //Save button
+        Button saveChanges = new Button("Save", e-> {
+            // Handle save logic here
+            _productRules = newRules;
+            presenter.updateProductPolicy(_productRules, product, isSuccess -> {
+                if(isSuccess){
+                    Notification.show("Product policy updated successfully");
+                }else{
+                    Notification.show("Failed to update product policy");
+                }
+            });
+            dialog.close();
+        
+        });
+        Button addShopRule = new Button("Add Rule", e -> {
+            _addShopRuleDialog.open();
+        });
+        dialog.setWidth("900px"); // Set the desired width of the dialog
+        dialog.setHeight("700px"); // Set the desired height of the dialog
+
+        _addShopRuleDialog = createAddProductRuleDialog(newRules);
+        HorizontalLayout buttonsLayout = new HorizontalLayout(addShopRule, saveChanges);
+        content.add(buttonsLayout);
+        dialog.add(content);
+        
+        return dialog;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Dialog createAddProductRuleDialog(List<UserRuleDto> newRules){
+        Dialog dialog = new Dialog();
+
+        // Create form layout
+        FormLayout formLayout = new FormLayout();
+
+        // Create a headline
+        H2 headline = new H2("Add New Product Rule");
+        headline.getStyle().set("margin", "0");
+
+        // Create form fields
+        // Type choose
+        Select<String> selectRuleType = new Select<>();
+        selectRuleType.setLabel("Rule Type");
+        selectRuleType.setItems("Min Age Rule");
+        selectRuleType.setValue("Min Age Rule");
+        
+        //for min age rule
+        IntegerField minAge = new IntegerField("Value");
+        minAge.setErrorMessage("Please enter a valid value for the age");
+        minAge.setRequired(true);
+
+
+        // Add fields to the form layout
+        formLayout.add(selectRuleType, minAge);
+
+        // Listener to handle showing/hiding additional fields based on rule type
+        selectRuleType.addValueChangeListener(event -> {
+            String selectedType = event.getValue();
+            if ("Min Age Rule".equals(selectedType)) {
+                minAge.clear();
+                formLayout.add(minAge);
+            } else {
+                //do nothing for now
+            }
+        });
+
+        // Create buttons
+        Button submitButton = new Button("Add", event -> {
+            // Handle form submission
+            String ruleType = selectRuleType.getValue();
+            UserRuleDto rule = null;
+            if("Min Age Rule".equals(ruleType)){
+                if(minAge.getValue() <= 0){
+                    Notification.show("Please enter a valid age");
+                    return;
+                }
+                rule = new MinAgeRuleDto(minAge.getValue());
+                newRules.add(rule);
+            }else{
+                //do nothing for now
+            }
+            
+            ListDataProvider<UserRuleDto> dataProvider = (ListDataProvider<UserRuleDto>) _changeProductPolicyGrid.getDataProvider();
+            dataProvider.refreshAll();
+            dialog.close();
+        });
+
+        submitButton.addClassName("pointer-cursor");
+
+        Button cancelButton = new Button("Cancel", event -> {
+            // Close the dialog
+            dialog.close();
+        });
+
+        cancelButton.addClassName("pointer-cursor");
+
+        // Create button layout
+        HorizontalLayout buttonLayout = new HorizontalLayout(submitButton, cancelButton);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER); // Center the buttons
+
+        // Add form layout and button layout to the dialog
+        VerticalLayout dialogLayout = new VerticalLayout(headline, formLayout, buttonLayout);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER); // Center the layout content
+        dialog.add(dialogLayout);
+
+        // Add listener to clear fields when dialog is opened
+        dialog.addOpenedChangeListener(event -> {
+            if (dialog.isOpened()) {
+                selectRuleType.clear();
+                minAge.clear();
+            }
+        });
+
+        return dialog;  
+    }
+
+    public void showShopOrders(List<ShopOrderDto> orders) {
+        Dialog orderDialog = new Dialog();
+        orderDialog.setWidth("80%");
+        orderDialog.setHeight("80%");
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        orderDialog.add(dialogLayout);
+
+        Grid<ShopOrderDto> shopOrderGrid = new Grid<>(ShopOrderDto.class, false);
+        shopOrderGrid.addColumn(ShopOrderDto::getOrderId).setHeader("Order ID");
+        shopOrderGrid.addColumn(ShopOrderDto::getTotalOrderAmount).setHeader("Total Amount");
+
+        // Add a button to expand each order and show details
+        shopOrderGrid.addComponentColumn(orderDto -> {
+            Button detailsButton = new Button("Show Details");
+            detailsButton.addClickListener(e -> showOrderDetails(orderDto));
+            return detailsButton;
+        }).setHeader("Actions");
+
+        dialogLayout.add(shopOrderGrid);
+        shopOrderGrid.setItems(orders);
+
+        Button closeButton = new Button("Close", e -> orderDialog.close());
+        dialogLayout.add(closeButton);
+
+        orderDialog.open();
+    }
+
+    
+    private void createBackButton() {
+        Button backButton = new Button("Back", e -> restoreInitialState());
+        add(backButton);
+    }
+
+    private void restoreInitialState() {
+        removeAll(); // Clear the current layout
+        initializeLayout(_permissionsList); // Re-add the initial layout
+    }
+    
+
+    private void showOrderDetails(ShopOrderDto order) {
+        Dialog dialog = new Dialog();
+        dialog.setWidth("400px");
+        dialog.setHeight("300px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Order ID: " + order.getOrderId()));
+        dialogLayout.add(new Text("Total Amount: " + order.getTotalOrderAmount()));
+    
+        Button viewProductsButton = new Button("View Products", e -> showProductIds(order.getShoppingBasketDto().getProductIdList()));
+        dialogLayout.add(viewProductsButton);
+    
+        Button closeButton = new Button("Close", e -> dialog.close());
+        dialogLayout.add(closeButton);
+    
+        dialog.open();
+    }
+
+    private void showProductIds(List<Integer> productIds) {
+        Dialog productDialog = new Dialog();
+        productDialog.setWidth("300px");
+        productDialog.setHeight("200px");
+    
+        VerticalLayout dialogLayout = new VerticalLayout();
+        productDialog.add(dialogLayout);
+    
+        dialogLayout.add(new Text("Product IDs:"));
+    
+        productIds.forEach(productId -> dialogLayout.add(new Text(productId.toString())));
+    
+        Button closeButton = new Button("Close", e -> productDialog.close());
+        dialogLayout.add(closeButton);
+    
+        productDialog.open();
+    }
+
+
+    
 }

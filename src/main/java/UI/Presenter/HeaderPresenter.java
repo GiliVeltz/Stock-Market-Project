@@ -1,19 +1,21 @@
 package UI.Presenter;
 
 
+import java.util.Date;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
-import java.util.Date;
+import UI.Model.Response;
 import UI.Model.UserDto;
 import UI.View.Header;
-import UI.Model.Response;
 // import ServiceLayer.Response;
 public class HeaderPresenter {
 
@@ -54,17 +56,20 @@ public class HeaderPresenter {
                                 // Update the token in local storage using JavaScript
                                 UI.getCurrent().getPage().executeJs("localStorage.setItem('authToken', $0);", newToken);
                                 VaadinSession.getCurrent().setAttribute("username", username);
-                                view.showSuccessMessage("Login successful");
-                                view.switchToLogout();
-                                view.navigateToUserMainPage();
-                                System.out.println(response.getBody());
+
+                                checkIfAdmin(newToken, username);
+
+                                // view.showSuccessMessage("Login successful");
+                                // view.switchToLogout();
+                                // view.navigateToUserMainPage();
+                                // System.out.println(response.getBody());
                             } else {
                                 view.showErrorMessage("Login failed: " + responseBody.getErrorMessage());
                             }
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response for Login");
+                            view.showErrorMessage("Login failed: " + e.getMessage());
                             e.printStackTrace();
                         }
                     } else {
@@ -72,6 +77,42 @@ public class HeaderPresenter {
                         view.showErrorMessage("Login failed");
                     }
                 });
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void checkIfAdmin(String token, String username) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+
+        String url = "http://localhost:" + _serverPort + "/api/user/isSystemAdmin?username=" + username;
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Response> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    requestEntity,
+                    Response.class);
+            Response responseBody = response.getBody();
+
+            if ("User is an admin".equals(responseBody.getReturnValue().toString())) {
+                VaadinSession.getCurrent().setAttribute("role", "admin");
+            } else {
+                VaadinSession.getCurrent().setAttribute("role", "user");
+            }
+
+            // Provide feedback to the user and navigate to the user main page
+            view.showSuccessMessage("Login successful");
+            view.switchToLogout();
+            view.navigateToUserMainPage();
+            System.out.println(responseBody);
+        } catch (HttpClientErrorException e) {
+            ResponseHandler.handleResponse(e.getStatusCode());
+        } catch (Exception e) {
+            view.showErrorMessage("Failed to check admin status");
+            e.printStackTrace();
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -161,14 +202,6 @@ public class HeaderPresenter {
                     }
                 });
     }
-
-
-
-    public void searchShop(String shopName, String shopId) {
-
-                
-    }
-
 
 }
 

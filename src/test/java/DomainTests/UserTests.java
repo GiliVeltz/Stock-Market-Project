@@ -11,9 +11,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import Domain.Order;
-import Domain.ShoppingBasket;
-import Domain.User;
+
+import Domain.Entities.Order;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
 import Exceptions.StockMarketException;
 
 public class UserTests {
@@ -59,7 +60,7 @@ public class UserTests {
     public void testAddOrder_whenNewOrder_thenOrderAdded() throws StockMarketException {
         // Arrange - Create a new User object
         User user = new User("john_doe", "password123", "email@example.com", new Date());
-        Order order = new Order(1, new ArrayList<ShoppingBasket>());
+        Order order = new Order(new ArrayList<ShoppingBasket>(), 1, 1);
         
         // Act - try to add a new order
         user.addOrder(order);

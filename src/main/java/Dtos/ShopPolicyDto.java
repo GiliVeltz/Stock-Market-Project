@@ -2,9 +2,9 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.Policy;
-import Domain.ShoppingBasket;
-import Domain.Rules.Rule;
+import Domain.Entities.Policy;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.Rules.Rule;
 
 public class ShopPolicyDto {
     private List<Rule<ShoppingBasketDto>> _rules;

@@ -24,6 +24,7 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
     // @Autowired
     // private WebSocketClient webSocketClient;
 
+    @SuppressWarnings("unused")
     private static int port;
     // Static variable to store the token
     public static String token;
@@ -35,7 +36,6 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
         // System.out.println("Server port: " + port);
         SpringApplication app = new SpringApplication(Application.class);
         app.run(args);
-
     }
 
 
@@ -47,7 +47,5 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
             throw new RuntimeException("Failed to find an available port", e);
         }
     }
-
- 
 
 }

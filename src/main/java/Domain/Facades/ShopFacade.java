@@ -12,55 +12,67 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Discounts.BaseDiscount;
-import Domain.Discounts.CategoryFixedDiscount;
-import Domain.Discounts.CategoryPercentageDiscount;
-import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.Discount;
-import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPercentageDiscount;
-import Domain.Discounts.ShopFixedDiscount;
-import Domain.Discounts.ShopPercentageDiscount;
-import Domain.Product;
-import Domain.Role;
-import Domain.Repositories.MemoryShopRepository;
+import Domain.Entities.Product;
+import Domain.Entities.Role;
+import Domain.Entities.Shop;
+import Domain.Entities.ShopOrder;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.User;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.AppointedManagerAlert;
+import Domain.Entities.Alerts.AppointedOwnerAlert;
+import Domain.Entities.Alerts.FireManagerAlert;
+import Domain.Entities.Discounts.BaseDiscount;
+import Domain.Entities.Discounts.CategoryFixedDiscount;
+import Domain.Entities.Discounts.CategoryPercentageDiscount;
+import Domain.Entities.Discounts.ConditionalDiscount;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Discounts.ProductFixedDiscount;
+import Domain.Entities.Discounts.ProductPercentageDiscount;
+import Domain.Entities.Discounts.ShopFixedDiscount;
+import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.Rules.Rule;
+import Domain.Entities.Rules.RuleFactory;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
+import Domain.Repositories.DbProductRepository;
+import Domain.Repositories.DbRoleRepository;
+import Domain.Repositories.DbShopRepository;
+import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
-import Domain.Shop;
-import Domain.Alerts.Alert;
-import Domain.Alerts.AppointedManagerAlert;
-import Domain.Alerts.AppointedOwnerAlert;
-import Domain.Alerts.FireManagerAlert;
-import Domain.ShopOrder;
 import Dtos.BasicDiscountDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
+import Dtos.ProductGetterDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
+import Dtos.ShopOrderDto;
+import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
-import Dtos.ShoppingBasketRuleDto;
 import Exceptions.PermissionException;
+import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
-import enums.Category;
-import enums.Permission;
-
+import Server.notifications.NotificationHandler;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 @Service
 public class ShopFacade {
-    private static ShopFacade _shopFacade;
-
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
+    private InterfaceProductRepository _productRepository;
+    private InterfaceRoleRepository _roleRepository;
+    private NotificationHandler _notificationHandler;
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository) {
+    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
-        _userFacade = UserFacade.getUserFacade();
-    }
+        _productRepository = productRepository;
+        _roleRepository = roleRepository;
+        _userFacade = userFacade;
+        _notificationHandler = notificationHandler;
 
-        public ShopFacade() {
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
-
-        // For testing UI
+        //For testing UI
         // try {
         //     initUI();
         // }
@@ -69,26 +81,20 @@ public class ShopFacade {
         // }
     }
 
-    public ShopFacade(List<Shop> shopsList) { // ForTests
-        _shopRepository = new MemoryShopRepository(shopsList);
-        _userFacade = UserFacade.getUserFacade();
+    // set repositories to be used in test system
+    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository) {
+        _shopRepository = shopRepository;
+        _productRepository = productRepository;
+        _roleRepository = roleRepository;
     }
 
-    // Public method to provide access to the _shopFacade
-    public static synchronized ShopFacade getShopFacade() {
-        if (_shopFacade == null) {
-            _shopFacade = new ShopFacade();
-        }
-        return _shopFacade;
-    }
-
-    public Shop getShopByShopId(int shopId) {
-        return _shopRepository.getShopByID(shopId);
+    public Shop getShopByShopId(Integer shopId) {
+        return _shopRepository.findByShopId(shopId);
     }
 
     // Checks if a shop ID exists.
-    public Boolean isShopIdExist(int shopId) {
-        return _shopRepository.doesShopExist(shopId);
+    public Boolean isShopIdExist(Integer shopId) {
+        return _shopRepository.findByShopId(shopId) == null ? false : true;
     }
 
     // Open a new shop only if the user is not a manager or owner of another shop.
@@ -113,10 +119,17 @@ public class ShopFacade {
             throw new StockMarketException("Shop address is null or empty.");
         }
 
-        int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
-        getShopByShopId(shopId).notifyReOpenShop(userName);
-        return shopId;
+        Shop shop = new Shop();
+        shop.setShopName(shopDto.shopName);
+        shop.setBankDetails(shopDto.bankDetails);
+        shop.setShopAddress(shopDto.shopAddress);
+        shop.setNotificationHandler(_notificationHandler);
+        shop.setRoleRepository(_roleRepository);
+        _shopRepository.save(shop);
+        shop.setShopFounder(userName);
+        shop.notifyReOpenShop(userName);
+        _shopRepository.save(shop);
+        return shop.getShopId();
     }
 
     // Close shop only if the user is the founder of the shop
@@ -173,11 +186,14 @@ public class ShopFacade {
         if (getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
                     productDto.productName, shopId));
-        int productId = _shopRepository.getUniqueProductID();
-        Product newProduct = new Product(productId, productDto.productName, productDto.category, productDto.price);
+        Shop shop = getShopByShopId(shopId);
+        Product newProduct = new Product(productDto.productName, productDto.category, productDto.price, shop);
+        newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
         getShopByShopId(shopId).addProductToShop(userName, newProduct);
     }
+
+
 
     // Remove a product from a shop by its ID.
     @Transactional
@@ -194,6 +210,21 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDto.productName, shopId));
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
+    }
+
+    @Transactional
+    public void openComplaint(Integer shopId, String userName,String message) throws StockMarketException {
+        try {
+            if (!isShopIdExist(shopId))
+                throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
+            else {
+                Shop shopToNotify = getShopByShopId(shopId);               
+                shopToNotify.openComplaint(userName, message);                
+            }
+        } catch (StockMarketException e) {
+            throw new StockMarketException(e.getMessage());
+        }
+
     }
 
     // Edit a product in a shop by its ID.
@@ -243,14 +274,31 @@ public class ShopFacade {
         return purchaseHistory;
     }
 
+    // Retrieves the purchase history for a shop by its ID.
+    @Transactional
+    public List<ShopOrderDto> getPurchaseHistoryDto(Integer shopId) throws StockMarketException {
+        List<ShopOrder> purchaseHistory = getPurchaseHistory(shopId);
+        List<ShopOrderDto> purchaseHistoryDto = new ArrayList<>();
+
+         for (ShopOrder purchase : purchaseHistory) {
+            purchaseHistoryDto.add(new ShopOrderDto(purchase));
+        }
+        return purchaseHistoryDto;
+    }
+
     // Checks if a user is the owner of a shop.
     @Transactional
     public Boolean isShopOwner(Integer shopId, String userId) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (shop != null) {
-            return shop.isOwnerOrFounderOwner(userId);
+        try{
+            if (shop != null) {
+                return shop.isOwnerOrFounderOwner(userId);
+            }
+            return false;
         }
-        return false;
+        catch(Exception e){
+            return false;
+        }
     }
 
     // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
@@ -259,7 +307,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (discountDto.isPrecentage){
@@ -287,7 +335,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
 
         ConditionalDiscount discount = new ConditionalDiscount(discountDto);
@@ -298,7 +346,7 @@ public class ShopFacade {
     @Transactional
     public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException(
                     "User " + username + " has no permission to remove discount from shop " + shopId);
         shop.removeDiscount(discountId);
@@ -339,7 +387,7 @@ public class ShopFacade {
     // this function is responsible return all the shops in the system
     @Transactional
     public List<Shop> getAllShops() {
-        return _shopRepository.getAllShops();
+        return _shopRepository.findAll();
     }
 
     // this function is responsible return all the shops in the system as DTO
@@ -453,6 +501,39 @@ public class ShopFacade {
         shop.updateProductQuantity(userName, productId, productAmount);
     }
 
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductName(String userName, Integer shopId, Integer productId, String productName)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductName(userName, productId, productName);
+    }
+
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductPrice(String userName, Integer shopId, Integer productId, Double productPrice)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductPrice(userName, productId, productPrice);
+    }
+
+    // this function is responsible update the quantity of a product in a shop
+    @Transactional
+    public void updateProductCategory(String userName, Integer shopId, Integer productId, Category productCategpory)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+
+        shop.updateProductCategory(userName, productId, productCategpory);
+    }
+
     public String getShopFounderUsername(Integer shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
@@ -561,6 +642,36 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
     }
+
+    // this function returns the shop policy
+    @Transactional
+    public List<ShoppingBasketRuleDto> getShopPolicy(Integer shopId) throws StockMarketException {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            List<Rule<ShoppingBasket>> rules = shop.getShopPolicy().getRules();
+            List<ShoppingBasketRuleDto> rulesDto = rules.stream().map(rule -> RuleFactory.createShoppingBasketRuleDto(rule)).toList();
+            return rulesDto;
+        } else {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+
+    // this function returns the shop policy
+    @Transactional
+    public List<UserRuleDto> getProductPolicy(Integer shopId, Integer productId) throws StockMarketException {
+        if (isShopIdExist(shopId)) {
+            Shop shop = getShopByShopId(shopId);
+            Product product = shop.getProductById(productId);
+            List<Rule<User>> rules = product.getProductPolicy().getRules();
+            List<UserRuleDto> rulesDto = rules.stream().map(rule -> RuleFactory.createProductRule(rule)).toList();
+            return rulesDto;
+        } else {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+    }
+    
+
+
 
     // this function returns the product policy
     @Transactional
@@ -717,14 +828,29 @@ public class ShopFacade {
 
     // this function is responsible for changing the shop policy
     @Transactional
-    public void changeShopPolicy(String username, int shopId, List<ShoppingBasketRuleDto> shopRules)
+    public void changeShopPolicy(String username, int shopId,  List<ShoppingBasketRuleDto> rules)
             throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
-        shop.changeShopPolicy(username, shopRules);
+        // List<ShoppingBasketRuleDto> shopRules = new ArrayList<>();
+        // shopRules.addAll(minBasketRules);
+        // shopRules.addAll(minProductRules);
+        shop.changeShopPolicy(username, rules);
+    }
+
+    // this function is responsible for changing the product policy
+    @Transactional
+    public void changeProductPolicy(String username, int shopId, int productId, List<UserRuleDto> productRules)
+            throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null)
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        if (shop.isShopClosed())
+            throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
+        shop.changeProductPolicy(username, productId, productRules);
     }
 
     // This function is responsible for getting all the shops in the system
@@ -793,20 +919,26 @@ public class ShopFacade {
         shop.addKeywordsToProduct(username, productId, keywords);
     }
 
-    // // function to initilaize data for UI testing
-    // public void initUI() throws StockMarketException {
-    //     // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
-    //     // _shopRepository.addShop(shop);
-    //     // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
-    //     // product.updateProductQuantity(10);
-    //     // shop.addProductToShop("Tal", product);
+    // function to initilaize data for UI testing
+    public void initUI() throws StockMarketException {
+        // Shop shop = new Shop(10, "shopUITest", "Tal", "bankUITest", "addressUITest");
+        // _shopRepository.addShop(shop);
+        // Product product = new Product(10, "productUITest", Category.ELECTRONICS, 100.0);
+        // product.updateProductQuantity(10);
+        // shop.addProductToShop("Tal", product);
 
-    //     openNewShop("tal", new ShopDto("shopUITest", "bankUITest", "addressUITest"));
-    //     openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
-    //     addProductToShop(0, new ProductDto("productUITest", Category.ELECTRONICS, 100.0, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest2", Category.ELECTRONICS, 207.5, 10), "tal");
-    //     addProductToShop(1, new ProductDto("productUITest3", Category.ELECTRONICS, 100.0, 10), "tal");
-    // }
+        openNewShop("tal", new ShopDto("shopUITest1", "bankUITest", "addressUITest1"));
+        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        addProductToShop(0, new ProductDto("productUITest1", Category.ELECTRONICS, 40.0, 10), "tal");
+        addProductToShop(0, new ProductDto("productUITest2", Category.ELECTRONICS, 30.0, 10), "tal");
+        addProductToShop(0, new ProductDto("productUITest3", Category.ELECTRONICS, 10.0, 10), "tal");
+        addProductToShop(0, new ProductDto("productUITest4", Category.ELECTRONICS, 20.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest5", Category.ELECTRONICS, 10.5, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest6", Category.ELECTRONICS, 50.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest7", Category.ELECTRONICS, 30.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest8", Category.ELECTRONICS, 50.0, 10), "tal");
+        addProductToShop(1, new ProductDto("productUITest9", Category.ELECTRONICS, 20.0, 10), "tal");
+    }
 
     // this function is responsible for getting all the shop managers
     @Transactional
@@ -815,7 +947,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, false);
         List<ShopManagerDto> managers = new ArrayList<>();
         for (Map.Entry<String, Role> entry : roles.entrySet()) {
             Set<Permission> permissions = entry.getValue().getPermissions();
@@ -840,7 +972,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, true);
         Role manager = shop.getRole(username);
         Set<String> subordinates = manager.getAppointments();
         List<ShopManagerDto> managers = new ArrayList<>();
@@ -860,6 +992,16 @@ public class ShopFacade {
             }
         }
         return managers;
+    }
+
+    // returns shopID, name and Rating for response.
+    // for example : " */Id/* 1 */Name/* shop1 */Rating/* 4.5"
+    public String getShopStringForSearchById(int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return shop.getShopStringForSearch();
+        }
+        return null;
     }
 
     public List<BasicDiscountDto> getShopDiscounts(String username, int shopId) throws StockMarketException{
@@ -932,5 +1074,98 @@ public class ShopFacade {
             throw new StockMarketException("Shop " + shopId + " does not exist");
         }
         shop.removeDiscount(discountDto.id);
+    }
+
+    public List<BasicDiscountDto> getProductDiscounts(int shopId, int productId) throws StockMarketException{
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            return null;
+        }
+        Map<Integer, Discount> discounts = shop.getProductDiscounts(productId);
+        List<BasicDiscountDto> discounts_list = new ArrayList<>();
+        for (Map.Entry<Integer, Discount> entry : discounts.entrySet()) {
+            Discount discount = entry.getValue();
+            BasicDiscountDto discountDto = discount.getDto();
+            discounts_list.add(discountDto);
+        }
+        return discounts_list;
+    }
+
+    // Update the permissins of manager in shop.
+    @Transactional
+    public void updatePermissions(String username, Integer shopId, String managerUsername, Set<String> permissions)
+        throws StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop == null) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        // Here we create a set of permissions from the strings.
+        Set<Permission> permissionsSet = permissions.stream()
+                .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
+                .collect(Collectors.toSet());
+        shop.modifyPermissions(username, managerUsername, permissionsSet);
+    }
+
+   
+
+    // this function returns the shop id by its name and founder
+    public int getShopIdByShopNameAndFounder(String founder, String shopName) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(shopName) && shop.getFounderName().equals(founder)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // shop names are unique, so we can get the shop id by its name
+    public int getShopIdByShopName(String string) {
+        for (Shop shop : getAllShops()) {
+            if (shop.getShopName().equals(string)) {
+                return shop.getShopId();
+            }
+        }
+        return -1;
+    }
+
+    // this function returns the product id by its name and shop id
+    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            for (Product product : shop.getAllProductsList()) {
+                if (product.getProductName().equals(string)) {
+                    return product.getProductId();
+                }
+            }
+        }
+        return -1;
+    }
+
+    // get shopDto including rating by shopId
+    public ShopDto getShopDtoById(int shopId) {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            return new ShopDto(shopId, shop.getShopName(), shop.getBankDetails(), shop.getShopAddress(), shop.getShopRating());
+        }
+        return null;
+    }
+
+    // returns productGetterDto - a very detailed object including discounts
+    public ProductGetterDto getProductDetaildDtoById(int shopId, int productId) throws ProductDoesNotExistsException, StockMarketException {
+        Shop shop = getShopByShopId(shopId);
+        if (shop != null) {
+            Product product = shop.getProductById(productId);
+            if (product != null) {
+                ProductGetterDto productGetterDto = new ProductGetterDto(product);
+                productGetterDto.setProductDiscounts(getProductDiscounts(shopId, productId));
+                return productGetterDto;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
+    public Product getProductById(int productID) {
+        return _productRepository.getById(productID);
     }
 }

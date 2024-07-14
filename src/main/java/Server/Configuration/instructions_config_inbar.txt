@@ -1,0 +1,7 @@
+add_admin#u1_Admin#adminPassword#admin@email.com#2022-05-04
+
+register#u_inbar#u_inbarPassword#u_inbar@email.com#2021-05-04
+
+open_shop#u_inbar#s_inbar#bank_details#shop_address
+
+add_product_to_shop#u_inbar#s_inbar#Bamba#GROCERY#30#20

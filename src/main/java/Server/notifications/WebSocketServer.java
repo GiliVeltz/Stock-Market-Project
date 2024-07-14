@@ -1,5 +1,6 @@
 package Server.notifications;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -24,10 +25,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
-    // @Autowired
+
     private TokenService tokenService;
-    // Singleton instance
-    private static WebSocketServer instance;
+    
     // assumption messages as aformat of:"targetUsername:message"
 
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
@@ -36,18 +36,11 @@ public class WebSocketServer extends TextWebSocketHandler {
     private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
                                                                                                // messageQueue>
 
+    @Autowired
     // Private constructor to prevent instantiation
-    private WebSocketServer() {
+    private WebSocketServer(TokenService tokenService) {
         // Initialization code
-        this.tokenService = TokenService.getTokenService();
-    }
-
-    // Method to get singleton instance
-    public static synchronized WebSocketServer getInstance() {
-        if (instance == null) {
-            instance = new WebSocketServer();
-        }
-        return instance;
+        this.tokenService = tokenService;
     }
 
     /**
@@ -133,7 +126,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
             String targetUsername = parts[0];
-            String msg = parts[1];
+            String msg = "New notification :" + targetUsername + parts[1];
 
             // Send message to the target client
             WebSocketSession targetSession = sessions.get(targetUsername);

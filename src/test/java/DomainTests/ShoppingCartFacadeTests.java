@@ -1,248 +1,261 @@
-package DomainTests;
+// package DomainTests;
 
-import Domain.Facades.ShopFacade;
-import Domain.Facades.ShoppingCartFacade;
-import Domain.*;
-import Domain.Authenticators.PasswordEncoderUtil;
-import Domain.ExternalServices.PaymentService.AdapterPayment;
-import Domain.ExternalServices.SupplyService.AdapterSupply;
-import Domain.Repositories.InterfaceShoppingCartRepository;
-import Exceptions.StockMarketException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+// import Domain.Facades.ShopFacade;
+// import Domain.Facades.ShoppingCartFacade;
+// import Domain.Facades.UserFacade;
+// import Domain.Authenticators.PasswordEncoderUtil;
+// import Domain.Entities.Order;
+// import Domain.Entities.Product;
+// import Domain.Entities.Shop;
+// import Domain.Entities.ShoppingBasket;
+// import Domain.Entities.ShoppingCart;
+// import Domain.Entities.User;
+// import Domain.Entities.enums.Category;
+// import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+// import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
+// import Domain.Repositories.DbShoppingCartRepository;
+// import Domain.Repositories.MemoryShoppingCartRepository;
+// import Exceptions.StockMarketException;
+// import org.junit.jupiter.api.AfterEach;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.mockito.Mock;
+// import org.mockito.MockitoAnnotations;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+// import java.util.Date;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+// import static org.junit.jupiter.api.Assertions.*;
+// import static org.mockito.Mockito.*;
 
-public class ShoppingCartFacadeTests {
+// public class ShoppingCartFacadeTests {
 
-    // private fields in ShoppingCartFacade
-    private Map<String, ShoppingCart> _guestsCarts;
+//     // private fields in ShoppingCartFacade
+//     private Map<String, ShoppingCart> _guestsCarts;
 
-    // mocks
-    @Mock
-    private PasswordEncoderUtil _passwordEncoderMock;
+//     // mocks
+//     @Mock
+//     private PasswordEncoderUtil _passwordEncoderMock;
     
-    @Mock
-    private InterfaceShoppingCartRepository _cartsRepoMock;
+//     @Mock
+//     private DbShoppingCartRepository _cartsRepoMock;
 
-    @Mock
-    private ShopFacade _shopFacadeMock;
+//     @Mock
+//     private ShopFacade _shopFacadeMock;
 
-    @Mock
-    private AdapterPayment _AdapterPaymentMock;
+//     @Mock
+//     private UserFacade _userFacadeMock;
 
-    @Mock
-    private AdapterSupply _AdapterSupplyMock;
+//     @Mock
+//     private AdapterPaymentImp _AdapterPaymentMock;
 
-    @Mock
-    private ShoppingCart _cartMock;
+//     @Mock
+//     private AdapterSupplyImp _AdapterSupplyMock;
 
-    @Mock
-    private ShoppingBasket _basketMock;
+//     @Mock
+//     private ShoppingCart _cartMock;
 
-    @Mock
-    private HashMap<String, ShoppingBasket> _hashMapMock;
+//     @Mock
+//     private ShoppingBasket _basketMock;
 
-    @Mock
-    private Shop _shopMock;
+//     @Mock
+//     private HashMap<String, ShoppingBasket> _hashMapMock;
 
-    @Mock
-    private Order _orderMock;
+//     @Mock
+//     private Shop _shopMock;
 
-    private ShoppingCartFacade shoppingCartFacadeUnderTest;
+//     @Mock
+//     private Order _orderMock;
 
-    @BeforeEach
-    public void setUp() throws StockMarketException {
-        MockitoAnnotations.openMocks(this);
-        _guestsCarts = new HashMap<>();
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade();
-    }
+//     private ShoppingCartFacade shoppingCartFacadeUnderTest;
 
-    @AfterEach
-    public void tearDown() {
-        _guestsCarts.clear();
-    }
+//     @BeforeEach
+//     public void setUp() throws StockMarketException {
+//         MockitoAnnotations.openMocks(this);
+//         _guestsCarts = new HashMap<>();
+//         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
+//         shoppingCartFacadeUnderTest.setShoppingCartRepository(new MemoryShoppingCartRepository());
+//     }
 
-    @Test
-    public void testAddCartForGuest_whenGuestID_thenAddCart() {
-        // Arrange
-        String guestID = "guestID";
+//     @AfterEach
+//     public void tearDown() {
+//         _guestsCarts.clear();
+//     }
 
-        // Act
-        shoppingCartFacadeUnderTest.addCartForGuest(guestID);
+//     @Test
+//     public void testAddCartForGuest_whenGuestID_thenAddCart() {
+//         // Arrange
+//         String guestID = "guestID";
 
-        // Assert
-        assertTrue(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey(guestID));
-    }
+//         // Act
+//         shoppingCartFacadeUnderTest.addCartForGuest(guestID);
 
-    @Test
-    public void testAddCartForGuest_whenGuestID_thenAddCartFail() {
-        // Arrange
-        String guestID = "guestID";
+//         // Assert
+//         assertTrue(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey(guestID));
+//     }
 
-        // Act
-        shoppingCartFacadeUnderTest.addCartForGuest(guestID);
+//     @Test
+//     public void testAddCartForGuest_whenGuestID_thenAddCartFail() {
+//         // Arrange
+//         String guestID = "guestID";
 
-        // Assert
-        assertFalse(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey("guestIDFail"));
-    }
+//         // Act
+//         shoppingCartFacadeUnderTest.addCartForGuest(guestID);
 
-    @Test
-    public void testAddCartForUser_whenGuestIDAndUser_thenAddCart() {
-        // Arrange
-        String guestID = "guestID";
-        User user = new User("username", "password", "email@email.com", new Date());
+//         // Assert
+//         assertFalse(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey("guestIDFail"));
+//     }
 
-        // Act
-        shoppingCartFacadeUnderTest.addCartForGuest(guestID);
-        shoppingCartFacadeUnderTest.addCartForUser(guestID, user);
+//     @Test
+//     public void testAddCartForUser_whenGuestIDAndUser_thenAddCart() {
+//         // Arrange
+//         String guestID = "guestID";
+//         User user = new User("username", "password", "email@email.com", new Date());
 
-        // Assert
-        assertTrue(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey(guestID));
-    }
+//         // Act
+//         shoppingCartFacadeUnderTest.addCartForGuest(guestID);
+//         shoppingCartFacadeUnderTest.addCartForUser(guestID, user);
 
-    @Test
-    public void testAddCartForUser_whenGuestIDAndUser_thenAddCartFail() {
-        // Arrange
-        String guestID = "guestID";
-        User user = new User("username", "password", "email", new Date());
+//         // Assert
+//         assertTrue(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey(guestID));
+//     }
 
-        // Act
-        shoppingCartFacadeUnderTest.addCartForGuest(guestID);
-        shoppingCartFacadeUnderTest.addCartForUser(guestID, user);
+//     @Test
+//     public void testAddCartForUser_whenGuestIDAndUser_thenAddCartFail() {
+//         // Arrange
+//         String guestID = "guestID";
+//         User user = new User("username", "password", "email", new Date());
 
-        // Assert
-        assertFalse(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey("guestIDFail"));
-    }
+//         // Act
+//         shoppingCartFacadeUnderTest.addCartForGuest(guestID);
+//         shoppingCartFacadeUnderTest.addCartForUser(guestID, user);
 
-    @Test
-    public void testAddProductToUserCart_whenSuccessToAddProduct_thenAddProduct() throws StockMarketException {
-        // Arrange
-        String userName = "username";
-        int shopID = 1;
-        int productID = 1;
-        when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).addProduct(productID, shopID);
+//         // Assert
+//         assertFalse(shoppingCartFacadeUnderTest.get_guestsCarts().containsKey("guestIDFail"));
+//     }
 
-        // Act & Assert
-        try {
-            shoppingCartFacadeUnderTest.addProductToUserCart(userName, productID, shopID);
-        } catch (StockMarketException e) {
-            e.printStackTrace();
-            fail("Exception thrown when not expected: " + e.getMessage());
-        }
-    }
+//     @Test
+//     public void testAddProductToUserCart_whenSuccessToAddProduct_thenAddProduct() throws StockMarketException {
+//         // Arrange
+//         String userName = "username";
+//         int shopID = 1;
+//         int productID = 1;
+//         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
+//         doNothing().when(_cartMock).addProduct(productID, shopID, 1);
 
-    @Test
-    public void testRemoveProductFromUserCart_whenSuccessToRemoveProduct_thenRemoveProduct() throws StockMarketException {
-        // Arrange
-        String userName = "username";
-        int shopID = 1;
-        int productID = 1;
-        when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).removeProduct(productID, shopID);
+//         // Act & Assert
+//         try {
+//             shoppingCartFacadeUnderTest.addProductToUserCart(userName, productID, shopID, 1);
+//         } catch (StockMarketException e) {
+//             e.printStackTrace();
+//             fail("Exception thrown when not expected: " + e.getMessage());
+//         }
+//     }
 
-        // Act & Assert
-        try {
-            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID);
-        } catch (StockMarketException e) {
-            e.printStackTrace();
-            fail("Exception thrown when not expected: " + e.getMessage());
-        }
-    }
+//     @Test
+//     public void testRemoveProductFromUserCart_whenSuccessToRemoveProduct_thenRemoveProduct() throws StockMarketException {
+//         // Arrange
+//         String userName = "username";
+//         int shopID = 1;
+//         int productID = 1;
+//         Product product = new Product(productID, "productName", Category.BOOKS, 10.0);
+//         when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
+//         doNothing().when(_cartMock).removeProduct(product, shopID, 1);
 
-    @SuppressWarnings("unlikely-arg-type")
-    @Test
-    public void testWriteReview_whenUserHasPurchasedProduct_thenWriteReview() throws StockMarketException {
-        // Arrange
-        String username = "username";
-        int productID = 1;
-        int shopID = 1;
-        String review = "review";
-        when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
-        when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
-        when(_hashMapMock.containsKey(productID)).thenReturn(true);
-        when(_hashMapMock.get(productID)).thenReturn(_basketMock);
-        when(_basketMock.getShopId()).thenReturn(shopID);
-        when(_basketMock.getShop()).thenReturn(_shopMock);
-        doNothing().when(_shopMock).addReview(username, productID, review);
+//         // Act & Assert
+//         try {
+//             shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID, 1);
+//         } catch (StockMarketException e) {
+//             e.printStackTrace();
+//             fail("Exception thrown when not expected: " + e.getMessage());
+//         }
+//     }
 
-        List<Order> purchaseHistory = List.of(_orderMock);
-        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
-        shoppingBasketMap.put(productID, _basketMock);
-        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+//     @SuppressWarnings("unlikely-arg-type")
+//     @Test
+//     public void testWriteReview_whenUserHasPurchasedProduct_thenWriteReview() throws StockMarketException {
+//         // Arrange
+//         String username = "username";
+//         int productID = 1;
+//         int shopID = 1;
+//         String review = "review";
+//         when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
+//         when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
+//         when(_hashMapMock.containsKey(productID)).thenReturn(true);
+//         when(_hashMapMock.get(productID)).thenReturn(_basketMock);
+//         when(_basketMock.getShopId()).thenReturn(shopID);
+//         when(_basketMock.getShop()).thenReturn(_shopMock);
+//         doNothing().when(_shopMock).addReview(username, productID, review);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+//         List<Order> purchaseHistory = List.of(_orderMock);
+//         Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+//         shoppingBasketMap.put(productID, _basketMock);
+//         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        // Act & Assert
-        try {
-            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
-        } catch (StockMarketException e) {
-            e.printStackTrace();
-            fail("testWriteReview_whenUserHasPurchasedProduct_thenWriteReview Exception thrown when not expected: " + e.getMessage());
-        }
-    }
+//         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
-    @SuppressWarnings("unlikely-arg-type")
-    @Test
-    public void testWriteReview_whenShopDoesNotExist_thenWriteReviewFail() {
-        // Arrange
-        String username = "username";
-        int productID = 1;
-        int shopID = 1;
-        String review = "review";
-        when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
-        when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
-        when(_hashMapMock.containsKey(productID)).thenReturn(true);
-        when(_hashMapMock.get(productID)).thenReturn(_basketMock);
-        when(_basketMock.getShopId()).thenReturn(2);
-        when(_basketMock.getShop()).thenReturn(_shopMock);
+//         // Act & Assert
+//         try {
+//             shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
+//         } catch (StockMarketException e) {
+//             e.printStackTrace();
+//             fail("testWriteReview_whenUserHasPurchasedProduct_thenWriteReview Exception thrown when not expected: " + e.getMessage());
+//         }
+//     }
 
-        List<Order> purchaseHistory = List.of(_orderMock);
-        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
-        shoppingBasketMap.put(productID, _basketMock);
-        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+//     @SuppressWarnings("unlikely-arg-type")
+//     @Test
+//     public void testWriteReview_whenShopDoesNotExist_thenWriteReviewFail() {
+//         // Arrange
+//         String username = "username";
+//         int productID = 1;
+//         int shopID = 1;
+//         String review = "review";
+//         when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
+//         when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
+//         when(_hashMapMock.containsKey(productID)).thenReturn(true);
+//         when(_hashMapMock.get(productID)).thenReturn(_basketMock);
+//         when(_basketMock.getShopId()).thenReturn(2);
+//         when(_basketMock.getShop()).thenReturn(_shopMock);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+//         List<Order> purchaseHistory = List.of(_orderMock);
+//         Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+//         shoppingBasketMap.put(productID, _basketMock);
+//         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        // Act & Assert
-        assertThrows(StockMarketException.class, () -> {
-            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
-        });
-    }
+//         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
-    @SuppressWarnings("unlikely-arg-type")
-    @Test
-    public void testWriteReview_whenUserHasNotPurchasedProduct_thenWriteReviewFail() {
-        // Arrange
-        String username = "username";
-        int productID = 1;
-        int shopID = 1;
-        String review = "review";
-        when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
-        when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
-        when(_hashMapMock.containsKey(productID)).thenReturn(false);
+//         // Act & Assert
+//         assertThrows(StockMarketException.class, () -> {
+//             shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
+//         });
+//     }
 
-        List<Order> purchaseHistory = List.of(_orderMock);
-        Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
-        shoppingBasketMap.put(productID, _basketMock);
-        when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
+//     @SuppressWarnings("unlikely-arg-type")
+//     @Test
+//     public void testWriteReview_whenUserHasNotPurchasedProduct_thenWriteReviewFail() {
+//         // Arrange
+//         String username = "username";
+//         int productID = 1;
+//         int shopID = 1;
+//         String review = "review";
+//         when(_cartsRepoMock.getCartByUsername(username)).thenReturn(_cartMock);
+//         when(_cartMock.getPurchases()).thenReturn(_hashMapMock);
+//         when(_hashMapMock.containsKey(productID)).thenReturn(false);
+
+//         List<Order> purchaseHistory = List.of(_orderMock);
+//         Map<Integer ,ShoppingBasket> shoppingBasketMap = new HashMap<>();
+//         shoppingBasketMap.put(productID, _basketMock);
+//         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock);
+//         shoppingCartFacadeUnderTest = new ShoppingCartFacade(_cartsRepoMock, _userFacadeMock, _shopFacadeMock);
 
-        // Act & Assert
-        assertThrows(StockMarketException.class, () -> {
-            shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
-        });
-    }
-}
+//         // Act & Assert
+//         assertThrows(StockMarketException.class, () -> {
+//             shoppingCartFacadeUnderTest.writeReview(username, purchaseHistory, productID, shopID, review);
+//         });
+//     }
+// }

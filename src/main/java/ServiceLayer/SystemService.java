@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Alerts.Alert;
-import Domain.Alerts.GeneralAlert;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.GeneralAlert;
 import Domain.ExternalServices.ExternalServiceHandler;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
@@ -35,15 +35,7 @@ public class SystemService {
         _tokenService = tokenService;
         _userFacade = userFacade;
         _shoppingCartFacade = shoppingCartFacade;
-        // TODO: create it as a singleton
         _externalServiceHandler = externalServiceHandler;
-    }
-
-    public SystemService() {
-        _externalServiceHandler = new ExternalServiceHandler();
-        _tokenService = TokenService.getTokenService();
-        _userFacade = UserFacade.getUserFacade();
-        _shoppingCartFacade = ShoppingCartFacade.getShoppingCartFacade();
     }
 
     /**
@@ -404,11 +396,11 @@ public class SystemService {
                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
             // check if system is open
-            if (!isSystemOpen()) {
-                response.setErrorMessage("System is not open");
-                logger.log(Level.SEVERE, "System is not open");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+            // if (!isSystemOpen()) {
+            //     response.setErrorMessage("System is not open");
+            //     logger.log(Level.SEVERE, "System is not open");
+            //     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            // }
             // check validation of the arguments
             if(targetUser == null || targetUser.length() == 0 || message == null || message.length() == 0){
                 response.setErrorMessage("One or more of the arguments are null");

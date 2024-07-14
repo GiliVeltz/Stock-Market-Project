@@ -10,11 +10,15 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import Domain.Order;
-import Domain.ShoppingBasket;
-import Domain.ShoppingCart;
-import Domain.User;
-import Domain.Repositories.MemoryShoppingCartRepository;
+import Domain.Entities.Guest;
+import Domain.Entities.Order;
+import Domain.Entities.Product;
+import Domain.Entities.ShoppingBasket;
+import Domain.Entities.ShoppingCart;
+import Domain.Entities.User;
+import Domain.Repositories.DbOrderRepository;
+import Domain.Repositories.DbShoppingCartRepository;
+import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
@@ -23,42 +27,35 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ShoppingCartFacade {
-    private static ShoppingCartFacade _shoppingCartFacade;
+    private UserFacade userFacade;
+    private ShopFacade shopFacade;
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
-    InterfaceShoppingCartRepository _cartsRepo;
+    InterfaceShoppingCartRepository _cartsRepository;
+    InterfaceOrderRepository _orderRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
-
-    public ShoppingCartFacade() {
-        _guestsCarts = new HashMap<>();
-        _cartsRepo = new MemoryShoppingCartRepository();
-
-        // For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
+    
     @Autowired
-    public ShoppingCartFacade(InterfaceShoppingCartRepository cartsRepo) {
-        _cartsRepo = cartsRepo;
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, DbOrderRepository orderRepository, UserFacade userFacade, ShopFacade shopFacade) {
+        _cartsRepository = cartsRepository;
+        _orderRepository = orderRepository;
+        this.userFacade = userFacade;
+        this.shopFacade = shopFacade;
         _guestsCarts = new HashMap<>();
     }
 
-    // Public method to provide access to the _shoppingCartFacade
-    public static synchronized ShoppingCartFacade getShoppingCartFacade() {
-        if (_shoppingCartFacade == null) {
-            _shoppingCartFacade = new ShoppingCartFacade();
-        }
-        return _shoppingCartFacade;
+
+    // set shopping cart repository to be used in test system
+    public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
+        _cartsRepository = cartsRepo;
     }
 
     // Add a cart for a guest by token.
     @Transactional
     public void addCartForGuest(String guestID) {
-        ShoppingCart cart = new ShoppingCart();
+        Guest g = userFacade.getGuestById(guestID);
+        ShoppingCart cart = new ShoppingCart(g);
+        cart.setOrderRepository(_orderRepository);
+        cart.setOrderRepository(null);
         _guestsCarts.put(guestID, cart);
     }
 
@@ -70,12 +67,26 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addCartForUser(String guestID, User user) {
-        if (_cartsRepo.getCartByUsername(user.getUserName()) == null) {
-            _cartsRepo.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
+        ShoppingCart cart = _cartsRepository.getCartByUsername(user.getUserName());
+        if (cart == null) {
+            ShoppingCart existCart = _cartsRepository.getCartByUsername(guestID);
+            if(existCart == null) {
+                ShoppingCart newCart = new ShoppingCart(user);
+                newCart.setOrderRepository(_orderRepository);
+                _cartsRepository.save(newCart);
+            }
+            else {
+                existCart.SetUser(user);
+                _cartsRepository.save(existCart);
+            }
+            //_cartsRepository.addCartForUser(user.getUserName(), _guestsCarts.get(guestID));
+
         }
-        System.out.println("test"+_cartsRepo.getCartByUsername(user.getUserName()));
-        // add the user to the cart
-        _cartsRepo.getCartByUsername(user.getUserName()).SetUser(user);
+        else {
+            // add the user to the cart
+            cart.SetUser(user);
+        }
+        //System.out.println("test"+_cartsRepository.getCartByUsername(user.getUserName()));
     }
 
     /*
@@ -83,10 +94,10 @@ public class ShoppingCartFacade {
      * This method called when a user add a product to his cart.
      */
     @Transactional
-    public void addProductToUserCart(String userName, int productID, int shopID) throws StockMarketException {
-        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
+    public void addProductToUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
+        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
         if (cart != null) {
-            cart.addProduct(productID, shopID);
+            cart.addProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -98,10 +109,10 @@ public class ShoppingCartFacade {
      * This method called when a guest user add a product to his cart.
      */
     @Transactional
-    public void addProductToGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
+    public void addProductToGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.addProduct(productID, shopID);
+            cart.addProduct(productID, shopID, quantity);
             logger.log(Level.INFO, "Product added to guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -113,10 +124,11 @@ public class ShoppingCartFacade {
      * This method called when a user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromUserCart(String userName, int productID, int shopID) throws StockMarketException {
-        ShoppingCart cart = _cartsRepo.getCartByUsername(userName);
+    public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
+        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            Product product = shopFacade.getProductById(productID);
+            cart.removeProduct(product, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -128,10 +140,11 @@ public class ShoppingCartFacade {
      * This method called when a guest user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromGuestCart(String guestID, int productID, int shopID) throws StockMarketException {
+    public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.removeProduct(productID, shopID);
+            Product product = shopFacade.getProductById(productID);
+            cart.removeProduct(product, shopID, quantity);
             logger.log(Level.INFO, "Product removed from guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -152,23 +165,32 @@ public class ShoppingCartFacade {
      * This method called when a user leave the system.
      */
      @Transactional
-    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto details) throws StockMarketException {
-        ArrayList<Integer> allBaskets = new ArrayList<Integer>();
-
-        for (int i = 0; i < _guestsCarts.get(guestID).getCartSize(); i++)
-            allBaskets.add(i);
+    public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
-        details.basketsToBuy = allBaskets;
-        _guestsCarts.get(guestID).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        try {
+            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
+            _guestsCarts.get(guestID).emptyCart();
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
+            throw e;
+        }
     }
 
     /*
      * Purchase the cart of a user.
      */
     @Transactional
-    public void purchaseCartUser(String username, PurchaseCartDetailsDto details) throws StockMarketException {
+    public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
-        _cartsRepo.getCartByUsername(username).purchaseCart(details, _cartsRepo.getUniqueOrderID());
+        try {
+            _cartsRepository.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
+            _cartsRepository.getCartByUsername(username).emptyCart();
+        }
+        catch (StockMarketException e) {
+            logger.log(Level.WARNING, "Failed to purchase cart for user: " + username);
+            throw e;
+        }
     }
 
     // Getters
@@ -184,10 +206,10 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public ShoppingCart getUserCart(String username) throws StockMarketException {
-        if (_cartsRepo.getCartByUsername(username) == null) {
+        if (_cartsRepository.getCartByUsername(username) == null) {
             throw new StockMarketException("user does not have a cart");
         }
-        return _cartsRepo.getCartByUsername(username);
+        return _cartsRepository.getCartByUsername(username);
     }
 
     /*
@@ -232,7 +254,7 @@ public class ShoppingCartFacade {
     // this function returns the cart of the user by username.
     @Transactional
     public Object getCartByUsername(String username) {
-        return _cartsRepo.getCartByUsername(username);
+        return _cartsRepository.getCartByUsername(username);
     }
 
     /*
@@ -245,11 +267,11 @@ public class ShoppingCartFacade {
         if (username == null) {
             cart = _guestsCarts.get(token);
         } else {
-            cart = _cartsRepo.getCartByUsername(username);
+            cart = _cartsRepository.getCartByUsername(username);
         }
         List<BasketDto> baskets = new ArrayList<>();
         for (ShoppingBasket basket : cart.getShoppingBaskets()) {
-            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdList(), basket.calculateShoppingBasketPrice()));
+            baskets.add(new BasketDto(basket.getShopId(), basket.getProductIdsList(), basket.calculateShoppingBasketPrice()));
         }
         return baskets;
     }
@@ -259,13 +281,13 @@ public class ShoppingCartFacade {
         _guestsCarts.put(guestID, cart);
     }
 
-    // // function to initilaize data for UI testing
+    // function to initilaize data for UI testing
     // public void initUI() throws StockMarketException {
     //     ShoppingCart cartUI = new ShoppingCart();
-    //     _cartsRepo.addCartForUser("tal", cartUI);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 0, 0);
-    //     addProductToUserCart("tal", 1, 1);
-    //     addProductToUserCart("tal", 2, 1);    
+    //     _cartsRepository.addCartForUser("tal", cartUI);
+    //     addProductToUserCart("tal", 0, 0, 1);
+    //     addProductToUserCart("tal", 0, 0, 1);
+    //     addProductToUserCart("tal", 1, 1, 1);
+    //     addProductToUserCart("tal", 2, 1, 1);    
     // }
 }

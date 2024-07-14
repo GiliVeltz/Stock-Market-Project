@@ -1,18 +1,37 @@
 package Domain.ExternalServices.SupplyService;
 
-public class ProxySupply {
+import Dtos.SupplyInfoDto;
+
+public class ProxySupply implements AdapterSupplyInterface{
+    private static ProxySupply _adapterSupply;
 
     public ProxySupply() {
-        // TODO: TAL: add constructor detalils
+        _adapterSupply = this;
     }
 
-    public boolean checkIfDeliverOk(String address) {
+    public static ProxySupply getProxySupply() {
+        if (_adapterSupply == null)
+            _adapterSupply = new ProxySupply();
+        return _adapterSupply;
+    }
+
+    @Override
+    public boolean handshake() {
         return true;
     }
 
-    public boolean deliver(String address, String shopAddress) {
-        // TODO Auto-generated method stub
+    @Override
+    public int supply(SupplyInfoDto supplyInfo) {
+        return 1;
+    }
+
+    @Override
+    public int cancel_supply(int transaction_id) {
+        return -1;
+    }
+
+    @Override
+    public boolean ConnectToService() {
         return true;
     }
-    
 }
