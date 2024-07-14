@@ -141,6 +141,7 @@ public class ShopFacade {
                 throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
+                shopToClose.setNotificationHandler(_notificationHandler);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     shopToClose.closeShop();
                     getShopByShopId(shopId).notifyCloseShop(userName);
@@ -163,6 +164,7 @@ public class ShopFacade {
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToReOpen = getShopByShopId(shopId);
+                shopToReOpen.setNotificationHandler(_notificationHandler);
                 if (shopToReOpen.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     getShopByShopId(shopId).notifyReOpenShop(userName);
                     shopToReOpen.reopenShop();
@@ -191,7 +193,9 @@ public class ShopFacade {
         Product newProduct = new Product(productDto.productName, productDto.category, productDto.price, shop);
         newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
-        getShopByShopId(shopId).addProductToShop(userName, newProduct);
+        newProduct = _productRepository.save(newProduct);
+        shop.addProductToShop(userName, newProduct);
+        _shopRepository.save(shop);
     }
 
 
@@ -210,9 +214,9 @@ public class ShopFacade {
         if (!getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDto.productName, shopId));
-        Optional<Product> product = _productRepository.findById(productDto.productId);
-        getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
-        _productRepository.delete(product.get());
+        getShopByShopId(shopId).setNotificationHandler(_notificationHandler);
+        getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName, _productRepository);
+        _shopRepository.save(getShopByShopId(shopId));
     }
 
     @Transactional
@@ -952,17 +956,17 @@ public class ShopFacade {
         // product.updateProductQuantity(10);
         // shop.addProductToShop("Tal", product);
 
-        openNewShop("tal", new ShopDto("shopUITest1", "bankUITest", "addressUITest1"));
-        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
-        addProductToShop(0, new ProductDto("productUITest1", Category.ELECTRONICS, 40.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest2", Category.ELECTRONICS, 30.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest3", Category.ELECTRONICS, 10.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest4", Category.ELECTRONICS, 20.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest5", Category.ELECTRONICS, 10.5, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest6", Category.ELECTRONICS, 50.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest7", Category.ELECTRONICS, 30.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest8", Category.ELECTRONICS, 50.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest9", Category.ELECTRONICS, 20.0, 10), "tal");
+        // openNewShop("tal", new ShopDto("shopUITest1", "bankUITest", "addressUITest1"));
+        // openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        // addProductToShop(0, new ProductDto("productUITest1", Category.ELECTRONICS, 40.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest2", Category.ELECTRONICS, 30.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest3", Category.ELECTRONICS, 10.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest4", Category.ELECTRONICS, 20.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest5", Category.ELECTRONICS, 10.5, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest6", Category.ELECTRONICS, 50.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest7", Category.ELECTRONICS, 30.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest8", Category.ELECTRONICS, 50.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest9", Category.ELECTRONICS, 20.0, 10), "tal");
     }
 
     // this function is responsible for getting all the shop managers
@@ -1128,6 +1132,7 @@ public class ShopFacade {
         Set<Permission> permissionsSet = permissions.stream()
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
+        shop.setNotificationHandler(_notificationHandler);
         shop.modifyPermissions(username, managerUsername, permissionsSet);
         _shopRepository.save(shop);
     }
@@ -1155,11 +1160,11 @@ public class ShopFacade {
     }
 
     // this function returns the product id by its name and shop id
-    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+    public int getProductIdByProductNameAndShopId(String product_name, int shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             for (Product product : shop.getAllProductsList()) {
-                if (product.getProductName().equals(string)) {
+                if (product.getProductName().equals(product_name)) {
                     return product.getProductId();
                 }
             }

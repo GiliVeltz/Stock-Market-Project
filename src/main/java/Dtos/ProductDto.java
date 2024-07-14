@@ -24,6 +24,15 @@ public class ProductDto {
         this.productQuantity = productQuantity;
     }
 
+    // Constructor
+    public ProductDto(int productId, String productName, Category category, double price, int productQuantity) {
+        this.productId = productId;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productQuantity = productQuantity;
+    }
+
     public ProductDto(Product product) {
         this.productId = product.getProductId();
         this.productName = product.getProductName();
