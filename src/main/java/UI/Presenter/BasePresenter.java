@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-
 public class BasePresenter {
 
     private static final String SERVER_PORT = "8080";
-    
+
     @Autowired
     private WebSocketClient webSocketClient;
 
@@ -24,25 +23,30 @@ public class BasePresenter {
         addJavaScriptToHandleUnloadEvent();
     }
 
-    // For the first time client enter the system [[If client has nothing in localStorage => It's first time]]
+    // For the first time client enter the system [[If client has nothing in
+    // localStorage => It's first time]]
     public void checkToken() {
         UI.getCurrent().getPage().executeJs(
-            "return localStorage.getItem('authToken');"
-        ).then(String.class, existingToken -> {
-            if (existingToken == null || existingToken.isEmpty()) {
-                // No token in local storage, fetch a new one
-                fetchAndStoreToken();
-            }
-        });
+                "return localStorage.getItem('authToken');").then(String.class, existingToken -> {
+                    if (existingToken == null || existingToken.isEmpty()) {
+                        // No token in local storage, fetch a new one
+                        fetchAndStoreToken();
+                    }
+                });
     }
 
     private void addJavaScriptToHandleUnloadEvent() {
-        // String serverUrl = "http://localhost:" + SERVER_PORT + "/api/system/leaveSystem";
+        // Assuming you have an endpoint to handle logout at /api/system/logout
+        String leaveSystemUrl = "http://localhost:8080/api/system/leaveSystem";
+        String logoutUrl = "http://localhost:8080/api/system/logout";
+
         UI.getCurrent().getPage().executeJs(
-            "window.addEventListener('unload', function(event) { " +
-            "    fetch('http://localhost:8080/api/system/leaveSystem', { method: 'POST' }); " +
-            "});"
-        );
+                "window.addEventListener('beforeunload', function(event) { " +
+                        "    if (localStorage.getItem('authToken')) {" + // Check if user is signed in
+                        "        navigator.sendBeacon('" + logoutUrl + "');" + // Attempt to log out
+                        "        navigator.sendBeacon('" + leaveSystemUrl + "');" + // Then leave the system
+                        "    }" +
+                        "});");
     }
 
     private void fetchAndStoreToken() {

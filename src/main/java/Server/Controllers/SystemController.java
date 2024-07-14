@@ -35,10 +35,10 @@ public class SystemController {
     }
 
     @PostMapping("/leaveSystem")
-    public ResponseEntity<Response> leaveSystem() {
+    public ResponseEntity<Response> leaveSystem(@RequestHeader(value = "Authorization", required = true) String token) {
         // ResponseEntity<Response> resp = _systemService.leaveSystem(token);
         System.out.println("yesss");
-        ResponseEntity<Response> resp = _systemService.requestToEnterSystem();
+        ResponseEntity<Response> resp = _systemService.leaveSystem(token);
         return resp;
     }
 

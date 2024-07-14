@@ -27,19 +27,20 @@ public class UserService {
     private TokenService _tokenService;
     private NotificationHandler _notificationHandler;
     private WebSocketServer _webSocketServer;
-
+    private SystemService _systemService;
     private ShoppingCartFacade _shoppingCartFacade;
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Autowired
     public UserService(UserFacade userFacade, TokenService tokenService,
             ShoppingCartFacade shoppingCartFacade, NotificationHandler notificationHandler,
-            WebSocketServer webSocketServer) {
+            WebSocketServer webSocketServer, SystemService systemService) {
         _userFacade = userFacade;
         _tokenService = tokenService;
         _shoppingCartFacade = shoppingCartFacade;
         _notificationHandler = notificationHandler;
         _webSocketServer = webSocketServer;
+        _systemService = systemService;
     }
 
     // this function is responsible for logging in a user to the system by checking
@@ -93,6 +94,8 @@ public class UserService {
                 response.setReturnValue(newToken);
                 // close this session
                  _webSocketServer.changeLoggedInSession(userName, newToken);
+                //  _systemService.leaveSystem(token);
+                 
                 // Alert alert = new GeneralAlert("system Administrator", userName,
                 // "hello AGAIN LOGGED IN USER THIS MESSAGE HAVE BEEN WAITING FOR YOU!!!!!");
                 // NotificationHandler.getInstance().sendMessage(userName, alert);

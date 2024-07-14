@@ -48,6 +48,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<Response> logout(@RequestHeader(value = "Authorization") String token) {
         return _userService.logOut(token);
+        
     }
 
     // @GetMapping("/test")
