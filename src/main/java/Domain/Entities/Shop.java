@@ -751,10 +751,10 @@ public class Shop {
      * @param productPriceNew    the new product price
      * @throws StockMarketException
      */
-    public synchronized void editProductInShop(String userName, String productNameOld, String productNameNew,
+    public synchronized void editProductInShop(String userName, Product product, String productNameNew,
             Category productCategoryNew, double productPriceNew) throws StockMarketException {
         // print logs to inform about the action
-        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + productNameOld
+        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + product.getProductName()
                 + " in the shop with id " + shopId);
 
         // check if shop is closed
@@ -771,18 +771,10 @@ public class Shop {
                     "User " + userName + " doesn't have permission to edit product in shop with id " + shopId);
         }
 
-        // check if product exists
-        Product product = null;
-        for (Product p : productMap.values()) {
-            if (p.getProductName().equals(productNameOld)) {
-                product = p;
-                break;
-            }
-        }
         if (product == null) {
             logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: "
-                    + productNameOld + " from shop with id " + shopId);
-            throw new ProductDoesNotExistsException("Product with name " + productNameOld + " does not exist.");
+                    + product.getProductName() + " from shop with id " + shopId);
+            throw new ProductDoesNotExistsException("Product with name " + product.getProductName() + " does not exist.");
         }
 
         // All constraints checked - edit product in the shop

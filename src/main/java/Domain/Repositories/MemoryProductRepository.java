@@ -121,8 +121,12 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public Optional<Product> findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        for (Product product : products) {
+            if (product.getProductId() == id) {
+                return Optional.of(product);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

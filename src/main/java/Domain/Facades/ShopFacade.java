@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -209,7 +210,9 @@ public class ShopFacade {
         if (!getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDto.productName, shopId));
+        Optional<Product> product = _productRepository.findById(productDto.productId);
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
+        _productRepository.delete(product.get());
     }
 
     @Transactional
@@ -259,8 +262,12 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
                     productDtoNew.productName, shopId));
 
-        getShopByShopId(shopId).editProductInShop(userName, productDtoOld.productName, productDtoNew.productName,
+        Product product = _productRepository.findById(productDtoOld.productId).get();
+
+        getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
                 productDtoNew.category, productDtoNew.price);
+        
+        _productRepository.save(product);
     }
 
     // Retrieves the purchase history for a shop by its ID.
