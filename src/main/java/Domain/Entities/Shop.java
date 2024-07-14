@@ -23,6 +23,7 @@ import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
+import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceRoleRepository;
 import Dtos.DiscountDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
@@ -40,6 +41,7 @@ import Server.notifications.NotificationHandler;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,7 +67,7 @@ public class Shop {
     @Column(name = "shopFounder", unique = false, nullable = true)
     private String shopFounder; // Shop founder username
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Map<Integer, Product> productMap; // <ProductId, Product>
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
@@ -130,6 +132,7 @@ public class Shop {
                     + " named " + shopName + ". The Founder of the shop is: " + shopFounderUserName);
             this.shopName = shopName;
             shopFounder = shopFounderUserName;
+            productMap = new HashMap<>(); // Initialize the product map
             productMap = new HashMap<>(); // Initialize the product map
             orderHistory = new ArrayList<>();
             userToRole = new HashMap<>();
@@ -213,17 +216,17 @@ public class Shop {
     /**
      * Check if a username has a role in shop.
      * 
-     * @param username the username to check.
+     * @param usernameToCheck the username to check.
      * @return True - if has role. False - if doesn't have.
      * @throws StockMarketException
      */
-    public boolean checkIfHasRole(String username) throws StockMarketException {
+    public boolean checkIfHasRole(String usernameToCheck) throws StockMarketException {
         logger.log(Level.FINE,
-                "Shop - checkIfHasRole: Checking if user " + username + " has a role in shop with id: " + shopId);
-        if (username == null) {
+                "Shop - checkIfHasRole: Checking if user " + usernameToCheck + " has a role in shop with id: " + shopId);
+        if (usernameToCheck == null) {
             return false;
         }
-        return userToRole.containsKey(username);
+        return userToRole.containsKey(usernameToCheck);
     }
 
     // get role of the user in the shop
@@ -377,8 +380,8 @@ public class Shop {
                     "User " + username + " doesn't have permission to add new manager to shop with id " + shopId);
         }
         if (checkIfHasRole(newManagerUserName)) {
-            logger.log(Level.SEVERE, "Shop - AppointManager: user " + username + " already in shop with id " + shopId);
-            throw new ShopException("User " + username + " already in shop with id " + shopId);
+            logger.log(Level.SEVERE, "Shop - AppointManager: user " + newManagerUserName + " already in shop with id " + shopId);
+            throw new ShopException("User " + newManagerUserName + " already in shop with id " + shopId);
         }
         if (permissions.isEmpty()) {
             logger.log(Level.SEVERE, "Shop - AppointManager: Error while appointing a new manager with 0 permissions.");
@@ -428,8 +431,8 @@ public class Shop {
                     "User " + username + " doesn't have permission to add new owner to shop with id " + shopId);
         }
         if (checkIfHasRole(newOwnerUserName)) {
-            logger.log(Level.SEVERE, "Shop - AppointOwner: user " + username + " already in shop with id " + shopId);
-            throw new ShopException("User " + username + " already in shop with id " + shopId);
+            logger.log(Level.SEVERE, "Shop - AppointOwner: user " + newOwnerUserName + " already in shop with id " + shopId);
+            throw new ShopException("User " + newOwnerUserName + " already in shop with id " + shopId);
         }
 
         if (isShopClosed())
@@ -687,6 +690,7 @@ public class Shop {
 
         // All constraints checked - add product to the shop
         productMap.put(product.getProductId(), product);
+        productMap.put(product.getProductId(), product);
 
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addProductToShop: " + username + " successfully added product "
@@ -700,7 +704,7 @@ public class Shop {
      * @param _productName the product name we want to remove
      * @throws StockMarketException
      */
-    public synchronized void removeProductFromShop(String userName, String _productName) throws StockMarketException {
+    public synchronized void removeProductFromShop(String userName, String _productName, InterfaceProductRepository productRepository) throws StockMarketException {
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - removeProductFromShop: " + userName + " trying get remove product "
                 + _productName + " in the shop with id " + shopId);
@@ -734,7 +738,8 @@ public class Shop {
         }
 
         // All constraints checked - remove product from the shop
-        productMap.remove(product.getProductId());
+        //productMap.remove(product.getProductId());
+        productRepository.delete(product);
 
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - removeProductFromShop: " + userName + " successfully removed product "

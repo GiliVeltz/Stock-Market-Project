@@ -41,7 +41,7 @@ public class Product implements Cloneable {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @ElementCollection(fetch = FetchType.LAZY) // Lazy loading is often a good default for collections
+    //@ElementCollection(fetch = FetchType.LAZY) // Lazy loading is often a good default for collections
     @CollectionTable(name = "product_keywords", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "keyword") // Name of the column in the collection table
     private HashSet<String> keywords;

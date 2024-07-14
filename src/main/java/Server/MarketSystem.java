@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Domain.Entities.Order;
+import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
@@ -56,7 +57,7 @@ public class MarketSystem {
 
     public String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
+    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config_inbar.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
@@ -282,6 +283,7 @@ public class MarketSystem {
         else if (instruction.equals("add_order_to_user")){
             //add_order_to_user#???
             try {
+                // TODO: INBAR: need to implement
                 List<ShoppingBasket> shoppingBasket = new ArrayList<>();
                 Order order = new Order(shoppingBasket, Integer.parseInt(instruction_params[0]), Integer.parseInt(instruction_params[0]));
                 userFacade.addOrderToUser(instruction_params[1], order);
@@ -320,7 +322,7 @@ public class MarketSystem {
         else if (instruction.equals("set_user_details")){
             //set_user_details#user_name#new_name#new_password#new_email#new_birthdate
             try {
-                LocalDate localdate = LocalDate.parse(instruction_params[4], DateTimeFormatter.ISO_LOCAL_DATE);
+                LocalDate localdate = LocalDate.parse(instruction_params[5], DateTimeFormatter.ISO_LOCAL_DATE);
                 @SuppressWarnings("deprecation")
                 Date birthdate = new Date(localdate.getYear(), localdate.getMonthValue(), localdate.getDayOfMonth());
                 UserDto userDto = new UserDto(instruction_params[2], instruction_params[3], instruction_params[4], birthdate);
@@ -420,8 +422,8 @@ public class MarketSystem {
         else if (instruction.equals("close_shop")){
             //close_shop#user_name#shop_name
             try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
-                shopFacade.closeShop(shopId, instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                shopFacade.closeShop(shopId, instruction_params[1]);
             } catch (Exception e) {
                 logger.info("[run_instruction] Close Shop Fail: " + e.getMessage());
             }
@@ -430,10 +432,10 @@ public class MarketSystem {
         else if (instruction.equals("reopen_shop")){
             //reopen_shop#user_name#shop_name
             try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
-                shopFacade.reOpenShop(shopId, instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                shopFacade.reOpenShop(shopId, instruction_params[1]);
             } catch (Exception e) {
-                logger.info("[run_instruction] Reopwn Shop Fail: " + e.getMessage());
+                logger.info("[run_instruction] Reopen Shop Fail: " + e.getMessage());
             }
         }
         
@@ -441,7 +443,7 @@ public class MarketSystem {
             //add_product_to_shop#user_name#shop_name#category#product_name#price#quantity
             try {
                 ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.addProductToShop(shopId, productDto, instruction_params[1]);
             } catch (Exception e) {
                 logger.info("[run_instruction] Add Product To Shop Fail: " + e.getMessage());
@@ -449,10 +451,11 @@ public class MarketSystem {
         }
         
         else if (instruction.equals("remove_product_from_shop")){
-            //remove_product_from_shop#user_name#shop_name#category#product_name#price#quantity
+            //remove_product_from_shop#user_name#shop_name#product_name#category
             try {
-                ProductDto productDto = new ProductDto(instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                Product product = shopFacade.getProductInShopByName(shopId, instruction_params[3]).get(shopId).get(0);
+                ProductDto productDto = new ProductDto(product.getProductId(), instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
                 shopFacade.removeProductFromShop(shopId, productDto, instruction_params[1]);
             } catch (Exception e) {
                 logger.info("[run_instruction] Remove Product From Shop Fail: " + e.getMessage());
@@ -463,7 +466,7 @@ public class MarketSystem {
             //open_complaint#user_name#shop_name#message
             try {
                 // TODO: INBAR: need to check
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.openComplaint(shopId, instruction_params[1], instruction_params[3]);
             } catch (Exception e) {
                 logger.info("[run_instruction] Open Complint Fail: " + e.getMessage());
@@ -473,8 +476,8 @@ public class MarketSystem {
         else if (instruction.equals("edit_quantity_product")){
             //edit_quantity_product#user_name#shop_name#product_name#quantity
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.updateProductQuantity(instruction_params[1], shopId, productId, Integer.parseInt(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] edit quantity product Fail: " + e.getMessage());
@@ -484,8 +487,8 @@ public class MarketSystem {
         else if (instruction.equals("edit_price_product")){
             //edit_price_product#user_name#shop_name#product_name#new_price
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.updateProductPrice(instruction_params[1], shopId, productId, Double.parseDouble(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] edit price product Fail: " + e.getMessage());
@@ -495,8 +498,8 @@ public class MarketSystem {
         else if (instruction.equals("edit_name_product")){
             //edit_name_product#user_name#shop_name#product_name#new_name
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.updateProductName(instruction_params[1], shopId, productId, instruction_params[4]);
             } catch (Exception e) {
                 logger.info("[run_instruction] edit name product Fail: " + e.getMessage());
@@ -506,8 +509,8 @@ public class MarketSystem {
         else if (instruction.equals("edit_category_product")){
             //edit_category_product#user_name#shop_name#product_name#new_category
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.updateProductCategory(instruction_params[1], shopId, productId, Category.valueOf(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] edit category product Fail: " + e.getMessage());
@@ -549,7 +552,7 @@ public class MarketSystem {
         else if (instruction.equals("appoint_shop_owner")){
             //appoint_shop_owner#founder_user_name#shop_name#owner_user_name
             try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.addShopOwner(instruction_params[1], shopId, instruction_params[3]);
             } catch (Exception e) {
                 logger.info("[run_instruction] Appoint Shop Owner Fail: " + e.getMessage());
@@ -561,7 +564,7 @@ public class MarketSystem {
             //notify_appint_shop_owner#founder_user_name#shop_name#owner_user_name
             try {
                 // TODO: INBAR: need to test this
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.notifyAppointOwner(instruction_params[1], instruction_params[3], shopId);
             } catch (Exception e) {
                 logger.info("[run_instruction] notiffy appint shop owner Fail: " + e.getMessage());
@@ -571,7 +574,7 @@ public class MarketSystem {
         else if (instruction.equals("appoint_shop_manager")){
             //appoint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
             try {
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 Set<String> permissions = new HashSet<>();
                 for (int i = 4; i < instruction_params.length; i++){
                     permissions.add(instruction_params[i]);
@@ -586,7 +589,7 @@ public class MarketSystem {
             //notify_appint_shop_manager#founder_user_name#shop_name#manager_user_name#permission1#permission2#...
             try {
                 // TODO: INBAR: need to test this
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 Set<String> permissions = new HashSet<>();
                 for (int i = 4; i < instruction_params.length; i++){
                     permissions.add(instruction_params[i]);
@@ -601,7 +604,7 @@ public class MarketSystem {
             //fire_shop_manager#user_name#shop_name#manager_to_fire_user_name
             try {
                 // TODO: INBAR: need to test this
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.fireShopManager(instruction_params[1], shopId, instruction_params[3]);
             } catch (Exception e) {
                 logger.info("[run_instruction] fire shop manager Fail: " + e.getMessage());
@@ -612,7 +615,7 @@ public class MarketSystem {
             //notify_fire_shop_manager#user_name#shop_name#manager_to_fire_user_name
             try {
                 // TODO: INBAR: need to test this
-                int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.notifyFireUser(instruction_params[1], instruction_params[3], shopId);
             } catch (Exception e) {
                 logger.info("[run_instruction] notify fire shop manager Fail: " + e.getMessage());
@@ -648,8 +651,8 @@ public class MarketSystem {
         else if (instruction.equals("add_product_rating")){
             //add_product_rating#user_name#shop_name#product_name#product_rating
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[2], shopId);
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.addProductRating(shopId, productId, Integer.parseInt(instruction_params[4]));
             } catch (Exception e) {
                 logger.info("[run_instruction] add product rating Fail: " + e.getMessage());
@@ -659,20 +662,10 @@ public class MarketSystem {
         else if (instruction.equals("add_shop_rating")){
             //add_shop_rating#user_name#shop_name#shop_rating
             try {
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[3]);
-                shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
-            } catch (Exception e) {
-                logger.info("[run_instruction] add shop rating Fail: " + e.getMessage());
-            }
-        }
-
-        else if (instruction.equals("rate_shop")){
-            //rate_shop#user_name#shop_name#rating
-            try {
                 int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 shopFacade.addShopRating(shopId, Integer.parseInt(instruction_params[3]));
             } catch (Exception e) {
-                logger.info("[run_instruction] Add Shop Rating Fail: " + e.getMessage());
+                logger.info("[run_instruction] add shop rating Fail: " + e.getMessage());
             }
         }
 
@@ -701,7 +694,7 @@ public class MarketSystem {
         else if (instruction.equals("add_key_word_to_product")){
             //add_key_word_to_product#user_name#shop_name#product_name#keyword1#keyword2#...
             try {
-                // TODO: INBAR: need to test this
+                // TODO: INBAR: need to test this - its enters exha words to db - why ???
                 int shopId = shopFacade.getShopIdByShopNameAndFounder(instruction_params[1], instruction_params[2]);
                 int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 List<String> keywords = new ArrayList<>();
