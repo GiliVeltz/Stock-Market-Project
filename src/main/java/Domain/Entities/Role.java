@@ -282,4 +282,9 @@ public class Role {
         return appointments;
     }
 
+    // for memory repositories
+    public void setId(int size) {
+        roleId = size;
+    }
+
 }

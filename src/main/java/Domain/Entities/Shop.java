@@ -751,10 +751,10 @@ public class Shop {
      * @param productPriceNew    the new product price
      * @throws StockMarketException
      */
-    public synchronized void editProductInShop(String userName, String productNameOld, String productNameNew,
+    public synchronized void editProductInShop(String userName, Product product, String productNameNew,
             Category productCategoryNew, double productPriceNew) throws StockMarketException {
         // print logs to inform about the action
-        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + productNameOld
+        logger.log(Level.INFO, "Shop - editProductInShop: " + userName + " trying get edit product " + product.getProductName()
                 + " in the shop with id " + shopId);
 
         // check if shop is closed
@@ -771,18 +771,10 @@ public class Shop {
                     "User " + userName + " doesn't have permission to edit product in shop with id " + shopId);
         }
 
-        // check if product exists
-        Product product = null;
-        for (Product p : productMap.values()) {
-            if (p.getProductName().equals(productNameOld)) {
-                product = p;
-                break;
-            }
-        }
         if (product == null) {
             logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: "
-                    + productNameOld + " from shop with id " + shopId);
-            throw new ProductDoesNotExistsException("Product with name " + productNameOld + " does not exist.");
+                    + product.getProductName() + " from shop with id " + shopId);
+            throw new ProductDoesNotExistsException("Product with name " + product.getProductName() + " does not exist.");
         }
 
         // All constraints checked - edit product in the shop
@@ -915,11 +907,10 @@ public class Shop {
         return isOwnerOrFounder(role);
     }
 
-    public void addProductRating(int productId, Integer rating) throws StockMarketException {
-        if (!isProductExist(productId))
-            throw new StockMarketException(String.format("Product ID: %d doesn't exist.", productId));
+    public void addProductRating(Product product, Integer rating) throws StockMarketException {
+        if (!isProductExist(product.getProductId()))
+            throw new StockMarketException(String.format("Product ID: %d doesn't exist.", product.getProductId()));
 
-        Product product = productMap.get(productId);
         product.addProductRating(rating);
     }
 
@@ -947,102 +938,98 @@ public class Shop {
         return false;
     }
 
-    public void updateProductQuantity(String username, int productId, Integer productAmoutn)
+    public void updateProductQuantity(String username, Product product, Integer productAmoutn)
             throws StockMarketException {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
                         "Shop - updateProductQuantity: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
-                        productId, shopId, username));
+                        product.getProductId(), shopId, username));
                 throw new PermissionException(
-                        String.format("User: %s does not have permission to Update product: %d", username, productId));
+                        String.format("User: %s does not have permission to Update product: %d", username, product.getProductId()));
             }
 
             if (isShopClosed()) {
                 logger.log(Level.SEVERE,
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
                 throw new ShopException(
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
             }
 
-            isProductExist(productId);
-            getProductById(productId).updateProductQuantity(productAmoutn);
+            product.updateProductQuantity(productAmoutn);
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
     }
 
-    public void updateProductName(String username, int productId, String ProdcutName) throws StockMarketException
+    public void updateProductName(String username, Product product, String ProdcutName) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
                         "Shop - updateProductName: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
-                        productId, shopId, username));
+                        product.getProductId(), shopId, username));
                 throw new PermissionException(
-                        String.format("User: %s does not have permission to Update product: %d", username, productId));
+                        String.format("User: %s does not have permission to Update product: %d", username, product.getProductId()));
             }
 
             if (isShopClosed()) {
                 logger.log(Level.SEVERE,
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
                 throw new ShopException(
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
             }
 
-            isProductExist(productId);
-            getProductById(productId).setProductName(ProdcutName);
+            product .setProductName(ProdcutName);
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
 
     }
 
-    public void updateProductPrice(String username, int productId, Double productPrice) throws StockMarketException
+    public void updateProductPrice(String username, Product product, Double productPrice) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
                         "Shop - updateProductName: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
-                        productId, shopId, username));
+                        product.getProductId(), shopId, username));
                 throw new PermissionException(
-                        String.format("User: %s does not have permission to Update product: %d", username, productId));
+                        String.format("User: %s does not have permission to Update product: %d", username, product.getProductId()));
             }
 
             if (isShopClosed()) {
                 logger.log(Level.SEVERE,
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
                 throw new ShopException(
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
             }
 
-            isProductExist(productId);
-            getProductById(productId).setPrice(productPrice);
+            product.setPrice(productPrice);
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
     }
 
-    public void updateProductCategory(String username, int productId, Category category) throws StockMarketException
+    public void updateProductCategory(String username, Product product, Category category) throws StockMarketException
     {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
                 logger.log(Level.SEVERE, String.format(
                         "Shop - updateProductName: Error while trying to update product with id: %d to shopId: %d. User: %s does not have permissions",
-                        productId, shopId, username));
+                        product.getProductId(), shopId, username));
                 throw new PermissionException(
-                        String.format("User: %s does not have permission to Update product: %d", username, productId));
+                        String.format("User: %s does not have permission to Update product: %d", username, product.getProductId()));
             }
 
             if (isShopClosed()) {
                 logger.log(Level.SEVERE,
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
                 throw new ShopException(
-                        String.format("Shop: %d is close, product: %d can't be updated", shopId, productId));
+                        String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
             }
 
-            isProductExist(productId);
-            getProductById(productId).setCategory(category);
+            product.setCategory(category);
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
@@ -1475,5 +1462,10 @@ public class Shop {
 
     public void setNotificationHandler(NotificationHandler notificationHandler) {
         _notificationHandler = notificationHandler;
+    }
+
+    // for memory repository
+    public void setShopId(int _shopIdCounter) {
+        shopId = _shopIdCounter;
     }
 }
