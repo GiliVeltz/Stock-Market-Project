@@ -1,12 +1,9 @@
 package UI.Presenter;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
-
 import UI.WebSocketClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -14,13 +11,17 @@ import org.springframework.web.client.RestTemplate;
 public class BasePresenter {
 
     private static final String SERVER_PORT = "8080";
+    private static final String SERVER_URL = "http://localhost:8080";
+
 
     @Autowired
     private WebSocketClient webSocketClient;
 
+
     public BasePresenter() {
         this.webSocketClient = new WebSocketClient();
-        addJavaScriptToHandleUnloadEvent();
+        injectUnloadEventHandler();
+
     }
 
     // For the first time client enter the system [[If client has nothing in
@@ -33,20 +34,6 @@ public class BasePresenter {
                         fetchAndStoreToken();
                     }
                 });
-    }
-
-    private void addJavaScriptToHandleUnloadEvent() {
-        // Assuming you have an endpoint to handle logout at /api/system/logout
-        String leaveSystemUrl = "http://localhost:8080/api/system/leaveSystem";
-        String logoutUrl = "http://localhost:8080/api/system/logout";
-
-        UI.getCurrent().getPage().executeJs(
-                "window.addEventListener('beforeunload', function(event) { " +
-                        "    if (localStorage.getItem('authToken')) {" + // Check if user is signed in
-                        "        navigator.sendBeacon('" + logoutUrl + "');" + // Attempt to log out
-                        "        navigator.sendBeacon('" + leaveSystemUrl + "');" + // Then leave the system
-                        "    }" +
-                        "});");
     }
 
     private void fetchAndStoreToken() {
@@ -71,5 +58,27 @@ public class BasePresenter {
             e.printStackTrace();
             Notification.show("Failed to initialize system.");
         }
+    }
+
+    private void injectUnloadEventHandler() {
+        // String logoutUrl = SERVER_URL + "/api/user/logout";
+        String leaveSystemUrl = SERVER_URL + "/api/system/leaveSystem";
+
+        UI.getCurrent().getPage().executeJs(
+            "window.addEventListener('beforeunload', function (event) {" +
+            "    var token = localStorage.getItem('authToken');" +
+            "    if (token) {" +
+            "        var headers = new Headers();" +
+            "        headers.append('Authorization', token);" +
+            "        var requestOptions = {" +
+            "            method: 'POST'," +
+            "            headers: headers," +
+            "            keepalive: true" +
+            "        };" +
+            // "        fetch('" + logoutUrl + "', requestOptions);" +
+            "        fetch('" + leaveSystemUrl + "', requestOptions);" +
+            "    }" +
+            "});"
+        );
     }
 }
