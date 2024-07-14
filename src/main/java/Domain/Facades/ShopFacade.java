@@ -917,6 +917,8 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.addKeywordsToProduct(username, productId, keywords);
+        Product product = shop.getProductById(productId);
+        _productRepository.save(product);
     }
 
     // function to initilaize data for UI testing

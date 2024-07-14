@@ -12,7 +12,9 @@ import Domain.Entities.Policies.ProductPolicy;
 import Domain.Entities.enums.Category;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +22,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 
 @Entity
 public class Product implements Cloneable {
@@ -36,7 +41,9 @@ public class Product implements Cloneable {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Transient
+    @ElementCollection(fetch = FetchType.LAZY) // Lazy loading is often a good default for collections
+    @CollectionTable(name = "product_keywords", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "keyword") // Name of the column in the collection table
     private HashSet<String> keywords;
 
     @Column(name = "productRating", nullable = true)
@@ -45,7 +52,8 @@ public class Product implements Cloneable {
     @Column(name = "productRatersCounter", nullable = true)
     private Integer productRatersCounter;
 
-    @Transient
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     @Transient
