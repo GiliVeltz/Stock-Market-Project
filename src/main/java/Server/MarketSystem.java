@@ -54,10 +54,10 @@ import Exceptions.StockMarketException;
 @Service
 public class MarketSystem {
 
-    public final static String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
-    public final static String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public static String instructions_config_path = "src/main/java/Server/Configuration/instructions_config_inbar.txt";
-    public final static String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
+    public String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+    public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
+    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
+    public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
     private AdapterSupplyInterface supply_adapter;
@@ -67,12 +67,33 @@ public class MarketSystem {
     private ShopFacade shopFacade;
     private UserFacade userFacade;
     private ShoppingCartFacade shoppingCartFacade;
+    
     @Autowired
     public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.init_market(real_system_config_path);
+    }
+
+    // for test - set facades and urls to check
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade, String external_system_url, String instructions_config_path, String real_system_config_path) {
+        this.shopFacade = shopFacade;
+        this.userFacade = userFacade;
+        this.shoppingCartFacade = shoppingCartFacade;
+        this.external_system_url = external_system_url;
+        this.instructions_config_path = instructions_config_path;
+        this.real_system_config_path = real_system_config_path;
+    }
+
+    // for test - set instruction config file path
+    public void setInstructions_config_path(String instructions_config_path) {
+        this.instructions_config_path = instructions_config_path;
+    }
+
+    // for test - set init config file path
+    public void setReal_system_config_path(String real_system_config_path) {
+        this.real_system_config_path = real_system_config_path;
     }
 
     // initiate the system using the args config files
@@ -161,7 +182,7 @@ public class MarketSystem {
      * @param config - configuration instruction - "database:demo" or "database:real".
      * @throws StockMarketException if the connection to DB fail OR wrong format of the config instruction.
      */
-    private void set_database(String config) throws StockMarketException{
+    public void set_database(String config) throws StockMarketException{
         // database:real/demo
         if (config.equals("database:tests")){
             // no db
@@ -195,8 +216,9 @@ public class MarketSystem {
      * @param instructions_config_path - location of the instruction config file.
      * @return true if the system load data successfully.
      *  false if was illegal instructions order OR illegal format instruction.
+     * @throws StockMarketException 
      */
-    public void init_data_to_market(String instructions_config_path){ 
+    public void init_data_to_market(String instructions_config_path) throws StockMarketException{ 
         logger.info("Start to Init Data From Instructions File");
         try{
             File file = new File(instructions_config_path);
@@ -211,6 +233,7 @@ public class MarketSystem {
             }
         } catch (Exception e) {
             logger.info("Init Data Demo Fail, The System Run With No Data :" + e.getMessage());
+            throw new StockMarketException("Init Data Demo Fail, The System Run With No Data :" + e.getMessage());
         }
     }
 
