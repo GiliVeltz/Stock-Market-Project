@@ -505,7 +505,9 @@ public class ShopFacade {
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductQuantity(userName, productId, productAmount);
+        Product product = shop.getProductById(productId);
+        shop.updateProductQuantity(userName, product, productAmount);
+        _productRepository.save(product);
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -516,7 +518,9 @@ public class ShopFacade {
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductName(userName, productId, productName);
+        Product product = shop.getProductById(productId);
+        shop.updateProductName(userName, product, productName);
+        _productRepository.save(product);
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -527,7 +531,9 @@ public class ShopFacade {
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductPrice(userName, productId, productPrice);
+        Product product = shop.getProductById(productId);
+        shop.updateProductPrice(userName, product, productPrice);
+        _productRepository.save(product);
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -538,7 +544,9 @@ public class ShopFacade {
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductCategory(userName, productId, productCategpory);
+        Product product = shop.getProductById(productId);
+        shop.updateProductCategory(userName, product, productCategpory);
+        _productRepository.save(product);
     }
 
     public String getShopFounderUsername(Integer shopId) {
@@ -557,6 +565,7 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
+        _shopRepository.save(shop);
         notifyAppointOwner(username, ownerUsername, shopId);
     }
 
@@ -580,6 +589,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
+        _shopRepository.save(shop);
         notifyAppointManager(username, managerUsername, permissions,shopId);
     }
 
@@ -600,6 +610,7 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }      
         result = shop.fireRole(username, managerUsername);
+        _shopRepository.save(shop);
         notifyFireUser(username,managerUsername, shopId);
 
         return result;
@@ -620,7 +631,9 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        return shop.resign(username);
+        Set<String> ret = shop.resign(username);
+        _shopRepository.save(shop);
+        return ret;
     }
 
     // Modify the permissions of a manager in a shop.
@@ -636,7 +649,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
-        
+        _shopRepository.save(shop);
     }
 
     // this function returns the shop policy
@@ -742,7 +755,9 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
         Shop shop = getShopByShopId(shopId);
-        shop.addProductRating(productId, rating);
+        Product product = shop.getProductById(productId);
+        shop.addProductRating(product, rating);
+        _productRepository.save(product);
     }
 
     // this function adds a rating to a shop
@@ -753,6 +768,7 @@ public class ShopFacade {
 
         Shop shop = getShopByShopId(shopId);
         shop.addShopRating(rating);
+        _shopRepository.save(shop);
     }
 
     // Returns the shop name if exists, else returns null.
@@ -1113,6 +1129,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+        _shopRepository.save(shop);
     }
 
    
