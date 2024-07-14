@@ -115,6 +115,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public <S extends Product> S save(S entity) {
+        entity.setProductId(products.size());
         products.add(entity);
         return entity;
     }

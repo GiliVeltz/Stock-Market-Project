@@ -113,8 +113,9 @@ public class MemoryRoleRepository implements InterfaceRoleRepository{
 
     @Override
     public <S extends Role> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        entity.setId(roles.size());
+        roles.add(entity);
+        return entity;
     }
 
     @Override

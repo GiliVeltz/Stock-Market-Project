@@ -126,10 +126,10 @@ public class ShopFacade {
         shop.setShopAddress(shopDto.shopAddress);
         shop.setNotificationHandler(_notificationHandler);
         shop.setRoleRepository(_roleRepository);
-        _shopRepository.save(shop);
+        shop = _shopRepository.save(shop);
         shop.setShopFounder(userName);
         shop.notifyReOpenShop(userName);
-        _shopRepository.save(shop);
+        shop = _shopRepository.save(shop);
         return shop.getShopId();
     }
 

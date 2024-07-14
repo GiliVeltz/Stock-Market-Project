@@ -43,7 +43,6 @@ import Domain.Repositories.MemoryRoleRepository;
 import Domain.Repositories.MemoryShopRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
-import Dtos.BasicDiscountDto;
 import Dtos.PaymentInfoDto;
 import Dtos.ProductDto;
 import Dtos.PurchaseCartDetailsDto;
@@ -74,7 +73,7 @@ public class MarketSystem {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
-        this.init_market(real_system_config_path);
+        this.init_market(tests_config_file_path);
     }
 
     // for test - set facades and urls to check

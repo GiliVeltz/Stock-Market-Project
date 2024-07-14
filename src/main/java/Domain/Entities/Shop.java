@@ -1463,4 +1463,9 @@ public class Shop {
     public void setNotificationHandler(NotificationHandler notificationHandler) {
         _notificationHandler = notificationHandler;
     }
+
+    // for memory repository
+    public void setShopId(int _shopIdCounter) {
+        shopId = _shopIdCounter;
+    }
 }
