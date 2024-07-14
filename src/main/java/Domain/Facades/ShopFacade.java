@@ -555,7 +555,7 @@ public class ShopFacade {
 
     // notify the owner that he was appointed
     @Transactional
-    private void notifyAppointOwner(String username, String targetUser, int shopId) {
+    public void notifyAppointOwner(String username, String targetUser, int shopId) {
         Alert alert = new AppointedOwnerAlert(username, targetUser, shopId);
         _userFacade.notifyUser(targetUser, alert);
     }
@@ -578,7 +578,7 @@ public class ShopFacade {
 
     //notify the manager that he was appointed
     @Transactional
-    private void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
+    public void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
         Alert alert = new AppointedManagerAlert(username, targetUser, permissions, shopId);
         _userFacade.notifyUser(targetUser, alert);
     }
