@@ -14,7 +14,6 @@ import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +23,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 
 @Entity
 public class Product implements Cloneable {
@@ -181,7 +179,11 @@ public class Product implements Cloneable {
         return "Product ID: " + productId + " | Product Name: " + productName + " | Product Category: " + category + " | Product Price: " + price + " | Product Quantity: " + quantity + " | Product Rating: " + productRating;
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public Object getId() {
         return productId;
     }
 

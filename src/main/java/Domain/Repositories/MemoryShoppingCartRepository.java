@@ -118,6 +118,9 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public <S extends ShoppingCart> S save(S entity) {
+        if(entity.getId() == null) {
+            entity.setId(_orderIdCounter++);
+        }
         _shoppingCarts.put(entity.getUsernameString(), entity);
         return entity;
     }

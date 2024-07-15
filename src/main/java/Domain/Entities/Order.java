@@ -52,6 +52,10 @@ public class Order {
         return orderId;
     }
 
+    public Object getId() {
+        return orderId;
+    }
+
     // This method is used to set the shoppingBasketMap when creating the order
     private void setShoppingBasketMap(List<ShoppingBasket> shoppingBaskets){
         for (ShoppingBasket basket : shoppingBaskets) {
@@ -132,5 +136,9 @@ public class Order {
             allProductIds.addAll(entry.getValue().getProductIdsList());
         }
         return allProductIds;
+    }
+
+    public void setId(int i) {
+        orderId = i;
     }
 }

@@ -68,4 +68,12 @@ public class ShopOrder {
                 ", products = \n" + printAllProduct() +
                 '}';
     }
+
+    public Object getId() {
+        return shopOrderId;
+    }
+
+    public void setId(int size) {
+        this.shopOrderId = size;
+    }
 }
