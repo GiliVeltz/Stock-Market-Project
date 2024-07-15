@@ -35,21 +35,21 @@ public class ShoppingBasket implements Cloneable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer shoppingBasketId;
 
-    @OneToOne(optional = false, orphanRemoval = true)
-    @JoinColumn(name = "shop_id")
+    // @OneToOne(optional = false, orphanRemoval = true)
+    // @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> productsList;
 
-    @Column(name = "total_basket_amount", nullable = false)
+    //@Column(name = "total_basket_amount", nullable = false)
     private double basketTotalAmount;
 
     @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
 
-    @OneToOne
-    @JoinColumn(name = "shop_order_id")
+    // @OneToOne
+    // @JoinColumn(name = "shop_order_id")
     private ShopOrder shopOrder;
 
     @Transient

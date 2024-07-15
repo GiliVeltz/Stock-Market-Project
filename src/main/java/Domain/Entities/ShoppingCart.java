@@ -25,11 +25,15 @@ import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
@@ -41,10 +45,9 @@ import Exceptions.ShopPolicyException;
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "_shopping_cart_id", nullable = false, updatable = false)
+    @Column(name = "shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
-    // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @Transient
     private List<ShoppingBasket> shoppingBaskets;
 
@@ -63,18 +66,10 @@ public class ShoppingCart {
     @Transient
     private InterfaceOrderRepository orderRepository;
 
-    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = User.class)
-    //@Column(name = "username", nullable = false)
-    
-    //@OneToOne
-    //@JoinColumn(name = "user_name", nullable = false)
     @Column(name = "user_or_guest_name")
     private String user_or_guest_name; // or guestToken string
 
-    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
-    //@Column(name = "guest_id", nullable = false)
-    //@OneToOne(mappedBy = "shoppingCart")
-    @Transient
+    @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     private Guest guest; // or guestToken string
 
     // @OneToOne
