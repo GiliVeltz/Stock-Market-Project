@@ -85,6 +85,9 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public <S extends Order> S save(S entity) {
+        if(entity.getOrderId() == null){
+            entity.setId(order.size());
+        }
         order.add(entity);
         return entity;
     }

@@ -133,4 +133,8 @@ public class Order {
         }
         return allProductIds;
     }
+
+    public void setId(int i) {
+        orderId = i;
+    }
 }

@@ -181,7 +181,7 @@ public class Product implements Cloneable {
         return "Product ID: " + productId + " | Product Name: " + productName + " | Product Category: " + category + " | Product Price: " + price + " | Product Quantity: " + quantity + " | Product Rating: " + productRating;
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 

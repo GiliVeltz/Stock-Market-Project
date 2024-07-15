@@ -48,6 +48,9 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public <S extends User> S save(S entity) {
+        if (entity.getId() == -1) {
+            entity.setId((long) (_registeredUsers.size() + 1));
+        }
         _registeredUsers.put(entity.getUserName(), entity);
         return entity;
     }

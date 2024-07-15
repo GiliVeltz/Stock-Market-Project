@@ -409,4 +409,8 @@ public class ShoppingCart {
         }
         return shoppingBasketIdList;
     }
+
+    public void setId(int i) {
+        shoppingCartId = i;
+    }
 }

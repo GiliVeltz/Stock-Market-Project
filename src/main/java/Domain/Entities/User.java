@@ -207,4 +207,8 @@ public class User {
     public void setShoppingCart(ShoppingCart shoppingCart2) {
         this.shoppingCart = shoppingCart2;
     }
+
+    public void setId(long l) {
+        id = l;
+    }
 }

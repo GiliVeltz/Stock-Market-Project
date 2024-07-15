@@ -54,33 +54,9 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
-    }
-
-    @Override
     public void deleteAllInBatch() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
-    }
-
-    @Override
-    public ShopOrder getOne(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
-    }
-
-    @Override
-    public ShopOrder getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
-    }
-
-    @Override
-    public ShopOrder getReferenceById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
@@ -108,27 +84,12 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
     }
 
     @Override
-    public List<ShopOrder> findAllById(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
-    }
-
-    @Override
     public <S extends ShopOrder> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
-    }
-
-    @Override
-    public Optional<ShopOrder> findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+        if(entity.getId() == null) {
+            entity.setId(_shopOrders.size());
+        }
+        _shopOrders.add(entity);
+        return entity;
     }
 
     @Override
@@ -138,21 +99,9 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
     }
 
     @Override
-    public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
-    }
-
-    @Override
     public void delete(ShopOrder entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
     @Override
@@ -207,6 +156,60 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
     public <S extends ShopOrder, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
+    }
+
+    @Override
+    public ShopOrder getOne(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
+    }
+
+    @Override
+    public ShopOrder getById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    }
+
+    @Override
+    public ShopOrder getReferenceById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
+    }
+
+    @Override
+    public Optional<ShopOrder> findById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
+    }
+
+    @Override
+    public List<ShopOrder> findAllById(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
 }

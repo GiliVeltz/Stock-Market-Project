@@ -113,7 +113,9 @@ public class MemoryRoleRepository implements InterfaceRoleRepository{
 
     @Override
     public <S extends Role> S save(S entity) {
-        entity.setId(roles.size());
+        if(entity.getId() == null){
+            entity.setId(roles.size() + 1);
+        }
         roles.add(entity);
         return entity;
     }

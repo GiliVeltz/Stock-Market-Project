@@ -128,7 +128,9 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public <S extends Shop> S save(S entity) {
-        entity.setShopId(_shopIdCounter);
+        if (entity.getShopId() == -1) {
+            entity.setShopId(_shopIdCounter);
+        }
         _shops.put(_shopIdCounter, entity);
         _shopIdCounter++;
         return entity;

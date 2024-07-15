@@ -46,6 +46,9 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
         if (!existsByGuestId(entity.getGuestId())) {
             _guestIds.add(entity);
         }
+        if(entity.getGuestId() == null){
+            entity.setGuestId(_guestIds.size() + "");
+        }
         return entity;
     }
 

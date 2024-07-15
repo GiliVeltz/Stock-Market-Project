@@ -287,4 +287,8 @@ public class Role {
         roleId = size;
     }
 
+    public Object getId() {
+        return roleId;
+    }
+
 }
