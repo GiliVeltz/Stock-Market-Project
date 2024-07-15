@@ -499,7 +499,7 @@ public class Shop {
         }
         // All constraints checked
         manager.modifyPermissions(username, permissions);
-        notifyModifiedPermissions(username, userRole, permissions,getShopId());
+        notifyModifiedPermissions(username, userRole, permissions, getShopId());
         logger.log(Level.INFO,
                 "Shop - modifyPermissions: " + username + " successfuly modified permissions. Now the permission are: "
                         + permissions
@@ -774,12 +774,6 @@ public class Shop {
                     "User " + userName + " doesn't have permission to edit product in shop with id " + shopId);
         }
 
-        if (product == null) {
-            logger.log(Level.SEVERE, "Shop - editProductInShop: Error while trying to remove product with name: "
-                    + product.getProductName() + " from shop with id " + shopId);
-            throw new ProductDoesNotExistsException("Product with name " + product.getProductName() + " does not exist.");
-        }
-
         // All constraints checked - edit product in the shop
         product.setProductName(productNameNew);
         product.setCategory(productCategoryNew);
@@ -914,6 +908,7 @@ public class Shop {
         if (!isProductExist(product.getProductId()))
             throw new StockMarketException(String.format("Product ID: %d doesn't exist.", product.getProductId()));
 
+        logger.info("Shop - addProductRating: Adding rating " + rating + " to product " + product.getProductId());
         product.addProductRating(rating);
     }
 
@@ -941,7 +936,7 @@ public class Shop {
         return false;
     }
 
-    public void updateProductQuantity(String username, Product product, Integer productAmoutn)
+    public void updateProductQuantity(String username, Product product, Integer productQuantity)
             throws StockMarketException {
         try {
             if (!checkPermission(username, Permission.EDIT_PRODUCT)) {
@@ -959,7 +954,7 @@ public class Shop {
                         String.format("Shop: %d is close, product: %d can't be updated", shopId, product.getProductId()));
             }
 
-            product.updateProductQuantity(productAmoutn);
+            product.updateProductQuantity(productQuantity);
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
@@ -1291,7 +1286,7 @@ public class Shop {
     public synchronized void addKeywordsToProduct(String userName, int productId, List<String> keywords) throws StockMarketException {
         // print logs to inform about the action
         logger.log(Level.INFO, "Shop - addKeywordsToProduct: " + userName + " trying add key words to product " + productId
-                + " in the shop with id " + shopId);
+                + " in the shop with id " + shopId + " keywords: " + keywords);
 
         // check if shop is closed
         if (isShopClosed())
@@ -1319,6 +1314,7 @@ public class Shop {
         Product product = productMap.get(productId);
         for (String keyword : keywords) {
             product.addKeyword(keyword);
+            logger.log(Level.INFO, "Added keyword: " + keyword + " to product: " + product.getProductName());
         }
 
         // print logs to inform about the action
@@ -1371,6 +1367,8 @@ public class Shop {
     }
 
     public void setShopFounder(String shopFounderUserName) {
+        logger.log(Level.INFO, "Shop - setShopFounder: " + shopFounderUserName + " trying to set the founder of the shop with id: " + shopId);
+
         this.shopFounder = shopFounderUserName;
         try{
             Role founder = new Role(shopFounderUserName, this, null, EnumSet.of(Permission.FOUNDER));
@@ -1380,6 +1378,8 @@ public class Shop {
         catch (StockMarketException e){
             logger.log(Level.SEVERE, "Shop - setShopFounder: Error while trying to set the founder of the shop with id: " + shopId);
         }
+
+        logger.log(Level.INFO, "Shop - setShopFounder: " + shopFounderUserName + " successfuly set the founder of the shop with id: " + shopId);
     }
 
     public Map<Integer, Product> getShopProducts() {
@@ -1473,6 +1473,7 @@ public class Shop {
 
     // for memory repository
     public void setShopId(int _shopIdCounter) {
+        logger.log(Level.INFO, "Shop - setShopId: setting shop id to: " + _shopIdCounter);
         shopId = _shopIdCounter;
     }
 }
