@@ -148,11 +148,11 @@ public class Role {
      * @param permissions permission set.
      * @return boolean that represents if the role has all permissions from the set.
      */
-    public boolean hasAllPermissions(Set<Permission> permissions){
+    public boolean hasAllPermissions(Set<Permission> permissionsToCheck){
         if(permissions == null || permissions.isEmpty()){
             return false;
         }
-        return !permissions.retainAll(permissions);
+        return !permissions.retainAll(permissionsToCheck);
     }
 
     /**
