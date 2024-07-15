@@ -37,6 +37,7 @@ public class Role {
      */
     @ElementCollection
     @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
+    //@Enumerated(EnumType.STRING)
     private Set<Permission> permissions;
     
     @ElementCollection
