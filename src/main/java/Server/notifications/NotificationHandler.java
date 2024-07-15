@@ -27,7 +27,7 @@ public class NotificationHandler {
     }
 
     // set the repositories to be used test time
-    public void setUserFacadeRepositories(InterfaceUserRepository userRepository) {
+    public void setNotificationFacadeRepositories(InterfaceUserRepository userRepository) {
         this._userRepository = userRepository;
     }
 
@@ -35,8 +35,8 @@ public class NotificationHandler {
     }
 
     /**
-
-    /**
+     * 
+     * /**
      * Sends an alert message to a specified user via the WebSocket server.
      * Converts the Alert object to a string message before sending.
      *
