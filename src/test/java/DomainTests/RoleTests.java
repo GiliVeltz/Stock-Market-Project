@@ -11,13 +11,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import Domain.*;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.User;
+import Domain.Entities.enums.Permission;
 import Exceptions.ShopException;
 import Exceptions.StockMarketException;
-import enums.Permission;
 
 public class RoleTests {
 
@@ -29,7 +28,7 @@ public class RoleTests {
     public void setUp() {
         user = new User("user", "password", "email@email.com", new Date());
         try {
-            shop = new Shop(1, "shop name",  "founder name",  "shop bank",  "shop address");
+            shop = new Shop("shop name",  "founder name",  "shop bank",  "shop address", 1);
         } catch (ShopException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -48,7 +47,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -70,7 +69,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -94,7 +93,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -116,7 +115,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -138,7 +137,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -166,7 +165,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -192,7 +191,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -219,7 +218,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -247,7 +246,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -274,7 +273,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -302,7 +301,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -330,7 +329,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -365,7 +364,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -391,7 +390,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -419,7 +418,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());
@@ -447,7 +446,7 @@ public class RoleTests {
 
         Role role = null;
         try {
-            role = new Role(user.getUserName(), shop.getShopId(), "appointedBy", permissions);
+            role = new Role(user.getUserName(), shop, "appointedBy", permissions);
         } catch (StockMarketException e) {
             e.printStackTrace();
             fail("Exception was thrown when it shouldn't have been: " + e.getMessage());

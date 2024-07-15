@@ -22,8 +22,12 @@ import UI.Presenter.SearchShopPresenter;
 @PageTitle("Search Shops Results Page")
 @Route(value = "shops_search_results")
 public class SearchShopResultsView extends BaseView{
+
     Dialog resultsDialog;
+
+    @SuppressWarnings("unused")
     private SearchShopPresenter presenter;
+    
     // private String shopName;
     // private String shopId;
 

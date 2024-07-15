@@ -3,7 +3,7 @@ package Dtos;
 import java.util.Set;
 
 import Domain.Entities.Product;
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class ProductDto {
 
@@ -18,6 +18,15 @@ public class ProductDto {
     // Constructor
     public ProductDto(String productName, Category category, double price, int productQuantity) {
         this.productId = -1;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productQuantity = productQuantity;
+    }
+
+    // Constructor
+    public ProductDto(int productId, String productName, Category category, double price, int productQuantity) {
+        this.productId = productId;
         this.productName = productName;
         this.category = category;
         this.price = price;

@@ -50,6 +50,13 @@ public class UserController {
         return _userService.logOut(token);
     }
 
+    // @GetMapping("/test")
+    // public ResponseEntity<Response> test(){
+    //     Response response = new Response();
+    //     response.setReturnValue(_bookService.list());
+    //     return new ResponseEntity<>(response, HttpStatus.OK);
+    // }
+
     @GetMapping("/viewShoppingCart")
     public ResponseEntity<Response> viewShoppingCart(
             @RequestParam String username,

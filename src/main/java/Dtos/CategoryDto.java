@@ -3,7 +3,7 @@ package Dtos;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 public class CategoryDto {
     public String _categoryName;

@@ -18,7 +18,7 @@ public class ShopOrderDto {
     }
 
     public ShopOrderDto(ShopOrder shopOrder) throws StockMarketException {
-        _orderId = shopOrder.getOrderId();
+        _orderId = shopOrder.getShopOrderId();
         _shoppingBasketDto = new ShoppingBasketDto(shopOrder.getShoppingBasket());
         _totalOrderAmount = shopOrder.getOrderTotalAmount();
     }

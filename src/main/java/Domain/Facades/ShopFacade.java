@@ -6,65 +6,73 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Domain.Discounts.BaseDiscount;
-import Domain.Discounts.CategoryFixedDiscount;
-import Domain.Discounts.CategoryPercentageDiscount;
-import Domain.Discounts.ConditionalDiscount;
-import Domain.Discounts.Discount;
-import Domain.Discounts.ProductFixedDiscount;
-import Domain.Discounts.ProductPercentageDiscount;
-import Domain.Discounts.ShopFixedDiscount;
-import Domain.Discounts.ShopPercentageDiscount;
 import Domain.Entities.Product;
 import Domain.Entities.Role;
 import Domain.Entities.Shop;
 import Domain.Entities.ShopOrder;
-import Domain.Repositories.MemoryShopRepository;
-import Domain.Rules.Rule;
-import Domain.Rules.RuleFactory;
-import Domain.Repositories.InterfaceShopRepository;
-import Domain.Alerts.Alert;
-import Domain.Alerts.AppointedManagerAlert;
-import Domain.Alerts.AppointedOwnerAlert;
-import Domain.Alerts.FireManagerAlert;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.User;
+import Domain.Entities.Alerts.Alert;
+import Domain.Entities.Alerts.AppointedManagerAlert;
+import Domain.Entities.Alerts.AppointedOwnerAlert;
+import Domain.Entities.Alerts.FireManagerAlert;
+import Domain.Entities.Discounts.BaseDiscount;
+import Domain.Entities.Discounts.CategoryFixedDiscount;
+import Domain.Entities.Discounts.CategoryPercentageDiscount;
+import Domain.Entities.Discounts.ConditionalDiscount;
+import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Discounts.ProductFixedDiscount;
+import Domain.Entities.Discounts.ProductPercentageDiscount;
+import Domain.Entities.Discounts.ShopFixedDiscount;
+import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.Rules.Rule;
+import Domain.Entities.Rules.RuleFactory;
+import Domain.Entities.enums.Category;
+import Domain.Entities.enums.Permission;
+import Domain.Repositories.DbProductRepository;
+import Domain.Repositories.DbRoleRepository;
+import Domain.Repositories.DbShopRepository;
+import Domain.Repositories.InterfaceProductRepository;
+import Domain.Repositories.InterfaceRoleRepository;
+import Domain.Repositories.InterfaceShopRepository;
 import Dtos.BasicDiscountDto;
-import Dtos.BasketDto;
 import Dtos.ConditionalDiscountDto;
 import Dtos.ProductDto;
 import Dtos.ProductGetterDto;
 import Dtos.ShopDto;
 import Dtos.ShopManagerDto;
 import Dtos.ShopOrderDto;
-import Dtos.Rules.MinBasketPriceRuleDto;
-import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Dtos.Rules.UserRuleDto;
 import Dtos.ShopGetterDto;
 import Exceptions.PermissionException;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.StockMarketException;
-import enums.Category;
-import enums.Permission;
+import Server.notifications.NotificationHandler;
 @Service
 public class ShopFacade {
-    private static ShopFacade _shopFacade;
-
     private UserFacade _userFacade;
     private InterfaceShopRepository _shopRepository;
+    private InterfaceProductRepository _productRepository;
+    private InterfaceRoleRepository _roleRepository;
+    private NotificationHandler _notificationHandler;
+
+    private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @Autowired
-    public ShopFacade(InterfaceShopRepository shopRepository) {
+    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
         _shopRepository = shopRepository;
-        _userFacade = UserFacade.getUserFacade();
+        _productRepository = productRepository;
+        _roleRepository = roleRepository;
+        _userFacade = userFacade;
+        _notificationHandler = notificationHandler;
 
         //For testing UI
         // try {
@@ -75,44 +83,20 @@ public class ShopFacade {
         // }
     }
 
-    public ShopFacade() {
-        _shopRepository = new MemoryShopRepository(new ArrayList<>());
-        _userFacade = UserFacade.getUserFacade();
-
-        //For testing UI
-        // try {
-        //     initUI();
-        // }
-        // catch (StockMarketException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
-    public ShopFacade(List<Shop> shopsList) { // ForTests
-        _shopRepository = new MemoryShopRepository(shopsList);
-        _userFacade = UserFacade.getUserFacade();
-    }
-
-    // Public method to provide access to the _shopFacade
-    public static synchronized ShopFacade getShopFacade() {
-        if (_shopFacade == null) {
-            _shopFacade = new ShopFacade();
-        }
-        return _shopFacade;
-    }
-
-    // set shop repository to be used in real system
-    public void setShopRepository(InterfaceShopRepository shopRepository) {
+    // set repositories to be used in test system
+    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository) {
         _shopRepository = shopRepository;
+        _productRepository = productRepository;
+        _roleRepository = roleRepository;
     }
 
-    public Shop getShopByShopId(int shopId) {
-        return _shopRepository.getShopByID(shopId);
+    public Shop getShopByShopId(Integer shopId) {
+        return _shopRepository.findByShopId(shopId);
     }
 
     // Checks if a shop ID exists.
-    public Boolean isShopIdExist(int shopId) {
-        return _shopRepository.doesShopExist(shopId);
+    public Boolean isShopIdExist(Integer shopId) {
+        return _shopRepository.findByShopId(shopId) == null ? false : true;
     }
 
     // Open a new shop only if the user is not a manager or owner of another shop.
@@ -137,20 +121,29 @@ public class ShopFacade {
             throw new StockMarketException("Shop address is null or empty.");
         }
 
-        int shopId = _shopRepository.getUniqueShopID();
-        _shopRepository.addShop(new Shop(shopId, shopDto.shopName, userName, shopDto.bankDetails, shopDto.shopAddress));
-        getShopByShopId(shopId).notifyReOpenShop(userName);
-        return shopId;
+        Shop shop = new Shop();
+        shop.setShopName(shopDto.shopName);
+        shop.setBankDetails(shopDto.bankDetails);
+        shop.setShopAddress(shopDto.shopAddress);
+        shop.setNotificationHandler(_notificationHandler);
+        shop.setRoleRepository(_roleRepository);
+        shop = _shopRepository.save(shop);
+        shop.setShopFounder(userName);
+        shop.notifyReOpenShop(userName);
+        _shopRepository.flush();
+        return shop.getShopId();
     }
 
     // Close shop only if the user is the founder of the shop
     @Transactional
     public void closeShop(Integer shopId, String userName) throws StockMarketException {
+        logger.info("Trying to close shop with id: " + shopId);
         try {
             if (!isShopIdExist(shopId))
                 throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToClose = getShopByShopId(shopId);
+                shopToClose.setNotificationHandler(_notificationHandler);
                 if (shopToClose.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     shopToClose.closeShop();
                     getShopByShopId(shopId).notifyCloseShop(userName);
@@ -162,17 +155,19 @@ public class ShopFacade {
         } catch (StockMarketException e) {
             throw new StockMarketException(e.getMessage());
         }
-
+        logger.info("Shop with id: " + shopId + " was closed successfully.");
     }
 
     // Reopen a shop only if the user is the founder of the shop
     @Transactional
     public void reOpenShop(Integer shopId, String userName) throws Exception {
+        logger.info("Trying to reopen shop with id: " + shopId);
         try {
             if (!isShopIdExist(shopId))
                 throw new Exception(String.format("Shop ID: %d does not exist.", shopId));
             else {
                 Shop shopToReOpen = getShopByShopId(shopId);
+                shopToReOpen.setNotificationHandler(_notificationHandler);
                 if (shopToReOpen.checkPermission(userName, Permission.FOUNDER) || _userFacade.isAdmin(userName)) {
                     getShopByShopId(shopId).notifyReOpenShop(userName);
                     shopToReOpen.reopenShop();
@@ -184,7 +179,7 @@ public class ShopFacade {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-
+        logger.info("Shop with id: " + shopId + " was reopened successfully.");
     }
 
     // Add a product to a shop by its ID.
@@ -197,10 +192,13 @@ public class ShopFacade {
         if (getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
                     productDto.productName, shopId));
-        int productId = _shopRepository.getUniqueProductID();
-        Product newProduct = new Product(productId, productDto.productName, productDto.category, productDto.price);
+        Shop shop = getShopByShopId(shopId);
+        Product newProduct = new Product(productDto.productName, productDto.category, productDto.price, shop);
+        newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
-        getShopByShopId(shopId).addProductToShop(userName, newProduct);
+        _productRepository.flush();
+        shop.addProductToShop(userName, newProduct);
+        _shopRepository.flush();
     }
 
 
@@ -219,7 +217,9 @@ public class ShopFacade {
         if (!getShopByShopId(shopId).isProductNameExist(productDto.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDto.productName, shopId));
-        getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName);
+        getShopByShopId(shopId).setNotificationHandler(_notificationHandler);
+        getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName, _productRepository);
+        _shopRepository.flush();
     }
 
     @Transactional
@@ -241,6 +241,7 @@ public class ShopFacade {
     @Transactional
     public synchronized void editProductInShop(Integer shopId, ProductDto productDtoOld, ProductDto productDtoNew,
             String userName) throws StockMarketException {
+        logger.info("Trying to edit product in shop with id: " + shopId);
         // If the shop ID does not exist, raise an error
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d does not exist.", shopId));
@@ -263,14 +264,15 @@ public class ShopFacade {
         if (!getShopByShopId(shopId).isProductNameExist(productDtoOld.productName))
             throw new StockMarketException(String.format("Product name: %s is not exists in shop: %d.",
                     productDtoOld.productName, shopId));
+        logger.info("Product with name: " + productDtoOld.productName + " was found in shop with id: " + shopId);
 
-        // If the new product name already exists in the shop, raise an error
-        if (getShopByShopId(shopId).isProductNameExist(productDtoNew.productName))
-            throw new StockMarketException(String.format("Product name: %s already exists in shop: %d.",
-                    productDtoNew.productName, shopId));
+        Product product = _productRepository.findById(productDtoOld.productId).get();
 
-        getShopByShopId(shopId).editProductInShop(userName, productDtoOld.productName, productDtoNew.productName,
+        getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
                 productDtoNew.category, productDtoNew.price);
+        
+        _productRepository.flush();
+        logger.info("Product with name: " + productDtoOld.productName + " was edited successfully.");
     }
 
     // Retrieves the purchase history for a shop by its ID.
@@ -300,10 +302,15 @@ public class ShopFacade {
     @Transactional
     public Boolean isShopOwner(Integer shopId, String userId) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (shop != null) {
-            return shop.isOwnerOrFounderOwner(userId);
+        try{
+            if (shop != null) {
+                return shop.isOwnerOrFounderOwner(userId);
+            }
+            return false;
         }
-        return false;
+        catch(Exception e){
+            return false;
+        }
     }
 
     // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
@@ -312,7 +319,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
         BaseDiscount discount;
         if (discountDto.isPrecentage){
@@ -340,7 +347,7 @@ public class ShopFacade {
             throws StockMarketException {
 
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.ADD_DISCOUNT_POLICY))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
 
         ConditionalDiscount discount = new ConditionalDiscount(discountDto);
@@ -351,7 +358,7 @@ public class ShopFacade {
     @Transactional
     public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
         Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.REMOVE_DISCOUNT_METHOD))
+        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
             throw new PermissionException(
                     "User " + username + " has no permission to remove discount from shop " + shopId);
         shop.removeDiscount(discountId);
@@ -392,7 +399,7 @@ public class ShopFacade {
     // this function is responsible return all the shops in the system
     @Transactional
     public List<Shop> getAllShops() {
-        return _shopRepository.getAllShops();
+        return _shopRepository.findAll();
     }
 
     // this function is responsible return all the shops in the system as DTO
@@ -497,46 +504,62 @@ public class ShopFacade {
 
     // this function is responsible update the quantity of a product in a shop
     @Transactional
-    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productAmount)
+    public void updateProductQuantity(String userName, Integer shopId, Integer productId, Integer productQuantity)
             throws StockMarketException {
+        logger.info(userName + " trying to update product quantity: " + productQuantity + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductQuantity(userName, productId, productAmount);
+        Product product = shop.getProductById(productId);
+        shop.updateProductQuantity(userName, product, productQuantity);
+        _productRepository.flush();
+        logger.info("Product quantity was updated successfully.");
     }
 
     // this function is responsible update the quantity of a product in a shop
     @Transactional
     public void updateProductName(String userName, Integer shopId, Integer productId, String productName)
             throws StockMarketException {
+        logger.info(userName + " trying to update product name: " + productName + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductName(userName, productId, productName);
+        Product product = shop.getProductById(productId);
+        shop.updateProductName(userName, product, productName);
+        _productRepository.flush();
+        logger.info("Product name was updated successfully.");
     }
 
     // this function is responsible update the quantity of a product in a shop
     @Transactional
     public void updateProductPrice(String userName, Integer shopId, Integer productId, Double productPrice)
             throws StockMarketException {
+        logger.info(userName + " trying to update product price: " + productPrice + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductPrice(userName, productId, productPrice);
+        Product product = shop.getProductById(productId);
+        shop.updateProductPrice(userName, product, productPrice);
+        _productRepository.flush();
+        logger.info("Product price was updated successfully.");
     }
 
     // this function is responsible update the quantity of a product in a shop
     @Transactional
     public void updateProductCategory(String userName, Integer shopId, Integer productId, Category productCategpory)
             throws StockMarketException {
+        logger.info(userName + " trying to update product category: " + productCategpory + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
-        shop.updateProductCategory(userName, productId, productCategpory);
+        Product product = shop.getProductById(productId);
+        shop.updateProductCategory(userName, product, productCategpory);
+        _productRepository.flush();
+        logger.info("Product category was updated successfully.");
     }
 
     public String getShopFounderUsername(Integer shopId) {
@@ -550,17 +573,21 @@ public class ShopFacade {
     //  Adds a new owner to a shop.
     @Transactional
     public void addShopOwner(String username, Integer shopId, String ownerUsername) throws StockMarketException {
+        logger.info(username + " trying to add owner: " + ownerUsername + " to shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
+        _shopRepository.flush();
+        logger.info("Owner was added successfully.");
         notifyAppointOwner(username, ownerUsername, shopId);
+        logger.info(ownerUsername + " was notified that he was appointed as owner.");
     }
 
     // notify the owner that he was appointed
     @Transactional
-    private void notifyAppointOwner(String username, String targetUser, int shopId) {
+    public void notifyAppointOwner(String username, String targetUser, int shopId) {
         Alert alert = new AppointedOwnerAlert(username, targetUser, shopId);
         _userFacade.notifyUser(targetUser, alert);
     }
@@ -569,6 +596,7 @@ public class ShopFacade {
     @Transactional
     public void addShopManager(String username, Integer shopId, String managerUsername, Set<String> permissions)
             throws Exception {
+        logger.info(username + " trying to add manager: " + managerUsername + " to shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new Exception(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -578,12 +606,16 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
+        _shopRepository.flush();
+        logger.info("Manager was added successfully.");
+
         notifyAppointManager(username, managerUsername, permissions,shopId);
+        logger.info(managerUsername + " was notified that he was appointed as manager.");
     }
 
     //notify the manager that he was appointed
     @Transactional
-    private void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
+    public void notifyAppointManager(String username, String targetUser, Set<String> permissions, Integer shopId) {
         Alert alert = new AppointedManagerAlert(username, targetUser, permissions, shopId);
         _userFacade.notifyUser(targetUser, alert);
     }
@@ -592,16 +624,20 @@ public class ShopFacade {
     @Transactional
     public Set<String> fireShopManager(String username, Integer shopId, String managerUsername)
             throws StockMarketException {
+        logger.info(username + " trying to fire manager: " + managerUsername + " from shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         Set<String> result = new HashSet<String>();
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }      
         result = shop.fireRole(username, managerUsername);
+        _shopRepository.flush();
+        logger.info("Manager was fired successfully.");
+
         notifyFireUser(username,managerUsername, shopId);
+        logger.info(managerUsername + " was notified that he was fired.");
 
         return result;
-        
     }
 
     //notify the manager that he was fired
@@ -614,17 +650,25 @@ public class ShopFacade {
     // Resign a role from the shop.
     @Transactional
     public Set<String> resignFromRole(String username, Integer shopId) throws StockMarketException {
+        logger.info(username + " trying to resign from shop with id: " + shopId);
+
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             return null;
         }
-        return shop.resign(username);
+
+        Set<String> ret = shop.resign(username);
+        _shopRepository.flush();
+        logger.info("User was resigned successfully.");
+
+        return ret;
     }
 
     // Modify the permissions of a manager in a shop.
     @Transactional
     public void modifyManagerPermissions(String username, Integer shopId, String managerUsername,
             Set<String> permissions) throws StockMarketException {
+        logger.info(username + " trying to modify permissions: " + permissions + " of manager: " + managerUsername + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -634,7 +678,8 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
-        
+        _shopRepository.flush();
+        logger.info("Permissions were modified successfully.");
     }
 
     // this function returns the shop policy
@@ -736,11 +781,15 @@ public class ShopFacade {
     // this function adds a rating to a product
     @Transactional
     public void addProductRating(Integer shopId, Integer productId, Integer rating) throws StockMarketException {
+        logger.info("Trying to add rating: " + rating + " to product with id: " + productId + " in shop with id: " + shopId);
         if (!isShopIdExist(shopId))
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
 
         Shop shop = getShopByShopId(shopId);
-        shop.addProductRating(productId, rating);
+        Product product = shop.getProductById(productId);
+        shop.addProductRating(product, rating);
+        _productRepository.flush();
+        logger.info("Rating was added successfully.");
     }
 
     
@@ -763,6 +812,7 @@ public class ShopFacade {
 
         Shop shop = getShopByShopId(shopId);
         shop.addShopRating(rating);
+        _shopRepository.flush();
     }
 
     // Returns the shop name if exists, else returns null.
@@ -847,6 +897,7 @@ public class ShopFacade {
     @Transactional
     public void changeShopPolicy(String username, int shopId,  List<ShoppingBasketRuleDto> rules)
             throws StockMarketException {
+        logger.info(username + " trying to change shop policy in shop with id: " + shopId + " to: " + rules);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
@@ -856,18 +907,21 @@ public class ShopFacade {
         // shopRules.addAll(minBasketRules);
         // shopRules.addAll(minProductRules);
         shop.changeShopPolicy(username, rules);
+        logger.info("Shop policy was changed successfully.");
     }
 
     // this function is responsible for changing the product policy
     @Transactional
     public void changeProductPolicy(String username, int shopId, int productId, List<UserRuleDto> productRules)
             throws StockMarketException {
+        logger.info(username + " trying to change product policy in shop with id: " + shopId + " to: " + productRules);
         Shop shop = getShopByShopId(shopId);
         if (shop == null)
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeProductPolicy(username, productId, productRules);
+        logger.info("Product policy was changed successfully.");
     }
 
     // This function is responsible for getting all the shops in the system
@@ -929,11 +983,14 @@ public class ShopFacade {
     // Adds keywords to a product in a shop
     @Transactional
     public void addKeywordsToProductInShop (String username, Integer shopId, Integer productId, List<String> keywords) throws StockMarketException {
+        logger.info(username + " trying to add keywords: " + keywords + " to product with id: " + productId + " in shop with id: " + shopId);
         Shop shop = getShopByShopId(shopId);
         if (shop == null) {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.addKeywordsToProduct(username, productId, keywords);
+        _productRepository.flush();
+        logger.info("Keywords were added successfully.");
     }
 
     // function to initilaize data for UI testing
@@ -944,17 +1001,17 @@ public class ShopFacade {
         // product.updateProductQuantity(10);
         // shop.addProductToShop("Tal", product);
 
-        openNewShop("tal", new ShopDto("shopUITest1", "bankUITest", "addressUITest1"));
-        openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
-        addProductToShop(0, new ProductDto("productUITest1", Category.ELECTRONICS, 40.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest2", Category.ELECTRONICS, 30.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest3", Category.ELECTRONICS, 10.0, 10), "tal");
-        addProductToShop(0, new ProductDto("productUITest4", Category.ELECTRONICS, 20.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest5", Category.ELECTRONICS, 10.5, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest6", Category.ELECTRONICS, 50.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest7", Category.ELECTRONICS, 30.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest8", Category.ELECTRONICS, 50.0, 10), "tal");
-        addProductToShop(1, new ProductDto("productUITest9", Category.ELECTRONICS, 20.0, 10), "tal");
+        // openNewShop("tal", new ShopDto("shopUITest1", "bankUITest", "addressUITest1"));
+        // openNewShop("tal", new ShopDto("shopUITest2", "bankUITest2", "addressUITest2"));
+        // addProductToShop(0, new ProductDto("productUITest1", Category.ELECTRONICS, 40.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest2", Category.ELECTRONICS, 30.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest3", Category.ELECTRONICS, 10.0, 10), "tal");
+        // addProductToShop(0, new ProductDto("productUITest4", Category.ELECTRONICS, 20.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest5", Category.ELECTRONICS, 10.5, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest6", Category.ELECTRONICS, 50.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest7", Category.ELECTRONICS, 30.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest8", Category.ELECTRONICS, 50.0, 10), "tal");
+        // addProductToShop(1, new ProductDto("productUITest9", Category.ELECTRONICS, 20.0, 10), "tal");
     }
 
     // this function is responsible for getting all the shop managers
@@ -964,7 +1021,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, false);
         List<ShopManagerDto> managers = new ArrayList<>();
         for (Map.Entry<String, Role> entry : roles.entrySet()) {
             Set<Permission> permissions = entry.getValue().getPermissions();
@@ -989,7 +1046,7 @@ public class ShopFacade {
         if (shop == null) {
             return null;
         }
-        Map<String, Role> roles = shop.getUserToRoleMap(username);
+        Map<String, Role> roles = shop.getUserToRoleMap(username, true);
         Role manager = shop.getRole(username);
         Set<String> subordinates = manager.getAppointments();
         List<ShopManagerDto> managers = new ArrayList<>();
@@ -1120,7 +1177,9 @@ public class ShopFacade {
         Set<Permission> permissionsSet = permissions.stream()
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
+        shop.setNotificationHandler(_notificationHandler);
         shop.modifyPermissions(username, managerUsername, permissionsSet);
+        _shopRepository.flush();
     }
 
    
@@ -1146,11 +1205,11 @@ public class ShopFacade {
     }
 
     // this function returns the product id by its name and shop id
-    public int getProductIdByProductNameAndShopId(String string, int shopId) {
+    public int getProductIdByProductNameAndShopId(String product_name, int shopId) {
         Shop shop = getShopByShopId(shopId);
         if (shop != null) {
             for (Product product : shop.getAllProductsList()) {
-                if (product.getProductName().equals(string)) {
+                if (product.getProductName().equals(product_name)) {
                     return product.getProductId();
                 }
             }
@@ -1181,7 +1240,8 @@ public class ShopFacade {
         return null;
     }
 
-
-
-    
+    @SuppressWarnings("deprecation")
+    public Product getProductById(int productID) {
+        return _productRepository.getById(productID);
+    }
 }

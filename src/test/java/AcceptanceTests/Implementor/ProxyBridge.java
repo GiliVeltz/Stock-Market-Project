@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 // Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object.
 // A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.

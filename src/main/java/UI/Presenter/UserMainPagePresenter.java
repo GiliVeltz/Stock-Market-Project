@@ -1,8 +1,6 @@
 package UI.Presenter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 
 import org.springframework.http.HttpEntity;
@@ -38,25 +36,36 @@ public class UserMainPagePresenter {
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
                 .then(String.class, token -> {
                     if (token != null && !token.isEmpty()) {
-                        System.out.println("Token: " + token);
+                        try
+                        {
+                            System.out.println("Token: " + token);
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization", token);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Authorization", token);
 
-                        HttpEntity<ShopDto> requestEntity = new HttpEntity<>(shopDto, headers);
+                            HttpEntity<ShopDto> requestEntity = new HttpEntity<>(shopDto, headers);
 
-                        ResponseEntity<String> response = restTemplate.exchange(
-                                "http://localhost:" + view.getServerPort() + "/api/shop/openNewShop",
-                                HttpMethod.POST,
-                                requestEntity,
-                                String.class);
+                            ResponseEntity<String> response = restTemplate.exchange(
+                                    "http://localhost:" + view.getServerPort() + "/api/shop/openNewShop",
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    String.class);
 
-                        if (response.getStatusCode().is2xxSuccessful()) {
-                            view.showSuccessMessage("Shop opened successfully");
-                            System.out.println(response.getBody());
-                        } else {
-                            view.showErrorMessage("Failed to open shop");
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                view.showSuccessMessage("Shop opened successfully");
+                                System.out.println(response.getBody());
+                            } else {
+                                view.showErrorMessage("Failed to open shop");
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            view.showErrorMessage("Failed to open shop: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
                         }
+                        
                     } else {
                         System.out.println("Token not found in local storage.");
                         view.showErrorMessage("Failed to open shop");
@@ -184,9 +193,14 @@ public void getUserInfo() {
                                 view.showErrorMessage("Failed to parse JSON response");
                             }
                         } else {
-                            view.showErrorMessage("Failed to submit report ");
+                            view.showErrorMessage("Failed to submit report");
                         }
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (HttpClientErrorException e) {
+                        view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                    } catch (Exception e) {
+                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                        int endIndex = e.getMessage().indexOf("\",", startIndex);
+                        view.showErrorMessage("Failed to submit report: " + e.getMessage().substring(startIndex, endIndex));
                         e.printStackTrace();
                     }
                     } else {

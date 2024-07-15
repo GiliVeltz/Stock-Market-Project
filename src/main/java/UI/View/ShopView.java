@@ -22,6 +22,7 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Model.ProductDto;
 import UI.Presenter.ShopViewPresenter;
 
+@SuppressWarnings("unused")
 @Route(value = "shop_page")
 public class ShopView extends BaseView implements HasUrlParameter<Integer> {
 
@@ -151,7 +152,6 @@ public class ShopView extends BaseView implements HasUrlParameter<Integer> {
         // Implement logic to add the product to the cart (not shown here)
         // Example: presenter.addToCart(product);
         _presenter.addProductToCart(_shopId, product.getProductId(), quantity);
-        Notification.show(product.getProductName() + " added to cart");
     }
 
     private void openComplainDialog() {

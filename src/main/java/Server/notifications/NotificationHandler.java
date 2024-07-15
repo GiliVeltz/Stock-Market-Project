@@ -1,48 +1,40 @@
 package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import Domain.Alerts.Alert;
+import Domain.Entities.Alerts.Alert;
 
 /**
  * Handles notifications by sending messages through a WebSocket server.
  */
-@Component
+@Service
 public class NotificationHandler {
 
-    private static NotificationHandler instance;
+    private WebSocketServer wServer;
+
     @Autowired
-    private static WebSocketServer wServer;
-
-    private NotificationHandler() {
-        // Initialization code
-        wServer = WebSocketServer.getInstance();
+    private NotificationHandler(WebSocketServer wServer) {
+        this.wServer = wServer;
     }
 
-    public static synchronized NotificationHandler getInstance() {
-        if (instance == null) {
-            instance = new NotificationHandler();
-        }
-        return instance;
-    }
-    
-     /**
+    /**
      * Sends an alert message to a specified user via the WebSocket server.
      * Converts the Alert object to a string message before sending.
      *
      * @param targetUsername The username of the recipient.
-     * @param alert The Alert object containing the message to be sent.
+     * @param alert          The Alert object containing the message to be sent.
      */
     public void sendMessage(String targetUsername, Alert alert) {
         String message = alert.getMessage();
         wServer.sendMessage(targetUsername, message);
     }
 
-    // Using this method for testing purposes
-    public static void setInstance(NotificationHandler _notificationHandlerMock) {
-        instance = _notificationHandlerMock;
+    public void retrivePreviousMessages(String targetUsername) {
+
+        wServer.retrivePreviousMessages(targetUsername);
     }
+
 
 
 }

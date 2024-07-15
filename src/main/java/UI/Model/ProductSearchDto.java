@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import enums.Category;
+import Domain.Entities.enums.Category;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 

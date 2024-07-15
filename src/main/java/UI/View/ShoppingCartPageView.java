@@ -205,13 +205,37 @@ public class ShoppingCartPageView extends BaseView {
         TextField countryField = new TextField("Country");
         TextField zipField = new TextField("ZIP Code");
 
+        // Add required indicator
+        currencyField.setRequiredIndicatorVisible(true);
+        cardNumberField.setRequiredIndicatorVisible(true);
+        monthField.setRequiredIndicatorVisible(true);
+        yearField.setRequiredIndicatorVisible(true);
+        holderField.setRequiredIndicatorVisible(true);
+        cvvField.setRequiredIndicatorVisible(true);
+        idField.setRequiredIndicatorVisible(true);
+        nameField.setRequiredIndicatorVisible(true);
+        addressField.setRequiredIndicatorVisible(true);
+        cityField.setRequiredIndicatorVisible(true);
+        countryField.setRequiredIndicatorVisible(true);
+        zipField.setRequiredIndicatorVisible(true);
+
+        // Add value change listeners to validate fields
+        Button submitButton = new Button("Submit");
+        submitButton.setEnabled(false); // Disable submit button initially
+
+        List<TextField> allFields = List.of(currencyField, cardNumberField, monthField, yearField, holderField, cvvField, idField, nameField, addressField, cityField, countryField, zipField);
+        allFields.forEach(field -> field.addValueChangeListener(event -> {
+            boolean allFilled = allFields.stream().allMatch(f -> !f.isEmpty());
+            submitButton.setEnabled(allFilled);
+        }));
+
         formLayout.add(paymentInfoHeader);
         formLayout.add(currencyField, cardNumberField, monthField, yearField, holderField, cvvField, idField);
 
         formLayout.add(supplyInfoHeader);
         formLayout.add(nameField, addressField, cityField, countryField, zipField);
 
-        Button submitButton = new Button("Submit", event -> {
+        submitButton.addClickListener(event -> {
             // Handle form submission for payment or supply
             String currency = currencyField.getValue();
             String cardNumber = cardNumberField.getValue();
@@ -234,6 +258,9 @@ public class ShoppingCartPageView extends BaseView {
 
             presenter.purchaseCart(paymentInfo, supplyInfo, selectedIndexes);
             dialog.close();
+            
+            // Refresh the cart view
+            presenter.viewCart();
         });
 
         formLayout.add(submitButton);

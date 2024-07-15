@@ -1,8 +1,5 @@
 package Server.Controllers;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +40,11 @@ public class SystemController {
         return resp;
     }
 
-  
-
+    @PostMapping("/sendAlertNotification")
+    public ResponseEntity<Response> sendAlertNotification(
+        @RequestHeader(value = "Authorization", required = true) String token, @RequestParam String targetUser, @RequestParam String message) {
+        ResponseEntity<Response> resp = _systemService.sendAlertNotification(token, targetUser, message);
+        return resp;
+    }
+   
 }

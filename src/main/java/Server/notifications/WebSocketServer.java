@@ -1,5 +1,6 @@
 package Server.notifications;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -8,26 +9,55 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ServiceLayer.TokenService;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-//Todo: make sure the class is thread safe.
 /**
  * This class is responsible for handling WebSocket communication within the
  * application.
  * It extends TextWebSocketHandler, which provides a simple way to handle text
- * messages over WebSocket connections.
- * The WebSocketServer class provides methods for sending messages to specific
- * clients.
+ * messages
+ * over WebSocket connections.
+ * 
+ * The WebSocketServer class provides methods for:
+ * 
+ * 1. Handling WebSocket connections:
+ * - onOpen: Invoked when a new WebSocket connection is established.
+ * - onClose: Invoked when an existing WebSocket connection is closed.
+ * 
+ * 2. Handling incoming messages:
+ * - handleTextMessage: Invoked when a new text message is received from a
+ * client.
+ * 
+ * 3. Sending messages to clients:
+ * - sendMessage: Allows the server to send a text message to a specific client.
+ * 
+ * Usage:
+ * - When a client connects to the WebSocket server, the onOpen method is
+ * called, allowing
+ * the server to perform any initialization or logging.
+ * - When a client sends a message, the handleTextMessage method is called,
+ * allowing the
+ * server to process the message and respond if necessary.
+ * - When a client disconnects, the onClose method is called, allowing the
+ * server to clean
+ * up any resources or perform logging.
+ * - The sendMessage method can be used by the server to send messages to
+ * clients at any
+ * time, for example, to broadcast updates or notifications.
  */
 @Component
 public class WebSocketServer extends TextWebSocketHandler {
-    // @Autowired
+
     private TokenService tokenService;
-    // Singleton instance
-    private static WebSocketServer instance;
+
     // assumption messages as aformat of:"targetUsername:message"
 
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
@@ -35,19 +65,15 @@ public class WebSocketServer extends TextWebSocketHandler {
                                                                                              // guest -> <token,session>
     private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
                                                                                                // messageQueue>
+    private static final Map<String, List<String>> allMessages = new ConcurrentHashMap<>(); // <username, list of all
+                                                                                            // messages>
+    private static final Logger logger = Logger.getLogger(WebSocketServer.class.getName());
 
+    @Autowired
     // Private constructor to prevent instantiation
-    private WebSocketServer() {
+    private WebSocketServer(TokenService tokenService) {
         // Initialization code
-        this.tokenService = TokenService.getTokenService();
-    }
-
-    // Method to get singleton instance
-    public static synchronized WebSocketServer getInstance() {
-        if (instance == null) {
-            instance = new WebSocketServer();
-        }
-        return instance;
+        this.tokenService = tokenService;
     }
 
     /**
@@ -62,16 +88,23 @@ public class WebSocketServer extends TextWebSocketHandler {
         String query = uri.getQuery();
         String token = null;
 
+        // Log the URI and query parameters
+        logger.info("Connection established with URI: " + uri);
+        logger.info("Query parameters: " + query);
+
         if (query != null) {
             for (String param : query.split("&")) {
                 if (param.startsWith("token=")) {
                     token = param.split("token=")[1];
+                    // Log the extracted token
+                    logger.info("Extracted token: " + token);
                 }
             }
         }
         if (token == null || !validateToken(token)) {
             session.close(CloseStatus.BAD_DATA);
             System.out.println("Invalid token, connection closed");
+            logger.warning("Invalid token, connection closed");
             return;
         }
 
@@ -79,14 +112,20 @@ public class WebSocketServer extends TextWebSocketHandler {
         String clientKey = (username != null) ? username : "guest-" + token;
         // String clientKey = "guest-" + token;
 
+        // Log the extracted username or guest key
+        logger.info("Extracted username: " + username);
+        logger.info("Client key: " + clientKey);
+
         if (username != null && tokenService.isUserAndLoggedIn(token)) {
             // User is logged in
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
+            logger.info("Connected: " + clientKey);
         } else {
             // User is a guest
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
+            logger.info("Connected: " + clientKey);
         }
     }
 
@@ -94,7 +133,8 @@ public class WebSocketServer extends TextWebSocketHandler {
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
-            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            List<String> lst = allMessages.getOrDefault(username, new ArrayList<>());
+            Queue<String> queue = new LinkedList<>(lst);
             while (!queue.isEmpty()) {
                 String message = queue.poll();
                 try {
@@ -103,7 +143,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                     e.printStackTrace();
                 }
             }
-            messageQueues.remove(username);
+            // messageQueues.remove(username);
         }
     }
 
@@ -118,6 +158,8 @@ public class WebSocketServer extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.values().remove(session);
         System.out.println("Disconnected: " + session.getId());
+        // Log the connection closure
+        logger.info("Connection closed with status: " + status);
     }
 
     /**
@@ -129,11 +171,17 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        // Log the received message
+        logger.info("Received message: " + message.getPayload());
+
         // Assuming the message format is "targetUsername:message"
         String[] parts = message.getPayload().split(":", 2);
         if (parts.length == 2) {
             String targetUsername = parts[0];
             String msg = "New notification :" + targetUsername + parts[1];
+
+            // Add message to the user's all messages list
+            allMessages.computeIfAbsent(targetUsername, k -> new ArrayList<>()).add(msg);
 
             // Send message to the target client
             WebSocketSession targetSession = sessions.get(targetUsername);
@@ -156,6 +204,8 @@ public class WebSocketServer extends TextWebSocketHandler {
      * @throws IOException If an I/O error occurs while sending the message.
      */
     public void broadcastMessage(String message) {
+        // Log the message being sent to all connected users
+        logger.info("Sending broadcast message: " + message);
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
             WebSocketSession session = entry.getValue();
             if (session.isOpen()) {
@@ -181,6 +231,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
+        allMessages.computeIfAbsent(targetUser, k -> new ArrayList<>()).add(message);
         if (session != null && session.isOpen()) {
             try {
                 session.sendMessage(new TextMessage(message));
@@ -235,6 +286,62 @@ public class WebSocketServer extends TextWebSocketHandler {
                 e.printStackTrace();
             }
         }
-
     }
+
+    /**
+     * function to retrieve the previous messages for a exist user who is logged
+     * after leaving the system.
+     * 
+     * @param targetUser
+     */
+    public void retrivePreviousMessages(String targetUser) {
+        WebSocketSession session = sessions.get(targetUser);
+        if (session != null && session.isOpen()) {
+            List<String> lst = allMessages.getOrDefault(targetUser, new ArrayList<>());
+            Queue<String> queue = new LinkedList<>(lst);
+            while (!queue.isEmpty()) {
+                String message = queue.poll();
+                try {
+                    session.sendMessage(new TextMessage(message));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    public void addGuestSession(String guestToken, WebSocketSession session) throws IOException {
+        URI uri = session.getUri();
+        String query = uri.getQuery();
+        String token = null;
+
+        if (query != null) {
+            for (String param : query.split("&")) {
+                if (param.startsWith("token=")) {
+                    token = param.split("token=")[1];
+                }
+            }
+        }
+        if (token == null || !validateToken(token)) {
+            session.close(CloseStatus.BAD_DATA);
+            System.out.println("Invalid token, connection closed");
+            return;
+        }
+
+        String username = tokenService.extractUsername(token);
+        String clientKey = (username != null) ? username : "guest-" + token;
+        // String clientKey = "guest-" + token;
+
+        if (username != null && tokenService.isUserAndLoggedIn(token)) {
+            // User is logged in
+            sessions.put(clientKey, session);
+            System.out.println("Connected: " + clientKey);
+        } else {
+            // User is a guest
+            sessions.put(clientKey, session);
+            System.out.println("Connected: " + clientKey);
+        }
+    }
+
 }

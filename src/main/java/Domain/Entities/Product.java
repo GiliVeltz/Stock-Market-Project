@@ -8,85 +8,121 @@ import java.util.logging.Logger;
 
 import java.util.Map;
 
-import Domain.Policies.ProductPolicy;
+import Domain.Entities.Policies.ProductPolicy;
+import Domain.Entities.enums.Category;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import enums.Category;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 public class Product implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer _productId;
-    private String _productName;
-    private double _price;
-    private Integer _quantity;
-    private HashSet<String> _keywords;
-    private Double _productRating;
-    private Integer _productRatersCounter;
+    private Integer productId;
+
+    @Column(name = "productName", nullable = false)
+    private String productName;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
+    //@ElementCollection(fetch = FetchType.LAZY) // Lazy loading is often a good default for collections
+    @CollectionTable(name = "product_keywords", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "keyword") // Name of the column in the collection table
+    private HashSet<String> keywords;
+
+    @Column(name = "productRating", nullable = true)
+    private Double productRating;
+
+    @Column(name = "productRatersCounter", nullable = true)
+    private Integer productRatersCounter;
+
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     @Transient
-    private Category _category;
+    private ProductPolicy productPolicy;
+
     @Transient
-    private ProductPolicy _productPolicy;
-    @Transient
-    private Map<String, String> _reviews; // usernames and reviews
+    private Map<String, String> reviews; // usernames and reviews
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+    @ManyToOne
+    @JoinColumn(name = "shopping_basket_id", nullable = true)
+    private ShoppingBasket shoppingBasket;
+
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
+    // Default constructor
+    public Product() { }
+
     // Constructor
-    public Product(Integer productId, String productName, Category category, double price) {
-        this._productId = productId;
-        this._productName = productName;
-        this._category = category;
-        this._price = price;
-        this._quantity = 0;
-        this._keywords = new HashSet<>();
-        this._keywords.add(productName);
-        this._keywords.add(category.toString());
-        this._productRating = -1.0;
-        this._productRatersCounter = 0;
-        this._productPolicy = new ProductPolicy();
-        this._reviews = new HashMap<>();
+    public Product(String productName, Category category, double price, Shop shop) {
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.quantity = 0;
+        this.keywords = new HashSet<>();
+        this.keywords.add(productName);
+        this.keywords.add(category.toString());
+        this.productRating = -1.0;
+        this.productRatersCounter = 0;
+        this.productPolicy = new ProductPolicy();
+        this.reviews = new HashMap<>();
+        this.shop = shop;
     }
 
     // this function responsible for adding a rating to the product
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
-            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", _productId));
+            throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", productId));
         Double newRating = Double.valueOf(rating);
-        if (_productRating == -1.0) {
-            _productRating = newRating;
+        if (productRating == -1.0) {
+            productRating = newRating;
         } else {
-            _productRating = ((_productRating * _productRatersCounter) + newRating) / (_productRatersCounter + 1);
+            productRating = ((productRating * productRatersCounter) + newRating) / (productRatersCounter + 1);
         }
-        _productRatersCounter++;
+        productRatersCounter++;
     }
 
     // this function responsible for purchasing a product: decrease the quantity of the product by 1 and add the product to the user's cart
     public synchronized void purchaseProduct() throws StockMarketException {
-        if (_quantity == 0) {
-            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+        if (quantity == 0) {
+            logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + productName + " with id: " + productId
                     + " out of stock -- thorwing ProductOutOfStockExepction.");
             throw new ProductOutOfStockExepction("Product is out of stock");
         }
-        _quantity--;
-        logger.log(Level.FINE, "Product - purchaseProduct - Product " + _productName + " with id: " + _productId
+        quantity--;
+        logger.log(Level.FINE, "Product - purchaseProduct - Product " + productName + " with id: " + productId
                 + " had been purchased -- -1 to stock.");
     }
 
     public synchronized void cancelPurchase() {
-        _quantity++;
-        logger.log(Level.FINE, "Product - cancelPurchase - Product " + _productName + " with id: " + _productId
+        quantity++;
+        logger.log(Level.FINE, "Product - cancelPurchase - Product " + productName + " with id: " + productId
                 + " had been purchased cancel -- +1 to stock.");
     }
 
     // this function add a review to the product
     public void addReview(String username, String review) {
-        _reviews.put(username, review);
+        reviews.put(username, review);
     }
 
     @Override
@@ -99,7 +135,7 @@ public class Product implements Cloneable {
     }
 
     public boolean isKeywordExist(String keyword) {
-        return _keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
+        return keywords.stream().anyMatch(k -> k.equalsIgnoreCase(keyword));
     }
 
     public boolean isKeywordListExist(List<String> keywords) {
@@ -112,134 +148,138 @@ public class Product implements Cloneable {
     }
 
     public boolean isPriceInRange(double minPrice, double maxPrice) {
-        return _price >= minPrice && _price <= maxPrice;
+        return price >= minPrice && price <= maxPrice;
     }
     
 
     public void updateProductQuantity(int newQuantitiy)
     {
-        _quantity = newQuantitiy;
+        quantity = newQuantitiy;
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + _productId +
-                ", name='" + _productName + '\'' +
-                ", category=" + _category +
-                ", price=" + _price +
-                ", keywords=" + _keywords +
-                ", rating=" + _productRating +
+                "id=" + productId +
+                ", name='" + productName + '\'' +
+                ", category=" + category +
+                ", price=" + price +
+                ", keywords=" + keywords +
+                ", rating=" + productRating +
                 '}';
     }
 
     // Getters and Setters
 
     public String getProductPolicyInfo() {
-        return _productPolicy.toString();
+        return productPolicy.toString();
     }
 
     public String getProductGeneralInfo() {
-        return "Product ID: " + _productId + " | Product Name: " + _productName + " | Product Category: " + _category + " | Product Price: " + _price + " | Product Quantity: " + _quantity + " | Product Rating: " + _productRating;
+        return "Product ID: " + productId + " | Product Name: " + productName + " | Product Category: " + category + " | Product Price: " + price + " | Product Quantity: " + quantity + " | Product Rating: " + productRating;
     }
 
     public Integer getProductId() {
-        return _productId;
+        return productId;
+    }
+
+    public Object getId() {
+        return productId;
     }
 
     public String getProductName() {
-        return _productName;
+        return productName;
     }
 
     public double getPrice() {
-        return _price;
+        return price;
     }
 
     public Integer getProductQuantity() {
-        return _quantity;
+        return quantity;
     }
 
     public HashSet<String> getKeywords() {
-        return _keywords;
+        return keywords;
     }
 
     public Double getProductRating() {
-        return _productRating;
+        return productRating;
     }
 
     public Integer getProductRatersCounter() {
-        return _productRatersCounter;
+        return productRatersCounter;
     }
 
     public Category getCategory() {
-        return _category;
+        return category;
     }
 
     public ProductPolicy getProductPolicy() {
-        return _productPolicy;
+        return productPolicy;
     }
 
     public Map<String, String> getReviews() {
-        return _reviews;
+        return reviews;
     }
 
-    public void setProductId(Integer productId) {
-        this._productId = productId;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
     public void setProductName(String productName) {
-        this._productName = productName;
+        this.productName = productName;
     }
 
     public void setPrice(double price) {
-        this._price = price;
+        this.price = price;
     }
 
     public void setProductQuantity(Integer productQuantity) {
-        this._quantity = productQuantity;
+        this.quantity = productQuantity;
     }
 
     public void setKeywords(HashSet<String> keywords) {
-        this._keywords = keywords;
+        this.keywords = keywords;
     }
 
     public void setProductRating(Double productRating) {
-        this._productRating = productRating;
+        this.productRating = productRating;
     }
 
     public void setProductRatersCounter(Integer productRatersCounter) {
-        this._productRatersCounter = productRatersCounter;
+        this.productRatersCounter = productRatersCounter;
     }
 
     public void setCategory(Category category) {
-        this._category = category;
+        this.category = category;
     }
 
     public void setProductPolicy(ProductPolicy productPolicy) {
-        this._productPolicy = productPolicy;
+        this.productPolicy = productPolicy;
     }
 
     public void setReviews(Map<String, String> reviews) {
-        this._reviews = reviews;
+        this.reviews = reviews;
     }
 
     public void setKeywords(String keyword) {
-        this._keywords.add(keyword);
+        this.keywords.add(keyword);
     }
 
     public void removeKeywords(String keyword) {
-        this._keywords.remove(keyword);
+        this.keywords.remove(keyword);
     }
 
     public void setProductRating(double productRating) {
-        this._productRating = productRating;
+        this.productRating = productRating;
     }
 
     public void setProductRatersCounter(int productRatersCounter) {
-        this._productRatersCounter = productRatersCounter;
+        this.productRatersCounter = productRatersCounter;
     }
 
     public void addKeyword(String keyword) {
-        _keywords.add(keyword);
+        keywords.add(keyword);
     }
 }

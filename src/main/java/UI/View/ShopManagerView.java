@@ -4,14 +4,10 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -25,8 +21,6 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.Grid.Column;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H2;
@@ -62,7 +56,7 @@ import UI.Model.ShopPolicy.ShoppingBasketRuleDto;
 import UI.Presenter.ShopManagerPresenter;
 import UI.Model.Category;
 
-
+@SuppressWarnings("unused")
 @Route(value = "user_shops")
 public class ShopManagerView extends BaseView implements HasUrlParameter<Integer>{
 
@@ -246,7 +240,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             if(!_permissions.contains(Permission.ADD_PRODUCT)){
                 addProductsBtn.setEnabled(false);
             }
-            if(!_permissions.contains(Permission.ADD_DISCOUNT_POLICY)){
+            if(!_permissions.contains(Permission.CHANGE_DISCOUNT_POLICY)){
                 addDiscountsBtn.setEnabled(false);
             }
             if(!_permissions.contains(Permission.CHANGE_PRODUCT_POLICY)){
@@ -264,6 +258,15 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             if(!_permissions.contains(Permission.GET_PURCHASE_HISTORY)){
                 viewPurchasesBtn.setEnabled(false);
             }
+            // if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+            //     viewProductsBtn.setEnabled(false);
+            // }
+            if(!_permissions.contains(Permission.EDIT_PRODUCT)){
+                editProductBtn.setEnabled(false);
+            }
+            // only for founder
+            closeShopBtn.setEnabled(false);
+            reopenShopBtn.setEnabled(false);
   
         }
 
@@ -1063,8 +1066,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
-    
-
+    @SuppressWarnings("unchecked")
     public Dialog createChangeShopPolicyDialog(){
         // Create a dialog
         Dialog dialog = new Dialog();
@@ -1149,6 +1151,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
+    @SuppressWarnings("unchecked")
     public Dialog createAddShopRuleDialog(List<ShoppingBasketRuleDto> newRules){
         Dialog dialog = new Dialog();
 
@@ -1313,6 +1316,8 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         dialog.add(content);
         return dialog;
     }
+    
+    @SuppressWarnings("unchecked")
     public Dialog createViewAndChangeProdcutPolicyDialog(ProductDto product){
         // Create a dialog
         Dialog dialog = new Dialog();
@@ -1397,6 +1402,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         return dialog;
     }
 
+    @SuppressWarnings("unchecked")
     public Dialog createAddProductRuleDialog(List<UserRuleDto> newRules){
         Dialog dialog = new Dialog();
 

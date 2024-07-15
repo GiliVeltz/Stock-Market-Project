@@ -78,9 +78,18 @@ public class UserOrderHistoryView extends BaseView {
         // Add the shopping baskets for this order
         for (Map.Entry<Integer, ShoppingBasketDto> entry : orderDto.getShoppingBasketMap().entrySet()) {
             ShoppingBasketDto basketDto = entry.getValue();
-            detailsLayout.add(createDetailSpan("Shop ID: ", entry.getKey().toString()));
-            detailsLayout.add(createDetailSpan("Shop Name: ", basketDto.getShop().getShopName()));
-            detailsLayout.add(createDetailSpan("Basket Total Amount: ", String.valueOf(basketDto.getBasketTotalAmount())));
+            
+            // Create a bordered div for each basket
+            Div basketDiv = new Div();
+            basketDiv.getStyle().set("border", "1px solid black");
+            basketDiv.getStyle().set("padding", "10px");
+            basketDiv.getStyle().set("margin", "10px 0");
+
+            // Create a vertical layout for basket details
+            VerticalLayout basketDetailsLayout = new VerticalLayout();
+            basketDetailsLayout.add(createDetailSpan("Shop ID: ", entry.getKey().toString()));
+            basketDetailsLayout.add(createDetailSpan("Shop Name: ", basketDto.getShop().getShopName()));
+            basketDetailsLayout.add(createDetailSpan("Basket Total Amount: ", String.valueOf(basketDto.getBasketTotalAmount())));
 
             // Format the product IDs with quantities
             String formattedProductIds = basketDto.getProductIdList().stream()
@@ -89,14 +98,17 @@ public class UserOrderHistoryView extends BaseView {
                 .map(e -> e.getKey() + " (" + e.getValue() + ")")
                 .collect(Collectors.joining(", "));
 
-            detailsLayout.add(createDetailSpan("Product IDs: ", formattedProductIds));
+            basketDetailsLayout.add(createDetailSpan("Product IDs: ", formattedProductIds));
+
+            basketDiv.add(basketDetailsLayout);
+            detailsLayout.add(basketDiv);
         }
 
         // Create a dialog to display the details
         Dialog dialog = new Dialog();
         dialog.add(detailsLayout);
-        dialog.setWidth("400px");
-        dialog.setHeight("300px");
+        dialog.setWidth("600px"); // Increase the width of the dialog
+        dialog.setHeight("500px"); // Increase the height of the dialog
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
 
