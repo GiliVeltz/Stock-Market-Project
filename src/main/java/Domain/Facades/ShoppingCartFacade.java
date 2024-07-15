@@ -16,6 +16,8 @@ import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbOrderRepository;
 import Domain.Repositories.DbShoppingBasketRepository;
@@ -110,9 +112,12 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addProductToUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
-        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
+        ShoppingCart cart = getCartByUsername(userName);
         if (cart != null) {
-            cart.addProduct(productID, shopID, quantity);
+            ShoppingBasket basket = cart.addProduct(productID, shopID, quantity);
+            _basketRepository.save(basket);
+            _basketRepository.flush();
+            _cartsRepository.flush();
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -127,7 +132,10 @@ public class ShoppingCartFacade {
     public void addProductToGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
-            cart.addProduct(productID, shopID, quantity);
+            ShoppingBasket basket = cart.addProduct(productID, shopID, quantity);
+            _basketRepository.save(basket);
+            _basketRepository.flush();
+            _cartsRepository.flush();
             logger.log(Level.INFO, "Product added to guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -268,8 +276,15 @@ public class ShoppingCartFacade {
 
     // this function returns the cart of the user by username.
     @Transactional
-    public Object getCartByUsername(String username) {
-        return _cartsRepository.getCartByUsername(username);
+    public ShoppingCart getCartByUsername(String username) {
+        ShoppingCart returnedCart = _cartsRepository.getCartByUsername(username);
+        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(returnedCart.getId());
+        returnedCart.setShoppingBaskets(shoppingBaskets);
+        returnedCart.setOrderRepository(_orderRepository);
+        returnedCart.setShopFacade(shopFacade);
+        returnedCart.setPaymentMethod(AdapterPaymentImp.getRealAdapterPayment());
+        returnedCart.setSupplyMethod(AdapterSupplyImp.getAdapterSupply());
+        return returnedCart;
     }
 
     /*
@@ -280,7 +295,8 @@ public class ShoppingCartFacade {
         ShoppingCart cart;
 
         if (username == null) {
-            cart = _guestsCarts.get(token);
+            //cart = _guestsCarts.get(token);
+            cart = _cartsRepository.getCartByUsername(token);
         } else {
             cart = _cartsRepository.getCartByUsername(username);
         }
