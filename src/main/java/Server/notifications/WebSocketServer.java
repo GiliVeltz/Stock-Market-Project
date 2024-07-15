@@ -145,8 +145,15 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    // check for any queued message and if exist send them to the client
-    @Transactional
+    /**
+     * Checks for any queued messages for the specified user and sends
+     *  them to the client if they exist.
+     * also check that if the current all msessages is empty
+     * then it might be because it is a new initialization
+     * of the server so need to retive all user messages from the DB
+     * 
+     * @param username the username of the client to check for queued messages
+     */    @Transactional
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
@@ -246,6 +253,9 @@ public class WebSocketServer extends TextWebSocketHandler {
      * This method looks up the session for the username and sends the message if
      * the session exists.
      * if it is a registered user but not logged in than the message will be queued.
+     * also check that if the current all msessages is empty
+     * then it might be because it is a new initialization
+     * of the server so need to retive all user messages from the DB
      * 
      * @param username The username of the recipient.
      * @param message  The message to be sent.
@@ -256,9 +266,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         WebSocketSession session = sessions.get(targetUser);
         if (!allMessages.containsKey(targetUser)) {
             // might be because first start of the server- need to check in DB id a user is
-            // already had previous messages
-            // user repository get all messages of the target user
-            // _userRepository.findMessagesByUsername(targetUser);
+         
             List<String> previousMessages = _userRepository.findMessagesByUsername(targetUser);
             allMessages.put(targetUser, new ArrayList<>(previousMessages));
 
@@ -278,10 +286,6 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    private boolean validateToken(String token) {
-        // return tokenService.validateToken(token);
-        return true;
-    }
 
     /**
      * Replaces a guest user's token with a logged-in user's new token.
@@ -374,6 +378,78 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
+    }
+
+     /**
+     * Adds a guest session to the WebSocket server.
+     *
+     * @param guestToken the guest token
+     * @param session the WebSocket session
+     * @throws IOException if an I/O error occurs
+     */
+    public void addGuestSessionfromToken(String guestToken, WebSocketSession session) throws IOException {
+        String token = extractTokenFromQuery(session.getUri().getQuery());
+
+        if (token == null || !validateToken(token)) {
+            closeSession(session, CloseStatus.BAD_DATA, "Invalid token, connection closed");
+            return;
+        }
+
+        String username = tokenService.extractUsername(token);
+        String clientKey = (username != null) ? username : "guest-" + token;
+
+        sessions.put(clientKey, session);
+        logConnection(clientKey);
+    }
+
+    /**
+     * Extracts the token from the query string.
+     *
+     * @param query the query string
+     * @return the extracted token, or null if not found
+     */
+    private String extractTokenFromQuery(String query) {
+        if (query != null) {
+            for (String param : query.split("&")) {
+                if (param.startsWith("token=")) {
+                    return param.split("token=")[1];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Validates the token.
+     *
+     * @param token the token to validate
+     * @return true if the token is valid, false otherwise
+     */
+    private boolean validateToken(String token) {
+        // Implement your token validation logic here
+        return tokenService.validateToken(token);
+    }
+
+    /**
+     * Closes the session with a specific status and logs the reason.
+     *
+     * @param session the WebSocket session
+     * @param status the close status
+     * @param reason the reason for closing the session
+     * @throws IOException if an I/O error occurs
+     */
+    private void closeSession(WebSocketSession session, CloseStatus status, String reason) throws IOException {
+        session.close(status);
+        logger.info(reason);
+    }
+
+    /**
+     * Logs the connection details.
+     *
+     * @param clientKey the client key
+     */
+    private void logConnection(String clientKey) {
+        logger.info("Connected:" + clientKey);
     }
 
 }
