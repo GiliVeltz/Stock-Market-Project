@@ -736,7 +736,7 @@ public class Shop {
         }
 
         // All constraints checked - remove product from the shop
-        //productMap.remove(product.getProductId());
+        productMap.remove(product.getProductId());
         productRepository.delete(product);
 
         // print logs to inform about the action
@@ -826,6 +826,12 @@ public class Shop {
         // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot remove discount.");
+
+        // check if no discounts
+        if (discounts.isEmpty()) {
+            throw new StockMarketException("No discounts to remove.");
+        }
+
         // check if discount exists
         for (Discount d : discounts) {
             if (d.getId() == discountId) {

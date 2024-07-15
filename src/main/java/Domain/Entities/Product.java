@@ -89,6 +89,23 @@ public class Product implements Cloneable {
         this.shop = shop;
     }
 
+    // Constructor for tests
+    public Product(String productName, Category category, double price, Shop shop, int productId) {
+        this.productId = productId;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.quantity = 0;
+        this.keywords = new HashSet<>();
+        this.keywords.add(productName);
+        this.keywords.add(category.toString());
+        this.productRating = -1.0;
+        this.productRatersCounter = 0;
+        this.productPolicy = new ProductPolicy();
+        this.reviews = new HashMap<>();
+        this.shop = shop;
+    }
+
     // this function responsible for adding a rating to the product
     public void addProductRating(Integer rating) throws StockMarketException {
         if(rating > 5 || rating < 1)
