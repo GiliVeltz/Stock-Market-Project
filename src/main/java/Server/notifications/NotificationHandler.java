@@ -49,7 +49,7 @@ public class NotificationHandler {
 
         User user = getUserByUsername(targetUsername);
         user.addMessage(message);
-        _userRepository.save(user);
+        _userRepository.flush();
     }
 
     public void retrivePreviousMessages(String targetUsername) {
