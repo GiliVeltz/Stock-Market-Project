@@ -2,6 +2,7 @@ package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -238,6 +239,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * @param message  The message to be sent.
      * @throws IOException If an I/O error occurs while sending the message.
      */
+      @Transactional
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
         if (!allMessages.containsKey(targetUser)) {

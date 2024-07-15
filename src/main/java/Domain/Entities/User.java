@@ -43,7 +43,7 @@ public class User {
     @ElementCollection
     @CollectionTable(name = "user_messages", joinColumns = @JoinColumn(name = "_id"))
     @Column(name = "message")
-    private List<String> message = new ArrayList<String>();
+    private List<String> messages = new ArrayList<String>();
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
@@ -209,7 +209,7 @@ public class User {
     }
 
     public void addMessage(String message) {
-        this.message.add(0,message);
+        this.messages.add(0,message);
     }
 
     public void setId(Integer i) {
