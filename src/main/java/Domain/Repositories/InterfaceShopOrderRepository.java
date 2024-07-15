@@ -6,6 +6,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import Domain.Entities.ShopOrder;
 
 @NoRepositoryBean
-public interface InterfaceShopOrderRepository extends JpaRepository<ShopOrder, Long>{
+public interface InterfaceShopOrderRepository extends JpaRepository<ShopOrder, Integer>{
 
 }

@@ -35,6 +35,8 @@ public class NotificationHandler {
     }
 
     /**
+
+    /**
      * Sends an alert message to a specified user via the WebSocket server.
      * Converts the Alert object to a string message before sending.
      *

@@ -18,7 +18,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "_id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -200,7 +200,7 @@ public class User {
                 - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
     }
 
-    public long getId() {
+    public Object getId(){
         return id;
     }
 
@@ -210,5 +210,9 @@ public class User {
 
     public void addMessage(String message) {
         this.message.add(0,message);
+    }
+
+    public void setId(Integer i) {
+        id = i;
     }
 }

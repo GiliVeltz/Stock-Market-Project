@@ -45,8 +45,6 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -128,7 +126,9 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public <S extends Shop> S save(S entity) {
-        entity.setShopId(_shopIdCounter);
+        if (entity.getId() == null) {
+            entity.setShopId(_shopIdCounter);
+        }
         _shops.put(_shopIdCounter, entity);
         _shopIdCounter++;
         return entity;
@@ -159,8 +159,7 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public void delete(Shop entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shops.remove(entity.getShopId());
     }
 
     @Override

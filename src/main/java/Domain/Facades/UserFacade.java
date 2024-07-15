@@ -82,7 +82,7 @@ public class UserFacade {
                 throw new StockMarketException("User is already logged in.");
         }
         user.logIn();
-        _userRepository.save(user);
+        _userRepository.flush();
         logger.info("User " + userName + " logged in to the system.");
     }
 
@@ -94,7 +94,7 @@ public class UserFacade {
                 throw new StockMarketException("User is not logged in.");
         }
         user.logOut();
-        _userRepository.save(user);
+        _userRepository.flush();
         logger.info("User " + userName + " logged out from the system.");
     }
 
@@ -124,6 +124,7 @@ public class UserFacade {
 
     // this function is used to register a new user to the system.
     public void register(UserDto userDto) throws StockMarketException {
+        logger.info("Registering new user " + userDto.username + " to the system.");
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
         }
@@ -152,14 +153,17 @@ public class UserFacade {
         } else {
             throw new StockMarketException("Username already exists.");
         }
+        logger.info("User " + userDto.username + " registered successfully.");
     }
 
     // function to add an order to a user
     @Transactional
     public void addOrderToUser(String username, Order order) throws StockMarketException {
+        logger.info("Adding order to user " + username + ".");
         User user = getUserByUsername(username);
         user.addOrder(order);
-        _userRepository.save(user);
+        _userRepository.flush();
+        logger.info("Order added to user " + username + ".");
     }
 
     // function that check if a given user is an admin
@@ -178,19 +182,23 @@ public class UserFacade {
     // function to add a new guest to the system
     @Transactional
     public void addNewGuest(String id) {
+        logger.info("Trying to add a new guest with ID " + id + " to the system.");
         if (isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " already exists.");
         }
         _guestRepository.save(new Guest(id));
+        logger.info("Guest with ID " + id + " added to the system.");
     }
 
     // function to remove a guest from the system
     @Transactional
     public void removeGuest(String id) {
+        logger.info("Trying to remove a guest with ID " + id + " from the system.");
         if (!isGuestExists(id)) {
             throw new IllegalArgumentException("Guest with ID " + id + " does not exist.");
         }
         _guestRepository.deleteByGuestId(String.valueOf(id));
+        logger.info("Guest with ID " + id + " removed from the system.");
     }
 
     // function to get all the registered users
@@ -213,6 +221,8 @@ public class UserFacade {
     // change email for a user
     @Transactional
     public void changeEmail(String username, String email) throws StockMarketException {
+        logger.info("Changing email for user " + username + " to " + email + ".");
+
         User user = getUserByUsername(username);
         if (email == null || email.isEmpty()) {
             throw new UserException("Email is empty.");
@@ -221,7 +231,9 @@ public class UserFacade {
             throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
-        _userRepository.save(user);
+        _userRepository.flush();
+
+        logger.info("Email for user " + username + " changed to " + email + ".");
     }
 
     // getting the user personal details
@@ -234,6 +246,8 @@ public class UserFacade {
     // set the user personal new details
     @Transactional
     public UserDto setUserDetails(String username, UserDto userDto) throws StockMarketException {
+        logger.info("Setting new details for user " + username);
+
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("new UserName is empty.");
         }
@@ -250,23 +264,30 @@ public class UserFacade {
         } else {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
-            _userRepository.save(user);
+            _userRepository.flush();
         }
+
+        logger.info("New details for user " + username);
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
 
     // function to notify a user when an alert is triggered
     @Transactional
     public boolean notifyUser(String targetUser, Alert alert) {
+        logger.info("Notifying user " + targetUser + " with alert " + alert);
         try {
             _notificationHandler.sendMessage(targetUser, alert);
+            logger.info("User " + targetUser + " notified with alert " + alert);
             return true;
         } catch (Exception e) {
+            logger.warning("Failed to notify user " + targetUser + " with alert " + alert);
             return false;
         }
     }
 
     public List<OrderDto> viewOrderHistory(String username) throws StockMarketException {
+        logger.info("Getting order history for user " + username + ".");
+
         User user = getUserByUsername(username);
         List<Order> orders = user.getPurchaseHistory();
         List<OrderDto> orderDtos = new ArrayList<>();
@@ -277,9 +298,11 @@ public class UserFacade {
     }
 
     public void reportToAdmin(String user, String message) {
+        logger.info("Reporting to admin " + user + " with message " + message);
         Alert alert = new IntegrityRuleBreakAlert(user, message);
         String targetUser = alert.getTargetUser();
        notifyUser(targetUser, alert);
+       logger.info("Reported to admin " + user + " with message " + message);
     }
 
     // get guest oblect by guest id from the repository
@@ -288,8 +311,10 @@ public class UserFacade {
     }
 
     public void setSystemAdmin(User user) {
+        logger.info("Setting user " + user.getUserName() + " as system admin.");
         user.setIsSystemAdmin(true);
-        _userRepository.save(user);
+        _userRepository.flush();
+        logger.info("User " + user.getUserName() + " set as system admin.");
     }
 
     // // // function to initilaize data for UI testing

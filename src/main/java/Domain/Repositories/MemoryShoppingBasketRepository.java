@@ -24,8 +24,6 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -47,33 +45,9 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
-    }
-
-    @Override
     public void deleteAllInBatch() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
-    }
-
-    @Override
-    public ShoppingBasket getOne(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
-    }
-
-    @Override
-    public ShoppingBasket getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
-    }
-
-    @Override
-    public ShoppingBasket getReferenceById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
@@ -96,32 +70,16 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public List<ShoppingBasket> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
-
-    @Override
-    public List<ShoppingBasket> findAllById(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+        return _shoppingBaskets;
     }
 
     @Override
     public <S extends ShoppingBasket> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
-    }
-
-    @Override
-    public Optional<ShoppingBasket> findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+        if (entity.getId() == null) {
+            entity.setId(_shoppingBaskets.size());          
+        }
+        _shoppingBaskets.add(entity);
+        return entity;
     }
 
     @Override
@@ -131,21 +89,8 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
     }
 
     @Override
-    public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
-    }
-
-    @Override
     public void delete(ShoppingBasket entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
+        _shoppingBaskets.remove(entity);
     }
 
     @Override
@@ -201,6 +146,60 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
             Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
+    }
+
+    @Override
+    public ShoppingBasket getOne(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
+    }
+
+    @Override
+    public ShoppingBasket getById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    }
+
+    @Override
+    public ShoppingBasket getReferenceById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
+    }
+
+    @Override
+    public Optional<ShoppingBasket> findById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
+    }
+
+    @Override
+    public List<ShoppingBasket> findAllById(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
 }
