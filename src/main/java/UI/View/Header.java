@@ -239,7 +239,9 @@ public class Header extends HorizontalLayout {
             String username = usernameField.getValue();
             String password = passwordField.getValue();
 
-            presenter.loginUser(username, password);
+            presenter.loginUser(username, password, message-> {
+                Notification.show(message);
+            });
 
             // Close the dialog after submission
             dialog.close();

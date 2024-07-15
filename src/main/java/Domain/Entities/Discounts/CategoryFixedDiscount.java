@@ -1,6 +1,7 @@
 package Domain.Entities.Discounts;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -55,7 +56,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
     protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (!_rule.predicate(basket))
             return;
-        for (Product product : basket.getProductsList()) {
+        for (Product product : new HashSet<>(basket.getProductsList())) {
             if(!product.getCategory().equals(_category)){
                 continue;
             }
