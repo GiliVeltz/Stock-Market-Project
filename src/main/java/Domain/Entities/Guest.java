@@ -16,7 +16,7 @@ public class Guest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "guest_id", nullable = false, unique = true)
     private String guestId;
@@ -42,7 +42,7 @@ public class Guest {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
