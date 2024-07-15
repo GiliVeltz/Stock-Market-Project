@@ -55,7 +55,6 @@ public class ShoppingCartFacade {
         Guest g = userFacade.getGuestById(guestID);
         ShoppingCart cart = new ShoppingCart(g);
         cart.setOrderRepository(_orderRepository);
-        cart.setOrderRepository(null);
         _guestsCarts.put(guestID, cart);
     }
 
