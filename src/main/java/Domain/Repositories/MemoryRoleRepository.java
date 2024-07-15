@@ -146,8 +146,7 @@ public class MemoryRoleRepository implements InterfaceRoleRepository{
 
     @Override
     public void delete(Role entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        roles.remove(entity);
     }
 
     @Override

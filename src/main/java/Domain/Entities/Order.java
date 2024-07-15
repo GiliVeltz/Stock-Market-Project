@@ -52,6 +52,10 @@ public class Order {
         return orderId;
     }
 
+    public Object getId() {
+        return orderId;
+    }
+
     // This method is used to set the shoppingBasketMap when creating the order
     private void setShoppingBasketMap(List<ShoppingBasket> shoppingBaskets){
         for (ShoppingBasket basket : shoppingBaskets) {

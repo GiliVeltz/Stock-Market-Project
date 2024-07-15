@@ -38,7 +38,7 @@ public class Guest {
     }
 
     // Getters and setters
-    public Long getId() {
+    public Object getId() {
         return id;
     }
 

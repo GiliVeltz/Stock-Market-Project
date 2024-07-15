@@ -78,7 +78,7 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public <S extends ShoppingBasket> S save(S entity) {
-        if (entity.getShoppingBasketId() == null) {
+        if (entity.getId() == null) {
             entity.setId(_shoppingBaskets.size());          
         }
         _shoppingBaskets.add(entity);
@@ -93,8 +93,7 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public void delete(ShoppingBasket entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shoppingBaskets.remove(entity);
     }
 
     @Override

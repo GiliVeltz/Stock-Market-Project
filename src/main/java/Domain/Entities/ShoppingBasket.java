@@ -321,6 +321,10 @@ public class ShoppingBasket implements Cloneable {
         return shoppingBasketId;
     }
 
+    public Object getId() {
+        return shoppingBasketId;
+    }
+
     public void setId(int id) {
         this.shoppingBasketId = id;
     }

@@ -115,7 +115,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public <S extends Product> S save(S entity) {
-        if (entity.getProductId() == null) {
+        if (entity.getId() == null) {
             entity.setProductId(products.size());
         }
         products.add(entity);
@@ -152,8 +152,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public void delete(Product entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        products.remove(entity);
     }
 
     @Override

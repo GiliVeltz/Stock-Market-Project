@@ -85,7 +85,7 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public <S extends Order> S save(S entity) {
-        if(entity.getOrderId() == null){
+        if(entity.getId() == null){
             entity.setId(order.size());
         }
         order.add(entity);
@@ -100,8 +100,7 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public void delete(Order entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        order.remove(entity);
     }
 
     @Override

@@ -48,8 +48,8 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public <S extends User> S save(S entity) {
-        if (entity.getId() == -1) {
-            entity.setId((long) (_registeredUsers.size() + 1));
+        if (entity.getId() == null) {
+            entity.setId((_registeredUsers.size()));
         }
         _registeredUsers.put(entity.getUserName(), entity);
         return entity;
@@ -86,33 +86,9 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
-    }
-
-    @Override
     public void deleteAllInBatch() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
-    }
-
-    @Override
-    public User getOne(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
-    }
-
-    @Override
-    public User getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
-    }
-
-    @Override
-    public User getReferenceById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
@@ -127,25 +103,10 @@ public class MemoryUserRepository implements InterfaceUserRepository {
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
     }
 
-
     @Override
-    public List<User> findAllById(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
-    }
-
-
-
-    @Override
-    public Optional<User> findById(Long id) {
-        User user = _registeredUsers.values().stream().filter(u -> Long.valueOf(u.getId()).equals(id)).findFirst().orElse(null);
+    public Optional<User> findById(Integer id) {
+        User user = _registeredUsers.values().stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
         return Optional.ofNullable(user);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
 
     @Override
@@ -155,21 +116,8 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
-    }
-
-    @Override
     public void delete(User entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
+        _registeredUsers.remove(entity.getUserName());
     }
 
     @Override
@@ -224,6 +172,54 @@ public class MemoryUserRepository implements InterfaceUserRepository {
     public <S extends User, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
+    }
+
+    @Override
+    public User getOne(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
+    }
+
+    @Override
+    public User getById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    }
+
+    @Override
+    public User getReferenceById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
+    }
+
+    @Override
+    public List<User> findAllById(Iterable<Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Integer> ids) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
 }

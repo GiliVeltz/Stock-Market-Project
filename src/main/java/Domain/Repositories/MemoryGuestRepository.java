@@ -46,7 +46,7 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
         if (!existsByGuestId(entity.getGuestId())) {
             _guestIds.add(entity);
         }
-        if(entity.getGuestId() == null){
+        if(entity.getId() == null){
             entity.setGuestId(_guestIds.size() + "");
         }
         return entity;
@@ -172,8 +172,7 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
 
     @Override
     public void delete(Guest entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _guestIds.remove(entity);
     }
 
     @Override

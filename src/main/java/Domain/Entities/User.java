@@ -27,7 +27,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "_id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -200,7 +200,7 @@ public class User {
         return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
     }
 
-    public long getId(){
+    public Object getId(){
         return id;
     }
 
@@ -208,7 +208,7 @@ public class User {
         this.shoppingCart = shoppingCart2;
     }
 
-    public void setId(long l) {
-        id = l;
+    public void setId(Integer i) {
+        id = i;
     }
 }

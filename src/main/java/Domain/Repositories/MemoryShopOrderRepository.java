@@ -100,8 +100,7 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
 
     @Override
     public void delete(ShopOrder entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shopOrders.remove(entity);
     }
 
     @Override

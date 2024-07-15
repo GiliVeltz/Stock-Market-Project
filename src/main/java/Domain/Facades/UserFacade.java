@@ -124,6 +124,7 @@ public class UserFacade {
 
     // this function is used to register a new user to the system.
     public void register(UserDto userDto) throws StockMarketException {
+        logger.info("Registering new user " + userDto.username + " to the system.");
         if (userDto.username == null || userDto.username.isEmpty()) {
             throw new StockMarketException("UserName is empty.");
         }
@@ -152,6 +153,7 @@ public class UserFacade {
         } else {
             throw new StockMarketException("Username already exists.");
         }
+        logger.info("User " + userDto.username + " registered successfully.");
     }
 
     // function to add an order to a user
@@ -288,6 +290,7 @@ public class UserFacade {
     }
 
     public void setSystemAdmin(User user) {
+        logger.info("Setting user " + user.getUserName() + " as system admin.");
         user.setIsSystemAdmin(true);
         _userRepository.save(user);
     }

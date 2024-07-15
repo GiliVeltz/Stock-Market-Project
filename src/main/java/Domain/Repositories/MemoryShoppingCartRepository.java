@@ -157,8 +157,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public void delete(ShoppingCart entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shoppingCarts.remove(entity.getUsernameString());
     }
 
     @Override
