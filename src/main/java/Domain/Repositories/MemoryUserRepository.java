@@ -57,8 +57,6 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override

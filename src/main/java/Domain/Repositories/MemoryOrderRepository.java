@@ -17,22 +17,20 @@ import Domain.Entities.Order;
 @Repository
 public class MemoryOrderRepository implements InterfaceOrderRepository{
 
-    private List<Order> order;
+    private List<Order> _orders;
 
     // Constructor
     public MemoryOrderRepository(List<Order> order){
-        this.order = order;
+        this._orders = order;
     }
 
     // empty constructor
     public MemoryOrderRepository() {
-        order = new ArrayList<>();
+        _orders = new ArrayList<>();
     }
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -79,16 +77,15 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public List<Order> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return _orders;
     }
 
     @Override
     public <S extends Order> S save(S entity) {
         if(entity.getId() == null){
-            entity.setId(order.size());
+            entity.setId(_orders.size());
         }
-        order.add(entity);
+        _orders.add(entity);
         return entity;
     }
 
@@ -100,7 +97,7 @@ public class MemoryOrderRepository implements InterfaceOrderRepository{
 
     @Override
     public void delete(Order entity) {
-        order.remove(entity);
+        _orders.remove(entity);
     }
 
     @Override

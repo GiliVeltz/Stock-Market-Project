@@ -127,7 +127,7 @@ public class ShopFacade {
         shop = _shopRepository.save(shop);
         shop.setShopFounder(userName);
         shop.notifyReOpenShop(userName);
-        shop = _shopRepository.save(shop);
+        _shopRepository.flush();
         return shop.getShopId();
     }
 
@@ -191,9 +191,9 @@ public class ShopFacade {
         Product newProduct = new Product(productDto.productName, productDto.category, productDto.price, shop);
         newProduct = _productRepository.save(newProduct);
         newProduct.updateProductQuantity(productDto.productQuantity);
-        newProduct = _productRepository.save(newProduct);
+        _productRepository.flush();
         shop.addProductToShop(userName, newProduct);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
     }
 
 
@@ -214,7 +214,7 @@ public class ShopFacade {
                     productDto.productName, shopId));
         getShopByShopId(shopId).setNotificationHandler(_notificationHandler);
         getShopByShopId(shopId).removeProductFromShop(userName, productDto.productName, _productRepository);
-        _shopRepository.save(getShopByShopId(shopId));
+        _shopRepository.flush();
     }
 
     @Transactional
@@ -269,7 +269,7 @@ public class ShopFacade {
         getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
                 productDtoNew.category, productDtoNew.price);
         
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // Retrieves the purchase history for a shop by its ID.
@@ -509,7 +509,7 @@ public class ShopFacade {
 
         Product product = shop.getProductById(productId);
         shop.updateProductQuantity(userName, product, productAmount);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -522,7 +522,7 @@ public class ShopFacade {
 
         Product product = shop.getProductById(productId);
         shop.updateProductName(userName, product, productName);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -535,7 +535,7 @@ public class ShopFacade {
 
         Product product = shop.getProductById(productId);
         shop.updateProductPrice(userName, product, productPrice);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // this function is responsible update the quantity of a product in a shop
@@ -548,7 +548,7 @@ public class ShopFacade {
 
         Product product = shop.getProductById(productId);
         shop.updateProductCategory(userName, product, productCategpory);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     public String getShopFounderUsername(Integer shopId) {
@@ -567,7 +567,7 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.AppointOwner(username, ownerUsername);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
         notifyAppointOwner(username, ownerUsername, shopId);
     }
 
@@ -591,7 +591,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.AppointManager(username, managerUsername, permissionsSet);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
         notifyAppointManager(username, managerUsername, permissions,shopId);
     }
 
@@ -612,7 +612,7 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }      
         result = shop.fireRole(username, managerUsername);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
         notifyFireUser(username,managerUsername, shopId);
 
         return result;
@@ -634,7 +634,7 @@ public class ShopFacade {
             return null;
         }
         Set<String> ret = shop.resign(username);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
         return ret;
     }
 
@@ -651,7 +651,7 @@ public class ShopFacade {
                 .map(permissionString -> Permission.valueOf(permissionString.toUpperCase()))
                 .collect(Collectors.toSet());
         shop.modifyPermissions(username, managerUsername, permissionsSet);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
     }
 
     // this function returns the shop policy
@@ -759,7 +759,7 @@ public class ShopFacade {
         Shop shop = getShopByShopId(shopId);
         Product product = shop.getProductById(productId);
         shop.addProductRating(product, rating);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // this function adds a rating to a shop
@@ -770,7 +770,7 @@ public class ShopFacade {
 
         Shop shop = getShopByShopId(shopId);
         shop.addShopRating(rating);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
     }
 
     // Returns the shop name if exists, else returns null.
@@ -943,7 +943,7 @@ public class ShopFacade {
         }
         shop.addKeywordsToProduct(username, productId, keywords);
         Product product = shop.getProductById(productId);
-        _productRepository.save(product);
+        _productRepository.flush();
     }
 
     // function to initilaize data for UI testing
@@ -1132,7 +1132,7 @@ public class ShopFacade {
                 .collect(Collectors.toSet());
         shop.setNotificationHandler(_notificationHandler);
         shop.modifyPermissions(username, managerUsername, permissionsSet);
-        _shopRepository.save(shop);
+        _shopRepository.flush();
     }
 
    

@@ -45,8 +45,6 @@ public class MemoryShopRepository implements InterfaceShopRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override

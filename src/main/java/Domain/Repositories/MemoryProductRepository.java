@@ -32,8 +32,6 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -103,8 +101,7 @@ public class MemoryProductRepository implements InterfaceProductRepository {
 
     @Override
     public List<Product> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return products;
     }
 
     @Override

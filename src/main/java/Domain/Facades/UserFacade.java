@@ -82,7 +82,7 @@ public class UserFacade {
                 throw new StockMarketException("User is already logged in.");
         }
         user.logIn();
-        _userRepository.save(user);
+        _userRepository.flush();
         logger.info("User " + userName + " logged in to the system.");
     }
 
@@ -94,7 +94,7 @@ public class UserFacade {
                 throw new StockMarketException("User is not logged in.");
         }
         user.logOut();
-        _userRepository.save(user);
+        _userRepository.flush();
         logger.info("User " + userName + " logged out from the system.");
     }
 
@@ -161,7 +161,7 @@ public class UserFacade {
     public void addOrderToUser(String username, Order order) throws StockMarketException {
         User user = getUserByUsername(username);
         user.addOrder(order);
-        _userRepository.save(user);
+        _userRepository.flush();
     }
 
     // function that check if a given user is an admin
@@ -223,7 +223,7 @@ public class UserFacade {
             throw new UserException("Email is not valid.");
         }
         user.setEmail(email);
-        _userRepository.save(user);
+        _userRepository.flush();
     }
 
     // getting the user personal details
@@ -252,7 +252,7 @@ public class UserFacade {
         } else {
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
-            _userRepository.save(user);
+            _userRepository.flush();
         }
         return new UserDto(user.getUserName(), user.getPassword(), user.getEmail(), user.getBirthDate());
     }
@@ -292,7 +292,7 @@ public class UserFacade {
     public void setSystemAdmin(User user) {
         logger.info("Setting user " + user.getUserName() + " as system admin.");
         user.setIsSystemAdmin(true);
-        _userRepository.save(user);
+        _userRepository.flush();
     }
 
     // // // function to initilaize data for UI testing

@@ -29,8 +29,6 @@ public class MemoryRoleRepository implements InterfaceRoleRepository{
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -101,8 +99,7 @@ public class MemoryRoleRepository implements InterfaceRoleRepository{
 
     @Override
     public List<Role> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return roles;
     }
 
     @Override
