@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.atmosphere.websocket.WebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,13 +52,15 @@ import Dtos.ShopDto;
 import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
+import Server.notifications.NotificationHandler;
+import Server.notifications.WebSocketServer;
 
 @Service
 public class MarketSystem {
 
     public String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config_inbar.txt";
+    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
@@ -68,20 +71,26 @@ public class MarketSystem {
     private ShopFacade shopFacade;
     private UserFacade userFacade;
     private ShoppingCartFacade shoppingCartFacade;
+    private NotificationHandler notificationHandler;
+    private WebSocketServer webSocketServer;
     
     @Autowired
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler/* ,WebSocketServer webSocketServer*/) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
+        this.notificationHandler = notificationHandler;
+        // this.webSocketServer = webSocketServer;
         this.init_market(real_system_config_path);
     }
 
     // for test - set facades and urls to check
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade, String external_system_url, String instructions_config_path, String real_system_config_path) {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler,/*WebSocketServer webSocketServer,*/ String external_system_url, String instructions_config_path, String real_system_config_path) {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
+        this.notificationHandler = notificationHandler;
+        // this.webSocketServer = webSocketServer;
         this.external_system_url = external_system_url;
         this.instructions_config_path = instructions_config_path;
         this.real_system_config_path = real_system_config_path;
@@ -200,6 +209,9 @@ public class MarketSystem {
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
+            notificationHandler.setNotificationFacadeRepositories(userRepository);
+            webSocketServer.setWebSocketServerFacadeRepositories(userRepository);
+            
         }
         else if (config.equals(("database:real_init"))){            
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);

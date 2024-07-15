@@ -2,10 +2,15 @@ package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceUserRepository;
 import ServiceLayer.TokenService;
 import java.io.IOException;
 import java.net.URI;
@@ -53,10 +58,12 @@ import java.util.logging.Logger;
  * clients at any
  * time, for example, to broadcast updates or notifications.
  */
-@Component
+// @Component
+@Service
 public class WebSocketServer extends TextWebSocketHandler {
 
     private TokenService tokenService;
+    private InterfaceUserRepository _userRepository;
 
     // assumption messages as aformat of:"targetUsername:message"
 
@@ -67,13 +74,22 @@ public class WebSocketServer extends TextWebSocketHandler {
                                                                                                // messageQueue>
     private static final Map<String, List<String>> allMessages = new ConcurrentHashMap<>(); // <username, list of all
                                                                                             // messages>
-    private static final Logger logger = Logger.getLogger(WebSocketServer.class.getName());
+    private static Logger logger = Logger.getLogger(WebSocketServer.class.getName());
 
     @Autowired
     // Private constructor to prevent instantiation
-    private WebSocketServer(TokenService tokenService) {
+    private WebSocketServer(TokenService tokenService, DbUserRepository dbUserRepository) {
         // Initialization code
         this.tokenService = tokenService;
+        this._userRepository = dbUserRepository;
+    }
+
+    // set the repositories to be used test time
+    public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
+        this._userRepository = userRepository;
+    }
+
+    public WebSocketServer() {
     }
 
     /**
@@ -130,10 +146,15 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     // check for any queued message and if exist send them to the client
+    @Transactional
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
             List<String> lst = allMessages.getOrDefault(username, new ArrayList<>());
+            if (lst.isEmpty()) {
+                lst = _userRepository.findMessagesByUsername(username);
+            }
+            // if (!lst.isEmpty()) {
             Queue<String> queue = new LinkedList<>(lst);
             while (!queue.isEmpty()) {
                 String message = queue.poll();
@@ -145,6 +166,7 @@ public class WebSocketServer extends TextWebSocketHandler {
             }
             // messageQueues.remove(username);
         }
+        // }
     }
 
     /**
@@ -229,8 +251,18 @@ public class WebSocketServer extends TextWebSocketHandler {
      * @param message  The message to be sent.
      * @throws IOException If an I/O error occurs while sending the message.
      */
+    @Transactional
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
+        if (!allMessages.containsKey(targetUser)) {
+            // might be because first start of the server- need to check in DB id a user is
+            // already had previous messages
+            // user repository get all messages of the target user
+            // _userRepository.findMessagesByUsername(targetUser);
+            List<String> previousMessages = _userRepository.findMessagesByUsername(targetUser);
+            allMessages.put(targetUser, new ArrayList<>(previousMessages));
+
+        }
         allMessages.computeIfAbsent(targetUser, k -> new ArrayList<>()).add(message);
         if (session != null && session.isOpen()) {
             try {

@@ -220,4 +220,10 @@ public class MemoryUserRepository implements InterfaceUserRepository {
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
+    @Override
+    public List<String> findMessagesByUsername(String username) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findMessagesByUsername'");
+    }
+
 }
