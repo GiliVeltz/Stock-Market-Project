@@ -9,17 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import Dtos.UserDto;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "[user]")
@@ -48,16 +39,24 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> purchaseHistory = new ArrayList<Order>();
 
+   
+    @ElementCollection
+    @CollectionTable(name = "user_messages", joinColumns = @JoinColumn(name = "_id"))
+    @Column(name = "message")
+    private List<String> message = new ArrayList<String>();
+
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
-    
-    // //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    // //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval =
+    // true)
     // @OneToOne(cascade = CascadeType.ALL)
     // @JoinColumn(name = "shopping_cart_id")
     @Transient
     private ShoppingCart shoppingCart;
-    
-    public User(){}
+
+    public User() {
+    }
 
     // Constructor
     public User(String username, String password, String email, Date birthDate) {
@@ -192,19 +191,24 @@ public class User {
     public int getAge() {
         // Convert _birthDate to LocalDate
         LocalDate birthDateLocal = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        
+
         // Get the current date
         LocalDate currentDate = LocalDate.now();
-        
+
         // Calculate the difference in years
-        return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
+        return currentDate.getYear() - birthDateLocal.getYear()
+                - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
     }
 
-    public long getId(){
+    public long getId() {
         return id;
     }
 
     public void setShoppingCart(ShoppingCart shoppingCart2) {
         this.shoppingCart = shoppingCart2;
+    }
+
+    public void addMessage(String message) {
+        this.message.add(0,message);
     }
 }

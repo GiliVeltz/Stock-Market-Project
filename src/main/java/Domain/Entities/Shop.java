@@ -1198,8 +1198,9 @@ public class Shop {
      * Notify owner of the shop that a purchase has been made.
      * @param buyingUser the buying user.   
      * @param productIdList the product id list.
+     * @throws StockMarketException 
      */
-    public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) {
+    public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new PurchaseFromShopAlert(owner,buyingUser, productIdList, shopId);
@@ -1210,8 +1211,9 @@ public class Shop {
     /**
      * Notify the users that the shop has been closed.
      * @param username the user that closed the shop.
+     * @throws StockMarketException 
      */
-    public void notifyCloseShop(String username) {
+    public void notifyCloseShop(String username) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new CloseShopAlert(owner, username, shopId);
@@ -1222,8 +1224,9 @@ public class Shop {
      /**
      * Notify the users that the shop has been closed.
      * @param username the user that closed the shop.
+     * @throws StockMarketException 
      */
-    public void openComplaint(String fromUsername,String message) {
+    public void openComplaint(String fromUsername,String message) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new GeneralAlert(fromUsername,owner, message);
@@ -1234,8 +1237,9 @@ public class Shop {
     /**
      * Notify the users that the shop has been re-opened.
      * @param username the  user that re-opened the shop.
+     * @throws StockMarketException 
      */
-    public void notifyReOpenShop(String username) {
+    public void notifyReOpenShop(String username) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new ReOpenShopAlert(owner, username, shopId);
@@ -1248,8 +1252,9 @@ public class Shop {
      * @param targetUser the user that the permissions have been modified.
      * @param permissions the new permissions.
      * @param shopId the shop id.
+     * @throws StockMarketException 
      */
-    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId) {
+    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId) throws StockMarketException {
         List <String> newPermissions = new ArrayList<String>();
         for (Permission p : permissions) {
             newPermissions.add(p.toString());

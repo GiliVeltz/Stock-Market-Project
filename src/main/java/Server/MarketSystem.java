@@ -51,6 +51,7 @@ import Dtos.ShopDto;
 import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
 import Exceptions.StockMarketException;
+import Server.notifications.NotificationHandler;
 
 @Service
 public class MarketSystem {
@@ -68,12 +69,14 @@ public class MarketSystem {
     private ShopFacade shopFacade;
     private UserFacade userFacade;
     private ShoppingCartFacade shoppingCartFacade;
+    private NotificationHandler notificationHandler;
     
     @Autowired
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade) throws StockMarketException {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
+        this.notificationHandler = notificationHandler;
         this.init_market(tests_config_file_path);
     }
 
@@ -200,6 +203,8 @@ public class MarketSystem {
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
             shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
+            notificationHandler.setUserFacadeRepositories(userRepository);
+            
         }
         else if (config.equals(("database:real_init"))){            
             logger.info("Init Data From Instructions File, Data File Path: " + instructions_config_path);
