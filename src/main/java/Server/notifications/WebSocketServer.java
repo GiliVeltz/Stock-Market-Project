@@ -9,6 +9,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ServiceLayer.TokenService;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +30,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class WebSocketServer extends TextWebSocketHandler {
 
     private TokenService tokenService;
-    
+
     // assumption messages as aformat of:"targetUsername:message"
 
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>(); // registered user ->
@@ -35,6 +38,8 @@ public class WebSocketServer extends TextWebSocketHandler {
                                                                                              // guest -> <token,session>
     private static final Map<String, Queue<String>> messageQueues = new ConcurrentHashMap<>(); // <username,
                                                                                                // messageQueue>
+    private static final Map<String, List<String>> allMessages = new ConcurrentHashMap<>(); // <username, list of all
+                                                                                             // messages>
 
     @Autowired
     // Private constructor to prevent instantiation
@@ -87,7 +92,8 @@ public class WebSocketServer extends TextWebSocketHandler {
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
-            Queue<String> queue = messageQueues.getOrDefault(username, new ConcurrentLinkedQueue<>());
+            List<String> lst = allMessages.getOrDefault(username, new ArrayList<>());
+            Queue<String> queue = new LinkedList<>(lst);        
             while (!queue.isEmpty()) {
                 String message = queue.poll();
                 try {
@@ -96,7 +102,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                     e.printStackTrace();
                 }
             }
-            messageQueues.remove(username);
+            // messageQueues.remove(username);
         }
     }
 
@@ -127,6 +133,9 @@ public class WebSocketServer extends TextWebSocketHandler {
         if (parts.length == 2) {
             String targetUsername = parts[0];
             String msg = "New notification :" + targetUsername + parts[1];
+
+            // Add message to the user's all messages list
+            allMessages.computeIfAbsent(targetUsername, k -> new ArrayList<>()).add(msg);
 
             // Send message to the target client
             WebSocketSession targetSession = sessions.get(targetUsername);
@@ -174,6 +183,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
+        allMessages.computeIfAbsent(targetUser, k -> new ArrayList<>()).add(message);
         if (session != null && session.isOpen()) {
             try {
                 session.sendMessage(new TextMessage(message));
@@ -228,6 +238,34 @@ public class WebSocketServer extends TextWebSocketHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * function to retrieve the previous messages for a exist user who is logged
+     * after leaving the system.
+     * 
+     * @param targetUser
+     */
+    public void retrivePreviousMessages(String targetUser) {
+        // WebSocketSession session = sessions.get(targetUser);
+        // if (session != null && session.isOpen()) {
+        //     // Queue<String> queue = allMessages.getOrDefault(targetUser, new ArrayList<>());
+        //     while (!queue.isEmpty()) {
+        //         String message = queue.poll();
+        //         try {
+        //             session.sendMessage(new TextMessage(message));
+        //         } catch (IOException e) {
+        //             e.printStackTrace();
+        //         }
+            }
+
+        // }
 
     }
-}
+
+    // public void addGuestSession(String guestToken) {
+    //     String guestKey = "guest-" + guestToken;
+    //     Sess
+    //     sessions.put(guestKey, session);
+    // }
+

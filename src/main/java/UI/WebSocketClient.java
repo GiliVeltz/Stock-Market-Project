@@ -57,12 +57,23 @@ public class WebSocketClient {
         synchronized (userMessages) {
             Message newMessage = new Message(message);
             String targetUser = newMessage.getTargetUser();
-            if (userMessages.get(targetUser) == null) {
-                List<Message> messages = new ArrayList<>();
+            List<Message> messages = userMessages.get(targetUser);
+            if (messages == null) {
+                messages = new ArrayList<>();
                 messages.add(newMessage);
                 userMessages.put(targetUser, messages);
             } else {
-                userMessages.get(targetUser).add(0, newMessage);
+                // userMessages.get(targetUser).add(0, newMessage);
+                boolean messageExists = false;
+                for (Message msg : messages) {
+                    if (msg.getMessage().equals(newMessage.getMessage())) {
+                        messageExists = true;
+                        break;
+                    }
+                }
+                if (!messageExists) {
+                    messages.add(0, newMessage);
+                }
             }
         }
         // Optionally, notify the UI to update if you have a direct reference or a way
