@@ -38,12 +38,18 @@ public class Application implements AppShellConfigurator, WebMvcConfigurer {
         app.run(args);
     }
 
-
-
+    /**
+     * Finds an available port on the local machine.
+     *
+     * @return an available port number
+     */
     private static int findAvailablePort() {
+        // Try-with-resources to ensure the ServerSocket is closed automatically
         try (ServerSocket socket = new ServerSocket(0)) {
+            // The port number assigned by the operating system
             return socket.getLocalPort();
         } catch (Exception e) {
+            // Throw a RuntimeException if an error occurs while finding an available port
             throw new RuntimeException("Failed to find an available port", e);
         }
     }
