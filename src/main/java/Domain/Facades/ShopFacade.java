@@ -792,6 +792,18 @@ public class ShopFacade {
         logger.info("Rating was added successfully.");
     }
 
+    
+    // this function adds a review to a product
+    @Transactional
+    public void addProductReview(String username, Integer shopId, Integer productId, String review) throws StockMarketException {
+        if (!isShopIdExist(shopId)) {
+            throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
+        }
+        Shop shop = getShopByShopId(shopId);
+        shop.addReview(username, productId, review);
+    }
+
+
     // this function adds a rating to a shop
     @Transactional
     public void addShopRating(Integer shopId, Integer rating) throws StockMarketException {

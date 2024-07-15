@@ -28,6 +28,7 @@ import com.vaadin.flow.server.VaadinSession;
 import UI.Model.BasicDiscountDto;
 import UI.Model.ProductDto;
 import UI.Model.ProductGetterDto;
+import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Presenter.ProductPresenter;
 
 @SuppressWarnings("unused")
@@ -237,7 +238,12 @@ public class ProductView extends BaseView implements HasUrlParameter<String>{
 
         // Create buttons
         Button productPolicyButton = new Button("Product Policy");
+        
         productPolicyButton.addClickListener(event -> {
+            presenter.fetchProductPolicy(shopId, productId, rules -> {
+                viewPolicyDialog = createViewPolicyDialog(rules);
+                viewPolicyDialog.open();
+            });
             // Implement logic to show product policy (not shown here)
             Notification.show("Product Policy - to be implemented");
         });
@@ -287,6 +293,32 @@ public class ProductView extends BaseView implements HasUrlParameter<String>{
         removeAll(); // Clear previous content
     }
 
+    private Dialog createViewPolicyDialog(List<UserRuleDto> productRules) {
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Product Policy");
+        
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        Grid<UserRuleDto> ruleGrid = new Grid<>(UserRuleDto.class, true);
+        ruleGrid.setItems(productRules);
+
+        content.add(ruleGrid);
+
+        Button closeButton = new Button("Close", event -> dialog.close());
+        content.add(closeButton);
+
+        content.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, closeButton);
+        dialog.add(content);
+        dialog.setWidth("800px");
+        return dialog;
+    }
+
+
 
     private Dialog createViewDiscountsDialog(List<BasicDiscountDto> discounts) {
         // Create a dialog
@@ -332,19 +364,21 @@ public class ProductView extends BaseView implements HasUrlParameter<String>{
             HorizontalLayout reviewLayout = new HorizontalLayout();
             H5 reviewHeader = new H5(review.getKey());
             reviewHeader.getStyle().set("margin-right", "10px");
-            reviewHeader.setWidth("30%");
+            reviewHeader.setWidth("20%");
             Span reviewText = new Span(review.getValue());
-            reviewText.setWidth("70%");
+            reviewText.setWidth("80%");
             reviewLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
             reviewLayout.add(reviewHeader, reviewText);
             content.add(reviewLayout);
         }
 
         Button closeButton = new Button("Close", event -> dialog.close());
+        closeButton.addClassName("pointer-cursor");
         content.add(closeButton);
 
         content.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, closeButton);
         dialog.add(content);
+        dialog.setWidth("800px");
         return dialog;
     }
 
