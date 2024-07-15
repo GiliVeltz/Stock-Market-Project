@@ -16,10 +16,16 @@ import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
+import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbOrderRepository;
+import Domain.Repositories.DbShoppingBasketRepository;
 import Domain.Repositories.DbShoppingCartRepository;
+import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
+import Domain.Repositories.InterfaceUserRepository;
 import Dtos.BasketDto;
 import Dtos.PurchaseCartDetailsDto;
 import Exceptions.StockMarketException;
@@ -32,12 +38,19 @@ public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     InterfaceShoppingCartRepository _cartsRepository;
     InterfaceOrderRepository _orderRepository;
+    InterfaceGuestRepository _guestRepository;
+    InterfaceUserRepository _userRepository;
+    InterfaceShoppingBasketRepository _basketRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
-    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, DbOrderRepository orderRepository, UserFacade userFacade, ShopFacade shopFacade) {
+    public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, DbOrderRepository orderRepository, DbGuestRepository guestRepository,
+             DbUserRepository userRepository, DbShoppingBasketRepository basketRepository, UserFacade userFacade, ShopFacade shopFacade) {
         _cartsRepository = cartsRepository;
         _orderRepository = orderRepository;
+        _guestRepository = guestRepository;
+        _userRepository = userRepository;
+        _basketRepository = basketRepository;
         this.userFacade = userFacade;
         this.shopFacade = shopFacade;
         _guestsCarts = new HashMap<>();
@@ -55,8 +68,10 @@ public class ShoppingCartFacade {
         Guest g = userFacade.getGuestById(guestID);
         ShoppingCart cart = new ShoppingCart(g);
         cart.setOrderRepository(_orderRepository);
-        cart.setOrderRepository(null);
-        _guestsCarts.put(guestID, cart);
+        g.setShoppingCart(cart);
+        _cartsRepository.save(cart);
+        _guestRepository.flush();
+        //_guestsCarts.put(guestID, cart);
     }
 
     /*

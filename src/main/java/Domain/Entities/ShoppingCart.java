@@ -30,8 +30,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.CascadeType;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping cart that contains a list of shopping baskets.
@@ -71,10 +73,7 @@ public class ShoppingCart {
     @Column(name = "user_or_guest_name")
     private String user_or_guest_name; // or guestToken string
 
-    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
-    //@Column(name = "guest_id", nullable = false)
-    //@OneToOne(mappedBy = "shoppingCart")
-    @Transient
+    @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     private Guest guest; // or guestToken string
 
     // @OneToOne
