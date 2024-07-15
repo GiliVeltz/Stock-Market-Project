@@ -15,6 +15,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The WebSocketClient class is a WebSocket client endpoint that connects to a WebSocket server.
+ * It uses annotations from the javax.websocket package to handle WebSocket events such as 
+ * opening a connection, receiving messages, and closing a connection. The class is also annotated 
+ * with @Component to indicate that it is a Spring-managed bean.
+ *
+ * Key Components:
+ * 1. Annotations:
+ *    - @Component: Marks the class as a Spring component.
+ *    - @ClientEndpoint: Indicates that this class is a WebSocket client endpoint.
+ *
+ * 2. Fields:
+ *    - private static Session session: Holds the WebSocket session once the connection is established.
+ *    - private static ConcurrentHashMap<String, List<Message>> userMessages: A thread-safe map to store messages for each user.
+ *
+ * 3. Methods:
+ *    - @OnOpen public void onOpen(Session session): This method is called when a WebSocket connection is established. 
+ *      It sets the session and prints connection status messages.
+ */
+
 @Component
 @ClientEndpoint
 public class WebSocketClient {
@@ -49,7 +69,10 @@ public class WebSocketClient {
     /**
      * Handles incoming messages from the server.
      * This method is called when a message is received from the server.
-     *
+     * handle a case when the user is enter the system afte previously leave the system
+     * and then it retrive all the past messages he already recevied from the server and 
+     * 
+     * 
      * @param message The message received from the server.
      */
     @OnMessage
@@ -57,12 +80,23 @@ public class WebSocketClient {
         synchronized (userMessages) {
             Message newMessage = new Message(message);
             String targetUser = newMessage.getTargetUser();
-            if (userMessages.get(targetUser) == null) {
-                List<Message> messages = new ArrayList<>();
+            List<Message> messages = userMessages.get(targetUser);
+            if (messages == null) {
+                messages = new ArrayList<>();
                 messages.add(newMessage);
                 userMessages.put(targetUser, messages);
             } else {
-                userMessages.get(targetUser).add(0, newMessage);
+                // userMessages.get(targetUser).add(0, newMessage);
+                boolean messageExists = false;
+                for (Message msg : messages) {
+                    if (msg.getMessage().equals(newMessage.getMessage())) {
+                        messageExists = true;
+                        break;
+                    }
+                }
+                if (!messageExists) {
+                    messages.add(0, newMessage);
+                }
             }
         }
         // Optionally, notify the UI to update if you have a direct reference or a way
