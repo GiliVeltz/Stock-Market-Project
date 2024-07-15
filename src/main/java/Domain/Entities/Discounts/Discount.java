@@ -12,12 +12,13 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "discount_type")
 public abstract class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer _id;
+    
     
     @Transient
     protected Rule<ShoppingBasket> _rule;

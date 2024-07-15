@@ -36,9 +36,11 @@ import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
+import Domain.Repositories.DbDiscountRepository;
 import Domain.Repositories.DbProductRepository;
 import Domain.Repositories.DbRoleRepository;
 import Domain.Repositories.DbShopRepository;
+import Domain.Repositories.InterfaceDiscountRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
@@ -62,16 +64,18 @@ public class ShopFacade {
     private InterfaceShopRepository _shopRepository;
     private InterfaceProductRepository _productRepository;
     private InterfaceRoleRepository _roleRepository;
+    private InterfaceDiscountRepository _discountRepository;
     private NotificationHandler _notificationHandler;
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @Autowired
-    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler) {
+    public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository, DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler, DbDiscountRepository discountRepository) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _roleRepository = roleRepository;
         _userFacade = userFacade;
+        _discountRepository = discountRepository;
         _notificationHandler = notificationHandler;
 
         //For testing UI
@@ -84,10 +88,11 @@ public class ShopFacade {
     }
 
     // set repositories to be used in test system
-    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository) {
+    public void setShopFacadeRepositories(InterfaceShopRepository shopRepository, InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository, InterfaceDiscountRepository discountRepository) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _roleRepository = roleRepository;
+        _discountRepository = discountRepository;
     }
 
     public Shop getShopByShopId(Integer shopId) {
@@ -338,7 +343,10 @@ public class ShopFacade {
             else
                 discount = new ProductFixedDiscount(discountDto);
         }
-        return shop.addDiscount(discount);
+
+        int id = shop.addDiscount(discount);
+        _discountRepository.save(discount);
+        return id;
     }
 
     // Adds a conditional discount to a shop.

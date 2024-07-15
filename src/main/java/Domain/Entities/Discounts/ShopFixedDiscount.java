@@ -8,8 +8,15 @@ import java.util.TreeMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "[shop_fixed_discounts]")
 public class ShopFixedDiscount extends BaseDiscount {
+    
+    @Column(name = "discount_total")
     private double _discountTotal;
 
     /**

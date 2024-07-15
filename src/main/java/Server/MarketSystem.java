@@ -30,6 +30,7 @@ import Domain.ExternalServices.SupplyService.ProxySupply;
 import Domain.Facades.ShopFacade;
 import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
+import Domain.Repositories.InterfaceDiscountRepository;
 import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceProductRepository;
@@ -37,6 +38,7 @@ import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
+import Domain.Repositories.MemoryDiscountRepository;
 import Domain.Repositories.MemoryGuestRepository;
 import Domain.Repositories.MemoryOrderRepository;
 import Domain.Repositories.MemoryProductRepository;
@@ -196,9 +198,10 @@ public class MarketSystem {
             InterfaceGuestRepository guestRepository = new MemoryGuestRepository();
             InterfaceOrderRepository orderRepository = new MemoryOrderRepository();
             InterfaceRoleRepository roleRepository = new MemoryRoleRepository();
+            InterfaceDiscountRepository discountRepository = new MemoryDiscountRepository();
 
             shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
-            shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository);
+            shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository, discountRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
         }
         else if (config.equals(("database:real_init"))){            
