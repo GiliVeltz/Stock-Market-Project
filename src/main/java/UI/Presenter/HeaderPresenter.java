@@ -2,6 +2,8 @@ package UI.Presenter;
 
 
 import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,10 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.Response;
+import UI.Model.ShopManagerDto;
 import UI.Model.UserDto;
 import UI.View.Header;
 // import ServiceLayer.Response;
@@ -28,7 +33,7 @@ public class HeaderPresenter {
     }
     
     @SuppressWarnings("rawtypes")
-    public void loginUser(String username, String password) {
+    public void loginUser(String username, String password, Consumer<String> callback) {
         RestTemplate restTemplate = new RestTemplate();
     
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
@@ -59,7 +64,6 @@ public class HeaderPresenter {
 
                                 checkIfAdmin(newToken, username);
 
-                                // view.showSuccessMessage("Login successful");
                                 // view.switchToLogout();
                                 // view.navigateToUserMainPage();
                                 // System.out.println(response.getBody());
@@ -69,8 +73,17 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Login failed: " + e.getMessage());
-                            e.printStackTrace();
+                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
+                            String errorMessage = e.getMessage();
+
+                            // Remove the leading "500 : " and the enclosing quotes
+                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
+
+                            // Now apply the existing logic
+                            int some = errorMessage.indexOf("\"errorMessage\":\"");
+                            int startIndex = some + 16;
+                            int endIndex = errorMessage.indexOf("}") - 1;
+                            callback.accept(errorMessage.substring(startIndex, endIndex));
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -78,6 +91,7 @@ public class HeaderPresenter {
                     }
                 });
     }
+
 
     @SuppressWarnings("rawtypes")
     private void checkIfAdmin(String token, String username) {
@@ -110,8 +124,17 @@ public class HeaderPresenter {
         } catch (HttpClientErrorException e) {
             ResponseHandler.handleResponse(e.getStatusCode());
         } catch (Exception e) {
-            view.showErrorMessage("Failed to check admin status");
-            e.printStackTrace();
+            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
+            String errorMessage = e.getMessage();
+
+            // Remove the leading "500 : " and the enclosing quotes
+            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
+
+            // Now apply the existing logic
+            int some = errorMessage.indexOf("\"errorMessage\":\"");
+            int startIndex = some + 16;
+            int endIndex = errorMessage.indexOf("}") - 1;
+            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
         }
     }
     
@@ -144,10 +167,17 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
-                            e.printStackTrace();
+                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
+                            String errorMessage = e.getMessage();
+
+                            // Remove the leading "500 : " and the enclosing quotes
+                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
+
+                            // Now apply the existing logic
+                            int some = errorMessage.indexOf("\"errorMessage\":\"");
+                            int startIndex = some + 16;
+                            int endIndex = errorMessage.indexOf("}") - 1;
+                            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
                         }
                     } else {
                         view.showErrorMessage("Authorization token not found. Please log in.");
@@ -193,8 +223,17 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response for Logout");
-                            e.printStackTrace();
+                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
+                            String errorMessage = e.getMessage();
+
+                            // Remove the leading "500 : " and the enclosing quotes
+                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
+
+                            // Now apply the existing logic
+                            int some = errorMessage.indexOf("\"errorMessage\":\"");
+                            int startIndex = some + 16;
+                            int endIndex = errorMessage.indexOf("}") - 1;
+                            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
