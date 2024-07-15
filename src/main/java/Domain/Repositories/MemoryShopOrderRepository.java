@@ -31,8 +31,6 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -103,8 +101,7 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
 
     @Override
     public List<ShopOrder> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return _shopOrders;
     }
 
     @Override
@@ -145,8 +142,7 @@ public class MemoryShopOrderRepository implements InterfaceShopOrderRepository{
 
     @Override
     public void delete(ShopOrder entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shopOrders.remove(entity);
     }
 
     @Override

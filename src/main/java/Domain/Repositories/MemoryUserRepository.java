@@ -54,8 +54,6 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -159,8 +157,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public void delete(User entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _registeredUsers.remove(entity.getUserName());
     }
 
     @Override

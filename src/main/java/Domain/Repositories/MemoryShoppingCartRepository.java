@@ -37,8 +37,6 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -109,7 +107,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public List<ShoppingCart> findAll() {
-        return List.copyOf(_shoppingCarts.values());
+        return (List<ShoppingCart>) _shoppingCarts.values();
     }
 
     @Override
@@ -154,8 +152,7 @@ public class MemoryShoppingCartRepository implements InterfaceShoppingCartReposi
 
     @Override
     public void delete(ShoppingCart entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shoppingCarts.remove(entity.getUsernameString());
     }
 
     @Override

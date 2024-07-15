@@ -61,8 +61,6 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -133,8 +131,7 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
 
     @Override
     public List<Guest> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return _guestIds;
     }
 
     @Override
@@ -169,8 +166,7 @@ public class MemoryGuestRepository implements InterfaceGuestRepository{
 
     @Override
     public void delete(Guest entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _guestIds.remove(entity);
     }
 
     @Override

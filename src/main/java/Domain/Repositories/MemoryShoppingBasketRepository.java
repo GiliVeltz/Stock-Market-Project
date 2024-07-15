@@ -24,8 +24,6 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -96,8 +94,7 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public List<ShoppingBasket> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return _shoppingBaskets;
     }
 
     @Override
@@ -138,8 +135,7 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
 
     @Override
     public void delete(ShoppingBasket entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        _shoppingBaskets.remove(entity);
     }
 
     @Override
