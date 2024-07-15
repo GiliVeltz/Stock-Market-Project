@@ -341,6 +341,19 @@ public class ShopController {
         List<UserRuleDto> rules = request;
         return _shopService.updateProductPolicy(token, shopId, productId, rules);
     }
+
+    @PostMapping("/addShopRating")
+    public ResponseEntity<Response>addShopRating(@RequestHeader("Authorization") String token, @RequestParam Integer shopId,
+            @RequestParam Integer rating) {
+        return _shopService.addShopRating(token, shopId, rating);
+    }
+
+    @PostMapping("/addProductRatingAndReview")
+    public ResponseEntity<Response>addProductRatingAndReview(@RequestHeader("Authorization") String token, @RequestParam Integer shopId, @RequestParam Integer productId,
+            @RequestParam Integer rating, @RequestParam String review) {
+        return _shopService.addProductRatingAndReview(token, shopId, productId, rating, review);
+    }
+
     
     
     

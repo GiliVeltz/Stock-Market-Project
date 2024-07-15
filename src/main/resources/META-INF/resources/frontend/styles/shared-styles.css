@@ -179,7 +179,7 @@ body {
 }
 
 .star {
-  font-size: 2em; /* Adjust the size of the stars */
+  font-size: 1.5em; /* Adjust the size of the stars */
   cursor: pointer; /* Show a pointer cursor on hover */
   padding: 0.1em; /* Add some padding for spacing */
   transition: transform 0.2s; /* Smooth transition for scaling effect */
@@ -189,6 +189,6 @@ body {
   transform: scale(1.2); /* Slightly enlarge the star on hover */
 }
 
-.star.clicked {
-  color: gold; /* Change color of clicked stars to gold */
+.selected-star {
+  transform: scale(1.2); /* Change color of clicked stars to gold */
 }

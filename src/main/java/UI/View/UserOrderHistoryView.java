@@ -1,10 +1,13 @@
 package UI.View;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -13,23 +16,26 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextArea;
 
 import UI.Model.OrderDto;
 import UI.Model.ShoppingBasketDto;
+import UI.Presenter.ReviewOrderPresenter;
 import UI.Presenter.UserOrderHistoryPresenter;
 
 public class UserOrderHistoryView extends BaseView {
     private UserOrderHistoryPresenter presenter;
+    private ReviewOrderPresenter reviewsPresenter;
     private final Div ordersDiv;
     private Grid<OrderDto> orderGrid;
     private static final String FILLED_STAR = "⭐";
-    private static final String EMPTY_STAR = "☆";
     private HorizontalLayout starLayout;
+    private Span[] stars = new Span[5];
     private int currentRating = 0;
 
     public UserOrderHistoryView() {
         presenter = new UserOrderHistoryPresenter(this);
+        reviewsPresenter = new ReviewOrderPresenter(this);
 
         // Initialize starLayout
         starLayout = createStarRatingLayout();
@@ -96,14 +102,18 @@ public class UserOrderHistoryView extends BaseView {
 
         // Add a close button to the dialog
         Button closeButton = new Button("Close", e -> dialog.close());
-        detailsLayout.add(closeButton);
-
+        closeButton.addClassName("pointer-cursor");
         Button reviewOrderButton = new Button("Review Order", e -> {
             dialog.close();
             // Call the method to create the review order dialog
             createReviewOrderDialog(orderDto);
         });
-        detailsLayout.add(reviewOrderButton);
+        reviewOrderButton.addClassName("pointer-cursor");
+
+        buttonsLayout.add(closeButton, reviewOrderButton);
+        buttonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        detailsLayout.add(buttonsLayout);
 
         // Open the dialog
         dialog.open();
@@ -143,13 +153,13 @@ public class UserOrderHistoryView extends BaseView {
         Integer[] shopIdRatingValue = {null, null}; //shopIdRatingValue[0] = shopId, shopIdRatingValue[1] = ratingValue
 
         H3 reviewShopLabel = new H3("Review Shop");
-        IntegerField shopIdField = new IntegerField("Enter Shop ID");
-        shopIdField.setReadOnly(false);
+        ComboBox<Integer> shopIdComboBox = new ComboBox<>("Select Shop ID");
+        shopIdComboBox.setItems(orderDto.getShoppingBasketMap().keySet());
+        shopIdComboBox.setReadOnly(false);
         Button enterShopIdButton = new Button("Enter");
         enterShopIdButton.setEnabled(true);
 
         Button resetButton = new Button("Reset");
-        resetButton.setVisible(false);
         resetButton.addClassName("pointer-cursor");
         Button closeButton = new Button("Close");
         closeButton.addClassName("pointer-cursor");
@@ -158,17 +168,20 @@ public class UserOrderHistoryView extends BaseView {
         submitButton.addClassName("pointer-cursor");
 
         resetButton.addClickListener(e -> {
-            cleanAndHideStarsLayout(resetButton, submitButton);
-            shopIdField.setReadOnly(false);
-            shopIdField.clear();                    
+            cleanAndHideStarsLayout(submitButton);
+            shopIdComboBox.setReadOnly(false);
+            shopIdComboBox.clear();                    
             enterShopIdButton.setEnabled(true);
-
+            shopIdRatingValue[0] = null;
+            shopIdRatingValue[1] = null;
         });
 
         closeButton.addClickListener(e -> {
-            cleanAndHideStarsLayout(resetButton, submitButton);
-            shopIdField.setReadOnly(false);
-            shopIdField.clear();
+            cleanAndHideStarsLayout(submitButton);
+            shopIdComboBox.setReadOnly(false);
+            shopIdComboBox.clear();
+            shopIdRatingValue[0] = null;
+            shopIdRatingValue[1] = null;
             dialog.close();
         });
 
@@ -177,192 +190,246 @@ public class UserOrderHistoryView extends BaseView {
             if (shopIdRatingValue[1] == 0) {
                 showErrorMessage("No rating was chosen.");
             } else {
-                //presenter.addShopRating(shopIdRatingValue[0], shopIdRatingValue[1]);
+                reviewsPresenter.addShopRating(shopIdRatingValue[0], shopIdRatingValue[1]);
                 showSuccessMessage("Shop was rated successfully");
-                cleanAndHideStarsLayout(resetButton, submitButton);
+                cleanAndHideStarsLayout(submitButton);
             }
         });
 
         enterShopIdButton.addClickListener(event -> {
-            shopIdRatingValue[0] = shopIdField.getValue();
+            shopIdRatingValue[0] = shopIdComboBox.getValue();
             if (shopIdRatingValue[0] != null) {
                 if (orderDto.getShoppingBasketMap().containsKey(shopIdRatingValue[0])) {
-                    cleanAndDisplayStarsLayout(resetButton, submitButton);
-                    shopIdField.setReadOnly(true);
+                    cleanAndDisplayStarsLayout(submitButton);
+                    shopIdComboBox.setReadOnly(true);
                     enterShopIdButton.setEnabled(false);
                 } else {
                     shopIdRatingValue[0] = null;
                     showErrorMessage("Shop ID not found in the order.");
-                    shopIdField.setReadOnly(false);
-                    shopIdField.clear();
+                    shopIdComboBox.setReadOnly(false);
+                    shopIdComboBox.clear();
                     enterShopIdButton.setEnabled(true);
                 }
             }
         });
 
-        buttonsLayout.add(resetButton, closeButton, submitButton);
+        buttonsLayout.add(resetButton, submitButton, closeButton);
         buttonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        reviewLayout.add(reviewShopLabel, shopIdField, enterShopIdButton, starLayout, buttonsLayout);
+        reviewLayout.add(reviewShopLabel, shopIdComboBox, enterShopIdButton, starLayout, buttonsLayout);
         reviewLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
         dialog.add(reviewLayout);
         dialog.open();
     }
 
+
+
+
     public void createReviewProductDialog(OrderDto orderDto) {
-        showSuccessMessage("not implemented Yet");
-    //     // Create a layout to hold the review order form
-    //     Dialog dialog = new Dialog();
-    //     VerticalLayout reviewLayout = new VerticalLayout();
-    //     HorizontalLayout buttonsLayout = new HorizontalLayout();
+        // Create a layout to hold the review order form
+        Dialog dialog = new Dialog();
+        VerticalLayout reviewLayout = new VerticalLayout();
+        HorizontalLayout shopSelectionLayout = new HorizontalLayout();
+        HorizontalLayout ProductSelectionLayout = new HorizontalLayout();
+        VerticalLayout productRateAndReviewLayout = new VerticalLayout();
+        HorizontalLayout buttonsLayout = new HorizontalLayout();
 
-    //     Integer[] shopIdRatingValue = {null, null}; //shopIdRatingValue[0] = shopId, shopIdRatingValue[1] = ratingValue
+        Set<Integer> productIdList = new HashSet<>();
+        Integer[] shopIdProductIdRatingValue = {null, null, null}; //shopIdProductIdRatingValue[0] = shopId, shopIdProductIdRatingValue[1] = productId, shopIdProductIdRatingValue[2] = ratingValue
+        H3 reviewProductLabel = new H3("Review Product");
 
-    //     IntegerField shopIdField = new IntegerField("Enter Shop ID");
-    //     shopIdField.setReadOnly(false);
+        /////////////////////////////////////
 
-    //     Button enterShopIdButton = new Button("Enter");
-    //     enterShopIdButton.setEnabled(true);
+        ComboBox<Integer> shopIdComboBox = new ComboBox<>("Select Shop ID");
+        shopIdComboBox.setItems(orderDto.getShoppingBasketMap().keySet());
+        Button enterShopIdButton = new Button("Enter");
+        enterShopIdButton.setEnabled(false);
+        enterShopIdButton.addClassName("pointer-cursor");
 
-    //     Button resetButton = new Button("Reset");
-    //     resetButton.setVisible(false);
-    //     resetButton.addClickListener(e -> {
-    //             cleanAndHideStarsLayout();
-    //             shopIdField.setReadOnly(false);
-    //             shopIdField.clear();                    
-    //             enterShopIdButton.setEnabled(true);
+        shopIdComboBox.addValueChangeListener(e -> {
+            enterShopIdButton.setEnabled(true);
+        });
 
-    //     });
-    //     resetButton.addClassName("pointer-cursor");
+        shopSelectionLayout.add(shopIdComboBox, enterShopIdButton);
+        shopSelectionLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        shopSelectionLayout.setVerticalComponentAlignment(FlexComponent.Alignment.END, shopIdComboBox, enterShopIdButton);
 
-    //     Button closeButton = new Button("Close");
-    //     closeButton.addClickListener(e -> {
-    //         cleanAndHideStarsLayout();
-    //         shopIdField.setReadOnly(false);
-    //         shopIdField.clear();
-    //         dialog.close();
-    //     });
+        //////////////////////////////////
 
-    //     Button submitButton = new Button("Submit");
-    //     submitButton.setVisible(false);
-    //     submitButton.addClickListener(e -> {
-    //         shopIdRatingValue[1] = getCurrentRating();
-    //         if (shopIdRatingValue[1] == 0) {
-    //             showErrorMessage("No rating was chosen.");
-    //         } else {
-    //             presenter.addShopRating(shopIdRatingValue[0], shopIdRatingValue[1]);
-    //             showSuccessMessage("Shop was rated successfully");
-    //             cleanAndHideStarsLayout();
-    //         }
-    //     });
-    //     submitButton.addClassName("pointer-cursor");
+        ComboBox<Integer> productIdComboBox = new ComboBox<>("Select Product ID");
+        productIdComboBox.setItems(productIdList);
+        Button enterProductIdButton = new Button("Enter");
+        enterProductIdButton.setEnabled(false);
+        enterProductIdButton.addClassName("pointer-cursor");
 
-    //     enterShopIdButton.addClickListener(event -> {
-    //         shopIdRatingValue[0] = shopIdField.getValue();
-    //         if (shopIdRatingValue[0] != null) {
-    //             if (orderDto.getShoppingBasketMap().containsKey(Integer.parseInt(shopId))) {
-    //                 cleanAndDisplayStarsLayout(cleanButton, submitButton);
-    //                 shopIdField.setReadOnly(true);
-    //                 enterShopIdButton.setEnabled(false);
-    //             } else {
-    //                 shopIdRatingValue[0] = null;
-    //                 showErrorMessage("Shop ID not found in the order.");
-    //                 shopIdField.setReadOnly(false);
-    //                 shopIdField.clear();
-    //                 enterShopIdButton.setEnabled(true);
-    //             }
-    //         }
-    //     });
+        productIdComboBox.addValueChangeListener(e -> {
+            enterProductIdButton.setEnabled(true);
+        });
 
-    //     buttonsLayout.add(resetButton, closeButton, submitButton);
-    //     buttonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        ProductSelectionLayout.add(productIdComboBox, enterProductIdButton);
+        ProductSelectionLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        ProductSelectionLayout.setVerticalComponentAlignment(FlexComponent.Alignment.END, productIdComboBox, enterProductIdButton);
 
-    //     reviewLayout.add(shopIdField, enterShopIdButton, buttonsLayout);
-    //     reviewLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-    //     dialog.add(reviewLayout);
-    //     dialog.open();
+        //////////////////////////////////////
 
-    //     // Add a text area for the review
-    //     TextArea reviewTextArea = new TextArea();
-    //     reviewTextArea.setLabel("Review");
-    //     reviewTextArea.setPlaceholder("Enter your review here...");
-    //     reviewLayout.add(reviewTextArea);
+        //productRateAndReviewLayout
+        //Add a text area for the review
+        TextArea reviewTextArea = new TextArea();
+        reviewTextArea.setLabel("Review: ");
+        reviewTextArea.setPlaceholder("Enter your review here...");
+        reviewTextArea.setWidthFull();
 
-    //     // Add a rating field
-    //     Rating rating = new Rating();
-    //     rating.setLabel("Rating");
-    //     reviewLayout.add(rating);
+        productRateAndReviewLayout.add(starLayout, reviewTextArea);
+        productRateAndReviewLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        productRateAndReviewLayout.setVisible(false);
 
-    //     // Add a submit button
-    //     Button submitButton = new Button("Submit Review", e -> {
-    //         // Get the review text and rating
-    //         String reviewText = reviewTextArea.getValue();
-    //         int ratingValue = rating.getValue();
+        //////////////////////////////////////
+        
 
-    //         // Call the presenter method to submit the review
-    //         presenter.submitOrderReview(orderDto.getOrderId(), reviewText, ratingValue);
-    //     });
+        Button resetButton = new Button("Reset");
+        resetButton.addClassName("pointer-cursor");
+        Button closeButton = new Button("Close");
+        closeButton.addClassName("pointer-cursor");
+        Button submitButton = new Button("Submit");
+        submitButton.setVisible(false);
+        submitButton.addClassName("pointer-cursor");
 
-    //     reviewLayout.add(submitButton);
+        buttonsLayout.add(resetButton, submitButton, closeButton);
+        buttonsLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-    //     // Create a dialog to display the review form
-    //     Dialog reviewDialog = new Dialog();
-    //     reviewDialog.add(reviewLayout);
-    //     reviewDialog.setWidth("400px");
-    //     reviewDialog.setHeight("300px");
+        ////////////////////////////////////////////
 
-    //     // Open the dialog
-    //     reviewDialog.open();
+        resetButton.addClickListener(e -> {
+            resetIdsSelectionForm(shopIdComboBox, enterShopIdButton);
+            resetIdsSelectionForm(productIdComboBox, enterProductIdButton);
+            cleanAndHideStarsLayout(submitButton);
+            reviewTextArea.clear();
+            ProductSelectionLayout.setVisible(false);
+            productRateAndReviewLayout.setVisible(false);
+            shopIdProductIdRatingValue[0] = null;
+            shopIdProductIdRatingValue[1] = null;
+            shopIdProductIdRatingValue[2] = null;
+        });
+
+        closeButton.addClickListener(e -> {
+            resetButton.click();
+            dialog.close();
+        });
+
+
+        //new.....
+        enterShopIdButton.addClickListener(event -> {
+            shopIdProductIdRatingValue[0] = shopIdComboBox.getValue();
+            if (shopIdProductIdRatingValue[0] != null) {
+                shopIdComboBox.setReadOnly(true);
+                enterShopIdButton.setEnabled(false);
+                productIdList.clear();
+                productIdList.addAll(orderDto.getShoppingBasketMap().get(shopIdProductIdRatingValue[0]).getProductIdList());
+                productIdComboBox.setItems(productIdList);
+                ProductSelectionLayout.setVisible(true);
+            }
+            else {
+                showErrorMessage("Shop ID not found in the order.");
+                shopIdComboBox.setReadOnly(false);
+                shopIdComboBox.clear();
+                enterShopIdButton.setEnabled(true);
+            }
+        });
+
+        // new.........
+        enterProductIdButton.addClickListener(event -> {
+            shopIdProductIdRatingValue[1] = shopIdComboBox.getValue();
+            if (shopIdProductIdRatingValue[1] != null) {
+                productIdComboBox.setReadOnly(true);
+                enterProductIdButton.setEnabled(false);
+                productRateAndReviewLayout.setVisible(true);
+                cleanAndDisplayStarsLayout(submitButton);
+                submitButton.setVisible(true);
+            } else {
+                showErrorMessage("Product ID not found in the order.");
+                productIdComboBox.setReadOnly(false);
+                productIdComboBox.clear();
+                enterProductIdButton.setEnabled(true);
+            }
+        });
+
+        submitButton.addClickListener(e -> {
+            shopIdProductIdRatingValue[2] = getCurrentRating();
+            if (shopIdProductIdRatingValue[2] == 0) {
+                showErrorMessage("No rating was chosen.");
+            } else if (reviewTextArea == null || reviewTextArea.isEmpty()) {
+                showErrorMessage("No review was entered.");
+            } else {
+                reviewsPresenter.addProductRatingAndReview(shopIdProductIdRatingValue[0], shopIdProductIdRatingValue[1], shopIdProductIdRatingValue[2], reviewTextArea.getValue());
+                showSuccessMessage("Product was rated and reviewed successfully");
+                cleanAndHideStarsLayout(submitButton);
+                closeButton.click();
+            }
+        });
+
+        ////////////////////////////////////////////
+
+
+        reviewLayout.add(reviewProductLabel, shopSelectionLayout, ProductSelectionLayout, productRateAndReviewLayout, buttonsLayout);
+        reviewLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        dialog.add(reviewLayout);
+        dialog.open();
     }
 
     private HorizontalLayout createStarRatingLayout() {
         HorizontalLayout starsRatingLayout = new HorizontalLayout();
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 0; i < 5; i++) {
             final int starIndex = i;
-            Span star = new Span(EMPTY_STAR);
-            star.addClassName("star");
-            star.getElement().addEventListener("click", e -> updateRating(starIndex));
-            starsRatingLayout.add(star);
+            stars[i] = new Span(FILLED_STAR);
+            stars[i].addClassName("star");
+            stars[i].getElement().addEventListener("click", e -> {
+                updateRating(starIndex + 1);
+                // Fix display of a toggled star and updateRating
+            });
+            starsRatingLayout.add(stars[i]);
         }
         return starsRatingLayout;
     }
 
-    private void cleanAndDisplayStarsLayout(Button resetButton, Button submitButton) {
-        starLayout.removeAll();
-        for (int i = 1; i <= 5; i++) {
-            final int starIndex = i;
-            Span star = new Span(EMPTY_STAR);
-            star.addClassName("star");
-            star.getElement().addEventListener("click", e -> updateRating(starIndex));
-            starLayout.add(star);
+    private void cleanAndDisplayStarsLayout(Button submitButton) {
+        for (int i = 0; i < 5; i++) {
+            stars[i].removeClassName("selected-star");
         }
+        currentRating = 0;
         starLayout.setVisible(true);
-        resetButton.setVisible(true);
         submitButton.setVisible(true);
     }
 
-    private void cleanAndHideStarsLayout(Button resetButton, Button submitButton) {
-        starLayout.removeAll();
-        for (int i = 1; i <= 5; i++) {
-            final int starIndex = i;
-            Span star = new Span(EMPTY_STAR);
-            star.addClassName("star");
-            star.getElement().addEventListener("click", e -> updateRating(starIndex));
-            starLayout.add(star);
+    private void cleanAndHideStarsLayout(Button submitButton) {
+        for (int i = 0; i < 5; i++) {
+            stars[i].removeClassName("selected-star");
         }
+        currentRating = 0;
         starLayout.setVisible(false);
-        resetButton.setVisible(false);
         submitButton.setVisible(false);
     }
 
     private void updateRating(int rating) {
+        for (int i = 0; i < rating; i++) {
+            stars[i].addClassName("selected-star");
+        }
+        for(int i = rating; i < 5; i++) {
+            stars[i].removeClassName("selected-star");
+        }
         currentRating = rating;
     }
 
     public int getCurrentRating() {
         return currentRating;
+    }
+
+    public void resetIdsSelectionForm(ComboBox<Integer> comboBox, Button enterButton) {
+        comboBox.setReadOnly(false);
+        comboBox.clear();
+        enterButton.setEnabled(false);
     }
 
     private Span createDetailSpan(String label, String value) {

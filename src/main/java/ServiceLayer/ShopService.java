@@ -2323,6 +2323,48 @@ public class ShopService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Adds a rating to a product in a shop.
+     * @param token
+     * @param shopId
+     * @param productId
+     * @param rating
+     * @param review
+     * @return
+     */
+    @Transactional
+    public ResponseEntity<Response> addProductRatingAndReview(String token, Integer shopId, Integer productId, Integer rating, String review) {
+        Response response = new Response();
+        try {
+            logger.log(Level.SEVERE,String.format("ShopService::addProductRatingAndReview entring"));
+            if (!_tokenService.validateToken(token)) 
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            if (!_tokenService.isUserAndLoggedIn(token)){
+                response.setErrorMessage("User is not logged in.");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
+            String username = _tokenService.extractUsername(token);
+
+            if (!_userFacade.doesUserExist(username)){
+                response.setErrorMessage(String.format("User does not exist.",username));
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+            _shopFacade.addProductRating(shopId, productId, rating);
+            _shopFacade.addProductReview(username, shopId, productId, review);
+            response.setReturnValue(String.format("Success to add rating and review to productID: %d in ShopID: %d .", productId,shopId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        catch(StockMarketException e){
+            logger.log(Level.INFO, e.getMessage(), e);
+            response.setErrorMessage(String.format(
+                "ShopService::addProductRatingAndReview failed to rate and review productId: %d in ShopId: %d with error %s", 
+                productId, shopId, e.getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 
 
