@@ -1,11 +1,7 @@
 add_admin#u1_Admin#adminPassword#admin@email.com#2022-05-04
 
 register#u2#u2Password#u2@email.com#2021-05-04
-register#u3#u3Password#u3@email.com#2020-05-04
-register#u4#u4Password#u4@email.com#2019-05-04
-register#u5#u5Password#u5@email.com#2018-05-04
-register#u6#u6Password#u6@email.com#2017-05-04
-register#123#123123#123@email.com#2017-05-04
+register#tal#123123#123@email.com#2017-05-04
 
 logIn#u2#u2Password
 
@@ -13,12 +9,6 @@ open_shop#u2#s1#bank_details#shop_address
 
 add_product_to_shop#u2#s1#Bamba#GROCERY#30#20
 
-appoint_shop_manager#u2#s1#u3#ADD_PRODUCT#EDIT_PRODUCT
-
-appoint_shop_owner#u2#s1#u4
-appoint_shop_owner#u2#s1#u5
-
-edit_quantity_product#u2#s1#Bamba#10
 
 logOut#u2
 

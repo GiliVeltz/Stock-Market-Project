@@ -21,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -37,8 +38,8 @@ public class ShoppingBasket implements Cloneable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer shoppingBasketId;
 
-    @OneToOne(optional = false, orphanRemoval = true)
-    @JoinColumn(name = "shop_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     @ManyToMany

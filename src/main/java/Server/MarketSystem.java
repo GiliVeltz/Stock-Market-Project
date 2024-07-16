@@ -59,7 +59,6 @@ public class MarketSystem {
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
     public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
-    public String real_system_config_path_tal = "src/main/java/Server/Configuration/instructions_config_tal.txt";
 
     private AdapterPaymentInterface payment_adapter;
     private AdapterSupplyInterface supply_adapter;
@@ -414,7 +413,7 @@ public class MarketSystem {
         else if (instruction.equals("purchase_cart")){
             //purchase_cart#user_name#card_number#month#year#holder#cvv#user_id#address#city#country#zip
             try {
-                ShoppingCart shoppingCart = (ShoppingCart) shoppingCartFacade.getCartByUsername(instruction_params[1]);
+                ShoppingCart shoppingCart = (ShoppingCart) shoppingCartFacade.getCartByUsernameOrToken(instruction_params[1]);
                 //String currency, String cardNumber, String month, String year, String holder, String cvv, String id
                 PaymentInfoDto paymentInfo = new PaymentInfoDto("" + shoppingCart.getTotalPrice(), instruction_params[2], instruction_params[3], instruction_params[4], instruction_params[5], instruction_params[6], instruction_params[7]);
                 //String name ,String address,String city,String country,String zip
