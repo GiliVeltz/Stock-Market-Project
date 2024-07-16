@@ -8,10 +8,20 @@ import java.util.TreeMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "[shop_percentage_discounts]")
 public class ShopPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
 
+    public ShopPercentageDiscount() {
+        super();
+    }
     /**
      * Represents a percentage discount for the whole shop.
      */

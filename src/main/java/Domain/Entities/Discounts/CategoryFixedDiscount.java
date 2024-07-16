@@ -12,9 +12,23 @@ import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[category_fixed_discounts]")
 public class CategoryFixedDiscount extends BaseDiscount {
+
+    @Column(name = "discount_total")
     private double _discountTotal;
+
+    @Column(name = "category")
     private Category _category;
+
+    public CategoryFixedDiscount() {
+        super();
+    }
 
     /**
      * Represents a fixed discount for the a specific category.

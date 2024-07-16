@@ -6,10 +6,23 @@ import java.util.SortedMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[product_fixed_discounts]")
 public class ProductFixedDiscount extends BaseDiscount {
+
+    @Column(name = "discount_total")
     private double _discountTotal;
+
+    @Column(name = "product_id")
     private int _productId;
 
+    public ProductFixedDiscount() {
+        super();
+    }
     /**
      * Represents a fixed discount for a specific product.
      */

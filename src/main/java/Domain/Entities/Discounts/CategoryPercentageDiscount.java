@@ -12,9 +12,23 @@ import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[category_percentage_discounts]")
 public class CategoryPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
+
+    @Column(name = "category")
     private Category _category;
+
+    public CategoryPercentageDiscount() {
+        super();
+    }
 
     /**
      * Represents a percentage discount for the a specific category.

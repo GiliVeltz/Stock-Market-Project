@@ -1185,7 +1185,7 @@ public class ShopFacade {
         if (shop == null) {
             throw new StockMarketException("Shop " + shopId + " does not exist");
         }
-        _discountRepository.delete(discountDto.id);
+        _discountRepository.deleteById(discountDto.id);
         shop.removeDiscount(discountDto.id);
         _shopRepository.flush();
     }

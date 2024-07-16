@@ -6,10 +6,23 @@ import java.util.SortedMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[product_percentage_discounts]")
 public class ProductPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
+
+    @Column(name = "product_id")
     private int _productId;
 
+    public ProductPercentageDiscount() {
+        super();
+    }
     /**
      * Represents a percentage discount for a specific product.
      */

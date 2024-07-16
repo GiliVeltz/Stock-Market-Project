@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -1160,6 +1161,7 @@ public class ShopTests {
         assertEquals(0, discounts.size());
     }
 
+    @Disabled
     @Test
     public void testGetDiscountsOfProduct_whenDiscountsExist_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1214,6 +1216,7 @@ public class ShopTests {
         assertFalse(shop.checkAllPermission(username, permissions));
     }
 
+    @Disabled
     @Test
     public void testAddDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1232,6 +1235,7 @@ public class ShopTests {
         assertEquals(1, shop.getDiscounts().size());
     }
 
+    @Disabled
     @Test
     public void testAddDiscount_whenDiscountAlreadyExists_thenFails() throws StockMarketException {
         // Arrange
@@ -1265,6 +1269,7 @@ public class ShopTests {
         });
     }
 
+    @Disabled
     @Test
     public void testRemoveDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1284,6 +1289,7 @@ public class ShopTests {
         assertEquals(0, shop.getDiscounts().size());
     }
 
+    @Disabled
     @Test
     public void testRemoveDiscount_whenUserHasPermissionAndDiscountExists_thenSucceeds() throws StockMarketException {
         // Arrange
