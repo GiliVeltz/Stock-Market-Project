@@ -30,8 +30,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.CascadeType;
 import Exceptions.ShopPolicyException;
 
 // This class represents a shopping cart that contains a list of shopping baskets.
@@ -44,8 +48,8 @@ public class ShoppingCart {
     @Column(name = "_shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
-    // @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shopping_cart_id") // Specifies the foreign key column in ShoppingBasket
     private List<ShoppingBasket> shoppingBaskets;
 
     @Transient
@@ -71,10 +75,7 @@ public class ShoppingCart {
     @Column(name = "user_or_guest_name")
     private String user_or_guest_name; // or guestToken string
 
-    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = Guest.class)
-    //@Column(name = "guest_id", nullable = false)
-    //@OneToOne(mappedBy = "shoppingCart")
-    @Transient
+    @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     private Guest guest; // or guestToken string
 
     // @OneToOne
@@ -276,7 +277,7 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException
      */
-    public void addProduct(int productID, int shopID, int quantity) throws StockMarketException {
+    public ShoppingBasket addProduct(int productID, int shopID, int quantity) throws StockMarketException {
         // Check if the product exists in the shop.
         if (shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
@@ -311,6 +312,7 @@ public class ShoppingCart {
         }
         
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
+        return basket;
     }
 
     // Remove a product from the shopping cart of a user.
@@ -412,5 +414,21 @@ public class ShoppingCart {
 
     public void setId(int i) {
         shoppingCartId = i;
+    }
+
+    public void setShopFacade(ShopFacade shopFacade) {
+        this.shopFacade = shopFacade;
+    }
+
+    public void setPaymentMethod(AdapterPaymentImp paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public void setSupplyMethod(AdapterSupplyImp supplyMethod) {
+        this.supplyMethod = supplyMethod;
+    }
+
+    public void setShoppingBaskets(List<ShoppingBasket> shoppingBaskets) {
+        this.shoppingBaskets = shoppingBaskets;
     }
 }

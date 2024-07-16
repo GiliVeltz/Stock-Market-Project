@@ -20,3 +20,7 @@ appoint_shop_owner#u2#s1#u5
 edit_quantity_product#u2#s1#Bamba#10
 
 logOut#u2
+
+logIn#tal#123123
+
+add_product_to_cart#tal#0#0#0
