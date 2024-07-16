@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 //class that represents an order for the shop
 @Entity
@@ -20,7 +21,7 @@ public class ShopOrder {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer shopOrderId;
 
-    @OneToOne(mappedBy = "shopOrder", optional = false, cascade = CascadeType.ALL)
+    @Transient
     private ShoppingBasket shoppingBasket;
 
     @Column(name = "total_order_amount", nullable = false)

@@ -14,7 +14,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
@@ -51,11 +53,9 @@ public class User {
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
     
-    // //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "shopping_cart_id")
-    @Transient
-    private ShoppingCart shoppingCart;
+    // @JoinColumn(name = "shopping_cart_id", nullable = true)
+    // private ShoppingCart shoppingCart;
     
     public User(){}
 
@@ -204,9 +204,9 @@ public class User {
         return id;
     }
 
-    public void setShoppingCart(ShoppingCart shoppingCart2) {
-        this.shoppingCart = shoppingCart2;
-    }
+    // public void setShoppingCart(ShoppingCart shoppingCart2) {
+    //     this.shoppingCart = shoppingCart2;
+    // }
 
     public void setId(Integer i) {
         id = i;

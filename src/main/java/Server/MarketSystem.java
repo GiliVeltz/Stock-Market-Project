@@ -385,6 +385,25 @@ public class MarketSystem {
             }
         }
 
+        else if (instruction.equals("add_cart_for_guest")){
+            //add_cart_for_guest#user_name
+            try {
+                shoppingCartFacade.addCartForGuest(instruction);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add cart for guest Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("add_cart_for_user")){
+            //add_cart_for_user#user_name#user_name
+            try {
+                User user = userFacade.getUserByUsername(instruction_params[2]);
+                shoppingCartFacade.addCartForUser(instruction_params[1], user);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add cart for user Fail: " + e.getMessage());
+            }
+        }
+
         else if (instruction.equals("remove_product_from_cart")){
             //remove_product_from_cart#user_name#product_name#shop_name#quantity
             try {
@@ -399,7 +418,7 @@ public class MarketSystem {
         else if (instruction.equals("purchase_cart")){
             //purchase_cart#user_name#card_number#month#year#holder#cvv#user_id#address#city#country#zip
             try {
-                ShoppingCart shoppingCart = (ShoppingCart) shoppingCartFacade.getCartByUsername(instruction_params[1]);
+                ShoppingCart shoppingCart = (ShoppingCart) shoppingCartFacade.getCartByUsernameOrToken(instruction_params[1]);
                 //String currency, String cardNumber, String month, String year, String holder, String cvv, String id
                 PaymentInfoDto paymentInfo = new PaymentInfoDto("" + shoppingCart.getTotalPrice(), instruction_params[2], instruction_params[3], instruction_params[4], instruction_params[5], instruction_params[6], instruction_params[7]);
                 //String name ,String address,String city,String country,String zip

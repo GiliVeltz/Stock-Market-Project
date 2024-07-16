@@ -93,6 +93,7 @@ public class ShoppingCartFacade {
                 ShoppingCart newCart = new ShoppingCart(user);
                 newCart.setOrderRepository(_orderRepository);
                 _cartsRepository.save(newCart);
+                _userRepository.flush();
             }
             else {
                 existCart.SetUser(user);
@@ -114,11 +115,9 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addProductToUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
-        ShoppingCart cart = getCartByUsername(userName);
+        ShoppingCart cart = getCartByUsernameOrToken(userName);
         if (cart != null) {
-            ShoppingBasket basket = cart.addProduct(productID, shopID, quantity);
-            _basketRepository.save(basket);
-            _basketRepository.flush();
+            cart.addProduct(productID, shopID, quantity);
             _cartsRepository.flush();
             logger.log(Level.INFO, "Product added to user's cart: " + userName);
         } else {
@@ -132,11 +131,9 @@ public class ShoppingCartFacade {
      */
     @Transactional
     public void addProductToGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
-        ShoppingCart cart = _guestsCarts.get(guestID);
+        ShoppingCart cart = getCartByUsernameOrToken(guestID);
         if (cart != null) {
-            ShoppingBasket basket = cart.addProduct(productID, shopID, quantity);
-            _basketRepository.save(basket);
-            _basketRepository.flush();
+            cart.addProduct(productID, shopID, quantity);
             _cartsRepository.flush();
             logger.log(Level.INFO, "Product added to guest's cart: " + guestID);
         } else {
@@ -278,15 +275,30 @@ public class ShoppingCartFacade {
 
     // this function returns the cart of the user by username.
     @Transactional
-    public ShoppingCart getCartByUsername(String username) {
+    public ShoppingCart getCartByUsernameOrToken(String username) {
         ShoppingCart returnedCart = _cartsRepository.getCartByUsername(username);
-        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(returnedCart.getId());
-        returnedCart.setShoppingBaskets(shoppingBaskets);
         returnedCart.setOrderRepository(_orderRepository);
+        returnedCart.setShoppingBasketsRepository(_basketRepository);
         returnedCart.setShopFacade(shopFacade);
         returnedCart.setPaymentMethod(AdapterPaymentImp.getRealAdapterPayment());
         returnedCart.setSupplyMethod(AdapterSupplyImp.getAdapterSupply());
         return returnedCart;
+    }
+
+    @Transactional
+    private List<ShoppingBasket> getShoppingBasketsByCartId(int cartId) {
+        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(cartId);
+        for (ShoppingBasket basket : shoppingBaskets) {
+            List<Product> products = new ArrayList<>();
+            List<Integer> productIds = _basketRepository.getProductIdsList(basket.getShoppingBasketId());
+            for (Integer productId : productIds) {
+                Product product = shopFacade.getProductById(productId);
+                products.add(product);
+            }
+            basket.setProductsList(products);
+            // basket.setShop(shopFacade.getShopById(basket.getShopId()));
+        }
+        return shoppingBaskets;
     }
 
     /*
