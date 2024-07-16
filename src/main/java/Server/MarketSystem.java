@@ -15,6 +15,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.Product;
 import Domain.Entities.ShoppingBasket;
@@ -750,10 +751,30 @@ public class MarketSystem {
             try {
                 List<User> users = userFacade.get_registeredUsers();
                 for (User user : users){
-                    logger.info("found register user: " + user.toString());
+                    logger.info("[get_all_users] found register user: " + user.toString());
                 }
             } catch (Exception e) {
                 logger.info("[run_instruction] get_all_users Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("get_user_by_username")){
+            //get_user_by_username#user_name
+            try {
+                User user = userFacade.getUserByUsername(instruction_params[1]);
+                logger.info("[get_user_by_username] found register user: " + user.toString());
+            } catch (Exception e) {
+                logger.info("[run_instruction] get_user_by_username Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("get_guest_by_id")){
+            //get_guest_by_id#guest_id
+            try {
+                Guest guest = userFacade.getGuestById(instruction_params[1]);
+                logger.info("[get_guest_by_id] found guest: " + guest.toString());
+            } catch (Exception e) {
+                logger.info("[run_instruction] get_guest_by_id Fail: " + e.getMessage());
             }
         }
         

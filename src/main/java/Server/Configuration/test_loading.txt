@@ -1,1 +1,2 @@
-get_all_users
+add_new_guest#g1
+get_guest_by_id#g1

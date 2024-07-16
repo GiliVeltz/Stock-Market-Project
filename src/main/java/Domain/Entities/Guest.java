@@ -66,4 +66,14 @@ public class Guest {
     public void setShoppingCart(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
     }
+
+    @Override
+    public String toString() {
+        return "Guest{" +
+                "id=" + id +
+                ", guestId='" + guestId + '\'' +
+                ", createdAt=" + createdAt +
+                ", shoppingCart=" + shoppingCart +
+                '}';
+    }
 }
