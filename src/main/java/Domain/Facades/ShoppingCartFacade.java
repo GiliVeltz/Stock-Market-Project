@@ -65,9 +65,11 @@ public class ShoppingCartFacade {
     }
 
     // Add a cart for a guest by token.
-    @Transactional
-    public void addCartForGuest(String guestID) {
+    public void addCartForGuest(String guestID) throws StockMarketException {
         Guest g = userFacade.getGuestById(guestID);
+        if(g == null) {
+            throw new StockMarketException("Guest with id: " + guestID + " does not exist");
+        }
         ShoppingCart cart = new ShoppingCart(g);
         cart.setOrderRepository(_orderRepository);
         g.setShoppingCart(cart);
