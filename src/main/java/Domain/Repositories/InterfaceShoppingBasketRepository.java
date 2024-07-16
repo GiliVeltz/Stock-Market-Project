@@ -11,6 +11,6 @@ import Domain.Entities.ShoppingBasket;
 @NoRepositoryBean
 public interface InterfaceShoppingBasketRepository extends JpaRepository<ShoppingBasket, Integer>{
 
-    @Query("SELECT c FROM ShoppingBasket c WHERE c.shopping_cart_id = ?1")
+    @Query("SELECT c FROM ShoppingBasket c WHERE c.shoppingBasketId = ?1")
     List<ShoppingBasket> getShoppingBasketsByCartId(int cartId);
 }

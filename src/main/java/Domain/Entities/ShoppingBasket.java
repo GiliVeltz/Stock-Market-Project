@@ -39,7 +39,7 @@ public class ShoppingBasket implements Cloneable {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL)
     private List<Product> productsList;
 
     @Column(name = "total_basket_amount", nullable = false)

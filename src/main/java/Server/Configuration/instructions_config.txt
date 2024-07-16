@@ -23,4 +23,4 @@ logOut#u2
 
 logIn#tal#123123
 
-add_product_to_cart#tal#0#0#1
+add_product_to_cart#tal#0#0#0

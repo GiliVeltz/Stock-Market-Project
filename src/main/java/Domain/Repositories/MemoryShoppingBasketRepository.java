@@ -202,4 +202,10 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
 
+    @Override
+    public List<ShoppingBasket> getShoppingBasketsByCartId(int cartId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getShoppingBasketsByCartId'");
+    }
+
 }

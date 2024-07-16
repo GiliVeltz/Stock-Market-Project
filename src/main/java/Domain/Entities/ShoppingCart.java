@@ -48,7 +48,7 @@ public class ShoppingCart {
     @Column(name = "_shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shopping_cart_id") // Specifies the foreign key column in ShoppingBasket
     private List<ShoppingBasket> shoppingBaskets;
 
