@@ -5,6 +5,7 @@ register#u3#u3Password#u3@email.com#2020-05-04
 register#u4#u4Password#u4@email.com#2019-05-04
 register#u5#u5Password#u5@email.com#2018-05-04
 register#u6#u6Password#u6@email.com#2017-05-04
+register#123#123123#123@email.com#2017-05-04
 
 logIn#u2#u2Password
 
@@ -20,3 +21,6 @@ appoint_shop_owner#u2#s1#u5
 edit_quantity_product#u2#s1#Bamba#10
 
 logOut#u2
+
+add_cart_for_guest#token
+add_cart_for_user#token#tal

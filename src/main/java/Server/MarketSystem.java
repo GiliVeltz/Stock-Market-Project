@@ -59,6 +59,7 @@ public class MarketSystem {
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
     public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
+    public String real_system_config_path_tal = "src/main/java/Server/Configuration/instructions_config_tal.txt";
 
     private AdapterPaymentInterface payment_adapter;
     private AdapterSupplyInterface supply_adapter;
