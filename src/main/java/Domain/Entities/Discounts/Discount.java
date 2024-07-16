@@ -12,26 +12,21 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "discount")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "discount_type")
 public abstract class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer _id;
-    
-    
+
     @Transient
     protected Rule<ShoppingBasket> _rule;
-    
+
     @Transient
     protected Rule<Product> _specialRule;
 
-    @Column(name = "expiration_date", nullable = false)
+    @Column(name = "expiration_date", nullable = true)
     private Date _expirationDate;
-
-    @ManyToOne
-    @JoinColumn(name = "shop_id", nullable = false)
-    private Shop shop;
 
     public Discount(Date expirationDate, int id) {
         _expirationDate = expirationDate;
@@ -54,20 +49,20 @@ public abstract class Discount {
         return _id;
     }
 
-    public int setId(int id){
+    public int setId(int id) {
         return _id = id;
     }
 
     // A special predicate to handle the shop and category discounts
-    public boolean specialPredicate(Product prodcut){
-        if(_specialRule != null){
+    public boolean specialPredicate(Product prodcut) {
+        if (_specialRule != null) {
             return _specialRule.predicate(prodcut);
         }
         return false;
     }
 
     public abstract int getParticipatingProduct();
-    
+
     public abstract BasicDiscountDto getDto();
 
     protected abstract void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException;
