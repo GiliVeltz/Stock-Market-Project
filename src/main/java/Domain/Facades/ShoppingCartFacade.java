@@ -294,7 +294,8 @@ public class ShoppingCartFacade {
         List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(cartId);
         for (ShoppingBasket basket : shoppingBaskets) {
             List<Product> products = new ArrayList<>();
-            for (Integer productId : _basketRepository.getProductIdsList(basket.getShoppingBasketId())) {
+            List<Integer> productIds = _basketRepository.getProductIdsList(basket.getShoppingBasketId());
+            for (Integer productId : productIds) {
                 Product product = shopFacade.getProductById(productId);
                 products.add(product);
             }

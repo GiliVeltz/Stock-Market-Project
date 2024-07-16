@@ -380,6 +380,25 @@ public class MarketSystem {
             }
         }
 
+        else if (instruction.equals("add_cart_for_guest")){
+            //add_cart_for_guest#user_name
+            try {
+                shoppingCartFacade.addCartForGuest(instruction);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add cart for guest Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("add_cart_for_user")){
+            //add_cart_for_user#user_name#user_name
+            try {
+                User user = userFacade.getUserByUsername(instruction_params[2]);
+                shoppingCartFacade.addCartForUser(instruction_params[1], user);
+            } catch (Exception e) {
+                logger.info("[run_instruction] add cart for user Fail: " + e.getMessage());
+            }
+        }
+
         else if (instruction.equals("remove_product_from_cart")){
             //remove_product_from_cart#user_name#product_name#shop_name#quantity
             try {
