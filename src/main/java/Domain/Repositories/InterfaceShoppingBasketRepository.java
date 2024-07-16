@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.query.Param;
 
 import Domain.Entities.ShoppingBasket;
 
@@ -14,6 +15,6 @@ public interface InterfaceShoppingBasketRepository extends JpaRepository<Shoppin
     @Query("SELECT c FROM ShoppingBasket c WHERE c.shoppingBasketId = ?1")
     List<ShoppingBasket> getShoppingBasketsByCartId(int cartId);
 
-    @Query("SELECT c FROM basket_product c WHERE c.basketId = ?1")
-    List<Integer> getProductIdsList(int basketId);
+    @Query("SELECT p.productId FROM ShoppingBasket sb JOIN sb.productsList p WHERE sb.shoppingBasketId = :basketId")
+    List<Integer> getProductIdsList(@Param("basketId") int basketId);
 }
