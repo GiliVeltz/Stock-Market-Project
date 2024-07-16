@@ -19,6 +19,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -39,7 +41,12 @@ public class ShoppingBasket implements Cloneable {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+        name = "basket_product", 
+        joinColumns = @JoinColumn(name = "basket_id"), 
+        inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
     private List<Product> productsList;
 
     @Column(name = "total_basket_amount", nullable = false)
@@ -47,10 +54,6 @@ public class ShoppingBasket implements Cloneable {
 
     @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
-
-    @OneToOne
-    @JoinColumn(name = "shop_order_id")
-    private ShopOrder shopOrder;
 
     @Transient
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
@@ -327,5 +330,9 @@ public class ShoppingBasket implements Cloneable {
 
     public void setId(int id) {
         this.shoppingBasketId = id;
+    }
+
+    public void setProductsList(List<Product> productsList) {
+        this.productsList = productsList;
     }
 }

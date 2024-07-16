@@ -13,4 +13,7 @@ public interface InterfaceShoppingBasketRepository extends JpaRepository<Shoppin
 
     @Query("SELECT c FROM ShoppingBasket c WHERE c.shoppingBasketId = ?1")
     List<ShoppingBasket> getShoppingBasketsByCartId(int cartId);
+
+    @Query("SELECT c FROM basket_product c WHERE c.basketId = ?1")
+    List<Integer> getProductIdsList(int basketId);
 }

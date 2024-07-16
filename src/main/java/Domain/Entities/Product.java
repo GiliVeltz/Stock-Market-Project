@@ -64,10 +64,6 @@ public class Product implements Cloneable {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @ManyToOne
-    @JoinColumn(name = "shopping_basket_id", nullable = true)
-    private ShoppingBasket shoppingBasket;
-
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Default constructor

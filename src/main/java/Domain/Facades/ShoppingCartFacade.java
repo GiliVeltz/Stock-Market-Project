@@ -280,13 +280,27 @@ public class ShoppingCartFacade {
     @Transactional
     public ShoppingCart getCartByUsername(String username) {
         ShoppingCart returnedCart = _cartsRepository.getCartByUsername(username);
-        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(returnedCart.getId());
+        List<ShoppingBasket> shoppingBaskets = getShoppingBasketsByCartId(returnedCart.getId());
         returnedCart.setShoppingBaskets(shoppingBaskets);
         returnedCart.setOrderRepository(_orderRepository);
         returnedCart.setShopFacade(shopFacade);
         returnedCart.setPaymentMethod(AdapterPaymentImp.getRealAdapterPayment());
         returnedCart.setSupplyMethod(AdapterSupplyImp.getAdapterSupply());
         return returnedCart;
+    }
+
+    @Transactional
+    private List<ShoppingBasket> getShoppingBasketsByCartId(int cartId) {
+        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(cartId);
+        for (ShoppingBasket basket : shoppingBaskets) {
+            List<Product> products = new ArrayList<>();
+            for (Integer productId : _basketRepository.getProductIdsList(basket.getShoppingBasketId())) {
+                Product product = shopFacade.getProductById(productId);
+                products.add(product);
+            }
+            basket.setProductsList(products);
+        }
+        return shoppingBaskets;
     }
 
     /*
