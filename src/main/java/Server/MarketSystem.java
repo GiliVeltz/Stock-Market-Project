@@ -57,7 +57,7 @@ public class MarketSystem {
 
     public String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config.txt";
+    public String instructions_config_path = "src/main/java/Server/Configuration/test_loading.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
@@ -742,6 +742,18 @@ public class MarketSystem {
                 shopFacade.updatePermissions(instruction_params[1], shopId, instruction_params[3], permissions);
             } catch (Exception e) {
                 logger.info("[run_instruction] update_user_permissions Fail: " + e.getMessage());
+            }
+        }
+
+        else if (instruction.equals("get_all_users")){
+            //get_all_users
+            try {
+                List<User> users = userFacade.get_registeredUsers();
+                for (User user : users){
+                    logger.info("found register user: " + user.toString());
+                }
+            } catch (Exception e) {
+                logger.info("[run_instruction] get_all_users Fail: " + e.getMessage());
             }
         }
         
