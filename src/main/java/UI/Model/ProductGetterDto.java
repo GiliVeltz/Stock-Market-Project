@@ -3,6 +3,7 @@ package UI.Model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
@@ -21,7 +22,7 @@ public class ProductGetterDto {
     private Integer _quantity;
 
     @NotBlank(message = "Keywords are required")
-    private HashSet<String> _keywords;
+    private Set<String> _keywords;
 
     @NotBlank(message = "Product Rating is required")
     private Double _productRating;
@@ -93,7 +94,7 @@ public class ProductGetterDto {
         return _quantity;
     }
 
-    public HashSet<String> getKeywords() {
+    public Set<String> getKeywords() {
         return _keywords;
     }
 
