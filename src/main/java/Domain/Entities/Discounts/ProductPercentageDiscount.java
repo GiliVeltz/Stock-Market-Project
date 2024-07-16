@@ -14,7 +14,7 @@ public class ProductPercentageDiscount extends BaseDiscount {
      * Represents a percentage discount for a specific product.
      */
     public ProductPercentageDiscount(Date expirationDate, double percentage, int productId, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;

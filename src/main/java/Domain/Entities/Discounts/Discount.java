@@ -28,9 +28,12 @@ public abstract class Discount {
     @Column(name = "expiration_date", nullable = true)
     private Date _expirationDate;
 
-    public Discount(Date expirationDate, int id) {
+
+    public Discount() {
+
+    }
+    public Discount(Date expirationDate) {
         _expirationDate = expirationDate;
-        _id = id;
     }
 
     public void applyDiscount(ShoppingBasket basket) throws StockMarketException {
@@ -47,10 +50,6 @@ public abstract class Discount {
 
     public int getId() {
         return _id;
-    }
-
-    public int setId(int id) {
-        return _id = id;
     }
 
     // A special predicate to handle the shop and category discounts

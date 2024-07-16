@@ -19,11 +19,14 @@ public class ShopFixedDiscount extends BaseDiscount {
     @Column(name = "discount_total")
     private double _discountTotal;
 
+    public ShopFixedDiscount() {
+        super();
+    }
     /**
      * Represents a fixed discount for the whole shop.
      */
-    public ShopFixedDiscount(Date expirationDate, double discountTotal, int id) {
-        super(expirationDate, id);
+    public ShopFixedDiscount(Date expirationDate, double discountTotal) {
+        super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
             _discountTotal = discountTotal;
@@ -33,7 +36,7 @@ public class ShopFixedDiscount extends BaseDiscount {
     }
 
     public ShopFixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.id);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount);
     }
 
     @Override

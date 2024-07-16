@@ -20,7 +20,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
      * Represents a percentage discount for the a specific category.
      */
     public CategoryPercentageDiscount(Date expirationDate, double percentage, Category category, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;

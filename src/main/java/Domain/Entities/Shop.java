@@ -76,7 +76,7 @@ public class Shop {
     @MapKeyColumn(name = "username")
     private Map<String, Role> userToRole = new HashMap<>(); // <userName, Role>
 
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shop_id")
     private List<Discount> discounts;
 
@@ -822,10 +822,9 @@ public class Shop {
             }
         }
 
-        int discountId = nextDiscountId++;
+        //int discountId = nextDiscountId++;
         discounts.add(discount);
-        discount.setId(discountId);
-        return discountId;
+        return discount.getDiscountId();
     }
 
     public void removeDiscount(int discountId) throws StockMarketException {

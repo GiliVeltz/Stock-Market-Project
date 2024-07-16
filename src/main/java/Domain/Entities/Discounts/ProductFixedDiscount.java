@@ -14,7 +14,7 @@ public class ProductFixedDiscount extends BaseDiscount {
      * Represents a fixed discount for a specific product.
      */
     public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         _discountTotal = discountTotal;
         _productId = productId;
 

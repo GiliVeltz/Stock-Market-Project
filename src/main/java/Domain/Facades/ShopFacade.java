@@ -350,7 +350,7 @@ public class ShopFacade {
         return id;
     }
 
-    // Adds a conditional discount to a shop.
+    //Adds a conditional discount to a shop.
     @Transactional
     public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto)
             throws StockMarketException {
@@ -1132,38 +1132,45 @@ public class ShopFacade {
         if (shop == null) {
             throw new StockMarketException("Shop " + shopId + " does not exist");
         }
+        Discount discount;
         // create proper discount
         if (discountDto.isPrecentage) {
             if (discountDto.category != null) {
-                shop.addDiscount(new CategoryPercentageDiscount(discountDto));
+                discount = new CategoryPercentageDiscount(discountDto);
             } else {
                 if (discountDto.productId == -1) {
-                    shop.addDiscount(new ShopPercentageDiscount(discountDto));
+                    discount = new ShopPercentageDiscount(discountDto);
                 } else {
                     // check if product with this id exists.
                     if (!shop.isProductExist(discountDto.productId)) {
                         throw new StockMarketException(
                                 "Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
                     }
-                    shop.addDiscount(new ProductPercentageDiscount(discountDto));
+                    discount = new ProductPercentageDiscount(discountDto);
                 }
             }
         } else {
             if (discountDto.category != null) {
-                shop.addDiscount(new CategoryFixedDiscount(discountDto));
+                discount = new CategoryFixedDiscount(discountDto);
             } else {
                 if (discountDto.productId == -1) {
-                    shop.addDiscount(new ShopFixedDiscount(discountDto));
+                    discount =new ShopFixedDiscount(discountDto);
                 } else {
                     // check if product with this id exists.
                     if (!shop.isProductExist(discountDto.productId)) {
                         throw new StockMarketException(
                                 "Prodcut with id " + discountDto.productId + " does not exist in shop " + shopId);
                     }
-                    shop.addDiscount(new ProductFixedDiscount(discountDto));
+                    discount = new ProductFixedDiscount(discountDto);
                 }
             }
         }
+       // Attach the Discount entity to the persistence context and save it
+        discount = _discountRepository.save(discount);
+
+        // Add the Discount to the Shop and save the Shop entity
+        shop.addDiscount(discount);
+        _shopRepository.flush();
     }
 
     /**
@@ -1178,7 +1185,9 @@ public class ShopFacade {
         if (shop == null) {
             throw new StockMarketException("Shop " + shopId + " does not exist");
         }
+        _discountRepository.delete(discountDto.id);
         shop.removeDiscount(discountDto.id);
+        _shopRepository.flush();
     }
 
     public List<BasicDiscountDto> getProductDiscounts(int shopId, int productId) throws StockMarketException {

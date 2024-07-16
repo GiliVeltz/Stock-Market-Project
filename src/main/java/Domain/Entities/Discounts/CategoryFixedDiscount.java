@@ -20,7 +20,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
      * Represents a fixed discount for the a specific category.
      */
     public CategoryFixedDiscount(Date expirationDate, double discountTotal, Category category, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
             _discountTotal = discountTotal;
