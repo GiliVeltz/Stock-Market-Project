@@ -37,6 +37,7 @@ import Domain.Facades.UserFacade;
 import Domain.Repositories.InterfaceDiscountRepository;
 import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfacePolicyRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopOrderRepository;
@@ -47,6 +48,7 @@ import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryDiscountRepository;
 import Domain.Repositories.MemoryGuestRepository;
 import Domain.Repositories.MemoryOrderRepository;
+import Domain.Repositories.MemoryPolicyRepository;
 import Domain.Repositories.MemoryProductRepository;
 import Domain.Repositories.MemoryRoleRepository;
 import Domain.Repositories.MemoryShopOrderRepository;
@@ -220,9 +222,10 @@ public class MarketSystem {
             InterfaceRoleRepository roleRepository = new MemoryRoleRepository();
             InterfaceDiscountRepository discountRepository = new MemoryDiscountRepository();
             InterfaceShopOrderRepository shopOrderRepository = new MemoryShopOrderRepository();
+            InterfacePolicyRepository policyRepository = new MemoryPolicyRepository();
  
             shoppingCartFacade.setShoppingCartFacadeRepositories(shoppingCartRepository, orderRepository, guestRepository, userRepository, shoppingBasketRepository, shopOrderRepository);
-            shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository, discountRepository);
+            shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository, discountRepository, policyRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
             notificationHandler.setNotificationFacadeRepositories(userRepository);
             webSocketServer.setWebSocketServerFacadeRepositories(userRepository);

@@ -18,7 +18,10 @@ import Domain.Entities.Alerts.GeneralAlert;
 import Domain.Entities.Alerts.PurchaseFromShopAlert;
 import Domain.Entities.Alerts.ReOpenShopAlert;
 import Domain.Entities.Discounts.Discount;
+import Domain.Entities.Policies.Policy;
 import Domain.Entities.Policies.ProductPolicy;
+import Domain.Entities.Policies.ShopPolicy;
+import Domain.Entities.Rules.AbstractRule;
 import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
@@ -48,6 +51,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -93,8 +97,8 @@ public class Shop {
     @Column(name = "shopRatersCounter", nullable = false)
     private Integer shopRatersCounter;
 
-    @Transient
-    // @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "policy_id", referencedColumnName = "id")
     private ShopPolicy shopPolicy;
 
     @Column(name = "nextDiscountId", nullable = false)
@@ -1174,7 +1178,7 @@ public class Shop {
      * @param rule The rule to add.
      * @throws StockMarketException
      */
-    public void addRuleToShopPolicy(String username, Rule<ShoppingBasket> rule) throws StockMarketException {
+    public void addRuleToShopPolicy(String username, AbstractRule<ShoppingBasket> rule) throws StockMarketException {
         logger.log(Level.INFO, "Shop - addRuleToShopPolicy: User " + username
                 + " trying to add rule to shop policy of shop with id: " + shopId);
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
@@ -1190,7 +1194,7 @@ public class Shop {
      * @param rule The rule to remove.
      * @throws StockMarketException
      */
-    public void removeRuleFromShopPolicy(String username, Rule<ShoppingBasket> rule) throws StockMarketException {
+    public void removeRuleFromShopPolicy(String username, AbstractRule<ShoppingBasket> rule) throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromShopPolicy: User " + username
                 + " trying to remove rule from shop policy of shop with id: " + shopId);
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
@@ -1207,7 +1211,7 @@ public class Shop {
      * @param productId The id of the product to add the rule to.
      * @throws StockMarketException
      */
-    public void addRuleToProductPolicy(String username, Rule<User> rule, int productId) throws StockMarketException {
+    public void addRuleToProductPolicy(String username, AbstractRule<User> rule, int productId) throws StockMarketException {
         logger.log(Level.INFO, "Shop - addRuleToProductPolicy: User " + username
                 + " trying to add rule to product policy of shop with id: " + shopId);
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
@@ -1225,7 +1229,7 @@ public class Shop {
      * @param productId The id of the product to remove the rule from.
      * @throws StockMarketException
      */
-    public void removeRuleFromProductPolicy(String username, Rule<User> rule, int productId)
+    public void removeRuleFromProductPolicy(String username, AbstractRule<User> rule, int productId)
             throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromProductPolicy: User " + username
                 + " trying to remove rule from product policy of shop with id: " + shopId);
@@ -1355,14 +1359,17 @@ public class Shop {
     }
 
     // this function changes the shop policy
-    public void changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules) throws StockMarketException {
+    public ShopPolicy changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules) throws StockMarketException {
+        ShopPolicy oldShopPolicy = shopPolicy;
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY)) {
             shopPolicy = new ShopPolicy();
             for (ShoppingBasketRuleDto rule : shopRules) {
-                Rule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
+                AbstractRule<ShoppingBasket> newRule = RuleFactory.createShoppingBasketRule(rule);
                 shopPolicy.addRule(newRule);
             }
+            return shopPolicy;
         }
+        return oldShopPolicy;
     }
 
     // this function changes the shop policy
@@ -1372,7 +1379,7 @@ public class Shop {
             Product product = productMap.get(productId);
             ProductPolicy policy = new ProductPolicy();
             for (UserRuleDto rule : productRules) {
-                Rule<User> newRule = RuleFactory.createUserRule(rule);
+                AbstractRule<User> newRule = RuleFactory.createUserRule(rule);
                 policy.addRule(newRule);
             }
             product.setProductPolicy(policy);

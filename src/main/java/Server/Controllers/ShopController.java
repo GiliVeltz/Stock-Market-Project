@@ -378,4 +378,11 @@ public class ShopController {
         return _shopService.addProductRatingAndReview(token, shopId, productId, rating, review);
     }
 
+    @PostMapping("/removeProductFromShop")
+    public ResponseEntity<Response> removeProductFromShop(@RequestBody ProductDto productDto,
+            @RequestHeader("Authorization") String token,
+            @RequestParam Integer shopId) {
+        return _shopService.removeProductFromShop(token, shopId, productDto);
+    }
+
 }
