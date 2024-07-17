@@ -85,9 +85,9 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     // set the repositories to be used test time
-    public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
-        this._userRepository = userRepository;
-    }
+    // public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
+    //     this._userRepository = userRepository;
+    // }
 
     public WebSocketServer() {
     }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import Domain.Entities.User;
@@ -64,7 +65,6 @@ public class MemoryUserRepository implements InterfaceUserRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
-
     @Override
     public <S extends User> S saveAndFlush(S entity) {
         // TODO Auto-generated method stub
@@ -222,8 +222,7 @@ public class MemoryUserRepository implements InterfaceUserRepository {
 
     @Override
     public List<String> findMessagesByUsername(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findMessagesByUsername'");
+        return new ArrayList<String>(); 
     }
 
 }

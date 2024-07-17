@@ -82,6 +82,7 @@ public class MarketSystem {
         this.notificationHandler = notificationHandler;
         // this.webSocketServer = webSocketServer;
         this.init_market(real_system_config_path);
+        // this.init_market(tests_config_file_path);
     }
 
     // for test - set facades and urls to check
