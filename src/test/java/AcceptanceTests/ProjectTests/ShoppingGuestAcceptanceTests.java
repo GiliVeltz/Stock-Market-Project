@@ -26,7 +26,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search a shop and display its products by shop ID as a Guest in the system.
     @Test
-    @Disabled
     public void testSearchAndDisplayShopByIDAsGuest() {
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsGuest("0", true) ); // success - exist shop, has products
         assertTrue(_bridge.testSearchAndDisplayShopByIDAsGuest("0", false) ); // success - exist shop, no products
@@ -35,7 +34,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search a shop and display its products by shop name as a Guest in the system.
     @Test
-    @Disabled
     public void testSearchAndDisplayShopByNameAsGuest() {
         assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", true) ); // success - exist shop, has products
         assertTrue(_bridge.testSearchAndDisplayShopByNameAsGuest("shopName1", false) ); // success - exist shop, no products
@@ -44,7 +42,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test get information about a shop as a guest in the system.
     @Test
-    @Disabled
     public void testGetShopInfoAsGuest() {
         assertTrue(_bridge.testGetShopInfoAsGuest("0")); // success - exist shop
         assertFalse(_bridge.testGetShopInfoAsGuest("1")); // fail - non exist shop
@@ -52,7 +49,6 @@ public class ShoppingGuestAcceptanceTests {
     
     // Test search product information according to product name as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingProductNameAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductNameAsGuest("productName1") ); // success - exist product
         assertFalse(_bridge.testGetProductInfoUsingProductNameAsGuest("productName2") ); // fail - non exist product
@@ -60,7 +56,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search product information according to product category as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingProductCategoryAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryAsGuest(Category.CLOTHING) ); // success - exist category
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryAsGuest(Category.GROCERY) ); // fail - non exist category
@@ -68,7 +63,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search product information according to key words as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingKeywordsAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingKeywordsAsGuest(List.of("keyword1"))); // success - exist key word
         assertTrue(_bridge.testGetProductInfoUsingKeywordsAsGuest(List.of("keyword1", "keyword2"))); // success - one key word exist
@@ -78,7 +72,6 @@ public class ShoppingGuestAcceptanceTests {
     
     // Test search product information in a specific shop, according to product name as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingProductNameInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName1", "0") ); // success - exist product and exist shop
         assertFalse(_bridge.testGetProductInfoUsingProductNameInShopAsGuest("productName2", "0") ); // fail - non exist product but exist shop
@@ -88,7 +81,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search product information in a specific shop, according to product category as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingProductCategoryInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest(Category.CLOTHING, "0")); // success - exist category and exist shop
         assertFalse(_bridge.testGetProductInfoUsingProductCategoryInShopAsGuest(Category.GROCERY, "0")); // fail - non exist category but exist shop
@@ -98,7 +90,6 @@ public class ShoppingGuestAcceptanceTests {
 
     // Test search product information in a specific shop, according to key words as a guest in the system.
     @Test
-    @Disabled
     public void testGetProductInfoUsingKeywordsInShopAsGuest() {
         assertTrue(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword1"), "0")); // success - exist keyword and exist shop
         assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "0")); // fail - non exist keyword but exist shop
