@@ -85,14 +85,14 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     // set the repositories to be used test time
-    // public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
-    //     this._userRepository = userRepository;
-    // }
+    public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
+        this._userRepository = userRepository;
+    }
 
     public WebSocketServer() {
     }
 
-    /**
+/**
      * Handles a new WebSocket connection after it has been established.
      * This method is called after the connection is opened.
      *

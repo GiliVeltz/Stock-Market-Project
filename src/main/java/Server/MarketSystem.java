@@ -75,18 +75,18 @@ public class MarketSystem {
     private WebSocketServer webSocketServer;
     
     @Autowired
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler/* ,WebSocketServer webSocketServer*/) throws StockMarketException {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler ,WebSocketServer webSocketServer) throws StockMarketException {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.notificationHandler = notificationHandler;
-        // this.webSocketServer = webSocketServer;
+        this.webSocketServer = webSocketServer;
         this.init_market(real_system_config_path);
         // this.init_market(tests_config_file_path);
     }
 
     // for test - set facades and urls to check
-    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler,/*WebSocketServer webSocketServer,*/ String external_system_url, String instructions_config_path, String real_system_config_path) {
+    public MarketSystem(ShopFacade shopFacade, UserFacade userFacade, ShoppingCartFacade shoppingCartFacade,NotificationHandler notificationHandler,WebSocketServer webSocketServer, String external_system_url, String instructions_config_path, String real_system_config_path) {
         this.shopFacade = shopFacade;
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
