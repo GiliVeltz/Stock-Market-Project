@@ -145,10 +145,6 @@ public class UserFacade {
             user.setPassword(userDto.password);
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
-            // ShoppingCart shoppingCart = new ShoppingCart();
-            // shoppingCart.setOrderRepository(_orderRepository);
-            // shoppingCart.setUser(user);
-            // user.setShoppingCart(shoppingCart);
             _userRepository.save(user);
         } else {
             throw new StockMarketException("Username already exists.");
