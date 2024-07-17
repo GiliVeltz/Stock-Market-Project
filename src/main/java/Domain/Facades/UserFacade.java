@@ -313,6 +313,7 @@ public class UserFacade {
     public void setSystemAdmin(User user) {
         logger.info("Setting user " + user.getUserName() + " as system admin.");
         user.setIsSystemAdmin(true);
+        _userRepository.save(user);
         _userRepository.flush();
         logger.info("User " + user.getUserName() + " set as system admin.");
     }
