@@ -42,10 +42,10 @@ public class ShoppingCartFacade {
     Map<String, ShoppingCart> _guestsCarts; // <guestID, ShoppingCart>
     InterfaceShoppingCartRepository _cartsRepository;
     InterfaceOrderRepository _orderRepository;
-    InterfaceShopOrderRepository _shopOrderRepository;
     InterfaceGuestRepository _guestRepository;
     InterfaceUserRepository _userRepository;
     InterfaceShoppingBasketRepository _basketRepository;
+    InterfaceShopOrderRepository _shopOrderRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
@@ -199,8 +199,9 @@ public class ShoppingCartFacade {
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
-            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails);
-            _guestsCarts.get(guestID).emptyCart();
+            getCartByUsernameOrToken(guestID).purchaseCart(purchaseCartDetails);
+            getCartByUsernameOrToken(guestID).emptyCart();
+            _cartsRepository.flush();
         }
         catch (StockMarketException e) {
             logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
@@ -215,8 +216,9 @@ public class ShoppingCartFacade {
     public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         try {
-            _cartsRepository.getCartByUsername(username).purchaseCart(purchaseCartDetails);
-            _cartsRepository.getCartByUsername(username).emptyCart();
+            getCartByUsernameOrToken(username).purchaseCart(purchaseCartDetails);
+            getCartByUsernameOrToken(username).emptyCart();
+            _cartsRepository.flush();
         }
         catch (StockMarketException e) {
             logger.log(Level.WARNING, "Failed to purchase cart for user: " + username);

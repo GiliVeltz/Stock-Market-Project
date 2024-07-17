@@ -227,6 +227,9 @@ public class ShoppingCart {
         List<Integer> boughtBasketList = new ArrayList<>();
 
         for (Integer basketId : busketsToBuy) {
+            if (basketId == -1) {
+                continue;
+            }
             try {
                 if (!shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
@@ -300,7 +303,7 @@ public class ShoppingCart {
             basket = basketOptional.get();
         } else {
             basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
-            basketRepository.save(basket);
+            basket = basketRepository.save(basket);
         }
 
         // add the product to the basket.

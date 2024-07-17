@@ -101,7 +101,9 @@ public class ShopFacade {
     }
 
     public Shop getShopByShopId(Integer shopId) {
-        return _shopRepository.findByShopId(shopId);
+        Shop shop = _shopRepository.findByShopId(shopId);
+        shop.setNotificationHandler(_notificationHandler);
+        return shop;
     }
 
     // Checks if a shop ID exists.
