@@ -15,6 +15,7 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,7 +43,7 @@ public class ShoppingBasket implements Cloneable {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "basket_product", 
         joinColumns = @JoinColumn(name = "basket_id"), 
@@ -82,7 +83,8 @@ public class ShoppingBasket implements Cloneable {
         }
         
         // check if the product is in the shop and validate the user doesn't violate the product policy
-        shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        // shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        // TODO VLADIN
 
         // add the product to the basket
         for (int i = 0; i < quantity; i++)
