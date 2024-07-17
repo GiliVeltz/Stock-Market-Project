@@ -23,7 +23,6 @@ public class ShopManagerAcceptanceTets {
         
         // Test that shop manager can do only what the shop owner allowed him.
         @Test
-        @Disabled
         public void testPermissionForShopManager() {
             assertTrue(_bridge.testPermissionForShopManager("shopManager", 0, "possiblePermission") ); // success
             assertFalse(_bridge.testPermissionForShopManager("shopManager", 1, "inPossiblePermission") ); // fail
