@@ -9,11 +9,13 @@ import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "[shop_fixed_discounts]")
+@DiscriminatorValue("Shop Fixed")
 public class ShopFixedDiscount extends BaseDiscount {
     
     @Column(name = "discount_total")
@@ -25,7 +27,7 @@ public class ShopFixedDiscount extends BaseDiscount {
     /**
      * Represents a fixed discount for the whole shop.
      */
-    public ShopFixedDiscount(Date expirationDate, double discountTotal) {
+    public ShopFixedDiscount(Date expirationDate, double discountTotal, int id) {
         super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
@@ -33,10 +35,11 @@ public class ShopFixedDiscount extends BaseDiscount {
 
         _rule = (basket) -> true;
         _specialRule = (product) -> true;
+        _tempId = id;
     }
 
     public ShopFixedDiscount(BasicDiscountDto dto) {
-        this(new Date(dto.expirationDate.getTime()), dto.discountAmount);
+        this(new Date(dto.expirationDate.getTime()), dto.discountAmount, dto.id);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class ShopFixedDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

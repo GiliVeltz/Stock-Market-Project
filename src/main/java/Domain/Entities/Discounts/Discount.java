@@ -14,6 +14,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "discount")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "discount_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,9 @@ public abstract class Discount {
 
     @Transient
     protected Rule<Product> _specialRule;
+
+    @Transient
+    protected int _tempId;
 
     @Column(name = "expiration_date", nullable = true)
     private Date _expirationDate;
@@ -48,8 +52,12 @@ public abstract class Discount {
         return _expirationDate;
     }
 
-    public int getId() {
+    public Integer getId() {
         return _id;
+    }
+
+    public Integer getTempId(){
+        return _tempId;
     }
 
     // A special predicate to handle the shop and category discounts
@@ -66,5 +74,5 @@ public abstract class Discount {
 
     protected abstract void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException;
 
-    public abstract int getDiscountId();
+    public abstract Integer getDiscountId();
 }

@@ -63,7 +63,7 @@ public class ConditionalDiscount extends Discount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return _discount.getId();
     }
 

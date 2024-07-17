@@ -1161,7 +1161,7 @@ public class ShopTests {
         assertEquals(0, discounts.size());
     }
 
-    @Disabled
+    
     @Test
     public void testGetDiscountsOfProduct_whenDiscountsExist_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1216,7 +1216,7 @@ public class ShopTests {
         assertFalse(shop.checkAllPermission(username, permissions));
     }
 
-    @Disabled
+    
     @Test
     public void testAddDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1235,7 +1235,7 @@ public class ShopTests {
         assertEquals(1, shop.getDiscounts().size());
     }
 
-    @Disabled
+    
     @Test
     public void testAddDiscount_whenDiscountAlreadyExists_thenFails() throws StockMarketException {
         // Arrange
@@ -1269,7 +1269,6 @@ public class ShopTests {
         });
     }
 
-    @Disabled
     @Test
     public void testRemoveDiscount_whenUserHasPermission_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1283,13 +1282,13 @@ public class ShopTests {
         shop.addDiscount(discount);
 
         // Act
-        shop.removeDiscount(0);
+        shop.removeDiscount(1);
 
         // Assert
         assertEquals(0, shop.getDiscounts().size());
     }
 
-    @Disabled
+    
     @Test
     public void testRemoveDiscount_whenUserHasPermissionAndDiscountExists_thenSucceeds() throws StockMarketException {
         // Arrange
@@ -1303,7 +1302,7 @@ public class ShopTests {
         shop.addDiscount(discount);
 
         // Act
-        shop.removeDiscount(0);
+        shop.removeDiscount(1);
 
         // Assert
         assertEquals(0, shop.getDiscounts().size());

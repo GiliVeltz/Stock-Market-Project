@@ -9,11 +9,13 @@ import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "[shop_percentage_discounts]")
+@DiscriminatorValue("Shop Percentage")
 public class ShopPercentageDiscount extends BaseDiscount {
 
     @Column(name = "percentage")
@@ -33,6 +35,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
 
         _rule = (basket) -> true;
         _specialRule = (product) -> true;
+        _tempId = id;
     }
 
     public ShopPercentageDiscount(BasicDiscountDto dto) {
@@ -74,7 +77,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

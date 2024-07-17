@@ -937,7 +937,7 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
             Category category = selectDiscountType.getValue().equals("Category Discount") ? Category.valueOf(categoryField.getValue()) : null;
             int product = selectDiscountType.getValue().equals("Product Discount") ? productIdField.getValue() : -1;
 
-            presenter.addDiscount(discountType, isPercentage, value, expiration, product, category, isSuccess ->{
+            presenter.addDiscount(isPercentage, value, expiration, product, category, isSuccess ->{
                 if(isSuccess) {
                     presenter.fetchShopDiscounts(discounts -> {
                         _discounts = discounts;

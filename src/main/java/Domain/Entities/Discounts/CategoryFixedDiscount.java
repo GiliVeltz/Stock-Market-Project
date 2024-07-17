@@ -13,11 +13,13 @@ import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "[category_fixed_discounts]")
+@DiscriminatorValue("Category Fixed")
 public class CategoryFixedDiscount extends BaseDiscount {
 
     @Column(name = "discount_total")
@@ -48,6 +50,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
             }
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
+        _tempId = id;
     }
 
     public CategoryFixedDiscount(BasicDiscountDto dto) {
@@ -91,7 +94,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

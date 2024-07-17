@@ -807,7 +807,7 @@ public class Shop {
      * @param discount the discount to be added
      * @return the ID of the added discount
      */
-    public int addDiscount(Discount discount) throws StockMarketException {
+    public Integer addDiscount(Discount discount) throws StockMarketException {
         // check if shop is closed
         if (isShopClosed())
             throw new StockMarketException("Shop is closed, cannot add discount.");
@@ -839,7 +839,7 @@ public class Shop {
 
         // check if discount exists
         for (Discount d : discounts) {
-            if (d.getId() == discountId) {
+            if ((d.getId()!= null &&  d.getId() == discountId) || (d.getTempId() != null && d.getTempId() == discountId)) {
                 discounts.remove(d);
                 return;
             }

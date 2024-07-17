@@ -7,11 +7,13 @@ import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "[product_fixed_discounts]")
+@DiscriminatorValue("Product Fixed")
 public class ProductFixedDiscount extends BaseDiscount {
 
     @Column(name = "discount_total")
@@ -32,6 +34,7 @@ public class ProductFixedDiscount extends BaseDiscount {
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
+        _tempId = id;
     }
 
     public ProductFixedDiscount(BasicDiscountDto dto) {
@@ -80,7 +83,7 @@ public class ProductFixedDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }
