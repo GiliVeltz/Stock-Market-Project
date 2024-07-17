@@ -185,6 +185,7 @@ public class ProductPresenter {
                 });
     }
 
+        @SuppressWarnings("deprecation")
         public void fetchProductPolicy(Integer shopId, Integer productId, Consumer<List<UserRuleDto>> callback){
         RestTemplate restTemplate = new RestTemplate();
         UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")

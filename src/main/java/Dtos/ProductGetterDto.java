@@ -3,6 +3,7 @@ package Dtos;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import Domain.Entities.Product;
 
@@ -11,7 +12,7 @@ public class ProductGetterDto {
     private String _productName;
     private double _price;
     private Integer _quantity;
-    private HashSet<String> _keywords;
+    private Set<String> _keywords;
     private Double _productRating;
     private Integer _productRatersCounter;
     private CategoryDto _category;
@@ -96,7 +97,7 @@ public class ProductGetterDto {
         this._quantity = _quantity;
     }
 
-    public HashSet<String> getKeywords() {
+    public Set<String> getKeywords() {
         return _keywords;
     }
 

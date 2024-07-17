@@ -22,6 +22,11 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
         _shoppingBaskets = shoppingBaskets;
     }
 
+    // empty constructor
+    public MemoryShoppingBasketRepository() {
+        _shoppingBaskets = new java.util.ArrayList<ShoppingBasket>();
+    }
+
     @Override
     public void flush() {
     }
@@ -200,6 +205,18 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
     public void deleteAllById(Iterable<? extends Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
+    }
+
+    @Override
+    public List<ShoppingBasket> getShoppingBasketsByCartId(int cartId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getShoppingBasketsByCartId'");
+    }
+
+    @Override
+    public List<Integer> getProductIdsList(int basketId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getProductIdsList'");
     }
 
 }

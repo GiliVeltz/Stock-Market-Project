@@ -1004,7 +1004,10 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         }
         shop.addKeywordsToProduct(username, productId, keywords);
+
+        _productRepository.save(shop.getProductById(productId));
         _productRepository.flush();
+
         logger.info("Keywords were added successfully.");
     }
 
