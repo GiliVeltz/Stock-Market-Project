@@ -38,6 +38,7 @@ import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
+import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
 import Domain.Repositories.MemoryGuestRepository;
@@ -45,6 +46,7 @@ import Domain.Repositories.MemoryOrderRepository;
 import Domain.Repositories.MemoryProductRepository;
 import Domain.Repositories.MemoryRoleRepository;
 import Domain.Repositories.MemoryShopRepository;
+import Domain.Repositories.MemoryShoppingBasketRepository;
 import Domain.Repositories.MemoryShoppingCartRepository;
 import Domain.Repositories.MemoryUserRepository;
 import Dtos.BasicDiscountDto;
@@ -195,6 +197,7 @@ public class MarketSystem {
             logger.info("Init Data For Tests: No Database");
 
             InterfaceShoppingCartRepository shoppingCartRepository = new MemoryShoppingCartRepository();
+            InterfaceShoppingBasketRepository shoppingBasketRepository = new MemoryShoppingBasketRepository();
             InterfaceShopRepository shopRepository = new MemoryShopRepository();
             InterfaceProductRepository productRepository = new MemoryProductRepository();
             InterfaceUserRepository userRepository = new MemoryUserRepository();
@@ -202,7 +205,7 @@ public class MarketSystem {
             InterfaceOrderRepository orderRepository = new MemoryOrderRepository();
             InterfaceRoleRepository roleRepository = new MemoryRoleRepository();
 
-            shoppingCartFacade.setShoppingCartRepository(shoppingCartRepository);
+            shoppingCartFacade.setShoppingCartFacadeRepositories(shoppingCartRepository, orderRepository, guestRepository, userRepository, shoppingBasketRepository);
             shopFacade.setShopFacadeRepositories(shopRepository, productRepository, roleRepository);
             userFacade.setUserFacadeRepositories(userRepository, guestRepository, orderRepository, shoppingCartRepository);
         }
