@@ -97,6 +97,13 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "1")); // fail - non exist keyword and non exist shop
     }
 
+    // Test when add product to shopping cart- it stays there as a Guest in the system.
+    @Test
+    public void testAddProductToShoppingCartAsGuest() {
+        assertTrue(_bridge.testAddProductToShoppingCartAsGuest("0") ); // success
+        assertFalse(_bridge.testAddProductToShoppingCartAsGuest("1") ); // fail
+    }
+
     // Test a guest can watch his items in the shopping cart.
     @Test
     @Disabled

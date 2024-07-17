@@ -103,8 +103,6 @@ public class ShoppingUserAcceptanceTests{
     
     // Test when add product to shopping cart- it stays there as a User in the system.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void testAddProductToShoppingCartAsUser() {
         assertTrue(_bridge.testAddProductToShoppingCartAsUser("0", "0") ); // success
         assertFalse(_bridge.testAddProductToShoppingCartAsUser("1", "1") ); // fail

@@ -83,6 +83,7 @@ public class ShoppingCartFacade {
         cart.setOrderRepository(_orderRepository);
         g.setShoppingCart(cart);
         _cartsRepository.save(cart);
+        
         _guestRepository.flush();
         //_guestsCarts.put(guestID, cart);
     }

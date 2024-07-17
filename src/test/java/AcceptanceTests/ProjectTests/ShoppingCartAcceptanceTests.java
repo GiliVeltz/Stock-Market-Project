@@ -22,8 +22,6 @@ public class ShoppingCartAcceptanceTests {
     
     // Test try to add product to shopping cart as register and signed in user in the system.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void testAddProductToShoppingCartAsUser() {
         assertTrue(_bridge.testAddProductToShoppingCartUser("userName", "0", "0") ); // success - product in shop
         assertFalse(_bridge.testAddProductToShoppingCartUser("userName", "2", "0") ); // fail - product not in shop
@@ -31,13 +29,8 @@ public class ShoppingCartAcceptanceTests {
     
     // Test try to add product to shopping cart as guest in the system.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void testAddProductToShoppingCartAsGuest() {
-        //assertTrue(_bridge.testAddProductToShoppingCartAsGuest("0")); // success - product in shop
-        //assertFalse(_bridge.testAddProductToShoppingCartAsGuest("2") ); // fail - product not in shop
-
         assertTrue(_bridge.testAddProductToShoppingCartGuest("guestname", "0", "0") ); // success - product in shop
         assertFalse(_bridge.testAddProductToShoppingCartGuest("guestname", "2", "0") ); // fail - product not in shop
-    }
+     }
 }
