@@ -1,13 +1,21 @@
 package Domain.Entities.Rules;
 
 import Domain.Entities.ShoppingBasket;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * Represents a rule that checks if a shopping basket contains a minimum amount of a specific product.
  */
-public class MinProductAmountRule implements Rule<ShoppingBasket> {
+@Entity
+@Table(name = "[min_product_amount_rule]")
+public class MinProductAmountRule  extends AbstractRule<ShoppingBasket> {
     
+    @Column(name = "productId", nullable = false)
     int _productId;
+
+    @Column(name = "minAmount", nullable = false)
     int _minAmount;
 
     /**

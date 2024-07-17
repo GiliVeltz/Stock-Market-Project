@@ -1,0 +1,7 @@
+register#u_inbar#u_inbarPassword#u_inbar@email.com#2021-05-04
+
+open_shop#u_inbar_test#s_inbar_test#bank_details#shop_address
+
+add_product_to_shop#u_inbar_test#s_inbar_test#Bisli#GROCERY#30#20
+
+edit_product_in_shop#u_inbar_test#s_inbar_test#Bisli#GROCERY#30#20#ball#SPORTS#100#200

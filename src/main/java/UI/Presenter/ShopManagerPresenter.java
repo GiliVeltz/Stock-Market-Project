@@ -95,10 +95,6 @@ public class ShopManagerPresenter {
         
     }
 
-    public void addDiscounts() {
-
-    }
-
     public void changeProductPolicy() {
         
     }
@@ -418,7 +414,7 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void addDiscount(String discounType, boolean isPercentage, Double discountValue, Date expirationDate,
+    public void addDiscount(boolean isPercentage, Double discountValue, Date expirationDate,
         Integer productId, Category category, Consumer<Boolean> callback){
         RestTemplate restTemplate = new RestTemplate();
         ShopDiscountDto discountDto = new ShopDiscountDto(productId, isPercentage, discountValue, expirationDate, category, -1); 

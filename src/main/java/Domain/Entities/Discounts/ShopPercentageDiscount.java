@@ -8,21 +8,34 @@ import java.util.TreeMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "[shop_percentage_discounts]")
+@DiscriminatorValue("Shop Percentage")
 public class ShopPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
 
+    public ShopPercentageDiscount() {
+        super();
+    }
     /**
      * Represents a percentage discount for the whole shop.
      */
     public ShopPercentageDiscount(Date expirationDate, double percentage, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
 
         _rule = (basket) -> true;
         _specialRule = (product) -> true;
+        _tempId = id;
     }
 
     public ShopPercentageDiscount(BasicDiscountDto dto) {
@@ -64,7 +77,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

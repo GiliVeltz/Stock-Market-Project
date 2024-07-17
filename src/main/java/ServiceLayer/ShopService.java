@@ -577,66 +577,66 @@ public class ShopService {
         }
     }
 
-    /**
-     * Adds a basic discount to a shop.
-     * 
-     * @param token          The session token of the user adding the discount.
-     * @param shopId         The ID of the shop to which the discount will be added.
-     * @param productId      The ID of the product to which the discount will be
-     *                       applied.
-     * @param isPrecentage   A boolean indicating whether the discount is a
-     *                       percentage or a fixed amount.
-     * @param discountAmount The amount of the discount.
-     * @param expirationDate The date on which the discount will expire.
-     * @return A response indicating the success (discount id) or failure (error
-     *         message) of the operation.
-     */
-    @Transactional
-    public ResponseEntity<Response> addShopBasicDiscount(String token, int shopId, BasicDiscountDto basicDiscountDto) {
-        Response response = new Response();
-        try {
-            // check for user validity
-            if (!_tokenService.validateToken(token))
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            if (!_tokenService.isUserAndLoggedIn(token)){
-                response.setErrorMessage("User is not logged in");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+    // /**
+    //  * Adds a basic discount to a shop.
+    //  * 
+    //  * @param token          The session token of the user adding the discount.
+    //  * @param shopId         The ID of the shop to which the discount will be added.
+    //  * @param productId      The ID of the product to which the discount will be
+    //  *                       applied.
+    //  * @param isPrecentage   A boolean indicating whether the discount is a
+    //  *                       percentage or a fixed amount.
+    //  * @param discountAmount The amount of the discount.
+    //  * @param expirationDate The date on which the discount will expire.
+    //  * @return A response indicating the success (discount id) or failure (error
+    //  *         message) of the operation.
+    //  */
+    // @Transactional
+    // public ResponseEntity<Response> addShopBasicDiscount(String token, int shopId, BasicDiscountDto basicDiscountDto) {
+    //     Response response = new Response();
+    //     try {
+    //         // check for user validity
+    //         if (!_tokenService.validateToken(token))
+    //             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    //         if (!_tokenService.isUserAndLoggedIn(token)){
+    //             response.setErrorMessage("User is not logged in");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
 
-            // check validity of input parameters
-            if (!_shopFacade.isShopIdExist(shopId)){
-                response.setErrorMessage("Shop not found");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
-            if (basicDiscountDto.isPrecentage
-                    && (basicDiscountDto.discountAmount < 0 || basicDiscountDto.discountAmount > 100)){
-                    response.setErrorMessage("Invalid discount amount - precentage should be between 0% and 100%");
-                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
-            if (!basicDiscountDto.isPrecentage && basicDiscountDto.discountAmount < 0){
-                response.setErrorMessage("Invalid discount amount - fixed amount should be positive");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+    //         // check validity of input parameters
+    //         if (!_shopFacade.isShopIdExist(shopId)){
+    //             response.setErrorMessage("Shop not found");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
+    //         if (basicDiscountDto.isPrecentage
+    //                 && (basicDiscountDto.discountAmount < 0 || basicDiscountDto.discountAmount > 100)){
+    //                 response.setErrorMessage("Invalid discount amount - precentage should be between 0% and 100%");
+    //                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
+    //         if (!basicDiscountDto.isPrecentage && basicDiscountDto.discountAmount < 0){
+    //             response.setErrorMessage("Invalid discount amount - fixed amount should be positive");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
 
-            Date currentDate = new Date();
-            if (basicDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000){
-                response.setErrorMessage("Invalid expiration date - should be at least one day into the future");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+    //         Date currentDate = new Date();
+    //         if (basicDiscountDto.expirationDate.getTime() - currentDate.getTime() < 86400000){
+    //             response.setErrorMessage("Invalid expiration date - should be at least one day into the future");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
 
-            String username = _tokenService.extractUsername(token);
-            int discountId = _shopFacade.addBasicDiscountToShop(shopId, username, basicDiscountDto);
-            response.setReturnValue(discountId);
-            logger.info("Added basic discount to shop: " + shopId + " with id " + discountId);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+    //         String username = _tokenService.extractUsername(token);
+    //         int discountId = _shopFacade.addBasicDiscountToShop(shopId, username, basicDiscountDto);
+    //         response.setReturnValue(discountId);
+    //         logger.info("Added basic discount to shop: " + shopId + " with id " + discountId);
+    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //     }
         
-        catch (StockMarketException e) {
-            response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to add discount to shop: " + e.getMessage(), e);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    //     catch (StockMarketException e) {
+    //         response.setErrorMessage("Failed to add discount to shop: " + e.getMessage());
+    //         logger.log(Level.SEVERE, "Failed to add discount to shop: " + e.getMessage(), e);
+    //         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     /**
      * Adds a conditional discount to a shop.
@@ -704,45 +704,45 @@ public class ShopService {
         }
     }
 
-    /**
-     * Removes a discount from a shop.
-     * 
-     * @param token      The session token of the user removing the discount.
-     * @param shopId     The ID of the shop from which the discount will be removed.
-     * @param discountId The ID of the discount to be removed.
-     * @return A response indicating the success or failure of the operation.
-     */
-    @Transactional
-    public ResponseEntity<Response> removeDiscount(String token, int shopId, int discountId) {
-        Response response = new Response();
-        try {
-            // check for user validity
-            if (!_tokenService.validateToken(token))
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            if (!_tokenService.isUserAndLoggedIn(token)){
-                response.setErrorMessage("User is not logged in");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+    // /**
+    //  * Removes a discount from a shop.
+    //  * 
+    //  * @param token      The session token of the user removing the discount.
+    //  * @param shopId     The ID of the shop from which the discount will be removed.
+    //  * @param discountId The ID of the discount to be removed.
+    //  * @return A response indicating the success or failure of the operation.
+    //  */
+    // @Transactional
+    // public ResponseEntity<Response> removeDiscount(String token, int shopId, int discountId) {
+    //     Response response = new Response();
+    //     try {
+    //         // check for user validity
+    //         if (!_tokenService.validateToken(token))
+    //             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    //         if (!_tokenService.isUserAndLoggedIn(token)){
+    //             response.setErrorMessage("User is not logged in");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
 
-            // check validity of input parameters
-            if (!_shopFacade.isShopIdExist(shopId)){
-                response.setErrorMessage("Shop not found");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+    //         // check validity of input parameters
+    //         if (!_shopFacade.isShopIdExist(shopId)){
+    //             response.setErrorMessage("Shop not found");
+    //             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    //         }
 
-            String username = _tokenService.extractUsername(token);
-            _shopFacade.removeDiscountFromShop(shopId, discountId, username);
-            response.setReturnValue("Removed discount");
-            logger.info("Removed discount from shop: " + shopId);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+    //         String username = _tokenService.extractUsername(token);
+    //         _shopFacade.removeDiscountFromShop(shopId, discountId, username);
+    //         response.setReturnValue("Removed discount");
+    //         logger.info("Removed discount from shop: " + shopId);
+    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //     }
         
-        catch (StockMarketException e) {
-            response.setErrorMessage("Failed to remove discount from shop: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to remove discount from shop: " + e.getMessage(), e);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    //     catch (StockMarketException e) {
+    //         response.setErrorMessage("Failed to remove discount from shop: " + e.getMessage());
+    //         logger.log(Level.SEVERE, "Failed to remove discount from shop: " + e.getMessage(), e);
+    //         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     /**
      * Updates the quantity of a specified product in a shop.
