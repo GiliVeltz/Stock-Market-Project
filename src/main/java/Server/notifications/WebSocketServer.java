@@ -2,10 +2,15 @@ package Server.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import Domain.Repositories.DbUserRepository;
+import Domain.Repositories.InterfaceUserRepository;
 import ServiceLayer.TokenService;
 import java.io.IOException;
 import java.net.URI;
@@ -52,10 +57,12 @@ import java.util.logging.Logger;
  * clients at any
  * time, for example, to broadcast updates or notifications.
  */
-@Component
+// @Component
+@Service
 public class WebSocketServer extends TextWebSocketHandler {
 
     private TokenService tokenService;
+    private InterfaceUserRepository _userRepository;
 
     // assumption messages as aformat of:"targetUsername:message"
 
@@ -66,16 +73,25 @@ public class WebSocketServer extends TextWebSocketHandler {
                                                                                                // messageQueue>
     private static final Map<String, List<String>> allMessages = new ConcurrentHashMap<>(); // <username, list of all
                                                                                             // messages>
-    private static final Logger logger = Logger.getLogger(WebSocketServer.class.getName());
+    private static Logger logger = Logger.getLogger(WebSocketServer.class.getName());
 
     @Autowired
     // Private constructor to prevent instantiation
-    private WebSocketServer(TokenService tokenService) {
+    private WebSocketServer(TokenService tokenService, DbUserRepository dbUserRepository) {
         // Initialization code
         this.tokenService = tokenService;
+        this._userRepository = dbUserRepository;
     }
 
-    /**
+    // set the repositories to be used test time
+    public void setWebSocketServerFacadeRepositories(InterfaceUserRepository userRepository) {
+        this._userRepository = userRepository;
+    }
+
+    public WebSocketServer() {
+    }
+
+/**
      * Handles a new WebSocket connection after it has been established.
      * This method is called after the connection is opened.
      *
@@ -128,11 +144,23 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    // check for any queued message and if exist send them to the client
+    /**
+     * Checks for any queued messages for the specified user and sends
+     *  them to the client if they exist.
+     * also check that if the current all msessages is empty
+     * then it might be because it is a new initialization
+     * of the server so need to retive all user messages from the DB
+     * 
+     * @param username the username of the client to check for queued messages
+     */    @Transactional
     public void checkForQueuedMessages(String username) {
         WebSocketSession session = sessions.get(username);
         if (session != null && session.isOpen()) {
             List<String> lst = allMessages.getOrDefault(username, new ArrayList<>());
+            if (lst.isEmpty()) {
+                lst = _userRepository.findMessagesByUsername(username);
+            }
+            // if (!lst.isEmpty()) {
             Queue<String> queue = new LinkedList<>(lst);
             while (!queue.isEmpty()) {
                 String message = queue.poll();
@@ -144,6 +172,7 @@ public class WebSocketServer extends TextWebSocketHandler {
             }
             // messageQueues.remove(username);
         }
+        // }
     }
 
     /**
@@ -223,13 +252,24 @@ public class WebSocketServer extends TextWebSocketHandler {
      * This method looks up the session for the username and sends the message if
      * the session exists.
      * if it is a registered user but not logged in than the message will be queued.
+     * also check that if the current all msessages is empty
+     * then it might be because it is a new initialization
+     * of the server so need to retive all user messages from the DB
      * 
      * @param username The username of the recipient.
      * @param message  The message to be sent.
      * @throws IOException If an I/O error occurs while sending the message.
      */
+    @Transactional
     public void sendMessage(String targetUser, String message) {
         WebSocketSession session = sessions.get(targetUser);
+        if (!allMessages.containsKey(targetUser)) {
+            // might be because first start of the server- need to check in DB id a user is
+         
+            List<String> previousMessages = _userRepository.findMessagesByUsername(targetUser);
+            allMessages.put(targetUser, new ArrayList<>(previousMessages));
+
+        }
         allMessages.computeIfAbsent(targetUser, k -> new ArrayList<>()).add(message);
         if (session != null && session.isOpen()) {
             try {
@@ -245,10 +285,6 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
     }
 
-    private boolean validateToken(String token) {
-        // return tokenService.validateToken(token);
-        return true;
-    }
 
     /**
      * Replaces a guest user's token with a logged-in user's new token.
@@ -341,6 +377,78 @@ public class WebSocketServer extends TextWebSocketHandler {
             sessions.put(clientKey, session);
             System.out.println("Connected: " + clientKey);
         }
+    }
+
+     /**
+     * Adds a guest session to the WebSocket server.
+     *
+     * @param guestToken the guest token
+     * @param session the WebSocket session
+     * @throws IOException if an I/O error occurs
+     */
+    public void addGuestSessionfromToken(String guestToken, WebSocketSession session) throws IOException {
+        String token = extractTokenFromQuery(session.getUri().getQuery());
+
+        if (token == null || !validateToken(token)) {
+            closeSession(session, CloseStatus.BAD_DATA, "Invalid token, connection closed");
+            return;
+        }
+
+        String username = tokenService.extractUsername(token);
+        String clientKey = (username != null) ? username : "guest-" + token;
+
+        sessions.put(clientKey, session);
+        logConnection(clientKey);
+    }
+
+    /**
+     * Extracts the token from the query string.
+     *
+     * @param query the query string
+     * @return the extracted token, or null if not found
+     */
+    private String extractTokenFromQuery(String query) {
+        if (query != null) {
+            for (String param : query.split("&")) {
+                if (param.startsWith("token=")) {
+                    return param.split("token=")[1];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Validates the token.
+     *
+     * @param token the token to validate
+     * @return true if the token is valid, false otherwise
+     */
+    private boolean validateToken(String token) {
+        // Implement your token validation logic here
+        return tokenService.validateToken(token);
+    }
+
+    /**
+     * Closes the session with a specific status and logs the reason.
+     *
+     * @param session the WebSocket session
+     * @param status the close status
+     * @param reason the reason for closing the session
+     * @throws IOException if an I/O error occurs
+     */
+    private void closeSession(WebSocketSession session, CloseStatus status, String reason) throws IOException {
+        session.close(status);
+        logger.info(reason);
+    }
+
+    /**
+     * Logs the connection details.
+     *
+     * @param clientKey the client key
+     */
+    private void logConnection(String clientKey) {
+        logger.info("Connected:" + clientKey);
     }
 
 }
