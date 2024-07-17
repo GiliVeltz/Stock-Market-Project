@@ -11,6 +11,7 @@ import java.util.List;
 import Dtos.UserDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,15 +48,12 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date birthDate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id") // This will be added to the Order table as a foreign key
     private List<Order> purchaseHistory = new ArrayList<Order>();
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
-    
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "shopping_cart_id", nullable = true)
-    // private ShoppingCart shoppingCart;
     
     public User(){}
 

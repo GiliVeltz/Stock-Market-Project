@@ -85,14 +85,17 @@ public class ShoppingCartFacadeTests {
     @Mock
     DbShoppingBasketRepository basketRepositoryMock;
 
+    @Mock
+    DbShopOrderRepository shopOrderRepositoryMock;
+
     private ShoppingCartFacade shoppingCartFacadeUnderTest;
 
     @BeforeEach
     public void setUp() throws StockMarketException {
         MockitoAnnotations.openMocks(this);
         _guestsCarts = new HashMap<>();
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
-        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository());  
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());  
     }
 
     @AfterEach
@@ -106,12 +109,12 @@ public class ShoppingCartFacadeTests {
         String guestID = "guestID";
         Guest guest = new Guest("guestID");
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
         shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>() {
             {
                 add(guest);
             }
-        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         when(_userFacadeMock.getGuestById(guestID)).thenReturn(guest);
         
@@ -133,12 +136,12 @@ public class ShoppingCartFacadeTests {
         String guestID = "guestID";
         Guest guest = new Guest("guestID");
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
         shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>() {
             {
                 add(guest);
             }
-        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         when(_userFacadeMock.getGuestById(guestID)).thenReturn(guest);
         
@@ -160,12 +163,12 @@ public class ShoppingCartFacadeTests {
         String guestID = "guestID";
         Guest guest = new Guest("guestID");
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
         shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>() {
             {
                 add(guest);
             }
-        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
         
         User user = new User("username", "password", "email@email.com", new Date());
 
@@ -190,12 +193,12 @@ public class ShoppingCartFacadeTests {
         String guestID = "guestID";
         Guest guest = new Guest("guestID");
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
         shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>() {
             {
                 add(guest);
             }
-        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        }), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         User user = new User("username", "password", "email", new Date());
 
@@ -221,7 +224,7 @@ public class ShoppingCartFacadeTests {
         int shopID = 1;
         int productID = 1;
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
         
         when(shoppingCartRepositoryMock.getCartByUsername(userName)).thenReturn(_cartMock);
         doNothing().when(_cartMock).addProduct(productID, shopID, 1);
@@ -276,7 +279,7 @@ public class ShoppingCartFacadeTests {
         shoppingBasketMap.put(productID, _basketMock);
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
 
         // Act & Assert
         try {
@@ -307,8 +310,8 @@ public class ShoppingCartFacadeTests {
         shoppingBasketMap.put(productID, _basketMock);
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
-        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {
@@ -334,8 +337,8 @@ public class ShoppingCartFacadeTests {
         when(_orderMock.getProductsByShoppingBasket()).thenReturn(shoppingBasketMap);
 
 
-        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, _userFacadeMock, _shopFacadeMock);
-        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository());
+        shoppingCartFacadeUnderTest = new ShoppingCartFacade(shoppingCartRepositoryMock, orderRepositoryMock, guestRepositoryMock, userRepositoryMock, basketRepositoryMock, shopOrderRepositoryMock, _userFacadeMock, _shopFacadeMock);
+        shoppingCartFacadeUnderTest.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(), new MemoryUserRepository(), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         // Act & Assert
         assertThrows(StockMarketException.class, () -> {
