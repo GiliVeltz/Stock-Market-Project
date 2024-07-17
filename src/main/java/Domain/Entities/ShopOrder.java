@@ -11,7 +11,6 @@ import jakarta.persistence.CascadeType; // Add this line
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 //class that represents an order for the shop
 @Entity

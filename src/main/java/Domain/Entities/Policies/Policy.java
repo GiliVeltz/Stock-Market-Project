@@ -1,8 +1,9 @@
-package Domain.Entities;
+package Domain.Entities.Policies;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import Domain.Entities.Rules.AbstractRule;
 import Domain.Entities.Rules.Rule;
 import Dtos.ShoppingBasketDto;
 import Dtos.UserDto;
@@ -14,9 +15,9 @@ import jakarta.persistence.*;
  *
  * @param <T> the type of the rules that define the policy
  */
-// @Entity
-// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-// @DiscriminatorColumn(name = "policy_type")
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "policy_type")
 public abstract class Policy<T> {
 
     @Id
@@ -27,8 +28,9 @@ public abstract class Policy<T> {
     // @JoinColumn(name = "shop_id", nullable = false)
     // private Shop shop;
     
-    @Transient
-    private List<Rule<T>> rules;
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = AbstractRule.class)
+    @JoinColumn(name = "policy_id")
+    private List<AbstractRule<T>> rules;
 
     /**
      * Constructs a new Policy object.
@@ -43,7 +45,7 @@ public abstract class Policy<T> {
      *
      * @param rule the rule to be added
      */
-    public void addRule(Rule<T> rule) {
+    public void addRule(AbstractRule<T> rule) {
         if(!rules.contains(rule))
             rules.add(rule);
     }
@@ -53,7 +55,7 @@ public abstract class Policy<T> {
      *
      * @param rule the rule to remove
      */
-    public void deleteRule(Rule<T> rule) {
+    public void deleteRule(AbstractRule<T> rule) {
         if(rules.contains(rule))
             rules.remove(rule);
     }
@@ -84,7 +86,7 @@ public abstract class Policy<T> {
     }
     
     // Getters
-    public List<Rule<T>> getRules() {
+    public List<AbstractRule<T>> getRules() {
         return rules;
     }
 
@@ -98,11 +100,15 @@ public abstract class Policy<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rule<UserDto>> getUsersRulesDto() {
-        List<Rule<UserDto>> _rules = new ArrayList<>();
-        for (Rule<T> rule : this.rules) {
-            _rules.add((Rule<UserDto>) rule);
+    public List<AbstractRule<UserDto>> getUsersRulesDto() {
+        List<AbstractRule<UserDto>> _rules = new ArrayList<>();
+        for (AbstractRule<T> rule : this.rules) {
+            _rules.add((AbstractRule<UserDto>) rule);
         }
         return _rules;
+    }
+
+    public int getId() {
+        return id;
     }
 }
