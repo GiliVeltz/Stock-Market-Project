@@ -66,7 +66,7 @@ public class MarketSystem {
 
     public String external_system_url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
     public String tests_config_file_path = "src/main/java/Server/Configuration/test_config.txt";
-    public String instructions_config_path = "src/main/java/Server/Configuration/test_loading.txt";
+    public String instructions_config_path = "src/main/java/Server/Configuration/instructions_config_inbar.txt";
     public String real_system_config_path = "src/main/java/Server/Configuration/system_config.txt";
 
     private AdapterPaymentInterface payment_adapter;
@@ -544,6 +544,19 @@ public class MarketSystem {
                 int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
                 int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
                 shopFacade.updateProductCategory(instruction_params[1], shopId, productId, Category.valueOf(instruction_params[4]));
+            } catch (Exception e) {
+                logger.info("[run_instruction] edit category product Fail: " + e.getMessage());
+            }
+        }
+        
+        else if (instruction.equals("edit_product_in_shop")){
+            //edit_product_in_shop#user_name#shop_name#product_name#old_category#old_price#old_quantity#new_name#new_category#new_price#new_quantity
+            try {
+                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
+                ProductDto productDtoOld = new ProductDto(productId, instruction_params[3], Category.valueOf(instruction_params[4]), Integer.parseInt(instruction_params[5]), Integer.parseInt(instruction_params[6]));
+                ProductDto productDtoNew = new ProductDto(productId, instruction_params[7], Category.valueOf(instruction_params[8]), Integer.parseInt(instruction_params[9]), Integer.parseInt(instruction_params[10]));
+                shopFacade.editProductInShop(shopId, productDtoOld, productDtoNew, instruction_params[1]);
             } catch (Exception e) {
                 logger.info("[run_instruction] edit category product Fail: " + e.getMessage());
             }
