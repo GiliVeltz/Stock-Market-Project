@@ -52,13 +52,7 @@ public class ReviewOrderPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
@@ -108,13 +102,7 @@ public class ReviewOrderPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
