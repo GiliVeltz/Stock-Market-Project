@@ -20,11 +20,13 @@ import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbOrderRepository;
+import Domain.Repositories.DbShopOrderRepository;
 import Domain.Repositories.DbShoppingBasketRepository;
 import Domain.Repositories.DbShoppingCartRepository;
 import Domain.Repositories.DbUserRepository;
 import Domain.Repositories.InterfaceGuestRepository;
 import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfaceShopOrderRepository;
 import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Domain.Repositories.InterfaceShoppingCartRepository;
 import Domain.Repositories.InterfaceUserRepository;
@@ -43,16 +45,18 @@ public class ShoppingCartFacade {
     InterfaceGuestRepository _guestRepository;
     InterfaceUserRepository _userRepository;
     InterfaceShoppingBasketRepository _basketRepository;
+    InterfaceShopOrderRepository _shopOrderRepository;
     private static final Logger logger = Logger.getLogger(ShoppingCartFacade.class.getName());
     
     @Autowired
     public ShoppingCartFacade(DbShoppingCartRepository cartsRepository, DbOrderRepository orderRepository, DbGuestRepository guestRepository,
-             DbUserRepository userRepository, DbShoppingBasketRepository basketRepository, UserFacade userFacade, ShopFacade shopFacade) {
+             DbUserRepository userRepository, DbShoppingBasketRepository basketRepository, DbShopOrderRepository shopOrderRepository, UserFacade userFacade, ShopFacade shopFacade) {
         _cartsRepository = cartsRepository;
         _orderRepository = orderRepository;
         _guestRepository = guestRepository;
         _userRepository = userRepository;
         _basketRepository = basketRepository;
+        _shopOrderRepository = shopOrderRepository;
         this.userFacade = userFacade;
         this.shopFacade = shopFacade;
         _guestsCarts = new HashMap<>();
@@ -60,9 +64,10 @@ public class ShoppingCartFacade {
 
     // set repositories to be used in test system
     public void setShoppingCartFacadeRepositories(InterfaceShoppingCartRepository cartsRepository, InterfaceOrderRepository orderRepository, InterfaceGuestRepository guestRepository,
-             InterfaceUserRepository userRepository, InterfaceShoppingBasketRepository basketRepository) {
+             InterfaceUserRepository userRepository, InterfaceShoppingBasketRepository basketRepository, InterfaceShopOrderRepository shopOrderRepository) {
         _cartsRepository = cartsRepository;
         _orderRepository = orderRepository;
+        _shopOrderRepository = shopOrderRepository;
         _guestRepository = guestRepository;
         _userRepository = userRepository;
         _basketRepository = basketRepository;
@@ -194,8 +199,9 @@ public class ShoppingCartFacade {
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
-            _guestsCarts.get(guestID).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
-            _guestsCarts.get(guestID).emptyCart();
+            getCartByUsernameOrToken(guestID).purchaseCart(purchaseCartDetails);
+            getCartByUsernameOrToken(guestID).emptyCart();
+            _cartsRepository.flush();
         }
         catch (StockMarketException e) {
             logger.log(Level.WARNING, "Failed to purchase cart for guest: " + guestID);
@@ -210,8 +216,9 @@ public class ShoppingCartFacade {
     public void purchaseCartUser(String username, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for user.");
         try {
-            _cartsRepository.getCartByUsername(username).purchaseCart(purchaseCartDetails, _cartsRepository.getUniqueOrderID());
-            _cartsRepository.getCartByUsername(username).emptyCart();
+            getCartByUsernameOrToken(username).purchaseCart(purchaseCartDetails);
+            getCartByUsernameOrToken(username).emptyCart();
+            _cartsRepository.flush();
         }
         catch (StockMarketException e) {
             logger.log(Level.WARNING, "Failed to purchase cart for user: " + username);
@@ -282,6 +289,7 @@ public class ShoppingCartFacade {
     public ShoppingCart getCartByUsernameOrToken(String username) {
         ShoppingCart returnedCart = _cartsRepository.getCartByUsername(username);
         returnedCart.setOrderRepository(_orderRepository);
+        returnedCart.setShopOrderRepository(_shopOrderRepository);
         returnedCart.setShoppingBasketsRepository(_basketRepository);
         returnedCart.setShopFacade(shopFacade);
         returnedCart.setPaymentMethod(AdapterPaymentImp.getRealAdapterPayment());

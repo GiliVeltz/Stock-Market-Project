@@ -195,7 +195,7 @@ public class ShoppingBasket implements Cloneable {
                 return false;
             }
         }
-        notfyPurchaseFromShop(username, getProductIdsList(), shop);
+        // notfyPurchaseFromShop(username, getProductIdsList(), shop);
         System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
@@ -251,6 +251,7 @@ public class ShoppingBasket implements Cloneable {
     public ShoppingBasket clone() {
         try {
             ShoppingBasket cloned = (ShoppingBasket) super.clone();
+            cloned.shoppingBasketId = null;
             cloned.shop = this.shop;
             cloned.productsList = new ArrayList<>(productsList);
             cloned._productToPriceToAmount = cloneProductToPriceToAmount();
