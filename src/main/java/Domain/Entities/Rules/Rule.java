@@ -1,5 +1,6 @@
 package Domain.Entities.Rules;
 
+import jakarta.persistence.Entity;
 
 /**
  * The Rule interface represents a rule that can be checked given a context of

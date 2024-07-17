@@ -17,6 +17,9 @@ public class MinBasketPriceRule extends AbstractRule<ShoppingBasket> {
     @Column(name = "minPrice", nullable = false)
     private double _minPrice;
 
+    public MinBasketPriceRule() {
+        _minPrice = -1;
+    }
     /**
      * Initializes a new instance of the MinBasketPriceRule class with the specified
      * minimum price.
