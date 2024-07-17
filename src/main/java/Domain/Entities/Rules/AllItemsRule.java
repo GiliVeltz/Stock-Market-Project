@@ -9,7 +9,7 @@ import Domain.Entities.ShoppingBasket;
  * present in a shopping basket.
  * Implements the Rule interface with ShoppingBasket as the generic type.
  */
-public class AllItemsRule implements Rule<ShoppingBasket> {
+public class AllItemsRule extends AbstractRule<ShoppingBasket> {
     private List<Integer> _productIds;
 
     /**

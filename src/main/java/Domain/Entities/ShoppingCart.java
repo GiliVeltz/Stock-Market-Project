@@ -16,6 +16,7 @@ import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
 import Domain.Facades.ShopFacade;
 import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Dtos.PurchaseCartDetailsDto;
 
 import java.util.Optional;
@@ -27,6 +28,7 @@ import Exceptions.ShippingFailedException;
 import Exceptions.StockMarketException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -48,7 +50,7 @@ public class ShoppingCart {
     @Column(name = "_shopping_cart_id", nullable = false, updatable = false)
     private Integer shoppingCartId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "shopping_cart_id") // Specifies the foreign key column in ShoppingBasket
     private List<ShoppingBasket> shoppingBaskets;
 
@@ -67,21 +69,17 @@ public class ShoppingCart {
     @Transient
     private InterfaceOrderRepository orderRepository;
 
-    //@OneToOne(cascade = CascadeType.ALL, mappedBy = "shopping_cart", optional = true, targetEntity = User.class)
-    //@Column(name = "username", nullable = false)
-    
-    //@OneToOne
-    //@JoinColumn(name = "user_name", nullable = false)
+    @Transient
+    private InterfaceShoppingBasketRepository basketRepository;
+
     @Column(name = "user_or_guest_name")
     private String user_or_guest_name; // or guestToken string
 
-    @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "shoppingCart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Guest guest; // or guestToken string
 
-    // @OneToOne
-    // @JoinColumn(name = "user_id")
-    @Transient
-    //@OneToOne(mappedBy = "shoppingCart")
+    @OneToOne(optional = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user; // if the user is null, the cart is for a guest.
 
     private static final Logger logger = Logger.getLogger(ShoppingCart.class.getName());
@@ -277,7 +275,7 @@ public class ShoppingCart {
      * @throws ProdcutPolicyException
      * @throws ProductDoesNotExistsException
      */
-    public ShoppingBasket addProduct(int productID, int shopID, int quantity) throws StockMarketException {
+    public void addProduct(int productID, int shopID, int quantity) throws StockMarketException {
         // Check if the product exists in the shop.
         if (shopFacade.getShopByShopId(shopID).getProductById(productID) == null) {
             logger.log(Level.SEVERE, "Product does not exists in shop: " + shopID);
@@ -294,6 +292,7 @@ public class ShoppingCart {
             basket = basketOptional.get();
         } else {
             basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
+            basketRepository.save(basket);
         }
 
         // add the product to the basket.
@@ -312,7 +311,7 @@ public class ShoppingCart {
         }
         
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
-        return basket;
+        basketRepository.flush();
     }
 
     // Remove a product from the shopping cart of a user.
@@ -430,5 +429,9 @@ public class ShoppingCart {
 
     public void setShoppingBaskets(List<ShoppingBasket> shoppingBaskets) {
         this.shoppingBaskets = shoppingBaskets;
+    }
+
+    public void setShoppingBasketsRepository(InterfaceShoppingBasketRepository basketRepository) {
+        this.basketRepository = basketRepository;
     }
 }

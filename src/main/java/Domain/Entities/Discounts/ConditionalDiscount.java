@@ -26,7 +26,7 @@ public class ConditionalDiscount extends Discount {
      *                         are present
      */
     public ConditionalDiscount(List<Integer> mustHaveProducts, BaseDiscount discount) {
-        super(discount.getExpirationDate(), discount.getId());
+        super(discount.getExpirationDate());
         _discount = discount;
         _rule = (basket) -> mustHaveProducts.stream().allMatch((productId) -> basket.getProductCount(productId) > 0);
     }
@@ -63,7 +63,7 @@ public class ConditionalDiscount extends Discount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return _discount.getId();
     }
 
