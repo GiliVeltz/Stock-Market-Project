@@ -15,14 +15,6 @@ public class ProductDto {
     public double productRating;
     public Set<String> keywords;
 
-    public ProductDto() {
-        this.productId = -1;
-        this.productName = null;
-        this.category = null;
-        this.price = -1;
-        this.productQuantity = -1;
-    }
-    // Constructor
     // Constructor
     public ProductDto() {
         this.productId = -1;
@@ -31,6 +23,7 @@ public class ProductDto {
         this.price = -1;
         this.productQuantity = -1;
     }
+    
 
     public ProductDto(String productName, Category category, double price, int productQuantity) {
         this.productId = -1;

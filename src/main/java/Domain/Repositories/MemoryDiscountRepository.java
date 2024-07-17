@@ -1,5 +1,6 @@
 package Domain.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -13,6 +14,18 @@ import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuer
 import Domain.Entities.Discounts.Discount;
 
 public class MemoryDiscountRepository implements InterfaceDiscountRepository {
+
+    private List<Discount> discounts;
+
+    // Constructor
+    public MemoryDiscountRepository(List<Discount> discounts){
+        this.discounts = discounts;
+    }
+
+    // empty constructor
+    public MemoryDiscountRepository(){
+        discounts = new ArrayList<Discount>();
+    }
 
     @Override
     public void flush() {
