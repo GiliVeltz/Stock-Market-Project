@@ -392,81 +392,81 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         throw new UnsupportedOperationException("Unimplemented method 'TestUserEditPrivateDetails'");
     }
 
-    @Override
-    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
-            String productAmount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddProductToShop'");
-    }
+    // @Override
+    // public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
+    //         String productAmount) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddProductToShop'");
+    // }
 
-    @Override
-    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveProductFromShop'");
-    }
+    // @Override
+    // public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveProductFromShop'");
+    // }
 
-    @Override
-    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
-            String productNameNew, String productAmount, String productAmountNew) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerEditProductInShop'");
-    }
+    // @Override
+    // public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
+    //         String productNameNew, String productAmount, String productAmountNew) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerEditProductInShop'");
+    // }
 
-    @Override
-    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerChangeShopPolicies'");
-    }
+    // @Override
+    // public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerChangeShopPolicies'");
+    // }
 
-    @Override
-    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopOwner'");
-    }
+    // @Override
+    // public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopOwner'");
+    // }
 
-    @Override
-    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager'");
-    }
+    // @Override
+    // public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager'");
+    // }
 
-    @Override
-    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
-            String permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddShopManagerPermission'");
-    }
+    // @Override
+    // public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
+    //         String permission) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAddShopManagerPermission'");
+    // }
 
-    @Override
-    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
-            String permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveShopManagerPermission'");
-    }
+    // @Override
+    // public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
+    //         String permission) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerRemoveShopManagerPermission'");
+    // }
 
-    @Override
-    public boolean testShopOwnerCloseShop(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerCloseShop'");
-    }
+    // @Override
+    // public boolean testShopOwnerCloseShop(String username, String shopId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerCloseShop'");
+    // }
 
-    @Override
-    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopInfo'");
-    }
+    // @Override
+    // public boolean testShopOwnerGetShopInfo(String username, String shopId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopInfo'");
+    // }
 
-    @Override
-    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopManagersPermissions'");
-    }
+    // @Override
+    // public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerGetShopManagersPermissions'");
+    // }
 
-    @Override
-    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop'");
-    }
+    // @Override
+    // public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerViewHistoryPurcaseInShop'");
+    // }
 
     // @Override
     // public boolean testPermissionForShopManager(String username, Integer shopId, String permission) {
@@ -935,8 +935,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //             add(guest);
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(manager);
     //             add(guest);
@@ -973,15 +973,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(manager);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(manager);
     //         }
     //     }));
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     try {
     //         _shopFacade.openNewShop(namanger, shopDto);
@@ -1037,7 +1037,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -1066,818 +1066,817 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     // // SHOP OWNER TESTS
     // // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // @Test
-    // public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
-    //         String productAmount) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    @Override
+    public boolean testShopOwnerAddProductToShop(String username, String shopId, String productName,
+            String productAmount) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     String tokenShopOwner = "shopOwner";
-    //     String tokenShopFounder = "shopFounder";
+        String tokenShopOwner = "shopOwner";
+        String tokenShopFounder = "shopFounder";
 
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
 
-    //     User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
-    //             "email@email.com", new Date());
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-    //     ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount), 1);
-    //     ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING,
-    //             Integer.parseInt(productAmount), 1);
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productAmount), 1);
+        ProductDto productExistDto = new ProductDto("ExistProductName", Category.CLOTHING,
+                Integer.parseInt(productAmount), 1);
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     try {
-    //         _shopFacade.openNewShop("Founder", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerAddProductToShop Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAddProductToShop Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
-    //             "shopOwner");
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
-    //             productExistDto);
-    //     ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
-    //             productDto);
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productExistDto);
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
 
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAddProductToShop Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAddProductToShop Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res3.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAddProductToShop Error message: " + res3.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res3.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAddProductToShop Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAddProductToShop Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAddProductToShop Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        return res3.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testShopOwnerRemoveProductFromShop(String username, String shopId, String productName) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     String tokenShopOwner = "shopOwner";
-    //     String tokenShopFounder = "shopFounder";
-    //     String tokenNotShopOwnerUserName = "NotShopOwnerUserName";
+        String tokenShopOwner = "shopOwner";
+        String tokenShopFounder = "shopFounder";
+        String tokenNotShopOwnerUserName = "NotShopOwnerUserName";
 
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenNotShopOwnerUserName)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenNotShopOwnerUserName)).thenReturn("NotShopOwnerUserName");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenNotShopOwnerUserName)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenNotShopOwnerUserName)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenNotShopOwnerUserName)).thenReturn("NotShopOwnerUserName");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenNotShopOwnerUserName)).thenReturn(true);
 
-    //     User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
-    //             "email@email.com", new Date());
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     User NotShopOwnerUserName = new User("NotShopOwnerUserName",
-    //             _passwordEncoder.encodePassword("NotShopOwnerUserNamePassword"), "email@email.com", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-    //     ProductDto productDto = new ProductDto(productName, Category.CLOTHING, 10, 1);
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User NotShopOwnerUserName = new User("NotShopOwnerUserName",
+                _passwordEncoder.encodePassword("NotShopOwnerUserNamePassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, 10, 1);
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //             add(NotShopOwnerUserName);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //             add(NotShopOwnerUserName);
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+                add(NotShopOwnerUserName);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+                add(NotShopOwnerUserName);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     try {
-    //         _shopFacade.openNewShop("Founder", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerAddProductToShop Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAddProductToShop Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
-    //             "shopOwner");
-    //     ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
-    //             productDto);
-    //     ResponseEntity<Response> res4 = _shopServiceUnderTest.removeProductFromShop(tokenShopOwner,
-    //             Integer.parseInt(shopId), productDto);
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwner");
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.removeProductFromShop(tokenShopOwner,
+                Integer.parseInt(shopId), productDto);
 
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveProductFromShop Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res3.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveProductFromShop Error message: " + res3.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res4.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveProductFromShop Error message: " + res4.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res4.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveProductFromShop Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveProductFromShop Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveProductFromShop Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        return res4.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
-    //         String productNameNew, String productAmount, String productAmountNew) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testShopOwnerEditProductInShop(String username, String shopId, String productName,
+            String productNameNew, String productPrice, String productPriceNew) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     String tokenShopOwner = "shopOwner";
-    //     String tokenShopFounder = "shopFounder";
+        String tokenShopOwner = "shopOwner";
+        String tokenShopFounder = "shopFounder";
 
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
 
-    //     User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
-    //             "email@email.com", new Date());
-    //     User shopOwner = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopOwnerPassword"),
-    //             "email@email.com", new Date());
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ProductDto productDto = new ProductDto(productName, Category.CLOTHING, Integer.parseInt(productPrice), 10);
+        ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productPriceNew), 10 );
+        ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING, Integer.parseInt(productPriceNew),10);
 
-    //     ProductDto productDto = new ProductDto("ProductName", Category.CLOTHING, Integer.parseInt(productAmount), 1);
-    //     ProductDto productDtoNew = new ProductDto(productNameNew, Category.CLOTHING, Integer.parseInt(productAmountNew),
-    //             1);
-    //     ProductDto productDtoExist = new ProductDto("ExistProductName", Category.CLOTHING,
-    //             Integer.parseInt(productAmountNew), 1);
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerEditProductInShop Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     try {
-    //         _shopFacade.openNewShop("Founder", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerEditProductInShop Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "shopOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDto);
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
+                productDtoExist);
+        ResponseEntity<Response> res4 = _shopServiceUnderTest.editProductInShop(tokenShopOwner,
+                Integer.parseInt(shopId), productDto, productDtoNew);
 
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
-    //             "shopOwnerUserName");
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
-    //             productDto);
-    //     ResponseEntity<Response> res3 = _shopServiceUnderTest.addProductToShop(tokenShopOwner, Integer.parseInt(shopId),
-    //             productDtoExist);
-    //     ResponseEntity<Response> res4 = _shopServiceUnderTest.editProductInShop(tokenShopOwner,
-    //             Integer.parseInt(shopId), productDto, productDtoNew);
 
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerEditProductInShop Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerEditProductInShop Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res3.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerEditProductInShop Error message: " + res3.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res4.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerEditProductInShop Error message: " + res4.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res4.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerEditProductInShop Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerEditProductInShop Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        if (res3.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerEditProductInShop Error message: " + res3.getBody().getErrorMessage());
+            return false;
+        }
+        if (res4.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerEditProductInShop Error message: " + res4.getBody().getErrorMessage());
+            return false;
+        }
+        return res4.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testShopOwnerChangeShopPolicies(String username, String shopId, String newPolicy) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     String tokenShopOwner = "shopOwner";
-    //     String tokenShopFounder = "shopFounder";
+        String tokenShopOwner = "shopOwner";
+        String tokenShopFounder = "shopFounder";
 
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn("Founder");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
 
-    //     User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        User shopFounder = new User("Founder", _passwordEncoder.encodePassword("shopFounderPassword"), "email@email.com", new Date());
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(shopOwner);
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(shopOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     try {
-    //         _shopFacade.openNewShop("Founder", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerChangeShopPolicies Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerChangeShopPolicies Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     // List<MinBasketPriceRuleDto> policy1 = new ArrayList<>();
-    //     // List<MinProductAmountRuleDto> policy2 = new ArrayList<>();
-    //     List<ShoppingBasketRuleDto> policy = new ArrayList<>();
+        // List<MinBasketPriceRuleDto> policy1 = new ArrayList<>();
+        // List<MinProductAmountRuleDto> policy2 = new ArrayList<>();
+        List<ShoppingBasketRuleDto> policy = new ArrayList<>();
         
 
-    //     if(newPolicy.equals("fail")) {
-    //         return false;
-    //     }
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.changeShopPolicy(tokenShopOwner, Integer.parseInt(shopId), policy);
-
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerChangeShopPolicies Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
-
-    //     String tokenShopFounder = "shopOwnerUserName";
-
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
-
-    //     User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
-    //             "email@email.com", new Date());
-    //     User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"),
-    //             "email@email.com", new Date());
-    //     User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(existOwner);
-    //             add(newOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(existOwner);
-    //             add(newOwner);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("shopOwnerUserName", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerAppointAnotherShopOwner Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
-    //             "existOwner");
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
-    //             newOwnerUsername);
-
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
-
-    //     String tokenShopFounder = "shopOwnerUserName";
-
-    //     when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
-
-    //     User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
-    //             "email@email.com", new Date());
-    //     User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"),
-    //             "email@email.com", new Date());
-    //     User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"),
-    //             "email@email.com", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(existManager);
-    //             add(newManager);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopFounder);
-    //             add(existManager);
-    //             add(newManager);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("shopOwnerUserName", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerAppointAnotherShopManager Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     Set<String> permissions = new HashSet<>();
-    //     permissions.add("ADD_PRODUCT");
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
-    //             "existManager", permissions);
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
-    //             newManagerUsername, permissions);
-
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
-    //         String permission) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
-
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
-    //             "email@EMAIL.COM", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("shopOwner", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     Set<String> permissions = new HashSet<>();
-    //     permissions.add("ADD_PRODUCT");
-
-    //     Set<String> permissionsToRemove = new HashSet<>();
-    //     if (permission.equals("newPermission")) {
-    //         permissionsToRemove.add("ADD_PRODUCT");
-    //     }
-    //     if (permission.equals("invalidPermission")) {
-    //         permissionsToRemove.add("NON_EXIST_PERMISSION");
-    //     }
-    //     if (permission.equals("nonexistPermission")) {
-    //         permissionsToRemove.add("EDIT_PRODUCT");
-    //     }
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
-    //             "managerUserName", permissions);
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
-    //             "managerUserName", permissionsToRemove);
-
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
-    //         String permission) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
-
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-
-    //     _passwordEncoder = new PasswordEncoderUtil();
-
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
-    //             "email@EMAIL.COM", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("shopOwner", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     Set<String> permissions = new HashSet<>();
-    //     permissions.add("ADD_PRODUCT");
-
-    //     Set<String> permissionsToRemove = new HashSet<>();
-    //     if (permission.equals("existPermission")) {
-    //         permissionsToRemove.add("ADD_PRODUCT");
-    //     }
-    //     if (permission.equals("invalidPermission")) {
-    //         permissionsToRemove.add("NON_EXIST_PERMISSION");
-    //     }
-    //     if (permission.equals("nonexistPermission")) {
-    //         permissionsToRemove.add("EDIT_PRODUCT");
-    //     }
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
-    //             "managerUserName", permissions);
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
-    //             "managerUserName", permissionsToRemove);
-
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerCloseShop(String username, String shopId) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
-
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-
-    //     _passwordEncoder = new PasswordEncoderUtil();
-
-    //     User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com",
-    //             new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(userName);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(userName);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("Founder", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerCloseShop Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     // Act
-    //     ResponseEntity<Response> res = _shopServiceUnderTest.closeShop(token, Integer.parseInt(shopId));
-
-    //     // Assert
-    //     logger.info("testShopOwnerCloseShop Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerGetShopInfo(String username, String shopId) {
-    //     MockitoAnnotations.openMocks(this);
-
-    //     String tokenShopOwner = "shopOwner";
-
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
-
-    //     _passwordEncoder = new PasswordEncoderUtil();
-
-    //     User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
-    //             new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
-
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //         }
-    //     }));
-
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
-
-    //     try {
-    //         _shopFacade.openNewShop("shopOwner", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerGetShopInfo Error message: " + e.getMessage());
-    //         return false;
-    //     }
-
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.displayShopGeneralInfo(tokenShopOwner,
-    //             Integer.parseInt(shopId));
-
-    //     // Assert
-    //     logger.info("testShopOwnerGetShopInfo Error message: " + res1.getBody().getErrorMessage());
-    //     return res1.getBody().getErrorMessage() == null;
-    // }
-
-    // @Test
-    // public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+        if(newPolicy.equals("fail")) {
+            return false;
+        }
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId), "shopOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.changeShopPolicy(tokenShopOwner, Integer.parseInt(shopId), policy);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerChangeShopPolicies Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerAppointAnotherShopOwner(String username, String shopId, String newOwnerUsername) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopFounder = "shopOwnerUserName";
+
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User existOwner = new User("existOwner", _passwordEncoder.encodePassword("existOwnerPassword"),
+                "email@email.com", new Date());
+        User newOwner = new User("newOwner", _passwordEncoder.encodePassword("newOwnerPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existOwner);
+                add(newOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existOwner);
+                add(newOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("shopOwnerUserName", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAppointAnotherShopOwner Error message: " + e.getMessage());
+            return false;
+        }
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                "existOwner");
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopOwner(tokenShopFounder, Integer.parseInt(shopId),
+                newOwnerUsername);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAppointAnotherShopOwner Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopFounder = "shopOwnerUserName";
+
+        when(_tokenServiceMock.validateToken(tokenShopFounder)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopFounder)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopFounder)).thenReturn(true);
+
+        User shopFounder = new User("shopOwnerUserName", _passwordEncoder.encodePassword("shopFounderPassword"),
+                "email@email.com", new Date());
+        User existManager = new User("existManager", _passwordEncoder.encodePassword("existManagerPassword"),
+                "email@email.com", new Date());
+        User newManager = new User("newManager", _passwordEncoder.encodePassword("newManagerPassword"),
+                "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existManager);
+                add(newManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopFounder);
+                add(existManager);
+                add(newManager);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("shopOwnerUserName", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerAppointAnotherShopManager Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
+                "existManager", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addShopManager(tokenShopFounder, Integer.parseInt(shopId),
+                newManagerUsername, permissions);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerAppointAnotherShopManager Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerAddShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
+                "email@EMAIL.COM", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        Set<String> permissionsToRemove = new HashSet<>();
+        if (permission.equals("newPermission")) {
+            permissionsToRemove.add("ADD_PRODUCT");
+        }
+        if (permission.equals("invalidPermission")) {
+            permissionsToRemove.add("NON_EXIST_PERMISSION");
+        }
+        if (permission.equals("nonexistPermission")) {
+            permissionsToRemove.add("EDIT_PRODUCT");
+        }
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
+                "managerUserName", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
+                "managerUserName", permissionsToRemove);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerRemoveShopManagerPermission(String username, String shopId, String managerUsername,
+            String permission) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User shopManager = new User("managerUserName", _passwordEncoder.encodePassword("shopManagerPassword"),
+                "email@EMAIL.COM", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
+
+        Set<String> permissionsToRemove = new HashSet<>();
+        if (permission.equals("existPermission")) {
+            permissionsToRemove.add("ADD_PRODUCT");
+        }
+        if (permission.equals("invalidPermission")) {
+            permissionsToRemove.add("NON_EXIST_PERMISSION");
+        }
+        if (permission.equals("nonexistPermission")) {
+            permissionsToRemove.add("EDIT_PRODUCT");
+        }
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(token, Integer.parseInt(shopId),
+                "managerUserName", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.modifyManagerPermissions(token, Integer.parseInt(shopId),
+                "managerUserName", permissionsToRemove);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerRemoveShopManagerPermission Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerCloseShop(String username, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("Founder", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        User userName = new User("userName", _passwordEncoder.encodePassword("userNamePassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(userName);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(userName);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("Founder", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerCloseShop Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        ResponseEntity<Response> res = _shopServiceUnderTest.closeShop(token, Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testShopOwnerCloseShop Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerGetShopInfo(String username, String shopId) {
+        MockitoAnnotations.openMocks(this);
+
+        String tokenShopOwner = "shopOwner";
+
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+
+        _passwordEncoder = new PasswordEncoderUtil();
+
+        User shopOwner = new User("shopOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
+
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopInfo Error message: " + e.getMessage());
+            return false;
+        }
+
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.displayShopGeneralInfo(tokenShopOwner,
+                Integer.parseInt(shopId));
+
+        // Assert
+        logger.info("testShopOwnerGetShopInfo Error message: " + res1.getBody().getErrorMessage());
+        return res1.getBody().getErrorMessage() == null;
+    }
+
+    @Test
+    public boolean testShopOwnerGetShopManagersPermissions(String username, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
         
-    //     String tokenShopOwner = "userNameOwner";
-    //     String tokenShopNotOwner = "userNameNotOwner";
+        String tokenShopOwner = "userNameOwner";
+        String tokenShopNotOwner = "userNameNotOwner";
 
-    //     when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn("userNameOwner");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopOwner)).thenReturn("userNameOwner");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(tokenShopNotOwner)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(tokenShopNotOwner)).thenReturn("userNameNotOwner");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(tokenShopNotOwner)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(tokenShopNotOwner)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(tokenShopNotOwner)).thenReturn("userNameNotOwner");
+        when(_tokenServiceMock.isUserAndLoggedIn(tokenShopNotOwner)).thenReturn(true);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-    //     _passwordEncoder = new PasswordEncoderUtil();
+        _passwordEncoder = new PasswordEncoderUtil();
 
-    //     User shopOwner = new User("userNameOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
-    //     User shopManager = new User("userNameManager", _passwordEncoder.encodePassword("shopManagerPassword"), "email@email.com", new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        User shopOwner = new User("userNameOwner", _passwordEncoder.encodePassword("shopOwnerPassword"), "email@email.com", new Date());
+        User shopManager = new User("userNameManager", _passwordEncoder.encodePassword("shopManagerPassword"), "email@email.com", new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //             add(shopManager);
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+                add(shopManager);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     try {
-    //         _shopFacade.openNewShop("userNameOwner", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shopFacade.openNewShop("userNameOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerGetShopManagersPermissions Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     Set<String> permissions = new HashSet<>();
-    //     permissions.add("ADD_PRODUCT");
+        Set<String> permissions = new HashSet<>();
+        permissions.add("ADD_PRODUCT");
 
-    //     // Act
-    //     ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopOwner, 0, "userNameManager", permissions);
-    //     ResponseEntity<Response> res2 = _shopServiceUnderTest.getShopManagerPermissions(token, Integer.parseInt(shopId));
+        // Act
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.addShopManager(tokenShopOwner, 0, "userNameManager", permissions);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.getShopManagerPermissions(token, Integer.parseInt(shopId));
 
-    //     // Assert
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testShopOwnerGetShopManagersPermissions Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     return res2.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testShopOwnerGetShopManagersPermissions Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
+        return res2.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testShopOwnerViewHistoryPurcaseInShop(String username, String shopId) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com",
-    //             new Date());
-    //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        User shopOwner = new User("shopOwner", "shopOwnerPassword", "email@email.com",
+                new Date());
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(shopOwner);
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(shopOwner);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
-    //     try {
-    //         _shopFacade.openNewShop("shopOwner", shopDto);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.warning("testShopOwnerViewHistoryPurcaseInShop Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shopFacade.openNewShop("shopOwner", shopDto);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testShopOwnerViewHistoryPurcaseInShop Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
 
-    //     // Act
-    //     ResponseEntity<Response> res = _shopServiceUnderTest.getShopPurchaseHistory(token, Integer.parseInt(shopId));
+        // Act
+        ResponseEntity<Response> res = _shopServiceUnderTest.getShopPurchaseHistory(token, Integer.parseInt(shopId));
 
-    //     // Assert
-    //     logger.info("testShopOwnerViewHistoryPurcaseInShop Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("testShopOwnerViewHistoryPurcaseInShop Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
 
     // // SHOPPING GUEST TESTS --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2571,7 +2570,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // initiate _shoppingCartFacade
 
         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        //_shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
         // create a shopingcart for the username
         try {
@@ -2657,7 +2657,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
 //         // initialize _shoppingCartFacade
 //         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-//         _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+//         _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
 //         // create a shopping cart for the user
 //         _shoppingCartFacade.addCartForGuest(tokenCheck);
@@ -2665,8 +2665,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 //         // user opens shop and adds product to it
 //         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
 //         ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-//         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-//         _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+//         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+//         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
 //         try {
 //             _shopFacade.openNewShop(username, shopDto);
@@ -2717,19 +2717,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 //             {
 //                 add(user);
 //             }
-//         }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-//         _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+//         }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+//         _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
 //             {
 //                 add(user);
 //             }
-//         }));
+//         }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-//         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-//         _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+//         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+//         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
 //         // initiate _shoppingCartFacade
 //         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-//         _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+//         _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
 //         ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
 //         // create a shopingcart for the username
@@ -2854,19 +2854,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(shopOwner);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(shopOwner);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username
@@ -3005,19 +3005,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
         
@@ -3873,16 +3873,16 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //             add(user);
     //             add(shopFounder);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //             add(shopFounder);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     try {
     //         _shopFacade.openNewShop("Founder", shopDto);
@@ -3925,16 +3925,16 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
     //     // initialize _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     // create a shopping cart for the user
     //     _shoppingCartFacade.addCartForGuest(username);
@@ -3943,8 +3943,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //     // user opens shop and adds product to it
     //     ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
     //     ProductDto productDto = new ProductDto("productName", Category.CLOTHING, 5, 1);
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     try {
     //         _shopFacade.openNewShop(username, shopDto);
@@ -3992,19 +3992,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username
@@ -4062,11 +4062,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //     _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
     //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>()));
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     _shoppingCartFacade.addCartForGuest(username);
 
@@ -4114,11 +4114,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //     _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
     //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>()));
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     _shoppingCartFacade.addCartForGuest(username);
 
@@ -4182,8 +4182,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
     //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>()));
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
     //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -4228,24 +4228,20 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(user);
-    //         }
-    //     }));
+    //    }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username
@@ -4319,15 +4315,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(shopFounder);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(shopFounder);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     try {
     //         _shopFacade.openNewShop("Founder", shopDto);
@@ -4378,15 +4374,15 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(shopFounder);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(shopFounder);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
 
     //     try {
     //         _shopFacade.openNewShop("Founder", shopDto);
@@ -4437,19 +4433,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username
@@ -4524,12 +4520,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
     //     // initiate userServiceUnderTest
     //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
@@ -4601,19 +4597,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username
@@ -4700,12 +4696,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
     //     // initiate userServiceUnderTest
     //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
@@ -4739,12 +4735,12 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
     //     // initiate userServiceUnderTest
     //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
@@ -4782,16 +4778,16 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     // create a shopingcart for the username
     //     _shoppingCartFacade.addCartForGuest(username);
@@ -4858,7 +4854,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         // initiate _shoppingCartFacade
 
         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
         // create a shopingcart for the username
         try {
@@ -4922,19 +4918,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     //         {
     //             add(user);
     //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
+    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+    //     _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
     //         {
     //             add(user);
     //         }
-    //     }));
+    //     }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock);
+    //     _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()));
         
     //     // initiate _shoppingCartFacade
     //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+    //     _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
     //     ShoppingCart shoppingCart = new ShoppingCart(_shopFacade, _adapterPaymentMock, _adapterSupplyMock);
     //     // create a shopingcart for the username

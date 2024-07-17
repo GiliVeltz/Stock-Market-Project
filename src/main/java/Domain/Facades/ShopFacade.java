@@ -266,9 +266,11 @@ public class ShopFacade {
                     productDtoOld.productName, shopId));
         logger.info("Product with name: " + productDtoOld.productName + " was found in shop with id: " + shopId);
 
-        Product product = _productRepository.findById(productDtoOld.productId).get();
+        // Product product = _productRepository.findById(productDtoOld.productId).get();
+        // getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
+        //         productDtoNew.category, productDtoNew.price);
 
-        getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
+        getShopByShopId(shopId).editProductInShopByName(userName, productDtoOld.productName, productDtoNew.productName,
                 productDtoNew.category, productDtoNew.price);
         
         _productRepository.flush();
