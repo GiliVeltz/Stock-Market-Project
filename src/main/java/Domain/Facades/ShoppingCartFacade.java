@@ -58,10 +58,14 @@ public class ShoppingCartFacade {
         _guestsCarts = new HashMap<>();
     }
 
-
-    // set shopping cart repository to be used in test system
-    public void setShoppingCartRepository(InterfaceShoppingCartRepository cartsRepo) {
-        _cartsRepository = cartsRepo;
+    // set repositories to be used in test system
+    public void setShoppingCartFacadeRepositories(InterfaceShoppingCartRepository cartsRepository, InterfaceOrderRepository orderRepository, InterfaceGuestRepository guestRepository,
+             InterfaceUserRepository userRepository, InterfaceShoppingBasketRepository basketRepository) {
+        _cartsRepository = cartsRepository;
+        _orderRepository = orderRepository;
+        _guestRepository = guestRepository;
+        _userRepository = userRepository;
+        _basketRepository = basketRepository;
     }
 
     // Add a cart for a guest by token.

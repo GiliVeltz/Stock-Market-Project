@@ -22,6 +22,11 @@ public class MemoryShoppingBasketRepository implements InterfaceShoppingBasketRe
         _shoppingBaskets = shoppingBaskets;
     }
 
+    // empty constructor
+    public MemoryShoppingBasketRepository() {
+        _shoppingBaskets = new java.util.ArrayList<ShoppingBasket>();
+    }
+
     @Override
     public void flush() {
     }
