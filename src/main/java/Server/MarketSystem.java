@@ -84,6 +84,7 @@ public class MarketSystem {
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.init_market(real_system_config_path);
+        //this.init_market(tests_config_file_path);
     }
 
     // for test - set facades and urls to check
