@@ -5,7 +5,7 @@ import Domain.Entities.User;
 /**
  * Represents a rule that checks if a user's age is greater than or equal to a minimum age.
  */
-public class MinAgeRule implements Rule<User> {
+public class MinAgeRule  extends AbstractRule<User> {
     
     int _minAge;
 

@@ -2,13 +2,19 @@ package Domain.Entities.Rules;
 
 import Domain.Entities.ShoppingBasket;
 import Exceptions.StockMarketException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * Represents a rule that checks if the total price of a shopping basket is
  * greater than or equal to a minimum price.
  */
-public class MinBasketPriceRule implements Rule<ShoppingBasket> {
+@Entity
+@Table(name = "[min_basket_price_rule]")
+public class MinBasketPriceRule extends AbstractRule<ShoppingBasket> {
 
+    @Column(name = "minPrice", nullable = false)
     private double _minPrice;
 
     /**
