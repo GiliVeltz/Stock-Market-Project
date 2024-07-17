@@ -6,7 +6,7 @@ import java.util.Calendar;
  * Represents a rule that checks if the current time falls within a specified time range in a day.
  * @param <T> the type of object - ignored by the rule
  */
-public class TimeRangeInDayRule<T> implements Rule<T> {
+public class TimeRangeInDayRule<T> extends AbstractRule<T> {
     
     int _startHours, _startMinutes;
     int _endHours, _endMinutes;

@@ -6,7 +6,7 @@ package Domain.Entities.Rules;
  *
  * @param <T> the type of object that the rule operates on
  */
-public class AndRule<T> implements Rule<T> {
+public class AndRule<T> extends AbstractRule<T> {
     
     Rule<T> _rule1;
     Rule<T> _rule2;

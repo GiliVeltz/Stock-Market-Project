@@ -6,21 +6,39 @@ import java.util.SortedMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+@Entity
+@Table(name = "[product_percentage_discounts]")
+@DiscriminatorValue("Product Percentage")
 public class ProductPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
+
+    @Column(name = "product_id")
     private int _productId;
 
+
+    public ProductPercentageDiscount() {
+        super();
+    }
     /**
      * Represents a percentage discount for a specific product.
      */
     public ProductPercentageDiscount(Date expirationDate, double percentage, int productId, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
+        _tempId = id;
     }
 
     public ProductPercentageDiscount(BasicDiscountDto dto) {
@@ -69,7 +87,7 @@ public class ProductPercentageDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

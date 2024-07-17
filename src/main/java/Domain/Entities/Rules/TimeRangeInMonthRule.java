@@ -5,7 +5,7 @@ package Domain.Entities.Rules;
  *
  * @param <T> the type of object to be ignored by the rule
  */
-public class TimeRangeInMonthRule<T> implements Rule<T> {
+public class TimeRangeInMonthRule<T> extends AbstractRule<T> {
     
     int _startDay;
     int _endDay;

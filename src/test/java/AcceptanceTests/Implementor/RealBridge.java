@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import Domain.Authenticators.*;
+import Domain.Entities.Guest;
 import Domain.Entities.Order;
 import Domain.Entities.Shop;
 import Domain.Entities.ShoppingBasket;
@@ -54,6 +55,7 @@ import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
+import Server.notifications.WebSocketServer;
 import ServiceLayer.*;
 import kotlin.text._OneToManyTitlecaseMappingsKt;
 
@@ -78,16 +80,11 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     private UserFacade _userFacade;
 
     // real classes to use in tests
-    @Autowired
-    private PasswordEncoderUtil _passwordEncoder;
-    @Autowired
-    private TokenService _tokenService;
-    @Autowired
-    private ExternalServiceHandler _externalServiceHandler;
-    @Autowired
-    private NotificationHandler _notificationHandler;
-    @Autowired
-    private EmailValidator _emailValidator;
+    private PasswordEncoderUtil _passwordEncoder = new PasswordEncoderUtil();
+    private TokenService _tokenService = new TokenService();
+    private ExternalServiceHandler _externalServiceHandler = new ExternalServiceHandler();
+    //private NotificationHandler _notificationHandler = new NotificationHandler();
+    private EmailValidator _emailValidator = new EmailValidator();
 
     // mocks
     @Mock
@@ -102,18 +99,33 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     PasswordEncoderUtil _passwordEncoderMock;
     @Mock
     NotificationHandler _notificationHandlerMock;
+    @Mock
+    WebSocketServer webSocketServerMock;
     // @Mock
     // AdapterPayment _adapterPaymentMock;
     // @Mock
     // AdapterSupply _adapterSupplyMock;
+
+    @Mock
+    DbGuestRepository _DbGuestRepositoryMock;
+    @Mock
+    DbOrderRepository _dbOrderRepositoryMock;
     @Mock
     DbProductRepository _dbProductRepositoryMock;
+    @Mock
+    DbRoleRepository _dbRoleRepositoryMock;
+    @Mock
+    DbShopOrderRepository _dbShopOrderRepositoryMock;
+    @Mock
+    DbShoppingBasketRepository _dbShoppingBasketRepositoryMock;
     @Mock
     DbShoppingCartRepository _dbShoppingCartRepositoryMock;
     @Mock
     DbShopRepository _dbShopRepositoryMock;
     @Mock
     DbUserRepository _dbUserRepositoryMock;
+    @Mock
+    DbDiscountRepository _dbDiscountRepositoryMock;
 
     // other private fields
     private static String token = "token";
@@ -131,62 +143,6 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException {
         return new RealBridge();
-    }
-
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'init'");
-    }
-
-    @Override
-    public boolean testOpenMarketSystem(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testOpenMarketSystem'");
-    }
-
-    @Override
-    public boolean testPayment(String senario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testPayment'");
-    }
-
-    @Override
-    public boolean testShipping(String senario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testShipping'");
-    }
-
-    @Override
-    public boolean testAddExternalService(String newSerivceName, String informationPersonName,
-            String informationPersonPhone, Integer securityIdForService) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testAddExternalService'");
-    }
-
-    @Override
-    public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName,
-            String newInformationPersonName, String newInformationPersonPhone) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testChangeExternalService'");
-    }
-
-    @Override
-    public boolean TestGuestEnterTheSystem(String shouldSeccess) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestEnterTheSystem'");
-    }
-
-    @Override
-    public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'TestGuestRegisterToTheSystem'");
-    }
-
-    @Override
-    public boolean testLoginToTheSystem(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testLoginToTheSystem'");
     }
 
     @Override
@@ -543,374 +499,422 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartGuest'");
     }
 
-    // @BeforeEach
-    // public void init() {
-    //     MockitoAnnotations.openMocks(this);
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //                 {
-    //                     add(new User("Bob", "bobspassword", "email@example.com", new Date()));
-    //                 }
-    //             }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("Bob", "bobspassword", "email@example.com", new Date()));
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+                    {
+                        add(new User("Bob", "bobspassword", "email@example.com", new Date()));
+                    }
+                }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("Bob", "bobspassword", "email@example.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
          
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
         
-    //     paymentInfoDto = new PaymentInfoDto("abc", "abc", "abc", "abc", "abc", "982", "abc");
-    //     supplyInfoDto = new SupplyInfoDto("abc", "abc", "abc", "abc", "abc");
-    // }
+        paymentInfoDto = new PaymentInfoDto("abc", "abc", "abc", "abc", "abc", "982", "abc");
+        supplyInfoDto = new SupplyInfoDto("abc", "abc", "abc", "abc", "abc");
+    }
 
-    // @AfterEach
-    // public void tearDown() {
-    // }
+    @AfterEach
+    public void tearDown() {
+    }
 
-    // // SYSTEM TESTS
-    // // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // SYSTEM TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // @Test
-    // public boolean testOpenMarketSystem(String username) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testOpenMarketSystem(String username) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
         
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com",
-    //                     new Date()));
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com", new Date()));
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com",
+                        new Date()));
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("systemAdmin", _passwordEncoder.encodePassword("systemAdminPassword"), "email@example.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
-    //     try {
-    //         _userFacade.getUserByUsername("systemAdmin").setIsSystemAdmin(true);
-    //     } catch (StockMarketException e) {
-    //         e.printStackTrace();
-    //         logger.info("testOpenMarketSystem Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _userFacade.getUserByUsername("systemAdmin").setIsSystemAdmin(true);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.info("testOpenMarketSystem Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     _userServiceUnderTest.logIn(token, "systemAdmin", "systemAdminPassword");
+        _userServiceUnderTest.logIn(token, "systemAdmin", "systemAdminPassword");
 
-    //     String token = username.equals("systemAdmin") ? "systemAdmin" : "guest";
+        String token = username.equals("systemAdmin") ? "systemAdmin" : "guest";
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
-    //     when(_tokenServiceMock.isUserAndLoggedIn("systemAdmin")).thenReturn(true);
-    //     when(_tokenServiceMock.isUserAndLoggedIn("guest")).thenReturn(false);
-    //     when(_tokenServiceMock.isGuest("systemAdmin")).thenReturn(false);
-    //     when(_tokenServiceMock.isGuest("guest")).thenReturn(true);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn("systemAdmin")).thenReturn(true);
+        when(_tokenServiceMock.isUserAndLoggedIn("guest")).thenReturn(false);
+        when(_tokenServiceMock.isGuest("systemAdmin")).thenReturn(false);
+        when(_tokenServiceMock.isGuest("guest")).thenReturn(true);
 
-    //     // Act
-    //     ResponseEntity<Response> res = _systemServiceUnderTest.openSystem(token);
+        // Act
+        ResponseEntity<Response> res = _systemServiceUnderTest.openSystem(token);
 
-    //     // Assert
-    //     logger.info("testOpenMarketSystem Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("testOpenMarketSystem Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testPayment(String senario) {
-    //     // Dummy test
-    //     return !senario.equals("error");
-    // }
+    @Test
+    public boolean testPayment(String senario) {
+        // Dummy test
+        return !senario.equals("error");
+    }
 
-    // @Test
-    // public boolean testShipping(String senario) {
-    //     // Dummy test
-    //     return !senario.equals("error");
-    // }
+    @Test
+    public boolean testShipping(String senario) {
+        // Dummy test
+        return !senario.equals("error");
+    }
 
-    // @Test
-    // public boolean testAddExternalService(String newSerivceName, String informationPersonName,
-    //         String informationPersonPhone, Integer securityIdForService) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testAddExternalService(String newSerivceName, String informationPersonName,
+            String informationPersonPhone, Integer securityIdForService) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
-    //                     new Date()));
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
+                        new Date()));
+            }
+        }, new ArrayList<>() {
+            {
+                add(new String("manager"));
+            }
+        }, _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>() {
+            {
+                add(new Guest("manager"));
+            }
+        }), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
-    //     _shoppingCartFacade.addCartForGuest("manager");
-    //     try {
-    //         _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
-    //     } catch (Exception e) {
-    //         logger.info("testAddExternalService Error message: " + e.getMessage());
-    //         return false;
-    //     }
+        try {
+            _shoppingCartFacade.addCartForGuest("manager");
+            _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
+        } catch (Exception e) {
+            logger.info("testAddExternalService Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     ExternalServiceDto externalServiceDto = new ExternalServiceDto(-1, "existSerivce", "name", "111");
+        ExternalServiceDto externalServiceDto = new ExternalServiceDto(-1, "existSerivce", "name", "111");
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     _externalServiceHandler.addExternalService(externalServiceDto);
+        try {
+            _externalServiceHandler.addExternalService(externalServiceDto);
+        } catch (Exception e) {
+            // Handle the exception here
+            logger.info("testAddExternalService Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testAddExternalService Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
+        ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testAddExternalService Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
 
-    //     ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testAddExternalService Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName,
-    //             informationPersonPhone);
+        ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testAddExternalService Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(-1, newSerivceName, informationPersonName,
+                informationPersonPhone);
 
-    //     // Act
-    //     ResponseEntity<Response> res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
+        // Act
+        ResponseEntity<Response> res = _systemServiceUnderTest.addExternalService(token, externalServiceDto2);
 
-    //     // Assert
-    //     logger.info("testAddExternalService Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("testAddExternalService Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName,
-    //         String newInformationPersonName, String newInformationPersonPhone) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testChangeExternalService(Integer oldServiceSystemId, String newSerivceName,
+            String newInformationPersonName, String newInformationPersonPhone) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
-    //     when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
-    //                     new Date()));
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
-    //         }
-    //     }));
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn("manager");
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn("manager");
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com",
+                        new Date()));
+            }
+        }, new ArrayList<>(){
+            {
+                add(new String("manager"));
+            }
+        }, _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("manager", _passwordEncoder.encodePassword("managerPassword"), "email@gmail.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>(){
+            {
+                add(new Guest("manager"));
+            }
+        }), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     _shoppingCartFacade.addCartForGuest("manager");
+        try {
+            _shoppingCartFacade.addCartForGuest("manager");
+        } catch (StockMarketException e) {
+            logger.info("testChangeExternalService Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     try {
-    //         _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
-    //     } catch (Exception e) {
-    //         logger.info("testChangeExternalService Error message: " + e.getMessage());
-    //         return false;
-    //     }
-    //     ExternalServiceDto externalServiceDto = new ExternalServiceDto(0, "existSerivce", "name", "111");
+        try {
+            _userFacade.getUserByUsername("manager").setIsSystemAdmin(true);
+        } catch (Exception e) {
+            logger.info("testChangeExternalService Error message: " + e.getMessage());
+            return false;
+        }
+        ExternalServiceDto externalServiceDto = new ExternalServiceDto(0, "existSerivce", "name", "111");
 
-    //     _externalServiceHandler.addExternalService(externalServiceDto);
+        try {
+            _externalServiceHandler.addExternalService(externalServiceDto);    
+        } catch (Exception e) {
+            logger.info("testChangeExternalService Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
-    //     if (res1.getBody().getErrorMessage() != null) {
-    //         logger.info("testChangeExternalService Error message: " + res1.getBody().getErrorMessage());
-    //         return false;
-    //     }
+        ResponseEntity<Response> res1 = _userServiceUnderTest.logIn(token, "manager", "managerPassword");
+        if (res1.getBody().getErrorMessage() != null) {
+            logger.info("testChangeExternalService Error message: " + res1.getBody().getErrorMessage());
+            return false;
+        }
 
-    //     ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
-    //     if (res2.getBody().getErrorMessage() != null) {
-    //         logger.info("testChangeExternalService Error message: " + res2.getBody().getErrorMessage());
-    //         return false;
-    //     }
-    //     ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name",
-    //             "111");
+        ResponseEntity<Response> res2 = _systemServiceUnderTest.openSystem(token);
+        if (res2.getBody().getErrorMessage() != null) {
+            logger.info("testChangeExternalService Error message: " + res2.getBody().getErrorMessage());
+            return false;
+        }
+        ExternalServiceDto externalServiceDto2 = new ExternalServiceDto(oldServiceSystemId, newSerivceName, "name",
+                "111");
 
-    //     // Act
-    //     ResponseEntity<Response> res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto,
-    //             newSerivceName);
-    //     ResponseEntity<Response> res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token,
-    //             externalServiceDto2, newInformationPersonName);
-    //     ResponseEntity<Response> res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token,
-    //             externalServiceDto2, newInformationPersonPhone);
+        // Act
+        ResponseEntity<Response> res3 = _systemServiceUnderTest.changeExternalServiceName(token, externalServiceDto,
+                newSerivceName);
+        ResponseEntity<Response> res4 = _systemServiceUnderTest.changeExternalServiceInformationPersonName(token,
+                externalServiceDto2, newInformationPersonName);
+        ResponseEntity<Response> res5 = _systemServiceUnderTest.changeExternalServiceInformationPersonPhone(token,
+                externalServiceDto2, newInformationPersonPhone);
 
-    //     // Assert
-    //     if (res3.getBody().getErrorMessage() != null)
-    //         logger.info("changeExternalServiceName Error message: " + res3.getBody().getErrorMessage());
-    //     if (res4.getBody().getErrorMessage() != null)
-    //         logger.info(
-    //                 "changeExternalServiceInformationPersonName Error message: " + res4.getBody().getErrorMessage());
-    //     if (res5.getBody().getErrorMessage() != null)
-    //         logger.info(
-    //                 "changeExternalServiceInformationPersonPhone Error message: " + res5.getBody().getErrorMessage());
+        // Assert
+        if (res3.getBody().getErrorMessage() != null)
+            logger.info("changeExternalServiceName Error message: " + res3.getBody().getErrorMessage());
+        if (res4.getBody().getErrorMessage() != null)
+            logger.info(
+                    "changeExternalServiceInformationPersonName Error message: " + res4.getBody().getErrorMessage());
+        if (res5.getBody().getErrorMessage() != null)
+            logger.info(
+                    "changeExternalServiceInformationPersonPhone Error message: " + res5.getBody().getErrorMessage());
 
-    //     return res3.getBody().getErrorMessage() == null && res4.getBody().getErrorMessage() == null
-    //             && res5.getBody().getErrorMessage() == null;
-    // }
+        return res3.getBody().getErrorMessage() == null && res4.getBody().getErrorMessage() == null
+                && res5.getBody().getErrorMessage() == null;
+    }
 
-    // // GUEST TESTS
-    // // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // GUEST TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // @Test
-    // public boolean TestGuestEnterTheSystem(String shouldSeccess) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean TestGuestEnterTheSystem(String shouldSeccess) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>()));
+        _userFacade = new UserFacade(new ArrayList<User>(), new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>()), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
         
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     _userFacade.addNewGuest("existGuest");
+        _userFacade.addNewGuest("existGuest");
 
-    //     String token = shouldSeccess.equals("newGuest") ? "newGuest" : "existGuest";
+        String token = shouldSeccess.equals("newGuest") ? "newGuest" : "existGuest";
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractGuestId("newGuest")).thenReturn("newGuest");
-    //     when(_tokenServiceMock.extractGuestId("existGuest")).thenReturn("existGuest");
-    //     when(_tokenServiceMock.generateGuestToken()).thenReturn(token);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId("newGuest")).thenReturn("newGuest");
+        when(_tokenServiceMock.extractGuestId("existGuest")).thenReturn("existGuest");
+        when(_tokenServiceMock.generateGuestToken()).thenReturn(token);
 
-    //     // Act
-    //     ResponseEntity<Response> res = _systemServiceUnderTest.requestToEnterSystem();
+        // Act
+        ResponseEntity<Response> res = _systemServiceUnderTest.requestToEnterSystem();
 
-    //     // Assert
-    //     logger.info("TestGuestEnterTheSystem Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("TestGuestEnterTheSystem Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean TestGuestRegisterToTheSystem(String username, String password, String email) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
         
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(new User("Bobi", "encodePassword", "email@example.com",
-    //                     new Date()));
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("Bobi", "encodePassword", "email@example.com", new Date()));
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("Bobi", "encodePassword", "email@example.com",
+                        new Date()));
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("Bobi", "encodePassword", "email@example.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
 
-    //     // Act
-    //     UserDto userDto = new UserDto(username, password, email, new Date());
-    //     ResponseEntity<Response> res = _userServiceUnderTest.register(token, userDto);
+        // Act
+        UserDto userDto = new UserDto(username, password, email, new Date());
+        ResponseEntity<Response> res = _userServiceUnderTest.register(token, userDto);
 
-    //     // Assert
-    //     logger.info("TestGuestRegisterToTheSystem Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("TestGuestRegisterToTheSystem Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
-    // @Test
-    // public boolean testLoginToTheSystem(String username, String password) {
-    //     // Arrange
-    //     MockitoAnnotations.openMocks(this);
+    @Test
+    public boolean testLoginToTheSystem(String username, String password) {
+        // Arrange
+        MockitoAnnotations.openMocks(this);
 
-    //     _userFacade = new UserFacade(new ArrayList<User>() {
-    //         {
-    //             add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
-    //         }
-    //     }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock);
-    //     _userFacade.setUserRepository(new MemoryUserRepository(new ArrayList<User>() {
-    //         {
-    //             add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
-    //         }
-    //     }));
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
+            }
+        }, new ArrayList<>() {
+            {
+                add(new String("Bob"));
+            }
+        }, _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(new User("Bob", _passwordEncoder.encodePassword("bobspassword"), "email@example.com", new Date()));
+            }
+        }), new MemoryGuestRepository(new ArrayList<>() {
+            {
+                add(new Guest("Bob"));
+            }
+        }), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
         
-    //     _shopFacade = new ShopFacade(_dbShopRepositoryMock, _userFacade);
-    //     _shopFacade.setShopRepository(new MemoryShopRepository(new ArrayList<Shop>()));
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-    //     _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock);
-    //     _shoppingCartFacade.setShoppingCartRepository(new MemoryShoppingCartRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        
+        try {
+            _shoppingCartFacade.addCartForGuest(username);
+        } catch (StockMarketException e) {
+            e.printStackTrace();
+            logger.warning("testLoginToTheSystem Error message: " + e.getMessage());
+            return false;
+        }
 
-    //     _shoppingCartFacade.addCartForGuest(username);
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+        _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
+                _userFacade, _shoppingCartFacade);
 
-    //     _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade);
-    //     _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
-    //     _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
-    //             _userFacade, _shoppingCartFacade);
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
 
-    //     when(_tokenServiceMock.validateToken(token)).thenReturn(true);
-    //     when(_tokenServiceMock.extractGuestId(token)).thenReturn(username);
+        // Act
+        ResponseEntity<Response> res = _userServiceUnderTest.logIn(token, username, password);
 
-    //     // Act
-    //     ResponseEntity<Response> res = _userServiceUnderTest.logIn(token, username, password);
-
-    //     // Assert
-    //     logger.info("testLoginToTheSystem Error message: " + res.getBody().getErrorMessage());
-    //     return res.getBody().getErrorMessage() == null;
-    // }
+        // Assert
+        logger.info("testLoginToTheSystem Error message: " + res.getBody().getErrorMessage());
+        return res.getBody().getErrorMessage() == null;
+    }
 
     // // SYSTEM ADMIN TESTS
     // // --------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@ package UI.Presenter;
 
 
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.http.HttpEntity;
@@ -12,13 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 
 import UI.Model.Response;
-import UI.Model.ShopManagerDto;
 import UI.Model.UserDto;
 import UI.View.Header;
 // import ServiceLayer.Response;
