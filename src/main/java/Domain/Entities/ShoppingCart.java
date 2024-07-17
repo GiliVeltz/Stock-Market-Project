@@ -16,6 +16,7 @@ import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
 import Domain.Facades.ShopFacade;
 import Domain.Repositories.InterfaceOrderRepository;
+import Domain.Repositories.InterfaceShopOrderRepository;
 import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Dtos.PurchaseCartDetailsDto;
 
@@ -71,6 +72,9 @@ public class ShoppingCart {
 
     @Transient
     private InterfaceShoppingBasketRepository basketRepository;
+
+    @Transient
+    private InterfaceShopOrderRepository shopOrderRepository;
 
     @Column(name = "user_or_guest_name")
     private String user_or_guest_name; // or guestToken string
@@ -130,6 +134,10 @@ public class ShoppingCart {
         this.orderRepository = orderRepository;
     }
 
+    public void setShopOrderRepository(InterfaceShopOrderRepository shopOrderRepository) {
+        this.shopOrderRepository = shopOrderRepository;
+    }
+
     /*
      * This method is responsible for purchasing the cart.
      * It first calls the purchaseCart method of the shopping cart which reaponsible
@@ -138,7 +146,7 @@ public class ShoppingCart {
      * If the payment or the delivery fails, it cancels the purchase and restock the
      * item.
      */
-    public void purchaseCart(PurchaseCartDetailsDto purchaseCartDetailsDto, int ordersId)
+    public void purchaseCart(PurchaseCartDetailsDto purchaseCartDetailsDto)
             throws PaymentFailedException, ShippingFailedException, StockMarketException {
         try {
             purchaseCartEditStock(purchaseCartDetailsDto.getBasketsToBuy());
@@ -179,17 +187,17 @@ public class ShoppingCart {
             for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
                 ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
                 shoppingBasketsForOrder.add(shoppingBasket);
-                //_supplyMethod.deliver(details.address, shoppingBasket.getShopAddress());
             }
 
             if (user != null) {
                 Order order = new Order(shoppingBasketsForOrder, paymentTransactionId, supplyTransactionId);
-                orderRepository.save(order);
+                order = orderRepository.save(order);
                 user.addOrder(order);
             }
 
             for (ShoppingBasket shoppingBasket : shoppingBasketsForOrder) {
-                ShopOrder shopOrder = new ShopOrder(ordersId, shoppingBasket.getShop().getShopId(), shoppingBasket);
+                ShopOrder shopOrder = new ShopOrder(shoppingBasket.getShop().getShopId(), shoppingBasket);
+                shopOrder = shopOrderRepository.save(shopOrder);
                 shoppingBasket.getShop().addOrderToOrderHistory(shopOrder);
             }
 

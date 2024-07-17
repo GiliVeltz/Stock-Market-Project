@@ -524,8 +524,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
         
         paymentInfoDto = new PaymentInfoDto("abc", "abc", "abc", "abc", "abc", "982", "abc");
         supplyInfoDto = new SupplyInfoDto("abc", "abc", "abc", "abc", "abc");
@@ -558,8 +558,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         try {
             _userFacade.getUserByUsername("systemAdmin").setIsSystemAdmin(true);
@@ -639,8 +639,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         try {
             _shoppingCartFacade.addCartForGuest("manager");
@@ -719,8 +719,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
         _systemServiceUnderTest = new SystemService(_externalServiceHandler, _tokenServiceMock,
@@ -798,8 +798,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
         
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -843,8 +843,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
@@ -889,8 +889,8 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock);
         _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()));
 
-        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository());
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
         
         try {
             _shoppingCartFacade.addCartForGuest(username);

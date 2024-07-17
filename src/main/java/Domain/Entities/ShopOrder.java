@@ -35,8 +35,7 @@ public class ShopOrder {
     public ShopOrder() { }
 
     // Constructor
-    public ShopOrder(int orderId, int shopId, ShoppingBasket shoppingBasket) throws StockMarketException {
-        this.shopOrderId = orderId;
+    public ShopOrder(int shopId, ShoppingBasket shoppingBasket) throws StockMarketException {
         shoppingBasket = shoppingBasket.clone();
         totalOrderAmount = shoppingBasket.getShoppingBasketPrice();
     }
