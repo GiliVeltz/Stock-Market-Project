@@ -1,5 +1,8 @@
 package UI.Presenter;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -8,10 +11,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.vaadin.flow.component.UI;
 
 import UI.Model.ProductDto;
 import UI.Model.ProductGetterDto;
+import UI.Model.ProductPolicy.UserRuleDto;
 import UI.Model.Response;
 import UI.View.ProductView;
 
@@ -176,6 +181,55 @@ public class ProductPresenter {
                     } else {
                         System.out.println("Token not found in local storage.");
                         _view.showErrorMessage("Failed to add product to cart");
+                    }
+                });
+    }
+
+        @SuppressWarnings("deprecation")
+        public void fetchProductPolicy(Integer shopId, Integer productId, Consumer<List<UserRuleDto>> callback){
+        RestTemplate restTemplate = new RestTemplate();
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + _serverPort + "/api/shop/getProductPolicy?shopId="+ shopId + "&productId=" + productId,
+                                HttpMethod.GET,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                _view.showSuccessMessage("Product with id "+ productId+" policy loaded successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    ObjectMapper objectMapper = new ObjectMapper();
+                                    List<UserRuleDto> rules = objectMapper.convertValue(
+                                        responseBody.getReturnValue(),
+                                        TypeFactory.defaultInstance().constructCollectionType(List.class, UserRuleDto.class));
+                                    callback.accept(rules);
+                                }else {
+                                    _view.showErrorMessage("Product with id "+ productId +" policy loading failed");
+                                }
+                            }
+                            else {
+                                _view.showErrorMessage("Product with id "+ productId +" policy loading failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            _view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
+                            int endIndex = e.getMessage().indexOf("\",", startIndex);
+                            _view.showErrorMessage("Failed to load Product with id "+ productId +" policy: " + e.getMessage().substring(startIndex, endIndex));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        _view.showErrorMessage("Authorization token not found. Please log in.");
                     }
                 });
     }

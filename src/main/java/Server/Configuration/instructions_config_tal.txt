@@ -1,0 +1,16 @@
+add_admin#u1_Admin#adminPassword#admin@email.com#2022-05-04
+
+register#u2#u2Password#u2@email.com#2021-05-04
+register#tal#123123#123@email.com#2017-05-04
+
+logIn#u2#u2Password
+
+open_shop#u2#s1#bank_details#shop_address
+
+add_product_to_shop#u2#s1#Bamba#GROCERY#30#20
+
+
+logOut#u2
+
+add_cart_for_guest#token
+add_cart_for_user#token#tal

@@ -22,7 +22,6 @@ public class SystemAdminAcceptanceTests {
         
         // Test system nanger can see at any time the history purchased of the users and the shops.
         @Test
-        @Disabled
         public void testSystemManagerViewHistoryPurcaseInUsers() {
             assertTrue(_bridge.testSystemManagerViewHistoryPurcaseInUsers("manager", "userName") ); // success
             assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInUsers("manager", "invalidUserName") ); // fail - invalid user name
@@ -30,7 +29,6 @@ public class SystemAdminAcceptanceTests {
         }
         
         @Test
-    @Disabled
         public void testSystemManagerViewHistoryPurcaseInShops() {
             assertTrue(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", 0) ); // success
             assertFalse(_bridge.testSystemManagerViewHistoryPurcaseInShops("manager", -1) ); // fail - invalid shop Id

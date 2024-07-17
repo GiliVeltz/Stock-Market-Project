@@ -21,13 +21,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+
+import java.util.Set;
 
 @Entity
 public class Product implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "product_id", nullable = false)
     private Integer productId;
 
     @Column(name = "productName", nullable = false)
@@ -39,10 +43,10 @@ public class Product implements Cloneable {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    //@ElementCollection(fetch = FetchType.LAZY) // Lazy loading is often a good default for collections
-    @CollectionTable(name = "product_keywords", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "keyword") // Name of the column in the collection table
-    private HashSet<String> keywords;
+    @ElementCollection
+    @CollectionTable(name = "product_keyword", joinColumns = @JoinColumn(name = "product_id"))
+    private Set<String> keywords = new HashSet<>();
+    // private Set<String> keywords = new HashSet<>();
 
     @Column(name = "productRating", nullable = true)
     private Double productRating;
@@ -64,10 +68,6 @@ public class Product implements Cloneable {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @ManyToOne
-    @JoinColumn(name = "shopping_basket_id", nullable = true)
-    private ShoppingBasket shoppingBasket;
-
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Default constructor
@@ -75,6 +75,23 @@ public class Product implements Cloneable {
 
     // Constructor
     public Product(String productName, Category category, double price, Shop shop) {
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.quantity = 0;
+        this.keywords = new HashSet<>();
+        this.keywords.add(productName);
+        this.keywords.add(category.toString());
+        this.productRating = -1.0;
+        this.productRatersCounter = 0;
+        this.productPolicy = new ProductPolicy();
+        this.reviews = new HashMap<>();
+        this.shop = shop;
+    }
+
+    // Constructor for tests
+    public Product(String productName, Category category, double price, Shop shop, int productId) {
+        this.productId = productId;
         this.productName = productName;
         this.category = category;
         this.price = price;
@@ -199,7 +216,7 @@ public class Product implements Cloneable {
         return quantity;
     }
 
-    public HashSet<String> getKeywords() {
+    public Set<String> getKeywords() {
         return keywords;
     }
 

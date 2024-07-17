@@ -8,7 +8,7 @@ package Domain.Entities.Rules;
  *
  * @param <T> the type of object the rule operates on
  */
-public class ConditionRule<T> implements Rule<T> {
+public class ConditionRule<T>  extends AbstractRule<T> {
     
     Rule<T> _condRule;
     Rule<T> _followupRule;

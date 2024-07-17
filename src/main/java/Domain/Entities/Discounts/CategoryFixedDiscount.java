@@ -1,6 +1,7 @@
 package Domain.Entities.Discounts;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -11,15 +12,31 @@ import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[category_fixed_discounts]")
+@DiscriminatorValue("Category Fixed")
 public class CategoryFixedDiscount extends BaseDiscount {
+
+    @Column(name = "discount_total")
     private double _discountTotal;
+
+    @Column(name = "category")
     private Category _category;
+
+    public CategoryFixedDiscount() {
+        super();
+    }
 
     /**
      * Represents a fixed discount for the a specific category.
      */
     public CategoryFixedDiscount(Date expirationDate, double discountTotal, Category category, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (discountTotal <= 0)
             throw new IllegalArgumentException("Discount must be higher than 0.");
             _discountTotal = discountTotal;
@@ -33,6 +50,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
             }
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
+        _tempId = id;
     }
 
     public CategoryFixedDiscount(BasicDiscountDto dto) {
@@ -55,7 +73,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
     protected void applyDiscountLogic(ShoppingBasket basket) throws StockMarketException {
         if (!_rule.predicate(basket))
             return;
-        for (Product product : basket.getProductsList()) {
+        for (Product product : new HashSet<>(basket.getProductsList())) {
             if(!product.getCategory().equals(_category)){
                 continue;
             }
@@ -76,7 +94,7 @@ public class CategoryFixedDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }
