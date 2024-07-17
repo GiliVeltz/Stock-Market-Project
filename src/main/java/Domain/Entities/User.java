@@ -215,4 +215,8 @@ public class User {
     public void setId(Integer i) {
         id = i;
     }
+
+    public List<String> getMessages() {
+        return messages;
+    }
 }
