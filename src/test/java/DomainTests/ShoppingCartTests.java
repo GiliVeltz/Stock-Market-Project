@@ -33,6 +33,7 @@ import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShopOrderRepository;
 import Domain.Repositories.InterfaceShoppingBasketRepository;
 import Domain.Repositories.MemoryOrderRepository;
+import Domain.Repositories.MemoryShoppingBasketRepository;
 import Dtos.PaymentInfoDto;
 import Dtos.PurchaseCartDetailsDto;
 import Dtos.SupplyInfoDto;
@@ -129,7 +130,7 @@ public class ShoppingCartTests {
     public void testAddProduct_whenProductExists_shouldAddProduct() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         Product product = new Product("product", Category.CLOTHING, 10, shopMock, 1);
         when(shopMock.getProductById(1)).thenReturn(product);
         Mockito.doNothing().when(shopMock).ValidateProdcutPolicy(Mockito.any(User.class), Mockito.any(Product.class));
@@ -336,7 +337,7 @@ public class ShoppingCartTests {
     public void testRemoveProduct_whenProductExists_shouldRemoveProduct() throws StockMarketException {
         // Arrange
         shoppingCartUnderTest = new ShoppingCart(shopFacadeMock, adapterPaymentMock, adapterSupplyMock);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         Product product = new Product("product", Category.CLOTHING, 10, shopMock, 1);
         when(shopMock.getProductById(1)).thenReturn(product);
         when(shopMock.getShopId()).thenReturn(1);
@@ -433,7 +434,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -478,7 +479,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(0);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -522,7 +523,7 @@ public class ShoppingCartTests {
         Product product4 = new Product("product4", Category.ELECTRONICS, 100.0, shop2, 4);
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
@@ -572,7 +573,7 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         shoppingCartUnderTest.setShopOrderRepository(shopOrderRepositoryMock);
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
@@ -633,7 +634,7 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
@@ -642,7 +643,6 @@ public class ShoppingCartTests {
         when(adapterPaymentMock.payment(paymentInfoDto, 500)).thenReturn(1000);
         when(adapterSupplyMock.supply(supplyInfoDto)).thenReturn(1000);
         shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
         shoppingCartUnderTest.addProduct(1, 1, 1);
         shoppingCartUnderTest.addProduct(1, 1, 1);
         shoppingCartUnderTest.addProduct(2, 1, 1);
@@ -696,7 +696,7 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         shoppingCartUnderTest.setShopOrderRepository(shopOrderRepositoryMock);
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
@@ -759,7 +759,7 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
@@ -768,7 +768,6 @@ public class ShoppingCartTests {
         when(adapterPaymentMock.payment(paymentInfoDto, 500)).thenReturn(1000);
         when(adapterSupplyMock.supply(supplyInfoDto)).thenReturn(1000);
         shoppingCartUnderTest.SetUser(user);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
         shoppingCartUnderTest.addProduct(1, 1, 1);
         shoppingCartUnderTest.addProduct(1, 1, 1);
         shoppingCartUnderTest.addProduct(2, 1, 1);
@@ -819,7 +818,7 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
         
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
             new ArrayList<>(Arrays.asList(0, 1)));
 
@@ -872,7 +871,7 @@ public class ShoppingCartTests {
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
             new ArrayList<>(Arrays.asList(0, 1)));
         
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
         shoppingCartUnderTest.SetUser(user);
@@ -915,7 +914,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -967,7 +966,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -1018,7 +1017,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -1073,7 +1072,7 @@ public class ShoppingCartTests {
         product4.updateProductQuantity(10);
         shop2.addProductToShop("ownerUsername2", product4);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
@@ -1118,7 +1117,7 @@ public class ShoppingCartTests {
         shop.addProductToShop("ownerUsername", product);
 
         shop.setNotificationHandler(notificationHandlerMock);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
             new ArrayList<>(Arrays.asList(0)));
@@ -1151,7 +1150,7 @@ public class ShoppingCartTests {
         shop.addProductToShop("ownerUsername", product);
 
         shop.setNotificationHandler(notificationHandlerMock);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
                 new ArrayList<>(Arrays.asList(0)));
@@ -1182,7 +1181,7 @@ public class ShoppingCartTests {
         product.updateProductQuantity(10);
         shop.addProductToShop("ownerUsername", product);
 
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         shop.setNotificationHandler(notificationHandlerMock);
 
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
@@ -1219,7 +1218,7 @@ public class ShoppingCartTests {
         shop.addProductToShop("ownerUsername", product);
 
         shop.setNotificationHandler(notificationHandlerMock);
-        shoppingCartUnderTest.setShoppingBasketsRepository(shoppingBasketRepositoryMock);
+        shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
 
         PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
                 new ArrayList<>(Arrays.asList(0)));

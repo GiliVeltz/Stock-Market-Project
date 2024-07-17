@@ -309,7 +309,7 @@ public class ShoppingCart {
             basket = basketOptional.get();
         } else {
             basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
-            basketRepository.save(basket);
+            basket = basketRepository.save(basket);
         }
 
         // add the product to the basket.
