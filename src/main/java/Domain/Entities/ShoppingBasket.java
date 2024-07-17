@@ -12,15 +12,16 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
@@ -35,11 +36,16 @@ public class ShoppingBasket implements Cloneable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer shoppingBasketId;
 
-    @OneToOne(optional = false, orphanRemoval = true)
-    @JoinColumn(name = "shop_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @OneToMany(mappedBy = "shoppingBasket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "basket_product", 
+        joinColumns = @JoinColumn(name = "basket_id"), 
+        inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
     private List<Product> productsList;
 
     @Column(name = "total_basket_amount", nullable = false)
@@ -47,10 +53,6 @@ public class ShoppingBasket implements Cloneable {
 
     @Transient
     private Map<Integer, SortedMap<Double, Integer>> _productToPriceToAmount;
-
-    @OneToOne
-    @JoinColumn(name = "shop_order_id")
-    private ShopOrder shopOrder;
 
     @Transient
     private static final Logger logger = Logger.getLogger(ShoppingBasket.class.getName());
@@ -78,7 +80,8 @@ public class ShoppingBasket implements Cloneable {
         }
         
         // check if the product is in the shop and validate the user doesn't violate the product policy
-        shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        // shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        // TODO VLADIN
 
         // add the product to the basket
         for (int i = 0; i < quantity; i++)
@@ -245,6 +248,7 @@ public class ShoppingBasket implements Cloneable {
     public ShoppingBasket clone() {
         try {
             ShoppingBasket cloned = (ShoppingBasket) super.clone();
+            cloned.shoppingBasketId = null;
             cloned.shop = this.shop;
             cloned.productsList = new ArrayList<>(productsList);
             cloned._productToPriceToAmount = cloneProductToPriceToAmount();
@@ -327,5 +331,13 @@ public class ShoppingBasket implements Cloneable {
 
     public void setId(int id) {
         this.shoppingBasketId = id;
+    }
+
+    public void setProductsList(List<Product> productsList) {
+        this.productsList = productsList;
+    }
+
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 }

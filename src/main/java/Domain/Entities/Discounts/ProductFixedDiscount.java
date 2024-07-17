@@ -6,19 +6,35 @@ import java.util.SortedMap;
 import Domain.Entities.ShoppingBasket;
 import Dtos.BasicDiscountDto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[product_fixed_discounts]")
+@DiscriminatorValue("Product Fixed")
 public class ProductFixedDiscount extends BaseDiscount {
+
+    @Column(name = "discount_total")
     private double _discountTotal;
+
+    @Column(name = "product_id")
     private int _productId;
 
+    public ProductFixedDiscount() {
+        super();
+    }
     /**
      * Represents a fixed discount for a specific product.
      */
     public ProductFixedDiscount(Date expirationDate, double discountTotal, int productId, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         _discountTotal = discountTotal;
         _productId = productId;
 
         _rule = (basket) -> basket.getProductCount(productId) > 0;
+        _tempId = id;
     }
 
     public ProductFixedDiscount(BasicDiscountDto dto) {
@@ -67,7 +83,7 @@ public class ProductFixedDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

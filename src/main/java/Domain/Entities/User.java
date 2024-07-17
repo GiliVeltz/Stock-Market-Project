@@ -9,8 +9,20 @@ import java.util.Date;
 import java.util.List;
 
 import Dtos.UserDto;
-import jakarta.persistence.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "[user]")
@@ -36,7 +48,8 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date birthDate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id") // This will be added to the Order table as a foreign key
     private List<Order> purchaseHistory = new ArrayList<Order>();
 
    
@@ -47,16 +60,8 @@ public class User {
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
-
-    // //@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval =
-    // true)
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "shopping_cart_id")
-    @Transient
-    private ShoppingCart shoppingCart;
-
-    public User() {
-    }
+    
+    public User(){}
 
     // Constructor
     public User(String username, String password, String email, Date birthDate) {
@@ -204,9 +209,9 @@ public class User {
         return id;
     }
 
-    public void setShoppingCart(ShoppingCart shoppingCart2) {
-        this.shoppingCart = shoppingCart2;
-    }
+    // public void setShoppingCart(ShoppingCart shoppingCart2) {
+    //     this.shoppingCart = shoppingCart2;
+    // }
 
     public void addMessage(String message) {
         this.messages.add(0,message);

@@ -1,5 +1,6 @@
 package Domain.Entities.Rules;
 
+
 /**
  * The Rule interface represents a rule that can be checked given a context of
  * type T. It defines a predicate that must be satisfied.

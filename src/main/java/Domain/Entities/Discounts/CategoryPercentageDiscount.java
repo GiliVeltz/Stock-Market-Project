@@ -12,15 +12,31 @@ import Domain.Entities.enums.Category;
 import Dtos.BasicDiscountDto;
 import Exceptions.StockMarketException;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "[category_percentage_discounts]")
+@DiscriminatorValue("Category Percentage")
 public class CategoryPercentageDiscount extends BaseDiscount {
+
+    @Column(name = "percentage")
     private double _percentage;
+
+    @Column(name = "category")
     private Category _category;
+
+    public CategoryPercentageDiscount() {
+        super();
+    }
 
     /**
      * Represents a percentage discount for the a specific category.
      */
     public CategoryPercentageDiscount(Date expirationDate, double percentage, Category category, int id) {
-        super(expirationDate, id);
+        super(expirationDate);
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Precentage must be between 0 and 100");
         _percentage = percentage;
@@ -34,6 +50,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
             }
         };
         _specialRule = (product) -> product.getCategory().equals(_category);
+        _tempId = id;
     }
 
     public CategoryPercentageDiscount(BasicDiscountDto dto) {
@@ -76,7 +93,7 @@ public class CategoryPercentageDiscount extends BaseDiscount {
     }
 
     @Override
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return getId();
     }
 }

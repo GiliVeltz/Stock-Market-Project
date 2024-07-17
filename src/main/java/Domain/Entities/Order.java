@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import Exceptions.StockMarketException;
 
 // class that represents an order for the user
@@ -23,17 +24,20 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @Transient
+    @ElementCollection
+    @CollectionTable(name = "order_shopping_baskets", joinColumns = @JoinColumn(name = "order_id"))
+    @MapKeyColumn(name = "shop_id")
+    @Column(name = "shopping_basket_id") // Corrected to @Column instead of @JoinColumn
     private Map<Integer, ShoppingBasket> _shoppingBasketMap; // <ShopId, ShoppingBasketPerShop>
 
     @Column(name = "totalOrderAmount", nullable = false)
     private double totalOrderAmount;
-    private int paymentId;
-    private int SupplyId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "paymentId", nullable = false)
+    private int paymentId;
+
+    @Column(name = "SupplyId", nullable = false)
+    private int SupplyId;
 
     // Default constructor
     public Order() { }
@@ -59,7 +63,7 @@ public class Order {
     // This method is used to set the shoppingBasketMap when creating the order
     private void setShoppingBasketMap(List<ShoppingBasket> shoppingBaskets){
         for (ShoppingBasket basket : shoppingBaskets) {
-            _shoppingBasketMap.put(basket.getShopId(), basket.clone());
+            _shoppingBasketMap.put(basket.getShopId(), basket);
         }
     }
 
