@@ -156,9 +156,7 @@ public class ShopViewPresenter {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         }
                         catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage("Failed to add product to cart: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                         

@@ -73,9 +73,7 @@ public class ProductPresenter {
                         } catch (HttpClientErrorException e) {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -124,9 +122,7 @@ public class ProductPresenter {
                         } catch (HttpClientErrorException e) {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage("Failed to display product's details: " + e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage("Failed to display product's details: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -173,9 +169,7 @@ public class ProductPresenter {
                         } catch (HttpClientErrorException e) {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage("Failed to add product to cart: " + e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage("Failed to add product to cart: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -223,9 +217,7 @@ public class ProductPresenter {
                         } catch (HttpClientErrorException e) {
                             _view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            _view.showErrorMessage("Failed to load Product with id "+ productId +" policy: " + e.getMessage().substring(startIndex, endIndex));
+                            _view.showErrorMessage("Failed to load Product with id "+ productId +" policy: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
