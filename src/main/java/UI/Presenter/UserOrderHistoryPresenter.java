@@ -69,9 +69,7 @@ public class UserOrderHistoryPresenter {
                         catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to show Orders: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                         

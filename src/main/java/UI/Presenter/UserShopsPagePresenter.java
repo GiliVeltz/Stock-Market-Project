@@ -62,7 +62,7 @@ public class UserShopsPagePresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                             view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
@@ -110,7 +110,7 @@ public class UserShopsPagePresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                             view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
