@@ -113,12 +113,6 @@ public class ShopController {
         return _shopService.getShopPurchaseHistory(token, shopId);
     }
 
-    @PostMapping("/addShopBasicDiscount")
-    public ResponseEntity<Response> addShopBasicDiscount(@RequestHeader("Authorization") String token,
-            @RequestParam Integer shopId,
-            @RequestBody BasicDiscountDto discountDto) {
-        return _shopService.addShopBasicDiscount(token, shopId, discountDto);
-    }
 
     @PostMapping("/addShopConditionalDiscount")
     public ResponseEntity<Response> addShopConditionalDiscount(@RequestHeader("Authorization") String token,
@@ -127,12 +121,6 @@ public class ShopController {
         return _shopService.addShopConditionalDiscount(token, shopId, discountDto);
     }
 
-    @PostMapping("/removeShopDiscount")
-    public ResponseEntity<Response> removeShopDiscount(@RequestHeader("Authorization") String token,
-            @RequestParam Integer shopId,
-            @RequestParam Integer discountId) {
-        return _shopService.removeDiscount(token, shopId, discountId);
-    }
 
     @PostMapping("/updateProductQuantity")
     public ResponseEntity<Response> updateProductQuantity(@RequestHeader("Authorization") String token,

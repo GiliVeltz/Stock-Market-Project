@@ -95,10 +95,6 @@ public class ShopManagerPresenter {
         
     }
 
-    public void addDiscounts() {
-
-    }
-
     public void changeProductPolicy() {
         
     }

@@ -320,35 +320,35 @@ public class ShopFacade {
         }
     }
 
-    // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
-    @Transactional
-    public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
-            throws StockMarketException {
+    // // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
+    // @Transactional
+    // public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
+    //         throws StockMarketException {
 
-        Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
-            throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
-        BaseDiscount discount;
-        if (discountDto.isPrecentage) {
-            if (discountDto.category != null)
-                discount = new CategoryPercentageDiscount(discountDto);
-            else if (discountDto.productId == -1)
-                discount = new ShopPercentageDiscount(discountDto);
-            else
-                discount = new ProductPercentageDiscount(discountDto);
-        } else {
-            if (discountDto.category != null)
-                discount = new CategoryFixedDiscount(discountDto);
-            else if (discountDto.productId == -1)
-                discount = new ShopFixedDiscount(discountDto);
-            else
-                discount = new ProductFixedDiscount(discountDto);
-        }
+    //     Shop shop = getShopByShopId(shopId);
+    //     if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
+    //         throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
+    //     BaseDiscount discount;
+    //     if (discountDto.isPrecentage) {
+    //         if (discountDto.category != null)
+    //             discount = new CategoryPercentageDiscount(discountDto);
+    //         else if (discountDto.productId == -1)
+    //             discount = new ShopPercentageDiscount(discountDto);
+    //         else
+    //             discount = new ProductPercentageDiscount(discountDto);
+    //     } else {
+    //         if (discountDto.category != null)
+    //             discount = new CategoryFixedDiscount(discountDto);
+    //         else if (discountDto.productId == -1)
+    //             discount = new ShopFixedDiscount(discountDto);
+    //         else
+    //             discount = new ProductFixedDiscount(discountDto);
+    //     }
 
-        int id = shop.addDiscount(discount);
-        _discountRepository.save(discount);
-        return id;
-    }
+    //     int id = shop.addDiscount(discount);
+    //     _discountRepository.save(discount);
+    //     return id;
+    // }
 
     //Adds a conditional discount to a shop.
     @Transactional
@@ -363,15 +363,15 @@ public class ShopFacade {
         return shop.addDiscount(discount);
     }
 
-    // Removes a discount from a shop.
-    @Transactional
-    public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
-        Shop shop = getShopByShopId(shopId);
-        if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
-            throw new PermissionException(
-                    "User " + username + " has no permission to remove discount from shop " + shopId);
-        shop.removeDiscount(discountId);
-    }
+    // // Removes a discount from a shop.
+    // @Transactional
+    // public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
+    //     Shop shop = getShopByShopId(shopId);
+    //     if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
+    //         throw new PermissionException(
+    //                 "User " + username + " has no permission to remove discount from shop " + shopId);
+    //     shop.removeDiscount(discountId);
+    // }
 
     // this function is responsible searching a product in a shop by its name for
     // all type of users
