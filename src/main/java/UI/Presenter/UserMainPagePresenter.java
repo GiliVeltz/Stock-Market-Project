@@ -60,9 +60,7 @@ public class UserMainPagePresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to open shop: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to open shop: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                         
@@ -113,9 +111,7 @@ public void getUserInfo() {
                     } catch (HttpClientErrorException e) {
                         view.showErrorMessage("HTTP error: " + e.getStatusCode());
                     } catch (Exception e) {
-                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                        int endIndex = e.getMessage().indexOf("\",", startIndex);
-                        view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                        view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                         e.printStackTrace();
                     }
                 } else {
@@ -152,9 +148,7 @@ public void getUserInfo() {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -198,9 +192,7 @@ public void getUserInfo() {
                     } catch (HttpClientErrorException e) {
                         view.showErrorMessage("HTTP error: " + e.getStatusCode());
                     } catch (Exception e) {
-                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                        int endIndex = e.getMessage().indexOf("\",", startIndex);
-                        view.showErrorMessage("Failed to submit report: " + e.getMessage().substring(startIndex, endIndex));
+                        view.showErrorMessage("Failed to submit report: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                         e.printStackTrace();
                     }
                     } else {
