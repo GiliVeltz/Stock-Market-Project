@@ -84,6 +84,7 @@ public class MarketSystem {
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.init_market(real_system_config_path);
+        //this.init_market(tests_config_file_path);
     }
 
     // for test - set facades and urls to check
@@ -548,19 +549,19 @@ public class MarketSystem {
             }
         }
 
-        else if (instruction.equals("add_basic_dicsount_to_shop")){
-            //add_basic_dicsount_to_shop#user_name#shop_name#product_name#is_precentage#discount_amount#expiration_date#discount_category
-            try {
-                // TODO: INBAR: need to test
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
-                int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
-                // BasicDiscountDto(int productId, boolean isPrecentage, double discountAmount, Date expirationDate, Category category, int id)
-                BasicDiscountDto discountDto = new BasicDiscountDto(productId, Boolean.parseBoolean(instruction_params[4]), Double.parseDouble(instruction_params[5]), new Date(), Category.valueOf(instruction_params[7]), -1);
-                shopFacade.addBasicDiscountToShop(shopId, instruction_params[1], discountDto);
-            } catch (Exception e) {
-                logger.info("[run_instruction] add basic dicsount to shop Fail: " + e.getMessage());
-            }
-        }
+        // else if (instruction.equals("add_basic_dicsount_to_shop")){
+        //     //add_basic_dicsount_to_shop#user_name#shop_name#product_name#is_precentage#discount_amount#expiration_date#discount_category
+        //     try {
+        //         // TODO: INBAR: need to test
+        //         int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+        //         int productId = shopFacade.getProductIdByProductNameAndShopId(instruction_params[3], shopId);
+        //         // BasicDiscountDto(int productId, boolean isPrecentage, double discountAmount, Date expirationDate, Category category, int id)
+        //         BasicDiscountDto discountDto = new BasicDiscountDto(productId, Boolean.parseBoolean(instruction_params[4]), Double.parseDouble(instruction_params[5]), new Date(), Category.valueOf(instruction_params[7]), -1);
+        //         shopFacade.addBasicDiscountToShop(shopId, instruction_params[1], discountDto);
+        //     } catch (Exception e) {
+        //         logger.info("[run_instruction] add basic dicsount to shop Fail: " + e.getMessage());
+        //     }
+        // }
         
         else if (instruction.equals("add_conditional_dicsount_to_shop")){
             //add_vasic_dicsount_to_shop#???
@@ -573,16 +574,16 @@ public class MarketSystem {
             }
         }
         
-        else if (instruction.equals("remove_discount_from_shop")){
-            //remove_discount_from_shop#user_name#shop_name#discount_id
-            try {
-                // TODO: INBAR: need to test
-                int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
-                shopFacade.removeDiscountFromShop(shopId, Integer.parseInt(instruction_params[1]), instruction_params[3]);
-            } catch (Exception e) {
-                logger.info("[run_instruction] remove discount from shop Fail: " + e.getMessage());
-            }
-        }
+        // else if (instruction.equals("remove_discount_from_shop")){
+        //     //remove_discount_from_shop#user_name#shop_name#discount_id
+        //     try {
+        //         // TODO: INBAR: need to test
+        //         int shopId = shopFacade.getShopIdByShopName(instruction_params[2]);
+        //         shopFacade.removeDiscountFromShop(shopId, Integer.parseInt(instruction_params[1]), instruction_params[3]);
+        //     } catch (Exception e) {
+        //         logger.info("[run_instruction] remove discount from shop Fail: " + e.getMessage());
+        //     }
+        // }
         
         else if (instruction.equals("appoint_shop_owner")){
             //appoint_shop_owner#founder_user_name#shop_name#owner_user_name

@@ -29,8 +29,6 @@ public class MemoryDiscountRepository implements InterfaceDiscountRepository {
 
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'flush'");
     }
 
     @Override
@@ -71,8 +69,12 @@ public class MemoryDiscountRepository implements InterfaceDiscountRepository {
 
     @Override
     public Discount getById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+        for(Discount d : discounts){
+            if((d.getId()!=null && d.getId() == id)|| (d.getTempId() != null && d.getTempId() == id)){
+                return d;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -101,8 +103,7 @@ public class MemoryDiscountRepository implements InterfaceDiscountRepository {
 
     @Override
     public List<Discount> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return discounts;
     }
 
     @Override
@@ -113,14 +114,18 @@ public class MemoryDiscountRepository implements InterfaceDiscountRepository {
 
     @Override
     public <S extends Discount> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        discounts.add(entity);
+        return entity;
     }
 
     @Override
     public Optional<Discount> findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        for(Discount d : discounts){
+            if((d.getId()!=null && d.getId() == id)|| (d.getTempId() != null && d.getTempId() == id)){
+                return Optional.of(d);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -143,8 +148,7 @@ public class MemoryDiscountRepository implements InterfaceDiscountRepository {
 
     @Override
     public void delete(Discount entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        discounts.remove(entity);
     }
 
     @Override
