@@ -343,6 +343,11 @@ public class ShoppingCartFacade {
         cart.setOrderRepository(_orderRepository);
     }
 
+    // for tests
+    public InterfaceShoppingCartRepository getCartsRepository() {
+        return _cartsRepository;
+    }
+
     // function to initilaize data for UI testing
     // public void initUI() throws StockMarketException {
     //     ShoppingCart cartUI = new ShoppingCart();
