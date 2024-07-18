@@ -97,17 +97,24 @@ public class ShoppingGuestAcceptanceTests {
         assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "1")); // fail - non exist keyword and non exist shop
     }
 
+    // Test when add product to shopping cart- it stays there as a Guest in the system.
+    @Test
+    public void testAddProductToShoppingCartAsGuest() {
+        assertTrue(_bridge.testAddProductToShoppingCartAsGuest("0") ); // success
+        assertFalse(_bridge.testAddProductToShoppingCartAsGuest("1") ); // fail
+    }
+
     // Test a guest can watch his items in the shopping cart.
     @Test
-    @Disabled
     public void testCheckAndViewItemsInShoppingCartAsGuest() {
-        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsGuest("seccess")); // success
+        assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsGuest("success")); // success
         assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsGuest("fail")); // fail
     }
 
     // Test the buying senerio of a shopping cart (all or nothing) as a guest.
     @Test
     @Disabled
+    // TODO: solve issues in the test
     public void testBuyingShoppingCartAsGuest() {
         assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest("success", new ArrayList<Integer>(), "123456789", "address")); // success - all products are available to buy them
         //assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartGuest("fail", new ArrayList<Integer>(), "123456789", "address")); // fail - one of the pruducts (or more) is not available
@@ -118,6 +125,7 @@ public class ShoppingGuestAcceptanceTests {
     // Test the buying senerio of a shopping cart (all or nothing) as a user.
     @Test
     @Disabled
+    // TODO: solve issues in the test, why is it here? should be in ShoppingUserAcceptanceTests
     public void testBuyingShoppingCartAsUser() {
         //assertTrue(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 1)), "123456789", "address")); // success - all products are available to buy them
         assertFalse(_bridge.testCheckAllOrNothingBuyingShoppingCartUser(new ArrayList<Integer>(List.of(0, 2)), "123456789", "address")); // fail - one of the pruducts (or more) is not available
