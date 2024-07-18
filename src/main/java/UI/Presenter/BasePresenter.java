@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class BasePresenter {
 
     private static final String SERVER_PORT = "8080";
+    private static final String SERVER_URL = "http://localhost:" + SERVER_PORT;
+
     
     @Autowired
     private WebSocketClient webSocketClient;
