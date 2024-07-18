@@ -15,6 +15,7 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 
 @Entity
@@ -95,5 +96,18 @@ public class CategoryPercentageDiscount extends BaseDiscount {
     @Override
     public Integer getDiscountId() {
         return getId();
+    }
+
+    @PostLoad
+    public void setRules(){
+        _rule = (basket) -> {
+            try {
+                return basket.getProductsList().stream().anyMatch((product) -> product.getCategory().equals(_category));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
+        _specialRule = (product) -> product.getCategory().equals(_category);
     }
 }

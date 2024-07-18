@@ -12,6 +12,7 @@ import Exceptions.StockMarketException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 
 @Entity
@@ -80,6 +81,12 @@ public class ShopFixedDiscount extends BaseDiscount {
     @Override
     public Integer getDiscountId() {
         return getId();
+    }
+
+    @PostLoad
+    public void setRules(){
+        _rule = (basket) -> true;
+        _specialRule = (prodcut) -> true;
     }
 }
 

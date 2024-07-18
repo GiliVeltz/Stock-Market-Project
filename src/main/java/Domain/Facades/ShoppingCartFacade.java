@@ -345,9 +345,9 @@ public class ShoppingCartFacade {
 
         if (username == null) {
             // cart = _guestsCarts.get(token);
-            cart = _cartsRepository.getCartByUsername(token);
+            cart = getCartByUsernameOrToken(token);
         } else {
-            cart = _cartsRepository.getCartByUsername(username);
+            cart = getCartByUsernameOrToken(username);
         }
         List<BasketDto> baskets = new ArrayList<>();
         for (ShoppingBasket basket : cart.getShoppingBaskets()) {
