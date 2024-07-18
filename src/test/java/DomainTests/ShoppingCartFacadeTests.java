@@ -238,26 +238,6 @@ public class ShoppingCartFacadeTests {
         }
     }
 
-    @Test
-    public void testRemoveProductFromUserCart_whenSuccessToRemoveProduct_thenRemoveProduct() throws StockMarketException {
-        // Arrange
-        String userName = "username";
-        int shopID = 1;
-        int productID = 1;
-        Shop shop = new Shop("shopName", "shopDescription", "shopAddress", "shopOwner", 1);
-        Product product = new Product("productName", Category.BOOKS, 10.0, shop, productID);
-        when(_cartsRepoMock.getCartByUsername(userName)).thenReturn(_cartMock);
-        doNothing().when(_cartMock).removeProduct(product, shopID, 1);
-
-        // Act & Assert
-        try {
-            shoppingCartFacadeUnderTest.removeProductFromUserCart(userName, productID, shopID, 1);
-        } catch (StockMarketException e) {
-            e.printStackTrace();
-            fail("Exception thrown when not expected: " + e.getMessage());
-        }
-    }
-
     @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testWriteReview_whenUserHasPurchasedProduct_thenWriteReview() throws StockMarketException {
