@@ -18,6 +18,10 @@ public class MinProductAmountRule  extends AbstractRule<ShoppingBasket> {
     @Column(name = "minAmount", nullable = false)
     int _minAmount;
 
+    public MinProductAmountRule() {
+        _productId = -1;
+        _minAmount = -1;
+    }
     /**
      * Constructs a new MinProductAmountRule with the specified product ID and minimum amount.
      * 

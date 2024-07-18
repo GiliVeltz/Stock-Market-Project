@@ -2,14 +2,14 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.Entities.Policy;
+import Domain.Entities.Policies.Policy;
 import Domain.Entities.Policies.ProductPolicy;
-import Domain.Entities.Rules.Rule;
+import Domain.Entities.Rules.AbstractRule;
 
 public class ProductPolicyDto {
-    private List<Rule<UserDto>> _rules;
+    private List<AbstractRule<UserDto>> _rules;
 
-    public ProductPolicyDto(List<Rule<UserDto>> rules) {
+    public ProductPolicyDto(List<AbstractRule<UserDto>> rules) {
         _rules = rules;
     }
 
@@ -21,7 +21,7 @@ public class ProductPolicyDto {
         _rules = policy.getUsersRulesDto();
     }
 
-    public List<Rule<UserDto>> getRules() {
+    public List<AbstractRule<UserDto>> getRules() {
         return _rules;
     }
 }

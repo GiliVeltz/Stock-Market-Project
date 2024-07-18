@@ -311,23 +311,10 @@ public class ShoppingCartFacade {
         returnedCart.setShopFacade(shopFacade);
         returnedCart.setPaymentMethod(AdapterPaymentImp.getRealAdapterPayment());
         returnedCart.setSupplyMethod(AdapterSupplyImp.getAdapterSupply());
-        return returnedCart;
-    }
-
-    @Transactional
-    private List<ShoppingBasket> getShoppingBasketsByCartId(int cartId) {
-        List<ShoppingBasket> shoppingBaskets = _basketRepository.getShoppingBasketsByCartId(cartId);
-        for (ShoppingBasket basket : shoppingBaskets) {
-            List<Product> products = new ArrayList<>();
-            List<Integer> productIds = _basketRepository.getProductIdsList(basket.getShoppingBasketId());
-            for (Integer productId : productIds) {
-                Product product = shopFacade.getProductById(productId);
-                products.add(product);
-            }
-            basket.setProductsList(products);
-            // basket.setShop(shopFacade.getShopById(basket.getShopId()));
+        for (ShoppingBasket basket : returnedCart.getShoppingBaskets()) {
+            basket.setShop(shopFacade.getShopByShopId(basket.getShopId()));
         }
-        return shoppingBaskets;
+        return returnedCart;
     }
 
     /*

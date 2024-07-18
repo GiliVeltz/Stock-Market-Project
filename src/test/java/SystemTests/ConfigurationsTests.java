@@ -13,6 +13,8 @@ import Domain.Facades.ShoppingCartFacade;
 import Domain.Facades.UserFacade;
 import Exceptions.StockMarketException;
 import Server.MarketSystem;
+import Server.notifications.NotificationHandler;
+import Server.notifications.WebSocketServer;
 
 // write a test class to check the configurations belongs to "MarketSystem.java" class
 public class ConfigurationsTests {
@@ -29,6 +31,10 @@ public class ConfigurationsTests {
     UserFacade userFacadeMock;
     @Mock
     ShoppingCartFacade shoppingCartFacadeMock;
+    @Mock
+    NotificationHandler notificationHandlerMock;
+    @Mock
+    WebSocketServer webSocketServerMock;
     
     @BeforeEach
     public void setUp() {
@@ -44,7 +50,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/configurations_config/configurations_no_external_service.txt";
 
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setReal_system_config_path(url);
 
         // Assert - Verify that the configurations was not set successfully - throw exception from init function in MarketSystem class
@@ -57,7 +63,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/configurations_config/configurations_no_database.txt";
 
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setReal_system_config_path(url);
 
         // Assert - Verify that the configurations was not set successfully - throw exception from init function in MarketSystem class
@@ -70,7 +76,7 @@ public class ConfigurationsTests {
         String url = "src/main/java/Server/Configuration/test_config.txt";
 
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setReal_system_config_path(url);
 
         // Assert - Verify that the configurations was set successfully - no throw exception from init function in MarketSystem class
@@ -84,7 +90,7 @@ public class ConfigurationsTests {
 
 
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setReal_system_config_path(url);
 
         // Assert - Verify that the configurations was not set successfully - throw exception from init function in MarketSystem class
@@ -97,7 +103,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/instructions_config/instructions_true.txt";
         
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setInstructions_config_path(url);
 
         // Act and verify that the data was set successfully
@@ -110,7 +116,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/instructions_config/instructions_not_found_path";
         
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setInstructions_config_path(url);
         
         // Act and verify that the data was not set successfully
@@ -123,7 +129,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/instructions_config/instructions_fail.txt";
         
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setInstructions_config_path(url);
 
         // Act and verify that the data was not set successfully
@@ -136,7 +142,7 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/instructions_config/instructions_not_enough_args.txt";
         
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setInstructions_config_path(url);
         
         // Act and verify that the data was not set successfully
@@ -149,7 +155,20 @@ public class ConfigurationsTests {
         String url = "src/test/java/SystemTests/instructions_config/instructions_empty.txt";
         
         // Act - try to set a new configurations
-        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
+        marketSystemUnderTest.setInstructions_config_path(url);
+        
+        // Act and verify that the data was set successfully
+        assertDoesNotThrow(() -> marketSystemUnderTest.init_data_to_market(url), "The method should not throw any exception");
+    }
+
+    @Test
+    public void testInitDataToMarket_whenDataInitiateCorrectAndReal_ThenAddedToDb() {
+        // Arrange - Create a new url for the data
+        String url = "src/test/java/SystemTests/instructions_config/instructions_true_to_db.txt";
+        
+        // Act - try to set a new configurations
+        marketSystemUnderTest = new MarketSystem(shopFacadeMock, userFacadeMock, shoppingCartFacadeMock, notificationHandlerMock, webSocketServerMock, external_system_url, instructions_config_path, real_system_config_path);
         marketSystemUnderTest.setInstructions_config_path(url);
         
         // Act and verify that the data was set successfully

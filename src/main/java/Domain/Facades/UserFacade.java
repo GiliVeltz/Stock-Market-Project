@@ -145,10 +145,6 @@ public class UserFacade {
             user.setPassword(userDto.password);
             user.setEmail(userDto.email);
             user.setBirthDate(userDto.birthDate);
-            // ShoppingCart shoppingCart = new ShoppingCart();
-            // shoppingCart.setOrderRepository(_orderRepository);
-            // shoppingCart.setUser(user);
-            // user.setShoppingCart(shoppingCart);
             _userRepository.save(user);
         } else {
             throw new StockMarketException("Username already exists.");
@@ -313,6 +309,7 @@ public class UserFacade {
     public void setSystemAdmin(User user) {
         logger.info("Setting user " + user.getUserName() + " as system admin.");
         user.setIsSystemAdmin(true);
+        _userRepository.save(user);
         _userRepository.flush();
         logger.info("User " + user.getUserName() + " set as system admin.");
     }

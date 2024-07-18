@@ -102,9 +102,7 @@ public class SearchProductsPresenter {
                                 searchProductsResultsView.displayResponseShopNotFound(shopName);
                             }
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                            headerView.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                             headerView.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
@@ -167,9 +165,7 @@ public class SearchProductsPresenter {
                         } catch (HttpClientErrorException e) {
                             searchProductsResultsView.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            searchProductsResultsView.showErrorMessage("Failed to purchase cart: " + e.getMessage().substring(startIndex, endIndex));
+                            searchProductsResultsView.showErrorMessage("Failed to purchase cart: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {

@@ -18,7 +18,7 @@ import Dtos.Rules.UserRuleDto;
 @SuppressWarnings("unchecked")
 public class RuleFactory {
     /*********  Shopping Basket Rules **********/
-    public static Rule<ShoppingBasket> createShoppingBasketRule(ShoppingBasketRuleDto dto) {
+    public static AbstractRule<ShoppingBasket> createShoppingBasketRule(ShoppingBasketRuleDto dto) {
         if (dto instanceof GenericRuleDto)
             return createGenericRule(ShoppingBasket.class, (GenericRuleDto) dto);
 
@@ -50,20 +50,20 @@ public class RuleFactory {
     }
 
 
-    private static Rule<ShoppingBasket> createShoppingBasketRule(MinBasketPriceRuleDto dto) {
+    private static AbstractRule<ShoppingBasket> createShoppingBasketRule(MinBasketPriceRuleDto dto) {
         return new MinBasketPriceRule(dto.minPrice);
     }
 
-    private static Rule<ShoppingBasket> createShoppingBasketRule(AllItemsRuleDto dto) {
+    private static AbstractRule<ShoppingBasket> createShoppingBasketRule(AllItemsRuleDto dto) {
         return new AllItemsRule(dto.productIds);
     }
 
-    private static Rule<ShoppingBasket> createShoppingBasketRule(MinProductAmountRuleDto dto) {
+    private static AbstractRule<ShoppingBasket> createShoppingBasketRule(MinProductAmountRuleDto dto) {
         return new MinProductAmountRule(dto.productId, dto.minAmount);
     }
 
     /*********  User Rules **********/
-    public static Rule<User> createUserRule(UserRuleDto dto) {
+    public static AbstractRule<User> createUserRule(UserRuleDto dto) {
         if (dto instanceof GenericRuleDto)
             return createGenericRule(User.class, (GenericRuleDto) dto);
 
@@ -73,7 +73,7 @@ public class RuleFactory {
         throw new IllegalArgumentException("Unknown user rule dto type: " + dto.getClass().getName());
     }
 
-    public static UserRuleDto createProductRule(Rule<User> rule) {
+    public static UserRuleDto createProductRule(AbstractRule<User> rule) {
         if (rule instanceof MinAgeRule)
             return createUserRuleDto((MinAgeRule) rule);
 
@@ -84,12 +84,12 @@ public class RuleFactory {
         return new MinAgeRuleDto(rule.getMinAge());
     }
 
-    private static Rule<User> createUserRule(MinAgeRuleDto dto) {
+    private static AbstractRule<User> createUserRule(MinAgeRuleDto dto) {
         return new MinAgeRule(dto.minAge);
     }
 
     /*********  Generic Rules **********/
-    private static <T> Rule<T> createGenericRule(Class<T> type, GenericRuleDto dto) {
+    private static <T> AbstractRule<T> createGenericRule(Class<T> type, GenericRuleDto dto) {
         if (dto instanceof TimeRangeInDayRuleDto)
             return createGenericRule((TimeRangeInDayRuleDto) dto);
         if (dto instanceof TimeRangeInMonthRuleDto)
@@ -98,16 +98,16 @@ public class RuleFactory {
         return createCompositeRule(type, dto);
     }
 
-    private static <T> Rule<T> createGenericRule(TimeRangeInDayRuleDto dto) {
+    private static <T> AbstractRule<T> createGenericRule(TimeRangeInDayRuleDto dto) {
         return new TimeRangeInDayRule<T>(dto.startHour, dto.startMinutes, dto.endHour, dto.endMinutes);
     }
 
-    private static <T> Rule<T> createGenericRule(TimeRangeInMonthRuleDto dto) {
+    private static <T> AbstractRule<T> createGenericRule(TimeRangeInMonthRuleDto dto) {
         return new TimeRangeInMonthRule<T>(dto.startDay, dto.endDay);
     }
 
     /*********  Composite Rules **********/
-    private static <T> Rule<T> createCompositeRule(Class<T> retType, GenericRuleDto dto) {
+    private static <T> AbstractRule<T> createCompositeRule(Class<T> retType, GenericRuleDto dto) {
         if (dto instanceof AndRuleDto) 
             return createAndRule(retType, (AndRuleDto) dto);
         if (dto instanceof ConditionRuleDto)
@@ -118,46 +118,46 @@ public class RuleFactory {
         throw new IllegalArgumentException("Unknown rule dto type: " + dto.getClass().getName());
     }
 
-    private static <T> Rule<T> createAndRule(Class<T> retType, AndRuleDto dto) {
+    private static <T> AbstractRule<T> createAndRule(Class<T> retType, AndRuleDto dto) {
         if (retType == ShoppingBasket.class && dto.rule1 instanceof ShoppingBasketRuleDto && dto.rule2 instanceof ShoppingBasketRuleDto) {
             ShoppingBasketRuleDto rule1 = (ShoppingBasketRuleDto) dto.rule1;
             ShoppingBasketRuleDto rule2 = (ShoppingBasketRuleDto) dto.rule2;
-            return (Rule<T>) new AndRule<ShoppingBasket>(createShoppingBasketRule(rule1), createShoppingBasketRule(rule2));
+            return (AbstractRule<T>) new AndRule<ShoppingBasket>(createShoppingBasketRule(rule1), createShoppingBasketRule(rule2));
         } 
         if (retType == User.class && dto.rule1 instanceof UserRuleDto && dto.rule2 instanceof UserRuleDto) {
             UserRuleDto rule1 = (UserRuleDto) dto.rule1;
             UserRuleDto rule2 = (UserRuleDto) dto.rule2;
-            return (Rule<T>) new AndRule<User>(createUserRule(rule1), createUserRule(rule2));
+            return (AbstractRule<T>) new AndRule<User>(createUserRule(rule1), createUserRule(rule2));
         } 
 
         throw new IllegalArgumentException("AndRule: rule1 and rule2 should be of the same type");
     }
 
-    private static <T> Rule<T> createOrRule(Class<T> retType, OrRuleDto dto) {
+    private static <T> AbstractRule<T> createOrRule(Class<T> retType, OrRuleDto dto) {
         if (retType == ShoppingBasket.class && dto.rule1 instanceof ShoppingBasketRuleDto && dto.rule2 instanceof ShoppingBasketRuleDto) {
             ShoppingBasketRuleDto rule1 = (ShoppingBasketRuleDto) dto.rule1;
             ShoppingBasketRuleDto rule2 = (ShoppingBasketRuleDto) dto.rule2;
-            return (Rule<T>) new OrRule<ShoppingBasket>(createShoppingBasketRule(rule1), createShoppingBasketRule(rule2));
+            return (AbstractRule<T>) new OrRule<ShoppingBasket>(createShoppingBasketRule(rule1), createShoppingBasketRule(rule2));
         } 
         if (retType == User.class && dto.rule1 instanceof UserRuleDto && dto.rule2 instanceof UserRuleDto) {
             UserRuleDto rule1 = (UserRuleDto) dto.rule1;
             UserRuleDto rule2 = (UserRuleDto) dto.rule2;
-            return (Rule<T>) new OrRule<User>(createUserRule(rule1), createUserRule(rule2));
+            return (AbstractRule<T>) new OrRule<User>(createUserRule(rule1), createUserRule(rule2));
         } 
 
         throw new IllegalArgumentException("OrRule: rule1 and rule2 should be of the same type");
     }
 
-    private static <T> Rule<T> createConditionRule(Class<T> retType, ConditionRuleDto dto) {
+    private static <T> AbstractRule<T> createConditionRule(Class<T> retType, ConditionRuleDto dto) {
         if (retType == ShoppingBasket.class && dto.conditionRule instanceof ShoppingBasketRuleDto && dto.thenRule instanceof ShoppingBasketRuleDto) {
             ShoppingBasketRuleDto conditionRule = (ShoppingBasketRuleDto) dto.conditionRule;
             ShoppingBasketRuleDto thenRule = (ShoppingBasketRuleDto) dto.thenRule;
-            return (Rule<T>) new ConditionRule<ShoppingBasket>(createShoppingBasketRule(conditionRule), createShoppingBasketRule(thenRule));
+            return (AbstractRule<T>) new ConditionRule<ShoppingBasket>(createShoppingBasketRule(conditionRule), createShoppingBasketRule(thenRule));
         } 
         if (retType == User.class && dto.conditionRule instanceof UserRuleDto && dto.thenRule instanceof UserRuleDto) {
             UserRuleDto conditionRule = (UserRuleDto) dto.conditionRule;
             UserRuleDto thenRule = (UserRuleDto) dto.thenRule;
-            return (Rule<T>) new ConditionRule<User>(createUserRule(conditionRule), createUserRule(thenRule));
+            return (AbstractRule<T>) new ConditionRule<User>(createUserRule(conditionRule), createUserRule(thenRule));
         } 
 
         throw new IllegalArgumentException("ConditionRule: conditionRule and thenRule should be of the same type");

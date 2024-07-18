@@ -10,6 +10,7 @@ import java.util.List;
 
 import Dtos.UserDto;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
@@ -51,6 +53,12 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id") // This will be added to the Order table as a foreign key
     private List<Order> purchaseHistory = new ArrayList<Order>();
+
+   
+    @ElementCollection
+    @CollectionTable(name = "user_messages", joinColumns = @JoinColumn(name = "_id"))
+    @Column(name = "message")
+    private List<String> messages = new ArrayList<String>();
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
@@ -190,12 +198,13 @@ public class User {
     public int getAge() {
         // Convert _birthDate to LocalDate
         LocalDate birthDateLocal = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        
+
         // Get the current date
         LocalDate currentDate = LocalDate.now();
-        
+
         // Calculate the difference in years
-        return currentDate.getYear() - birthDateLocal.getYear() - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
+        return currentDate.getYear() - birthDateLocal.getYear()
+                - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
     }
 
     public Object getId(){
@@ -206,7 +215,15 @@ public class User {
     //     this.shoppingCart = shoppingCart2;
     // }
 
+    public void addMessage(String message) {
+        this.messages.add(0,message);
+    }
+
     public void setId(Integer i) {
         id = i;
+    }
+
+    public List<String> getMessages() {
+        return messages;
     }
 }

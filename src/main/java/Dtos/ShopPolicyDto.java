@@ -2,8 +2,8 @@ package Dtos;
 
 import java.util.List;
 
-import Domain.Entities.Policy;
 import Domain.Entities.ShoppingBasket;
+import Domain.Entities.Policies.Policy;
 import Domain.Entities.Rules.Rule;
 
 public class ShopPolicyDto {
