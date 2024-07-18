@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import Exceptions.ProductDoesNotExistsException;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,8 +22,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import Exceptions.ShopPolicyException;
@@ -195,12 +192,12 @@ public class ShoppingBasket implements Cloneable {
                 return false;
             }
         }
-        // notfyPurchaseFromShop(username, getProductIdsList(), shop);
+        notfyPurchaseFromShop(username, getProductIdsList(), shop);
         System.out.println("Finished method purchaseBasket - Returning true.");
         return true;
     }
 
-    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) {
+    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) throws StockMarketException {
         shop.notfyOwnerPurchaseFromShop(buyingUser,productIdList);
     }
 
@@ -338,5 +335,9 @@ public class ShoppingBasket implements Cloneable {
 
     public void setProductsList(List<Product> productsList) {
         this.productsList = productsList;
+    }
+
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 }

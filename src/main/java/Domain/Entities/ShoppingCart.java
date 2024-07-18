@@ -12,8 +12,10 @@ import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 import Domain.Facades.ShopFacade;
 import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShopOrderRepository;
@@ -113,6 +115,16 @@ public class ShoppingCart {
         this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
         this.guest = guest;
         this.user_or_guest_name = guest.getGuestId();
+        this.user = null;
+    }
+
+    // for tests
+    public ShoppingCart(ShopFacade shopFacade, ProxyPayment paymentMethod, ProxySupply supplyMethod) {
+        this.shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
+        this.shopFacade = shopFacade;
+        this.user_or_guest_name = null;
         this.user = null;
     }
 
@@ -231,7 +243,13 @@ public class ShoppingCart {
                 continue;
             }
             try {
-                if (!shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
+                String buyinguser;
+                if (user == null) {
+                    buyinguser = "Guest";
+                } else {
+                    buyinguser = getUsernameString();
+                }
+                if (!shoppingBaskets.get(basketId).purchaseBasket(buyinguser))
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {
@@ -303,7 +321,7 @@ public class ShoppingCart {
             basket = basketOptional.get();
         } else {
             basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
-            basketRepository.save(basket);
+            basket = basketRepository.save(basket);
         }
 
         // add the product to the basket.
@@ -444,5 +462,10 @@ public class ShoppingCart {
 
     public void setShoppingBasketsRepository(InterfaceShoppingBasketRepository basketRepository) {
         this.basketRepository = basketRepository;
+    }
+
+    public void setPaymentMocksForGuestCart(ProxyPayment paymentMethod, ProxySupply supplyMethod) {
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
     }
 }

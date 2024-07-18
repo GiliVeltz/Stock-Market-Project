@@ -69,17 +69,8 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
-                            String errorMessage = e.getMessage();
-
-                            // Remove the leading "500 : " and the enclosing quotes
-                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
-
-                            // Now apply the existing logic
-                            int some = errorMessage.indexOf("\"errorMessage\":\"");
-                            int startIndex = some + 16;
-                            int endIndex = errorMessage.indexOf("}") - 1;
-                            callback.accept(errorMessage.substring(startIndex, endIndex));
+                            String errorMsg = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
+                            callback.accept(errorMsg);
                         }
                     } else {
                         System.out.println("Token not found in local storage.");
@@ -120,17 +111,7 @@ public class HeaderPresenter {
         } catch (HttpClientErrorException e) {
             ResponseHandler.handleResponse(e.getStatusCode());
         } catch (Exception e) {
-            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
-            String errorMessage = e.getMessage();
-
-            // Remove the leading "500 : " and the enclosing quotes
-            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
-
-            // Now apply the existing logic
-            int some = errorMessage.indexOf("\"errorMessage\":\"");
-            int startIndex = some + 16;
-            int endIndex = errorMessage.indexOf("}") - 1;
-            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
+            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
         }
     }
     
@@ -163,17 +144,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
-                            String errorMessage = e.getMessage();
-
-                            // Remove the leading "500 : " and the enclosing quotes
-                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
-
-                            // Now apply the existing logic
-                            int some = errorMessage.indexOf("\"errorMessage\":\"");
-                            int startIndex = some + 16;
-                            int endIndex = errorMessage.indexOf("}") - 1;
-                            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                         }
                     } else {
                         view.showErrorMessage("Authorization token not found. Please log in.");
@@ -219,17 +190,7 @@ public class HeaderPresenter {
                         } catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         } catch (Exception e) {
-                            // Assuming e.getMessage() returns the full error string including the error code and outer quotes
-                            String errorMessage = e.getMessage();
-
-                            // Remove the leading "500 : " and the enclosing quotes
-                            errorMessage = errorMessage.substring(7, errorMessage.length() - 1);
-
-                            // Now apply the existing logic
-                            int some = errorMessage.indexOf("\"errorMessage\":\"");
-                            int startIndex = some + 16;
-                            int endIndex = errorMessage.indexOf("}") - 1;
-                            view.showErrorMessage(errorMessage.substring(startIndex, endIndex));
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                         }
                     } else {
                         System.out.println("Token not found in local storage.");

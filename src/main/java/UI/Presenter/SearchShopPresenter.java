@@ -84,9 +84,7 @@ public class SearchShopPresenter {
                                 searchShopsResultsView.displayResponseShopNotFound(shopId, shopName);
                             }
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            headerView.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                            headerView.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
