@@ -32,6 +32,7 @@ import Domain.Entities.Discounts.ProductFixedDiscount;
 import Domain.Entities.Discounts.ProductPercentageDiscount;
 import Domain.Entities.Discounts.ShopFixedDiscount;
 import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.Policies.ProductPolicy;
 import Domain.Entities.Policies.ShopPolicy;
 import Domain.Entities.Rules.AbstractRule;
 import Domain.Entities.Rules.Rule;
@@ -72,7 +73,6 @@ public class ShopFacade {
     private InterfaceDiscountRepository _discountRepository;
     private InterfacePolicyRepository _policyRepository;
     private NotificationHandler _notificationHandler;
-
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
@@ -286,8 +286,9 @@ public class ShopFacade {
         logger.info("Product with name: " + productDtoOld.productName + " was found in shop with id: " + shopId);
 
         // Product product = _productRepository.findById(productDtoOld.productId).get();
-        // getShopByShopId(shopId).editProductInShop(userName, product, productDtoNew.productName,
-        //         productDtoNew.category, productDtoNew.price);
+        // getShopByShopId(shopId).editProductInShop(userName, product,
+        // productDtoNew.productName,
+        // productDtoNew.category, productDtoNew.price);
 
         getShopByShopId(shopId).editProductInShopByName(userName, productDtoOld.productName, productDtoNew.productName,
                 productDtoNew.category, productDtoNew.price);
@@ -333,37 +334,40 @@ public class ShopFacade {
         }
     }
 
-    // // Adds a basic discount to a shop. Can be Product, Shop or Category discount.
+    // // Adds a basic discount to a shop. Can be Product, Shop or Category
+    // discount.
     // @Transactional
-    // public int addBasicDiscountToShop(int shopId, String username, BasicDiscountDto discountDto)
-    //         throws StockMarketException {
+    // public int addBasicDiscountToShop(int shopId, String username,
+    // BasicDiscountDto discountDto)
+    // throws StockMarketException {
 
-    //     Shop shop = getShopByShopId(shopId);
-    //     if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
-    //         throw new PermissionException("User " + username + " has no permission to add discount to shop " + shopId);
-    //     BaseDiscount discount;
-    //     if (discountDto.isPrecentage) {
-    //         if (discountDto.category != null)
-    //             discount = new CategoryPercentageDiscount(discountDto);
-    //         else if (discountDto.productId == -1)
-    //             discount = new ShopPercentageDiscount(discountDto);
-    //         else
-    //             discount = new ProductPercentageDiscount(discountDto);
-    //     } else {
-    //         if (discountDto.category != null)
-    //             discount = new CategoryFixedDiscount(discountDto);
-    //         else if (discountDto.productId == -1)
-    //             discount = new ShopFixedDiscount(discountDto);
-    //         else
-    //             discount = new ProductFixedDiscount(discountDto);
-    //     }
-
-    //     int id = shop.addDiscount(discount);
-    //     _discountRepository.save(discount);
-    //     return id;
+    // Shop shop = getShopByShopId(shopId);
+    // if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
+    // throw new PermissionException("User " + username + " has no permission to add
+    // discount to shop " + shopId);
+    // BaseDiscount discount;
+    // if (discountDto.isPrecentage) {
+    // if (discountDto.category != null)
+    // discount = new CategoryPercentageDiscount(discountDto);
+    // else if (discountDto.productId == -1)
+    // discount = new ShopPercentageDiscount(discountDto);
+    // else
+    // discount = new ProductPercentageDiscount(discountDto);
+    // } else {
+    // if (discountDto.category != null)
+    // discount = new CategoryFixedDiscount(discountDto);
+    // else if (discountDto.productId == -1)
+    // discount = new ShopFixedDiscount(discountDto);
+    // else
+    // discount = new ProductFixedDiscount(discountDto);
     // }
 
-    //Adds a conditional discount to a shop.
+    // int id = shop.addDiscount(discount);
+    // _discountRepository.save(discount);
+    // return id;
+    // }
+
+    // Adds a conditional discount to a shop.
     @Transactional
     public int addConditionalDiscountToShop(int shopId, String username, ConditionalDiscountDto discountDto)
             throws StockMarketException {
@@ -378,12 +382,14 @@ public class ShopFacade {
 
     // // Removes a discount from a shop.
     // @Transactional
-    // public void removeDiscountFromShop(int shopId, int discountId, String username) throws StockMarketException {
-    //     Shop shop = getShopByShopId(shopId);
-    //     if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
-    //         throw new PermissionException(
-    //                 "User " + username + " has no permission to remove discount from shop " + shopId);
-    //     shop.removeDiscount(discountId);
+    // public void removeDiscountFromShop(int shopId, int discountId, String
+    // username) throws StockMarketException {
+    // Shop shop = getShopByShopId(shopId);
+    // if (!shop.checkPermission(username, Permission.CHANGE_DISCOUNT_POLICY))
+    // throw new PermissionException(
+    // "User " + username + " has no permission to remove discount from shop " +
+    // shopId);
+    // shop.removeDiscount(discountId);
     // }
 
     // this function is responsible searching a product in a shop by its name for
@@ -933,7 +939,7 @@ public class ShopFacade {
         // shopRules.addAll(minProductRules);
         // delete old policy
         ShopPolicy oldPolicy = shop.getShopPolicy();
-        if(oldPolicy != shop.changeShopPolicy(username, rules)){
+        if (oldPolicy != shop.changeShopPolicy(username, rules)) {
             _policyRepository.delete(oldPolicy);
             shop.setShopPolicy(_policyRepository.save(shop.getShopPolicy()));
         }
@@ -952,7 +958,13 @@ public class ShopFacade {
             throw new StockMarketException(String.format("Shop ID: %d doesn't exist.", shopId));
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
-        shop.changeProductPolicy(username, productId, productRules);
+        ProductPolicy oldPolicy = shop.getProductById(productId).getProductPolicy();
+        if (oldPolicy != shop.changeProductPolicy(username, productId, productRules)) {
+            _policyRepository.delete(oldPolicy);
+            shop.getProductById(productId)
+                    .setProductPolicy(_policyRepository.save(shop.getProductById(productId).getProductPolicy()));
+        }
+        _policyRepository.flush();
         _shopRepository.flush();
         logger.info("Product policy was changed successfully.");
     }
@@ -1178,7 +1190,7 @@ public class ShopFacade {
                 discount = new CategoryFixedDiscount(discountDto);
             } else {
                 if (discountDto.productId == -1) {
-                    discount =new ShopFixedDiscount(discountDto);
+                    discount = new ShopFixedDiscount(discountDto);
                 } else {
                     // check if product with this id exists.
                     if (!shop.isProductExist(discountDto.productId)) {
@@ -1189,7 +1201,7 @@ public class ShopFacade {
                 }
             }
         }
-       // Attach the Discount entity to the persistence context and save it
+        // Attach the Discount entity to the persistence context and save it
         discount = _discountRepository.save(discount);
 
         // Add the Discount to the Shop and save the Shop entity

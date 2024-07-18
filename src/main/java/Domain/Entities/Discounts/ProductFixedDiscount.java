@@ -9,6 +9,7 @@ import Dtos.BasicDiscountDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 
 @Entity
@@ -86,4 +87,10 @@ public class ProductFixedDiscount extends BaseDiscount {
     public Integer getDiscountId() {
         return getId();
     }
+
+    @PostLoad
+    public void setRule(){
+        _rule = (basket) -> basket.getProductCount(_productId) > 0;
+    }
+
 }

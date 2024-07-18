@@ -339,4 +339,10 @@ public class ProxyBridge implements BridgeInterface{
     public boolean testShopOwnerAppointAnotherShopManager(String username, String shopId, String newManagerUsername) {
         throw new UnsupportedOperationException("Unimplemented method 'testShopOwnerAppointAnotherShopManager'");
     }
+
+    @Override
+    public boolean testAddProductToShoppingCartAsUserWithProductPolicy(String username, String productId, String shopId,
+            String restrictedAge) {
+        throw new UnsupportedOperationException("Unimplemented method 'testAddProductToShoppingCartAsUserWithProductPolicy'");
+    }
 }

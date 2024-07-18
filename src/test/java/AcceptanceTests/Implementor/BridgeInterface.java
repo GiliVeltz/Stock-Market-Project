@@ -221,4 +221,7 @@ public interface BridgeInterface {
 
     @Test
     boolean testAddProductToShoppingCartGuest(String username, String productId, String shopId);
+
+    @Test
+    boolean testAddProductToShoppingCartAsUserWithProductPolicy(String username, String productId, String shopId, String restrictedAge);
 }

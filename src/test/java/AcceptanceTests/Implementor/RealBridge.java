@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -56,9 +57,11 @@ import Dtos.PurchaseCartDetailsDto;
 import Dtos.ShopDto;
 import Dtos.SupplyInfoDto;
 import Dtos.UserDto;
+import Dtos.Rules.MinAgeRuleDto;
 import Dtos.Rules.MinBasketPriceRuleDto;
 import Dtos.Rules.MinProductAmountRuleDto;
 import Dtos.Rules.ShoppingBasketRuleDto;
+import Dtos.Rules.UserRuleDto;
 import Exceptions.StockMarketException;
 import Server.notifications.NotificationHandler;
 import Server.notifications.WebSocketServer;
@@ -4931,67 +4934,62 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         return userDtoAfterEdit.email.equals(newEmail) && userDtoAfterEdit.username.equals(username) && userDtoAfterEdit.birthDate.equals(user.getBirthDate());
     }
 
-    // // SHOPPING CART TESTS
-    // // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // SHOPPING CART TESTS
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public boolean testAddProductToShoppingCartUser(String username, String productId, String shopId) {
         // Arrange
         MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(username);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
         when(_tokenServiceMock.validateToken(token)).thenReturn(true);
         when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
         when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
         when(_tokenServiceMock.isGuest(token)).thenReturn(false);
 
         // create a user in the system
-        User user = new User(username, "password", "email@email.com", new Date());
-        Guest guest = new Guest(username);
-
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1998, Calendar.NOVEMBER, 26);
+        Date birthday = calendar.getTime();
+        User user = new User(username, "password", "email@email.com", birthday);
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
                 add(user);
             }
-        }, new ArrayList<>() {
-            {
-                add(new String(username));
-            }
-        }, _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
         _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
             {
                 add(user);
             }
-        }), new MemoryGuestRepository(new ArrayList<>() {
-            {
-                add(guest);
-            }
-        }), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
-
-        // initiate _shopFacade
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
 
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock, _dbPolicyRepositoryMock);
-        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()), new MemoryPolicyRepository(new ArrayList<>()));      
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()), new MemoryPolicyRepository(new ArrayList<>()));
 
         // initiate _shoppingCartFacade
 
         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
         _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
-        // create a shopingcart for the username
-
-        try {
-            _shoppingCartFacade.addCartForGuest(username);
-            _shoppingCartFacade.addCartForUser(username, user);
-        } catch (StockMarketException e) {
-            e.printStackTrace();
-            logger.warning("testAddProductToShoppingCartUser Error message: " + e.getMessage());
-            return false;
-        }
+        // // create a shopingcart for the username
+        // try{
+        //     _shoppingCartFacade.addCartForGuest(username);
+        // }catch(Exception e){
+        //     return false;
+        // }
+        _shoppingCartFacade.addCartForUser(username, user);
 
         // initiate _shopServiceUnderTest
         _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
 
         // initiate userServiceUnderTest
         _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+
 
         // this user opens a shop using ShopSerivce
         ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
@@ -5010,8 +5008,9 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             logger.info("testAddProductToShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
         if (res2.getBody().getErrorMessage() != null)
             logger.info("testAddProductToShoppingCartUser Error message: " + res2.getBody().getErrorMessage());
-
-        logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
+        if (res3.getBody().getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
+        
         return res3.getBody().getErrorMessage() == null;
     }
 
@@ -5031,9 +5030,14 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
         when(_tokenServiceMock.isUserAndLoggedIn(userToken)).thenReturn(true);
         when(_tokenServiceMock.isGuest(userToken)).thenReturn(false);
 
+        when(_DbGuestRepositoryMock.findByGuestId(guestname)).thenReturn(new Guest(guestname));
+
         // create a user in the system
-        User user = new User("user", _passwordEncoder.encodePassword("password"), "email@email.com", new Date());
-        Guest guest = new Guest(guestname);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1998, Calendar.NOVEMBER, 26);
+        Date birthday = calendar.getTime();
+        User user = new User("user", "password", "email@email.com", birthday);
+
 
         _userFacade = new UserFacade(new ArrayList<User>() {
             {
@@ -5048,21 +5052,19 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
             {
                 add(user);
             }
-        }), new MemoryGuestRepository(new ArrayList<>() {
-            {
-                add(guest);
-            }
-        }), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+        
+        _userFacade.addNewGuest(guestname);
 
         // initiate _shopFacade
 
         _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock, _dbPolicyRepositoryMock);
-        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()), new MemoryPolicyRepository(new ArrayList<>()));      
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()), new MemoryPolicyRepository(new ArrayList<>()));
 
         // initiate _shoppingCartFacade
 
         _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
-        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), _DbGuestRepositoryMock, new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
 
         // create a shoppingcart for the username
         try {
@@ -5099,6 +5101,93 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
         return res3.getBody().getErrorMessage() == null;
+    }
+
+
+    @Override
+    public boolean testAddProductToShoppingCartAsUserWithProductPolicy(String username, String productId, String shopId, String restrictedAge){
+        
+        // Arrange
+        MockitoAnnotations.openMocks(this);
+
+        String guestToken = "guestToken";
+        when(_tokenServiceMock.validateToken(guestToken)).thenReturn(true);
+        when(_tokenServiceMock.extractGuestId(guestToken)).thenReturn(username);
+        when(_tokenServiceMock.isGuest(guestToken)).thenReturn(true);
+
+        when(_tokenServiceMock.validateToken(token)).thenReturn(true);
+        when(_tokenServiceMock.extractUsername(token)).thenReturn(username);
+        when(_tokenServiceMock.isUserAndLoggedIn(token)).thenReturn(true);
+        when(_tokenServiceMock.isGuest(token)).thenReturn(false);
+
+        // create a user in the system
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1998, Calendar.NOVEMBER, 26);
+        Date birthday = calendar.getTime();
+        User user = new User(username, "password", "email@email.com", birthday);
+        _userFacade = new UserFacade(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }, new ArrayList<>(), _passwordEncoder, _emailValidator, _dbUserRepositoryMock, _DbGuestRepositoryMock, _dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _notificationHandlerMock);
+        _userFacade.setUserFacadeRepositories(new MemoryUserRepository(new ArrayList<User>() {
+            {
+                add(user);
+            }
+        }), new MemoryGuestRepository(new ArrayList<>()), new MemoryOrderRepository(), new MemoryShoppingCartRepository());
+
+        _shopFacade = new ShopFacade(_dbShopRepositoryMock, _dbProductRepositoryMock, _dbRoleRepositoryMock, _userFacade, _notificationHandlerMock, _dbDiscountRepositoryMock, _dbPolicyRepositoryMock);
+        _shopFacade.setShopFacadeRepositories(new MemoryShopRepository(new ArrayList<Shop>()), new MemoryProductRepository(new ArrayList<>()), new MemoryRoleRepository(new ArrayList<>()), new MemoryDiscountRepository(new ArrayList<>()), new MemoryPolicyRepository(new ArrayList<>()));
+
+        // initiate _shoppingCartFacade
+
+        _shoppingCartFacade = new ShoppingCartFacade(_dbShoppingCartRepositoryMock, _dbOrderRepositoryMock, _DbGuestRepositoryMock, _dbUserRepositoryMock, _dbShoppingBasketRepositoryMock, _dbShopOrderRepositoryMock, _userFacade, _shopFacade);
+        _shoppingCartFacade.setShoppingCartFacadeRepositories(new MemoryShoppingCartRepository(), new MemoryOrderRepository(), new MemoryGuestRepository(new ArrayList<>()), new MemoryUserRepository(new ArrayList<>()), new MemoryShoppingBasketRepository(), new MemoryShopOrderRepository());
+
+        // // create a shopingcart for the username
+        // try{
+        //     _shoppingCartFacade.addCartForGuest(username);
+        // }catch(Exception e){
+        //     return false;
+        // }
+        _shoppingCartFacade.addCartForUser(username, user);
+
+        // initiate _shopServiceUnderTest
+        _shopServiceUnderTest = new ShopService(_shopFacade, _tokenServiceMock, _userFacade);
+
+        // initiate userServiceUnderTest
+        _userServiceUnderTest = new UserService(_userFacade, _tokenServiceMock, _shoppingCartFacade, _notificationHandlerMock, webSocketServerMock);
+
+
+        // this user opens a shop using ShopSerivce
+        ShopDto shopDto = new ShopDto("shopName", "bankDetails", "address");
+        ResponseEntity<Response> res1 = _shopServiceUnderTest.openNewShop(token, shopDto);
+
+        // this user adds a product to the shop using ShopSerivce
+        ProductDto productDto = new ProductDto(productId, Category.CLOTHING, 100, 1);
+        ResponseEntity<Response> res2 = _shopServiceUnderTest.addProductToShop(token, 0, productDto);
+
+        // this user adds a product policy to the shop using ShopService
+        MinAgeRuleDto minAgeRuleDto = new MinAgeRuleDto(Integer.parseInt(restrictedAge));
+        List<UserRuleDto> rules = new ArrayList<>();
+        rules.add(minAgeRuleDto);
+        ResponseEntity<Response> res3 = _shopServiceUnderTest.changeProductPolicy(token, 0, 0, rules);
+        // Act - this user adds a product to the shopping cart using UserService
+        ResponseEntity<Response> res4 = _userServiceUnderTest.addProductToShoppingCart(token,
+                Integer.parseInt(productId), Integer.parseInt(shopId), 1);
+
+        // Assert
+        if (res1.getBody().getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res1.getBody().getErrorMessage());
+        if (res2.getBody().getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res2.getBody().getErrorMessage());
+        if (res3.getBody().getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res3.getBody().getErrorMessage());
+        if (res4.getBody().getErrorMessage() != null)
+            logger.info("testAddProductToShoppingCartUser Error message: " + res4.getBody().getErrorMessage());
+        
+        return res4.getBody().getErrorMessage() == null;
+    
     }
 
 }

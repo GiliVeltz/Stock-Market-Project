@@ -2,6 +2,7 @@
 package Domain.Entities;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,7 +55,6 @@ public class User {
     @JoinColumn(name = "user_id") // This will be added to the Order table as a foreign key
     private List<Order> purchaseHistory = new ArrayList<Order>();
 
-   
     @ElementCollection
     @CollectionTable(name = "user_messages", joinColumns = @JoinColumn(name = "_id"))
     @Column(name = "message")
@@ -62,8 +62,9 @@ public class User {
 
     @Column(name = "isLoggedIn", nullable = true)
     private boolean isLoggedIn;
-    
-    public User(){}
+
+    public User() {
+    }
 
     // Constructor
     public User(String username, String password, String email, Date birthDate) {
@@ -196,27 +197,31 @@ public class User {
     }
 
     public int getAge() {
-        // Convert _birthDate to LocalDate
-        LocalDate birthDateLocal = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        java.util.Date birthDate = this.getBirthDate(); // Assuming you have this method
+        Calendar today = Calendar.getInstance();
+        Calendar birthCalendar = Calendar.getInstance();
+        birthCalendar.setTime(birthDate);
 
-        // Get the current date
-        LocalDate currentDate = LocalDate.now();
+        int age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR);
 
-        // Calculate the difference in years
-        return currentDate.getYear() - birthDateLocal.getYear()
-                - (currentDate.getDayOfYear() < birthDateLocal.getDayOfYear() ? 1 : 0);
+        // Adjust age if birthday hasn't occurred this year
+        if (today.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
+            age--;
+        }
+
+        return age;
     }
 
-    public Object getId(){
+    public Object getId() {
         return id;
     }
 
     // public void setShoppingCart(ShoppingCart shoppingCart2) {
-    //     this.shoppingCart = shoppingCart2;
+    // this.shoppingCart = shoppingCart2;
     // }
 
     public void addMessage(String message) {
-        this.messages.add(0,message);
+        this.messages.add(0, message);
     }
 
     public void setId(Integer i) {
