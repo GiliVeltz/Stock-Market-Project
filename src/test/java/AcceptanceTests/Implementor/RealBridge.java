@@ -4870,7 +4870,7 @@ public class RealBridge implements BridgeInterface, ParameterResolver {
 
         // create a shopingcart for the username
         try {
-            _shoppingCartFacade.addCartForGuest(guestToken);
+            _shoppingCartFacade.addCartForGuest(guestname);
 
         } catch (StockMarketException e) {
             e.printStackTrace();
