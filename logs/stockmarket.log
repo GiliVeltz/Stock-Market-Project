@@ -1,24 +1,524 @@
-Jun 01, 2024 9:38:25 PM LoggingExample main
-INFO: This is an info message
-Jun 01, 2024 9:38:25 PM LoggingExample main
-WARNING: This is a warning message
-Jun 01, 2024 9:38:25 PM LoggingExample main
-SEVERE: This is a severe message
-Jun 01, 2024 9:38:57 PM LoggingExample main
-INFO: This is an info message
-Jun 01, 2024 9:38:57 PM LoggingExample main
-WARNING: This is a warning message
-Jun 01, 2024 9:38:57 PM LoggingExample main
-SEVERE: This is a severe message
-Jun 01, 2024 9:40:00 PM LoggingExample main
-INFO: This is an info message
-Jun 01, 2024 9:40:00 PM LoggingExample main
-WARNING: This is a warning message
-Jun 01, 2024 9:40:00 PM LoggingExample main
-SEVERE: This is a severe message
-Jun 01, 2024 9:57:43 PM LoggingExample main
-INFO: This is an info message
-Jun 01, 2024 9:57:43 PM LoggingExample main
-WARNING: This is a warning message
-Jun 01, 2024 9:57:43 PM LoggingExample main
-SEVERE: This is a severe message
+Jul 18, 2024 2:10:59 PM Domain.Entities.ShoppingCart addProduct
+INFO: Product added to shopping basket: 4602 in shop: 2552
+Jul 18, 2024 2:10:59 PM Domain.Facades.ShoppingCartFacade addProductToUserCart
+INFO: Product added to user's cart: u2
+Jul 18, 2024 2:11:09 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:11:09 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:11:09 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:11:09 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:11:09 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:11:10 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:11:31 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:11:32 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:11:32 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:11:32 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:11:32 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:11:33 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:11:59 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:12:00 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:12:00 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:12:00 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:12:00 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:12:01 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:12:07 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 2:12:07 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 2:12:07 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID eb00ab49-51fc-4c24-ad27-03113d0441eb to the system.
+Jul 18, 2024 2:12:07 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID eb00ab49-51fc-4c24-ad27-03113d0441eb added to the system.
+Jul 18, 2024 2:12:07 PM ServiceLayer.UserService logOut
+INFO: User successfully logged out: u2
+Jul 18, 2024 2:12:14 PM Server.notifications.WebSocketServer afterConnectionClosed
+INFO: Connection closed with status: CloseStatus[code=1006, reason=Connection reset]
+Jul 18, 2024 2:12:20 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 2:12:21 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 2:12:26 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 2:12:26 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 2:12:26 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 2:12:26 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 2:12:41 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 2:12:41 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 2:12:41 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 2:12:41 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 2:12:41 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 2:12:41 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 2:12:41 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 2:12:41 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 2:12:41 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 2:12:41 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 2:12:41 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 2:12:41 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 2:12:41 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 2:12:41 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 2:12:42 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 2:12:42 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 2:12:42 PM Domain.Facades.UserFacade logIn
+INFO: User u2 logged in to the system.
+Jul 18, 2024 2:12:42 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 2:12:42 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2552.
+Jul 18, 2024 2:12:42 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2552
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [EDIT_PRODUCT, ADD_PRODUCT]
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2552
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2552
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 2:12:43 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2552
+Jul 18, 2024 2:12:43 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2552
+Jul 18, 2024 2:12:43 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 2:12:43 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 2:12:43 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogOut Fail: User is not logged in.
+Jul 18, 2024 2:12:44 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 2:12:45 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring DispatcherServlet 'dispatcherServlet'
+Jul 18, 2024 2:12:46 PM org.apache.catalina.util.SessionIdGeneratorBase createSecureRandom
+WARNING: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [131] milliseconds.
+Jul 18, 2024 2:12:50 PM ServiceLayer.SystemService requestToEnterSystem
+INFO: New guest entered into the system, ID:50b8b63b-0f9c-477e-a1df-17cf0317f791
+Jul 18, 2024 2:12:50 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID 50b8b63b-0f9c-477e-a1df-17cf0317f791 to the system.
+Jul 18, 2024 2:12:50 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID 50b8b63b-0f9c-477e-a1df-17cf0317f791 added to the system.
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connection established with URI: ws://localhost:8080/websocket?token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiNTBiOGI2M2ItMGY5Yy00NzdlLWExZGYtMTdjZjAzMTdmNzkxIiwiaWF0IjoxNzIxMzAxMTcwLCJleHAiOjE3MjEzODc1NzB9.HkmNhyV6pW3x6QdmkY8l2ZCZdJXvW3eWkNG4-DX1024
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Query parameters: token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiNTBiOGI2M2ItMGY5Yy00NzdlLWExZGYtMTdjZjAzMTdmNzkxIiwiaWF0IjoxNzIxMzAxMTcwLCJleHAiOjE3MjEzODc1NzB9.HkmNhyV6pW3x6QdmkY8l2ZCZdJXvW3eWkNG4-DX1024
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted token: eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiNTBiOGI2M2ItMGY5Yy00NzdlLWExZGYtMTdjZjAzMTdmNzkxIiwiaWF0IjoxNzIxMzAxMTcwLCJleHAiOjE3MjEzODc1NzB9.HkmNhyV6pW3x6QdmkY8l2ZCZdJXvW3eWkNG4-DX1024
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted username: null
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Client key: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiNTBiOGI2M2ItMGY5Yy00NzdlLWExZGYtMTdjZjAzMTdmNzkxIiwiaWF0IjoxNzIxMzAxMTcwLCJleHAiOjE3MjEzODc1NzB9.HkmNhyV6pW3x6QdmkY8l2ZCZdJXvW3eWkNG4-DX1024
+Jul 18, 2024 2:12:51 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connected: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiNTBiOGI2M2ItMGY5Yy00NzdlLWExZGYtMTdjZjAzMTdmNzkxIiwiaWF0IjoxNzIxMzAxMTcwLCJleHAiOjE3MjEzODc1NzB9.HkmNhyV6pW3x6QdmkY8l2ZCZdJXvW3eWkNG4-DX1024
+Jul 18, 2024 2:12:56 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 2:12:57 PM Domain.Facades.UserFacade logIn
+INFO: User u2 logged in to the system.
+Jul 18, 2024 2:12:57 PM ServiceLayer.UserService logIn
+INFO: User u2 Logged In Succesfully
+Jul 18, 2024 2:12:57 PM ServiceLayer.UserService isSystemAdmin
+INFO: User is not an admin: u2
+Jul 18, 2024 2:12:57 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:12:58 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:12:58 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:12:58 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:12:58 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:12:59 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:13:15 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:13:16 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:13:16 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:13:16 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:13:16 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:13:18 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:13:37 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:13:37 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:13:37 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:13:37 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:13:38 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:13:38 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:14:17 PM Domain.Facades.ShopFacade changeProductPolicy
+INFO: u2 trying to change product policy in shop with id: 2552 to: [Dtos.Rules.MinAgeRuleDto@7083e3be]
+Jul 18, 2024 2:14:17 PM Domain.Facades.ShopFacade changeProductPolicy
+INFO: Product policy was changed successfully.
+Jul 18, 2024 2:14:17 PM ServiceLayer.ShopService updateProductPolicy
+INFO: Policy of product with id 4602 updated in Shop ID: 2552
+Jul 18, 2024 2:15:22 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:15:22 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:15:22 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:15:23 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:15:23 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:15:24 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:15:37 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:15:37 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:15:38 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:15:38 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:15:38 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:15:39 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:15:55 PM ServiceLayer.ShopService addShopDiscount
+SEVERE: Discount is expired, cannot add discount.
+Exceptions.StockMarketException: Discount is expired, cannot add discount.
+	at Domain.Entities.Shop.addDiscount(Shop.java:884)
+	at Domain.Facades.ShopFacade.addShopDiscount(ShopFacade.java:1208)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:354)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:716)
+	at Domain.Facades.ShopFacade$$SpringCGLIB$$0.addShopDiscount(<generated>)
+	at ServiceLayer.ShopService.addShopDiscount(ShopService.java:1983)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:354)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:392)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+	at ServiceLayer.ShopService$$SpringCGLIB$$0.addShopDiscount(<generated>)
+	at Server.Controllers.ShopController.addShopDiscount(ShopController.java:312)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:206)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1736)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+Jul 18, 2024 2:16:02 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:16:02 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:16:02 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:16:03 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:16:03 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:16:18 PM ServiceLayer.UserService purchaseCart
+INFO: Start purchasing cart for user: u2
+Jul 18, 2024 2:16:18 PM Domain.Facades.ShoppingCartFacade purchaseCartUser
+INFO: Start purchasing cart for user.
+Jul 18, 2024 2:16:18 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp handshake
+INFO: Starting handshake with the payment service
+Jul 18, 2024 2:16:19 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp handshake
+INFO: Starting handshake with the supply service
+Jul 18, 2024 2:16:19 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp payment
+INFO: Paying for the cart
+Jul 18, 2024 2:16:19 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp supply
+INFO: Supplying the cart
+Jul 18, 2024 2:16:39 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:16:39 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:16:39 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:16:40 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:16:40 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:17:07 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 2:17:07 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 2:17:07 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID 5564f515-faa9-4d84-b0c2-e04f018c0f05 to the system.
+Jul 18, 2024 2:17:07 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID 5564f515-faa9-4d84-b0c2-e04f018c0f05 added to the system.
+Jul 18, 2024 2:17:07 PM ServiceLayer.UserService logOut
+INFO: User successfully logged out: u2
+Jul 18, 2024 2:17:14 PM Domain.Entities.Shop ValidateProdcutPolicy
+SEVERE: Shop - ValidateProdcutPolicy: the product Bamba in shop with id: 2552 doesn't allow guest users
+Jul 18, 2024 2:17:14 PM ServiceLayer.UserService addProductToShoppingCart
+SEVERE: Failed to add product: Guest user violates the shop policy of shop with id: 2552
+Exceptions.ProdcutPolicyException: Guest user violates the shop policy of shop with id: 2552
+	at Domain.Entities.Shop.ValidateProdcutPolicy(Shop.java:1160)
+	at Domain.Entities.ShoppingBasket.addProductToShoppingBasket(ShoppingBasket.java:85)
+	at Domain.Entities.ShoppingCart.addProduct(ShoppingCart.java:329)
+	at Domain.Facades.ShoppingCartFacade.addProductToGuestCart(ShoppingCartFacade.java:170)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:354)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:392)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+	at Domain.Facades.ShoppingCartFacade$$SpringCGLIB$$0.addProductToGuestCart(<generated>)
+	at ServiceLayer.UserService.addProductToShoppingCart(UserService.java:268)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:354)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:392)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+	at ServiceLayer.UserService$$SpringCGLIB$$0.addProductToShoppingCart(<generated>)
+	at Server.Controllers.UserController.addProductToShoppingCart(UserController.java:137)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:206)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1736)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+Jul 18, 2024 2:18:26 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 2:18:27 PM Domain.Facades.UserFacade logIn
+INFO: User u2 logged in to the system.
+Jul 18, 2024 2:18:27 PM ServiceLayer.UserService logIn
+INFO: User u2 Logged In Succesfully
+Jul 18, 2024 2:18:27 PM ServiceLayer.UserService isSystemAdmin
+INFO: User is not an admin: u2
+Jul 18, 2024 2:18:27 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:18:27 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:18:27 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:18:28 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:18:29 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:20:53 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:20:53 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:20:54 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:23:02 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 
+Jul 18, 2024 2:25:06 PM Domain.Facades.ShopFacade changeProductPolicy
+INFO: u2 trying to change product policy in shop with id: 2552 to: [Dtos.Rules.MinAgeRuleDto@24b17bcb]
+Jul 18, 2024 2:25:06 PM Domain.Facades.ShopFacade changeProductPolicy
+INFO: Product policy was changed successfully.
+Jul 18, 2024 2:25:06 PM ServiceLayer.ShopService updateProductPolicy
+INFO: Policy of product with id 4602 updated in Shop ID: 2552
+Jul 18, 2024 2:26:03 PM Domain.Facades.ShopFacade changeShopPolicy
+INFO: u2 trying to change shop policy in shop with id: 2552 to: [Dtos.Rules.MinBasketPriceRuleDto@56df7631]
+Jul 18, 2024 2:26:03 PM Domain.Facades.ShopFacade changeShopPolicy
+INFO: Shop policy was changed successfully.
+Jul 18, 2024 2:26:03 PM ServiceLayer.ShopService updateShopPolicy
+INFO: Shop policy updated in Shop ID: 2552
+Jul 18, 2024 2:26:05 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 2:26:05 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 2:26:05 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID e2e0ea81-eb05-4587-aa1f-4cd6da0f9579 to the system.
+Jul 18, 2024 2:26:05 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID e2e0ea81-eb05-4587-aa1f-4cd6da0f9579 added to the system.
+Jul 18, 2024 2:26:05 PM ServiceLayer.UserService logOut
+INFO: User successfully logged out: u2
+Jul 18, 2024 2:26:13 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 2:26:13 PM Domain.Facades.UserFacade logIn
+INFO: User u2 logged in to the system.
+Jul 18, 2024 2:26:13 PM ServiceLayer.UserService logIn
+INFO: User u2 Logged In Succesfully
+Jul 18, 2024 2:26:13 PM ServiceLayer.UserService isSystemAdmin
+INFO: User is not an admin: u2
+Jul 18, 2024 2:26:13 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:26:13 PM Domain.Facades.UserFacade viewOrderHistory
+INFO: Getting order history for user u2.
+Jul 18, 2024 2:26:13 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:26:14 PM ServiceLayer.ShopService getUserShopsIds
+SEVERE: ShopService::getUserShops entring
+Jul 18, 2024 2:26:14 PM ServiceLayer.ShopService getUserShopsNames
+SEVERE: ShopService::getUserShopsNames entring
+Jul 18, 2024 2:26:14 PM ServiceLayer.ShopService getShopManagerPermissions
+INFO: Recieved successfuly shop permissions of shop with id 

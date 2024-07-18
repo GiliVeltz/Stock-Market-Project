@@ -73,15 +73,15 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Map<Integer, Product> productMap; // <ProductId, Product>
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "shop_id") // This will be added to the ShopOrder table as a foreign key
     private List<ShopOrder> orderHistory;
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKeyColumn(name = "username")
     private Map<String, Role> userToRole = new HashMap<>(); // <userName, Role>
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "shop_id")
     private List<Discount> discounts;
 
@@ -97,7 +97,7 @@ public class Shop {
     @Column(name = "shopRatersCounter", nullable = false)
     private Integer shopRatersCounter;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "policy_id", referencedColumnName = "id")
     private ShopPolicy shopPolicy;
 
@@ -785,7 +785,6 @@ public class Shop {
                     "User " + userName + " doesn't have permission to edit product in shop with id " + shopId);
         }
 
-
         // All constraints checked - edit product in the shop
         product.setProductName(productNameNew);
         product.setCategory(productCategoryNew);
@@ -870,7 +869,6 @@ public class Shop {
         return productMap.get(productId); // Get product by ID from the map
     }
 
-
     /**
      * Adds a discount to the shop.
      * 
@@ -892,7 +890,7 @@ public class Shop {
             }
         }
 
-        //int discountId = nextDiscountId++;
+        // int discountId = nextDiscountId++;
         discounts.add(discount);
         return discount.getDiscountId();
     }
@@ -909,7 +907,8 @@ public class Shop {
 
         // check if discount exists
         for (Discount d : discounts) {
-            if ((d.getId()!= null &&  d.getId() == discountId) || (d.getTempId() != null && d.getTempId() == discountId)) {
+            if ((d.getId() != null && d.getId() == discountId)
+                    || (d.getTempId() != null && d.getTempId() == discountId)) {
                 discounts.remove(d);
                 return;
             }
@@ -1167,7 +1166,8 @@ public class Shop {
             logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User " + u.getUserName()
                     + " violates the product policy of product " + p.getProductName() + " in shop with id: " + shopId);
             throw new ProdcutPolicyException(
-                    "User " + u.getUserName() + " violates the shop policy of shop with id: " + shopId);
+                    "User " + u.getUserName() + " violates the product policy " + p.getProductName()
+                            + " in shop with id: " + shopId);
         }
     }
 
@@ -1194,7 +1194,8 @@ public class Shop {
      * @param rule The rule to remove.
      * @throws StockMarketException
      */
-    public void removeRuleFromShopPolicy(String username, AbstractRule<ShoppingBasket> rule) throws StockMarketException {
+    public void removeRuleFromShopPolicy(String username, AbstractRule<ShoppingBasket> rule)
+            throws StockMarketException {
         logger.log(Level.INFO, "Shop - removeRuleFromShopPolicy: User " + username
                 + " trying to remove rule from shop policy of shop with id: " + shopId);
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY))
@@ -1211,7 +1212,8 @@ public class Shop {
      * @param productId The id of the product to add the rule to.
      * @throws StockMarketException
      */
-    public void addRuleToProductPolicy(String username, AbstractRule<User> rule, int productId) throws StockMarketException {
+    public void addRuleToProductPolicy(String username, AbstractRule<User> rule, int productId)
+            throws StockMarketException {
         logger.log(Level.INFO, "Shop - addRuleToProductPolicy: User " + username
                 + " trying to add rule to product policy of shop with id: " + shopId);
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
@@ -1283,7 +1285,7 @@ public class Shop {
      * 
      * @param buyingUser    the buying user.
      * @param productIdList the product id list.
-     * @throws StockMarketException 
+     * @throws StockMarketException
      */
     public void notfyOwnerPurchaseFromShop(String buyingUser, List<Integer> productIdList) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
@@ -1297,7 +1299,7 @@ public class Shop {
      * Notify the users that the shop has been closed.
      * 
      * @param username the user that closed the shop.
-     * @throws StockMarketException 
+     * @throws StockMarketException
      */
     public void notifyCloseShop(String username) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
@@ -1311,9 +1313,9 @@ public class Shop {
      * Notify the users that the shop has been closed.
      * 
      * @param username the user that closed the shop.
-     * @throws StockMarketException 
+     * @throws StockMarketException
      */
-    public void openComplaint(String fromUsername,String message) throws StockMarketException {
+    public void openComplaint(String fromUsername, String message) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
             String owner = entry.getKey();
             Alert alert = new GeneralAlert(fromUsername, owner, message);
@@ -1323,8 +1325,9 @@ public class Shop {
 
     /**
      * Notify the users that the shop has been re-opened.
-     * @param username the  user that re-opened the shop.
-     * @throws StockMarketException 
+     * 
+     * @param username the user that re-opened the shop.
+     * @throws StockMarketException
      */
     public void notifyReOpenShop(String username) throws StockMarketException {
         for (Map.Entry<String, Role> entry : userToRole.entrySet()) {
@@ -1340,11 +1343,12 @@ public class Shop {
      * @param fromUser    the user that modified the permissions.
      * @param targetUser  the user that the permissions have been modified.
      * @param permissions the new permissions.
-     * @param shopId the shop id.
-     * @throws StockMarketException 
+     * @param shopId      the shop id.
+     * @throws StockMarketException
      */
-    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId) throws StockMarketException {
-        List <String> newPermissions = new ArrayList<String>();
+    private void notifyModifiedPermissions(String fromUser, String targetUser, Set<Permission> permissions, int shopId)
+            throws StockMarketException {
+        List<String> newPermissions = new ArrayList<String>();
         for (Permission p : permissions) {
             newPermissions.add(p.toString());
         }
@@ -1359,7 +1363,8 @@ public class Shop {
     }
 
     // this function changes the shop policy
-    public ShopPolicy changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules) throws StockMarketException {
+    public ShopPolicy changeShopPolicy(String username, List<ShoppingBasketRuleDto> shopRules)
+            throws StockMarketException {
         ShopPolicy oldShopPolicy = shopPolicy;
         if (checkPermission(username, Permission.CHANGE_SHOP_POLICY)) {
             shopPolicy = new ShopPolicy();
@@ -1373,17 +1378,20 @@ public class Shop {
     }
 
     // this function changes the shop policy
-    public void changeProductPolicy(String username, int productId, List<UserRuleDto> productRules)
+    public ProductPolicy changeProductPolicy(String username, int productId, List<UserRuleDto> productRules)
             throws StockMarketException {
+        Product product = productMap.get(productId);
+        ProductPolicy oldProductPolicy = product.getProductPolicy();
         if (checkPermission(username, Permission.CHANGE_PRODUCT_POLICY)) {
-            Product product = productMap.get(productId);
             ProductPolicy policy = new ProductPolicy();
             for (UserRuleDto rule : productRules) {
                 AbstractRule<User> newRule = RuleFactory.createUserRule(rule);
                 policy.addRule(newRule);
             }
             product.setProductPolicy(policy);
+            return policy;
         }
+        return oldProductPolicy;
     }
 
     public synchronized void addKeywordsToProduct(String userName, int productId, List<String> keywords)
