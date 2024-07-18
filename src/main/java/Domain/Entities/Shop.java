@@ -73,15 +73,15 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Map<Integer, Product> productMap; // <ProductId, Product>
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "shop_id") // This will be added to the ShopOrder table as a foreign key
     private List<ShopOrder> orderHistory;
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKeyColumn(name = "username")
     private Map<String, Role> userToRole = new HashMap<>(); // <userName, Role>
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "shop_id")
     private List<Discount> discounts;
 
@@ -97,7 +97,7 @@ public class Shop {
     @Column(name = "shopRatersCounter", nullable = false)
     private Integer shopRatersCounter;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "policy_id", referencedColumnName = "id")
     private ShopPolicy shopPolicy;
 

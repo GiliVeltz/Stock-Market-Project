@@ -1,6 +1,7 @@
 package Domain.Entities.Discounts;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -60,7 +61,7 @@ public class ShopPercentageDiscount extends BaseDiscount {
         if (!_rule.predicate(basket))
             return;
             
-        for (int product_id : basket.getProductIdsList()) {
+        for (int product_id : new HashSet<>(basket.getProductIdsList())) {
             SortedMap<Double, Integer> newpriceToAmount = new TreeMap<>();
             SortedMap<Double, Integer> priceToAmount = basket.getProductPriceToAmount(product_id);
             for (Map.Entry<Double, Integer> entry : priceToAmount.entrySet()) {
