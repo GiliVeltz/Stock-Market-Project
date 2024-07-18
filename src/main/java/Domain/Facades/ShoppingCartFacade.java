@@ -183,12 +183,12 @@ public class ShoppingCartFacade {
      * This method called when a user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity)
-            throws StockMarketException {
-        ShoppingCart cart = _cartsRepository.getCartByUsername(userName);
+    public void removeProductFromUserCart(String userName, int productID, int shopID, int quantity) throws StockMarketException {
+        ShoppingCart cart = getCartByUsernameOrToken(userName);
         if (cart != null) {
             Product product = shopFacade.getProductById(productID);
             cart.removeProduct(product, shopID, quantity);
+            _cartsRepository.flush();
             logger.log(Level.INFO, "Product removed from guest's cart: " + userName);
         } else {
             logger.log(Level.WARNING, "User cart not found: " + userName);
@@ -200,12 +200,12 @@ public class ShoppingCartFacade {
      * This method called when a guest user remove a product from his cart.
      */
     @Transactional
-    public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity)
-            throws StockMarketException {
-        ShoppingCart cart = _guestsCarts.get(guestID);
+    public void removeProductFromGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
+        ShoppingCart cart = getCartByUsernameOrToken(guestID);
         if (cart != null) {
             Product product = shopFacade.getProductById(productID);
             cart.removeProduct(product, shopID, quantity);
+            _cartsRepository.flush();
             logger.log(Level.INFO, "Product removed from guest's cart: " + guestID);
         } else {
             logger.log(Level.WARNING, "Guest cart not found: " + guestID);
@@ -230,8 +230,6 @@ public class ShoppingCartFacade {
             throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
-            // getGuestCart(guestID).purchaseCart(purchaseCartDetails);
-            // getGuestCart(guestID).emptyCart();
             getCartByUsernameOrToken(guestID).purchaseCart(purchaseCartDetails);
             getCartByUsernameOrToken(guestID).emptyCart();
             _cartsRepository.flush();
@@ -344,7 +342,7 @@ public class ShoppingCartFacade {
         ShoppingCart cart;
 
         if (username == null) {
-            // cart = _guestsCarts.get(token);
+            //cart = _guestsCarts.get(token);
             cart = getCartByUsernameOrToken(token);
         } else {
             cart = getCartByUsernameOrToken(username);
@@ -361,6 +359,11 @@ public class ShoppingCartFacade {
     public void addCartForGuestForTests(String guestID, ShoppingCart cart) {
         _guestsCarts.put(guestID, cart);
         cart.setOrderRepository(_orderRepository);
+    }
+
+    // for tests
+    public InterfaceShoppingCartRepository getCartsRepository() {
+        return _cartsRepository;
     }
 
     // function to initilaize data for UI testing
