@@ -23,6 +23,8 @@ public class ShopFixedDiscount extends BaseDiscount {
 
     public ShopFixedDiscount() {
         super();
+        _rule = (basket) -> true;
+        _specialRule = (product) -> true;
     }
     /**
      * Represents a fixed discount for the whole shop.
