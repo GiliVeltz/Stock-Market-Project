@@ -117,11 +117,9 @@ public class ShoppingUserAcceptanceTests{
     
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void testBuyingShoppingCartAsUser() {
-        assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
-        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
+        assertTrue(_bridge.testCheckBuyingShoppingCartUser("Bob","0","Visa","Israel") ); // success - all products are available to buy them
+        assertFalse(_bridge.testCheckBuyingShoppingCartUser("Bob","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
     }
 
     // Test if the user can logout from the system.
@@ -153,38 +151,30 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can open write a review about the product he purchased.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void TestUserWriteReviewOnPurchasedProduct() {
-        //assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "0") ); // success - the user secceeded to write a review
-        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "2") ); // fail - the user did not porchased this product
+        assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("Bob","bobspassword", "0") ); // success - the user secceeded to write a review
+        assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("Bob","bobspassword", "2") ); // fail - the user did not porchased this product
     }
     
     // Test that a user can rate a product he purchased.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void TestUserRatingPurchasedProduct() {
-        assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "5") ); // success - the user secceeded to rate the product
-        assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "11") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingPurchasedProduct("Bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the product
+        assertFalse(_bridge.TestUserRatingPurchasedProduct("Bob","bobspassword", "0", "11") ); // fail - the score in invalid
     }
     
     // Test that a user can rate a shop he purchased from.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void TestUserRatingShopHePurchasedFrom() {
-        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the shop
-        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "30") ); // fail - the score in invalid
+        assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("Bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the shop
+        assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("Bob","bobspassword", "0", "11") ); // fail - the score in invalid
     }
     
     // Test that a user can send messages to the shop the purchased from about his orders.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void TestUserMessagingShopHePurchasedFrom() {
-        //assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "0", "message1") ); // success - the user secceeded to send the message
-        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "1", "message1") ); // fail - the user didnot purchased from this shop
+        assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("Bob","bobspassword", "0", "message1") ); // success - the user secceeded to send the message
+        assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("Bob","bobspassword", "1", "message1") ); // fail - the user didnot purchased from this shop
     }
     
     // Test that a user can report the system manager in case of breaking the integrity rules.
@@ -197,12 +187,9 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can see his own history shopping orders.
     @Test
-    @Disabled
-    // TODO: after fixing addProductToShoppingCart
     public void TestUserViewHistoryPurchaseList() {
-        //assertTrue(_bridge.TestUserViewHistoryPurchaseList("bob","bobspassword") ); // success - the user secceeded to see his history purchased list
-        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "0") ); // success - the product exsist in the history purchased list
-        assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem("bob","bobspassword", "0") ); // success - the shop products exsist in the history purchased list
+        assertTrue(_bridge.TestUserViewHistoryPurchaseList("Bob","bobspassword") ); // success - the user secceeded to see his history purchased list
+        assertFalse(_bridge.TestUserViewHistoryPurchaseList("notUsername","dadspassword") ); // fail - the user did not exsist in the system
     }
     
     // Test that a user can see his own private details.

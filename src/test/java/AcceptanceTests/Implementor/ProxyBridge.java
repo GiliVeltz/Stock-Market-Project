@@ -232,18 +232,6 @@ public class ProxyBridge implements BridgeInterface{
     }
 
     @Override
-    public boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password,
-            String productId) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem' in ProxyBridge class");
-    }
-
-    @Override
-    public boolean TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem(String username, String password,
-            String shopId) {
-        throw new UnsupportedOperationException("Unimplemented method 'TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem' in ProxyBridge class");
-    }
-
-    @Override
     public boolean TestUserViewPrivateDetails(String username, String password) {
         throw new UnsupportedOperationException("Unimplemented method 'TestUserViewPrivateDetails' in ProxyBridge class");
     }
