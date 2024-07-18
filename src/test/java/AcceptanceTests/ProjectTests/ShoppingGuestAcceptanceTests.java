@@ -129,26 +129,17 @@ public class ShoppingGuestAcceptanceTests {
     // a guest in the system.
     @Test
     public void testGetProductInfoUsingKeywordsInShopAsGuest() {
-        assertTrue(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword1"), "0")); // success - exist
-                                                                                                    // keyword and exist
-                                                                                                    // shop
-        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "0")); // fail - non exist
-                                                                                                     // keyword but
-                                                                                                     // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword1"), "1")); // fail - exist
-                                                                                                     // keyword but non
-                                                                                                     // exist shop
-        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "1")); // fail - non exist
-                                                                                                     // keyword and non
-                                                                                                     // exist shop
+        assertTrue(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword1"), "0")); // success - exist keyword and exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "0")); // fail - non exist keyword but exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword1"), "1")); // fail - exist keyword but non exist shop
+        assertFalse(_bridge.testGetProductInfoUsingKeywordsInShopAsGuest(List.of("keyword2"), "1")); // fail - non exist keyword and non exist shop
     }
 
-    // Test when add product to shopping cart- it stays there as a Guest in the
-    // system.
+    // Test when add product to shopping cart- it stays there as a Guest in the system.
     @Test
     public void testAddProductToShoppingCartAsGuest() {
-        assertTrue(_bridge.testAddProductToShoppingCartAsGuest("0")); // success
-        assertFalse(_bridge.testAddProductToShoppingCartAsGuest("1")); // fail
+        assertTrue(_bridge.testAddProductToShoppingCartAsGuest("0") ); // success
+        assertFalse(_bridge.testAddProductToShoppingCartAsGuest("1") ); // fail
     }
 
     // Test a guest can watch his items in the shopping cart.

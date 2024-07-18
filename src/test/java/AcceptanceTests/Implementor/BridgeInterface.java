@@ -158,12 +158,6 @@ public interface BridgeInterface {
     boolean TestUserViewHistoryPurchaseList(String username, String password);
     
     @Test
-    boolean TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem(String username, String password, String productId);
-
-    @Test
-    boolean TestUserViewHistoryPurchaseListWhenShopRemovedFromSystem(String username, String password, String shopId);
-    
-    @Test
     boolean TestUserViewPrivateDetails(String username, String password);
     
     @Test

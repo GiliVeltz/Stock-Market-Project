@@ -230,6 +230,8 @@ public class ShoppingCartFacade {
             throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
+            // getGuestCart(guestID).purchaseCart(purchaseCartDetails);
+            // getGuestCart(guestID).emptyCart();
             getCartByUsernameOrToken(guestID).purchaseCart(purchaseCartDetails);
             getCartByUsernameOrToken(guestID).emptyCart();
             _cartsRepository.flush();
