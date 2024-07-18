@@ -103,7 +103,6 @@ public class ShoppingUserAcceptanceTests{
     
     // Test when add product to shopping cart- it stays there as a User in the system.
     @Test
-    @Disabled
     public void testAddProductToShoppingCartAsUser() {
         assertTrue(_bridge.testAddProductToShoppingCartAsUser("0", "0") ); // success
         assertFalse(_bridge.testAddProductToShoppingCartAsUser("1", "1") ); // fail
@@ -111,7 +110,6 @@ public class ShoppingUserAcceptanceTests{
     
     // Test a User can watch his items in the shopping cart as a User in the system.
     @Test
-    @Disabled
     public void testCheckAndViewItemsInShoppingCartAsUser() {
         assertTrue(_bridge.testCheckAndViewItemsInShoppingCartAsUser("success") ); // success
         assertFalse(_bridge.testCheckAndViewItemsInShoppingCartAsUser("fail") ); // fail
@@ -120,6 +118,7 @@ public class ShoppingUserAcceptanceTests{
     // Test the buying senerio of a shopping cart (all or nothing) as a User in the system.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void testBuyingShoppingCartAsUser() {
         assertTrue(_bridge.testCheckBuyingShoppingCartUser("bob","0","Visa","Israel") ); // success - all products are available to buy them
         assertFalse(_bridge.testCheckBuyingShoppingCartUser("Tomer","1","Cal","Israel") ); // fail - one of the pruducts (or more) is not available
@@ -127,38 +126,35 @@ public class ShoppingUserAcceptanceTests{
 
     // Test if the user can logout from the system.
     @Test
-    @Disabled
     public void TestUserLogout() {
-        assertTrue(_bridge.testLogoutToTheSystem("Bob") ); // success
+        assertTrue(_bridge.testLogoutToTheSystem("UziNavon")); // success
         assertFalse(_bridge.testLogoutToTheSystem("notUsername")); // not a user in the system
     }
     
     // Test if the user logouts from the system - his shopping cart we saved in the system.
     @Test
-    @Disabled
     public void TestWhenUserLogoutThenHisCartSaved() {
         assertTrue(_bridge.TestWhenUserLogoutThenHisCartSaved("username") ); // success - his shopping cart saved
     }
     
     // Test if the user logouts from the system - he become a guest in the system.
     @Test
-    @Disabled
     public void TestWhenUserLogoutThenHeBecomeGuest() {
-        assertTrue(_bridge.TestWhenUserLogoutThenHeBecomeGuest("Bob") ); // success - user logged out and become guest
+        assertTrue(_bridge.TestWhenUserLogoutThenHeBecomeGuest("UziNavon") ); // success - user logged out and become guest
         assertFalse(_bridge.TestWhenUserLogoutThenHeBecomeGuest("notUsername")); // not a user in the system
     }
     
     // Test that a user can open a shop and be the founder of the shop.
     @Test
-    @Disabled
     public void TestUserOpenAShop() {
         assertTrue(_bridge.TestUserOpenAShop("Bob","bobspassword", "shopName1", "Vias", "Israel") ); // success - user open a shop
-        assertFalse(_bridge.TestUserOpenAShop("Tom","bobspassword", "shopName2", "MasterCard", "USA") ); // fail - user is a guest
+        assertFalse(_bridge.TestUserOpenAShop("notUsername","bobspassword", "shopName2", "MasterCard", "USA") ); // fail - user is a guest
     }
     
     // Test that a user can open write a review about the product he purchased.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void TestUserWriteReviewOnPurchasedProduct() {
         //assertTrue(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "0") ); // success - the user secceeded to write a review
         assertFalse(_bridge.TestUserWriteReviewOnPurchasedProduct("bob","bobspassword", "2") ); // fail - the user did not porchased this product
@@ -167,6 +163,7 @@ public class ShoppingUserAcceptanceTests{
     // Test that a user can rate a product he purchased.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void TestUserRatingPurchasedProduct() {
         assertTrue(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "5") ); // success - the user secceeded to rate the product
         assertFalse(_bridge.TestUserRatingPurchasedProduct("bob","bobspassword", "0", "11") ); // fail - the score in invalid
@@ -175,6 +172,7 @@ public class ShoppingUserAcceptanceTests{
     // Test that a user can rate a shop he purchased from.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void TestUserRatingShopHePurchasedFrom() {
         assertTrue(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "4") ); // success - the user secceeded to rate the shop
         assertFalse(_bridge.TestUserRatingShopHePurchasedFrom("bob","bobspassword", "0", "30") ); // fail - the score in invalid
@@ -183,6 +181,7 @@ public class ShoppingUserAcceptanceTests{
     // Test that a user can send messages to the shop the purchased from about his orders.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void TestUserMessagingShopHePurchasedFrom() {
         //assertTrue(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "0", "message1") ); // success - the user secceeded to send the message
         assertFalse(_bridge.TestUserMessagingShopHePurchasedFrom("bob","bobspassword", "1", "message1") ); // fail - the user didnot purchased from this shop
@@ -199,6 +198,7 @@ public class ShoppingUserAcceptanceTests{
     // Test that a user can see his own history shopping orders.
     @Test
     @Disabled
+    // TODO: after fixing addProductToShoppingCart
     public void TestUserViewHistoryPurchaseList() {
         //assertTrue(_bridge.TestUserViewHistoryPurchaseList("bob","bobspassword") ); // success - the user secceeded to see his history purchased list
         assertTrue(_bridge.TestUserViewHistoryPurchaseListWhenProductRemovedFromSystem("bob","bobspassword", "0") ); // success - the product exsist in the history purchased list
@@ -207,19 +207,17 @@ public class ShoppingUserAcceptanceTests{
     
     // Test that a user can see his own private details.
     @Test
-    @Disabled
     public void TestUserViewPrivateDetails() {
-        assertTrue(_bridge.TestUserViewPrivateDetails("bob","bobspassword") ); // success - the user secceeded to see his private details
-        //assertFalse(_bridge.TestUserViewPrivateDetails("dad","dadspassword") ); // fail - the user did not exsist in the system
+        assertTrue(_bridge.TestUserViewPrivateDetails("Bob","bobspassword") ); // success - the user secceeded to see his private details
+        assertFalse(_bridge.TestUserViewPrivateDetails("notUsername","dadspassword") ); // fail - the user did not exsist in the system
     }
     
     
     // Test that a user can edit his own private details.
     @Test
-    @Disabled
     public void TestUserEditPrivateDetails() {
         assertTrue(_bridge.TestUserEditPrivateDetails("bob","bobspassword", "newemail@example.com") ); // success - the user secceeded to edit his email
         assertTrue(_bridge.TestUserEditPrivateDetails("bob","newPassword", "email@example.com") ); // success - the user secceeded to edit his password
-        //assertFalse(_bridge.TestUserEditPrivateDetails("newName","bobspassword", "email@example.com") ); // fail - the user can not change his user name in the system (this user name is not exsist in the system)
+        assertFalse(_bridge.TestUserEditPrivateDetails("newName","bobspassword", "email@example.com") ); // fail - the user can not change his user name in the system (this user name is not exsist in the system)
     }
 }
