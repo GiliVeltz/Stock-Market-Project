@@ -166,7 +166,7 @@ public class ShoppingCart {
             logger.log(Level.SEVERE, "StockMarketException has been thrown: " + e.getMessage(), e);
             throw e;
         }
-        
+
         Map<Double, String> priceToShopDetails = new HashMap<>();
         double overallPrice = 0;
 
@@ -194,7 +194,7 @@ public class ShoppingCart {
             supplyTransactionId = supplyMethod.supply(purchaseCartDetailsDto.getSupplyInfo());
             if (supplyTransactionId == -1)
                 throw new ShippingFailedException("Shipping failed");
-                
+
             List<ShoppingBasket> shoppingBasketsForOrder = new ArrayList<>();
             for (Integer basketNum : purchaseCartDetailsDto.getBasketsToBuy()) {
                 ShoppingBasket shoppingBasket = shoppingBaskets.get(basketNum);
@@ -223,7 +223,7 @@ public class ShoppingCart {
             throw new ShippingFailedException("Shipping failed");
         }
     }
-    
+
     public String getUsernameString() {
         return user_or_guest_name;
     }
@@ -329,16 +329,14 @@ public class ShoppingCart {
             basket.addProductToShoppingBasket(user, productID, quantity);
             if (!basketOptional.isPresent())
                 shoppingBaskets.add(basket);
-        }
-        catch (ProductOutOfStockExepction e) {
+        } catch (ProductOutOfStockExepction e) {
             logger.log(Level.SEVERE, "Product out of stock in shop: " + shopID);
             throw e;
-        }
-        catch (ShopPolicyException e) {
+        } catch (ShopPolicyException e) {
             logger.log(Level.SEVERE, "Shop policy exception in shop: " + shopID);
             throw e;
         }
-        
+
         logger.log(Level.INFO, "Product added to shopping basket: " + productID + " in shop: " + shopID);
         basketRepository.flush();
     }
@@ -351,7 +349,8 @@ public class ShoppingCart {
         if (basketOptional.isPresent()) {
             ShoppingBasket basket = basketOptional.get();
             basket.removeProductFromShoppingBasket(product, quantity);
-            logger.log(Level.INFO, "Product removed from shopping basket: " + product.getProductId() + " in shop: " + shopID);
+            logger.log(Level.INFO,
+                    "Product removed from shopping basket: " + product.getProductId() + " in shop: " + shopID);
             if (basket.isEmpty()) {
                 shoppingBaskets.remove(basket);
                 logger.log(Level.INFO, "Shopping basket for shop: " + shopID + " is empty and has been removed.");
@@ -379,6 +378,15 @@ public class ShoppingCart {
     // Get a shopping basket by index.
     public ShoppingBasket getShoppingBasket(int i) {
         return getShoppingBaskets().get(i);
+    }
+
+    public ShoppingBasket getShoppingBasketByShopId(int shopId) {
+        for (ShoppingBasket basket : shoppingBaskets) {
+            if (basket.getShop().getShopId() == shopId) {
+                return basket;
+            }
+        }
+        return null;
     }
 
     // for tests
@@ -423,7 +431,7 @@ public class ShoppingCart {
     public Integer getId() {
         return shoppingCartId;
     }
-  
+
     public double getTotalPrice() throws StockMarketException {
         double totalPrice = 0;
         for (ShoppingBasket basket : shoppingBaskets) {

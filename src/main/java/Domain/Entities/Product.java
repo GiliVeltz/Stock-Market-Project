@@ -12,6 +12,7 @@ import Domain.Entities.Policies.ProductPolicy;
 import Domain.Entities.enums.Category;
 import Exceptions.ProductOutOfStockExepction;
 import Exceptions.StockMarketException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
@@ -58,7 +60,8 @@ public class Product implements Cloneable {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Transient
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "policy_id", referencedColumnName = "id")
     private ProductPolicy productPolicy;
 
     @Transient
@@ -71,7 +74,8 @@ public class Product implements Cloneable {
     private static final Logger logger = Logger.getLogger(Product.class.getName());
 
     // Default constructor
-    public Product() { }
+    public Product() {
+    }
 
     // Constructor
     public Product(String productName, Category category, double price, Shop shop) {
@@ -108,7 +112,7 @@ public class Product implements Cloneable {
 
     // this function responsible for adding a rating to the product
     public void addProductRating(Integer rating) throws StockMarketException {
-        if(rating > 5 || rating < 1)
+        if (rating > 5 || rating < 1)
             throw new StockMarketException(String.format("Product ID: %d rating is not in range 1 to 5.", productId));
         Double newRating = Double.valueOf(rating);
         if (productRating == -1.0) {
@@ -119,7 +123,8 @@ public class Product implements Cloneable {
         productRatersCounter++;
     }
 
-    // this function responsible for purchasing a product: decrease the quantity of the product by 1 and add the product to the user's cart
+    // this function responsible for purchasing a product: decrease the quantity of
+    // the product by 1 and add the product to the user's cart
     public synchronized void purchaseProduct() throws StockMarketException {
         if (quantity == 0) {
             logger.log(Level.SEVERE, "Product - purchaseProduct - Product " + productName + " with id: " + productId
@@ -167,10 +172,8 @@ public class Product implements Cloneable {
     public boolean isPriceInRange(double minPrice, double maxPrice) {
         return price >= minPrice && price <= maxPrice;
     }
-    
 
-    public void updateProductQuantity(int newQuantitiy)
-    {
+    public void updateProductQuantity(int newQuantitiy) {
         quantity = newQuantitiy;
     }
 
@@ -193,7 +196,9 @@ public class Product implements Cloneable {
     }
 
     public String getProductGeneralInfo() {
-        return "Product ID: " + productId + " | Product Name: " + productName + " | Product Category: " + category + " | Product Price: " + price + " | Product Quantity: " + quantity + " | Product Rating: " + productRating;
+        return "Product ID: " + productId + " | Product Name: " + productName + " | Product Category: " + category
+                + " | Product Price: " + price + " | Product Quantity: " + quantity + " | Product Rating: "
+                + productRating;
     }
 
     public Integer getProductId() {
