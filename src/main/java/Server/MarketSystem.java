@@ -27,7 +27,7 @@ import Domain.Entities.User;
 import Domain.Entities.enums.Category;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
-import Domain.ExternalServices.PaymentService.ProxyApyment;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
 import Domain.ExternalServices.SupplyService.ProxySupply;
@@ -104,7 +104,7 @@ public class MarketSystem {
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.notificationHandler = notificationHandler;
-        // this.webSocketServer = webSocketServer;
+        this.webSocketServer = webSocketServer;
         this.external_system_url = external_system_url;
         this.instructions_config_path = instructions_config_path;
         this.real_system_config_path = real_system_config_path;
@@ -185,7 +185,7 @@ public class MarketSystem {
     public void set_external_services(String config) throws StockMarketException {
         if (config.equals("external_services:tests")){
             logger.info("Set Tests External Services");
-            payment_adapter = ProxyApyment.getProxyApymentPayment();
+            payment_adapter = ProxyPayment.getProxyAdapterPayment();
             supply_adapter = ProxySupply.getProxySupply();
         }
         else if (config.equals("external_services:real")){

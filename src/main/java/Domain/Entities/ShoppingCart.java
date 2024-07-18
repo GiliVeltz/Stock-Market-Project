@@ -12,8 +12,10 @@ import java.util.HashMap;
 
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
 import Domain.ExternalServices.PaymentService.AdapterPaymentInterface;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
 import Domain.ExternalServices.SupplyService.AdapterSupplyInterface;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 import Domain.Facades.ShopFacade;
 import Domain.Repositories.InterfaceOrderRepository;
 import Domain.Repositories.InterfaceShopOrderRepository;
@@ -113,6 +115,16 @@ public class ShoppingCart {
         this.supplyMethod = AdapterSupplyImp.getAdapterSupply();
         this.guest = guest;
         this.user_or_guest_name = guest.getGuestId();
+        this.user = null;
+    }
+
+    // for tests
+    public ShoppingCart(ShopFacade shopFacade, ProxyPayment paymentMethod, ProxySupply supplyMethod) {
+        this.shoppingBaskets = new ArrayList<>();
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
+        this.shopFacade = shopFacade;
+        this.user_or_guest_name = null;
         this.user = null;
     }
 
@@ -458,5 +470,10 @@ public class ShoppingCart {
 
     public void setShoppingBasketsRepository(InterfaceShoppingBasketRepository basketRepository) {
         this.basketRepository = basketRepository;
+    }
+
+    public void setPaymentMocksForGuestCart(ProxyPayment paymentMethod, ProxySupply supplyMethod) {
+        this.paymentMethod = paymentMethod;
+        this.supplyMethod = supplyMethod;
     }
 }

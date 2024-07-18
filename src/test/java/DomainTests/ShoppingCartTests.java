@@ -530,7 +530,7 @@ public class ShoppingCartTests {
         shop2.addProductToShop("ownerUsername2", product4);
 
         shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
-
+        
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
@@ -761,9 +761,9 @@ public class ShoppingCartTests {
         shoppingCartUnderTest.addProduct(3, 2, 1);
         shoppingCartUnderTest.addProduct(4, 2, 1);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto,
-                new ArrayList<>(Arrays.asList(0, 1)));
-
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+            new ArrayList<>(Arrays.asList(0, 1)));
+     
         // Act
         assertThrows(StockMarketException.class, () -> {
             shoppingCartUnderTest.purchaseCart(purchaseCartDetailsDto);
@@ -827,8 +827,8 @@ public class ShoppingCartTests {
         shoppingCartUnderTest.setOrderRepository(new MemoryOrderRepository());
         shoppingCartUnderTest.setShopOrderRepository(shopOrderRepositoryMock);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto,
-                new ArrayList<>(Arrays.asList(0, 1)));
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+            new ArrayList<>(Arrays.asList(0, 1)));
 
         // Act
         assertThrows(StockMarketException.class, () -> {
@@ -867,10 +867,10 @@ public class ShoppingCartTests {
 
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
-
+        
         shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto,
-                new ArrayList<>(Arrays.asList(0, 1)));
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+            new ArrayList<>(Arrays.asList(0, 1)));
 
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);
@@ -918,9 +918,9 @@ public class ShoppingCartTests {
         shop.setNotificationHandler(notificationHandlerMock);
         shop2.setNotificationHandler(notificationHandlerMock);
 
-        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto,
-                new ArrayList<>(Arrays.asList(0, 1)));
-
+        PurchaseCartDetailsDto purchaseCartDetailsDto = new PurchaseCartDetailsDto(paymentInfoDto, supplyInfoDto, 
+            new ArrayList<>(Arrays.asList(0, 1)));
+        
         shoppingCartUnderTest.setShoppingBasketsRepository(new MemoryShoppingBasketRepository());
         when(shopFacadeMock.getShopByShopId(1)).thenReturn(shop);
         when(shopFacadeMock.getShopByShopId(2)).thenReturn(shop2);

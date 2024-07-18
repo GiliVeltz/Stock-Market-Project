@@ -22,3 +22,645 @@ Jun 01, 2024 9:57:43 PM LoggingExample main
 WARNING: This is a warning message
 Jun 01, 2024 9:57:43 PM LoggingExample main
 SEVERE: This is a severe message
+Jul 18, 2024 1:06:13 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:06:13 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:06:13 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:06:13 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:06:13 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:06:19 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:06:19 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:06:19 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:06:19 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:06:19 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:06:19 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:06:19 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:06:19 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:06:19 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:06:20 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:06:20 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:06:21 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:06:21 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:06:22 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:06:22 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:06:23 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [ADD_PRODUCT, EDIT_PRODUCT]
+Jul 18, 2024 1:06:23 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:06:23 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:06:23 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:06:23 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:06:24 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:06:24 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:06:24 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:06:24 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:06:24 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:06:25 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:06:25 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:06:25 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:06:26 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:06:26 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:06:26 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:06:50 PM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:07:01 PM org.apache.tomcat.util.net.Acceptor stop
+WARNING: The acceptor thread [http-nio-8080-Acceptor] did not stop cleanly
+Jul 18, 2024 1:07:01 PM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service [Tomcat]
+Jul 18, 2024 1:07:01 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:07:01 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:07:01 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:07:01 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:07:01 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:07:08 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:07:08 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:07:08 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:07:08 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:07:08 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:07:08 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:07:08 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:07:08 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:07:08 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:07:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:07:08 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:07:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:07:08 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:07:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:07:08 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:07:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:07:08 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:07:09 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:07:09 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:07:09 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:07:09 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:07:09 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:07:10 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:07:10 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:07:11 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:07:11 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [EDIT_PRODUCT, ADD_PRODUCT]
+Jul 18, 2024 1:07:11 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:07:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:07:12 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:07:12 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:07:12 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:07:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:07:12 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:07:13 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:07:13 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:07:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:07:13 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:07:14 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:07:14 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:07:14 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:07:14 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:08:59 PM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:08:59 PM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service [Tomcat]
+Jul 18, 2024 1:08:59 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:08:59 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:08:59 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:08:59 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:08:59 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:09:06 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:09:06 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:09:06 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:09:06 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:09:06 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:09:06 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:09:06 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:09:06 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:09:06 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:09:06 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:09:06 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:09:06 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:06 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:09:07 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:09:07 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:07 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:09:07 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:09:07 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:09:07 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:09:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:09:08 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:09:09 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:09:09 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [EDIT_PRODUCT, ADD_PRODUCT]
+Jul 18, 2024 1:09:09 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:09:09 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:09:10 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:09:10 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:09:10 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:09:10 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:09:11 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:09:11 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:09:11 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:09:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:09:12 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:09:12 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:09:12 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:09:13 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:09:13 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:09:30 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring DispatcherServlet 'dispatcherServlet'
+Jul 18, 2024 1:09:30 PM ServiceLayer.SystemService requestToEnterSystem
+INFO: New guest entered into the system, ID:3c713245-9def-49aa-9b0d-0a7220bc97d3
+Jul 18, 2024 1:09:30 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID 3c713245-9def-49aa-9b0d-0a7220bc97d3 to the system.
+Jul 18, 2024 1:09:31 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID 3c713245-9def-49aa-9b0d-0a7220bc97d3 added to the system.
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connection established with URI: ws://localhost:8080/websocket?token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiM2M3MTMyNDUtOWRlZi00OWFhLTliMGQtMGE3MjIwYmM5N2QzIiwiaWF0IjoxNzIxMjk3MzcwLCJleHAiOjE3MjEzODM3NzB9.plWqMFSyImlwxycmkvF7gT7rWSRbSri1z6inwJpKkLc
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Query parameters: token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiM2M3MTMyNDUtOWRlZi00OWFhLTliMGQtMGE3MjIwYmM5N2QzIiwiaWF0IjoxNzIxMjk3MzcwLCJleHAiOjE3MjEzODM3NzB9.plWqMFSyImlwxycmkvF7gT7rWSRbSri1z6inwJpKkLc
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted token: eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiM2M3MTMyNDUtOWRlZi00OWFhLTliMGQtMGE3MjIwYmM5N2QzIiwiaWF0IjoxNzIxMjk3MzcwLCJleHAiOjE3MjEzODM3NzB9.plWqMFSyImlwxycmkvF7gT7rWSRbSri1z6inwJpKkLc
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted username: null
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Client key: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiM2M3MTMyNDUtOWRlZi00OWFhLTliMGQtMGE3MjIwYmM5N2QzIiwiaWF0IjoxNzIxMjk3MzcwLCJleHAiOjE3MjEzODM3NzB9.plWqMFSyImlwxycmkvF7gT7rWSRbSri1z6inwJpKkLc
+Jul 18, 2024 1:09:31 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connected: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiM2M3MTMyNDUtOWRlZi00OWFhLTliMGQtMGE3MjIwYmM5N2QzIiwiaWF0IjoxNzIxMjk3MzcwLCJleHAiOjE3MjEzODM3NzB9.plWqMFSyImlwxycmkvF7gT7rWSRbSri1z6inwJpKkLc
+Jul 18, 2024 1:09:53 PM Domain.Facades.UserFacade register
+INFO: Amit is testing it
+Jul 18, 2024 1:09:53 PM Domain.Facades.UserFacade register
+INFO: Registering new user test1 to the system.
+Jul 18, 2024 1:09:54 PM Domain.Facades.UserFacade register
+INFO: User test1 registered successfully.
+Jul 18, 2024 1:09:54 PM ServiceLayer.UserService register
+INFO: User registered: test1
+Jul 18, 2024 1:11:03 PM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:03 PM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service [Tomcat]
+Jul 18, 2024 1:11:03 PM org.apache.catalina.core.ApplicationContext log
+INFO: Destroying Spring FrameworkServlet 'dispatcherServlet'
+Jul 18, 2024 1:11:03 PM Server.notifications.WebSocketServer afterConnectionClosed
+INFO: Connection closed with status: CloseStatus[code=1001, reason=The web application is stopping]
+Jul 18, 2024 1:11:03 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:11:04 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:04 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:11:04 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:11:04 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:11:10 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:11:10 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:11:10 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:11:10 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:11:10 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:11:10 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:11:10 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:11:10 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:11:10 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:11:11 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:11 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:11:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:11:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:11:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:11:13 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:11:14 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [ADD_PRODUCT, EDIT_PRODUCT]
+Jul 18, 2024 1:11:14 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:11:14 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:11:14 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:11:15 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:11:15 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:11:15 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:11:15 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:11:15 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:11:16 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:11:16 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:11:16 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:11:17 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:11:17 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:11:17 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:11:17 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:19 PM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:19 PM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service [Tomcat]
+Jul 18, 2024 1:11:19 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:11:19 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:19 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:11:19 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:11:19 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:11:26 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:11:26 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:11:26 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:11:26 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:11:26 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:11:26 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:11:26 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:11:26 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:11:26 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:11:26 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:11:26 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:11:26 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:11:26 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:26 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:11:27 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:11:27 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:11:27 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:11:28 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:11:28 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:11:29 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:11:29 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [EDIT_PRODUCT, ADD_PRODUCT]
+Jul 18, 2024 1:11:29 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:11:29 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:11:30 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:11:30 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:11:30 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:11:30 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:11:31 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:11:31 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:11:31 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:11:31 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:11:32 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:11:32 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:11:32 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:11:32 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:11:32 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:11:59 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:11:59 PM Server.Configuration.LoggerConfig configureLogging
+INFO: Logging configuration loaded
+Jul 18, 2024 1:12:00 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:12:00 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Jul 18, 2024 1:12:00 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.20]
+Jul 18, 2024 1:12:01 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring embedded WebApplicationContext
+Jul 18, 2024 1:12:12 PM Server.MarketSystem init_market
+INFO: Start Init Market
+Jul 18, 2024 1:12:12 PM Server.MarketSystem init_market
+INFO: Configuration File Path: src/main/java/Server/Configuration/system_config.txt
+Jul 18, 2024 1:12:12 PM Server.MarketSystem set_external_services
+INFO: Set Real External Services
+Jul 18, 2024 1:12:12 PM Server.MarketSystem connect_to_external_services
+INFO: System Start Connect To External Services
+Jul 18, 2024 1:12:12 PM Domain.ExternalServices.PaymentService.AdapterPaymentImp ConnectToService
+INFO: Connecting to the payment service
+Jul 18, 2024 1:12:12 PM Domain.ExternalServices.SupplyService.AdapterSupplyImp ConnectToService
+INFO: Connecting to the Supply service
+Jul 18, 2024 1:12:12 PM Server.MarketSystem set_database
+INFO: Init Data From Instructions File, Data File Path: src/main/java/Server/Configuration/instructions_config.txt
+Jul 18, 2024 1:12:12 PM Server.MarketSystem init_data_to_market
+INFO: Start to Init Data From Instructions File
+Jul 18, 2024 1:12:12 PM Domain.Facades.UserFacade register
+INFO: Registering new user u1_Admin to the system.
+Jul 18, 2024 1:12:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Admin Fail: Username already exists.
+Jul 18, 2024 1:12:12 PM Domain.Facades.UserFacade register
+INFO: Registering new user u2 to the system.
+Jul 18, 2024 1:12:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:12:12 PM Domain.Facades.UserFacade register
+INFO: Registering new user u3 to the system.
+Jul 18, 2024 1:12:12 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:12:12 PM Domain.Facades.UserFacade register
+INFO: Registering new user u4 to the system.
+Jul 18, 2024 1:12:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:12:13 PM Domain.Facades.UserFacade register
+INFO: Registering new user u5 to the system.
+Jul 18, 2024 1:12:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:12:13 PM Domain.Facades.UserFacade register
+INFO: Registering new user u6 to the system.
+Jul 18, 2024 1:12:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Register Fail: Username already exists.
+Jul 18, 2024 1:12:13 PM Domain.Facades.UserFacade logIn
+INFO: User u2 tries to log in to the system.
+Jul 18, 2024 1:12:13 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] LogIn Fail: User is already logged in.
+Jul 18, 2024 1:12:14 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Open New Shop Fail: Shop name: s1 already exists in the system.
+Jul 18, 2024 1:12:15 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Product To Shop Fail: Product name: Bamba already exists in shop: 2052.
+Jul 18, 2024 1:12:15 PM Domain.Facades.ShopFacade addShopManager
+INFO: u2 trying to add manager: u3 to shop with id: 2052
+Jul 18, 2024 1:12:15 PM Domain.Entities.Shop AppointManager
+INFO: Shop - AppointManager: u2 trying to appoint u3 as a new manager with permissions: [EDIT_PRODUCT, ADD_PRODUCT]
+Jul 18, 2024 1:12:15 PM Domain.Entities.Shop AppointManager
+SEVERE: Shop - AppointManager: user u3 already in shop with id 2052
+Jul 18, 2024 1:12:15 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Add Shop Manager Fail: User u3 already in shop with id 2052
+Jul 18, 2024 1:12:16 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u4 to shop with id: 2052
+Jul 18, 2024 1:12:16 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u4 as a new owner.
+Jul 18, 2024 1:12:16 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u4 already in shop with id 2052
+Jul 18, 2024 1:12:16 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u4 already in shop with id 2052
+Jul 18, 2024 1:12:17 PM Domain.Facades.ShopFacade addShopOwner
+INFO: u2 trying to add owner: u5 to shop with id: 2052
+Jul 18, 2024 1:12:17 PM Domain.Entities.Shop AppointOwner
+INFO: Shop - AppointOwner: u2 trying to appoint u5 as a new owner.
+Jul 18, 2024 1:12:17 PM Domain.Entities.Shop AppointOwner
+SEVERE: Shop - AppointOwner: user u5 already in shop with id 2052
+Jul 18, 2024 1:12:17 PM Server.MarketSystem run_instruction
+INFO: [run_instruction] Appoint Shop Owner Fail: User u5 already in shop with id 2052
+Jul 18, 2024 1:12:18 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: u2 trying to update product quantity: 10 in shop with id: 2052
+Jul 18, 2024 1:12:18 PM Domain.Facades.ShopFacade updateProductQuantity
+INFO: Product quantity was updated successfully.
+Jul 18, 2024 1:12:18 PM Domain.Facades.UserFacade logOut
+INFO: User u2 tries to log out from the system.
+Jul 18, 2024 1:12:19 PM Domain.Facades.UserFacade logOut
+INFO: User u2 logged out from the system.
+Jul 18, 2024 1:12:19 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+Jul 18, 2024 1:12:19 PM org.apache.catalina.core.ApplicationContext log
+INFO: Initializing Spring DispatcherServlet 'dispatcherServlet'
+Jul 18, 2024 1:12:40 PM ServiceLayer.SystemService requestToEnterSystem
+INFO: New guest entered into the system, ID:a2e4c6ad-ee80-4992-a110-b17a0bc4c32e
+Jul 18, 2024 1:12:40 PM Domain.Facades.UserFacade addNewGuest
+INFO: Trying to add a new guest with ID a2e4c6ad-ee80-4992-a110-b17a0bc4c32e to the system.
+Jul 18, 2024 1:12:40 PM Domain.Facades.UserFacade addNewGuest
+INFO: Guest with ID a2e4c6ad-ee80-4992-a110-b17a0bc4c32e added to the system.
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connection established with URI: ws://localhost:8080/websocket?token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiYTJlNGM2YWQtZWU4MC00OTkyLWExMTAtYjE3YTBiYzRjMzJlIiwiaWF0IjoxNzIxMjk3NTYwLCJleHAiOjE3MjEzODM5NjB9.DyAeE42d0kEa9TzGa6hrVhU3Q2x0ZNCd9mbIVhlfaE0
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Query parameters: token=eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiYTJlNGM2YWQtZWU4MC00OTkyLWExMTAtYjE3YTBiYzRjMzJlIiwiaWF0IjoxNzIxMjk3NTYwLCJleHAiOjE3MjEzODM5NjB9.DyAeE42d0kEa9TzGa6hrVhU3Q2x0ZNCd9mbIVhlfaE0
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted token: eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiYTJlNGM2YWQtZWU4MC00OTkyLWExMTAtYjE3YTBiYzRjMzJlIiwiaWF0IjoxNzIxMjk3NTYwLCJleHAiOjE3MjEzODM5NjB9.DyAeE42d0kEa9TzGa6hrVhU3Q2x0ZNCd9mbIVhlfaE0
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Extracted username: null
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Client key: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiYTJlNGM2YWQtZWU4MC00OTkyLWExMTAtYjE3YTBiYzRjMzJlIiwiaWF0IjoxNzIxMjk3NTYwLCJleHAiOjE3MjEzODM5NjB9.DyAeE42d0kEa9TzGa6hrVhU3Q2x0ZNCd9mbIVhlfaE0
+Jul 18, 2024 1:12:41 PM Server.notifications.WebSocketServer afterConnectionEstablished
+INFO: Connected: guest-eyJhbGciOiJIUzI1NiJ9.eyJndWVzdElkIjoiYTJlNGM2YWQtZWU4MC00OTkyLWExMTAtYjE3YTBiYzRjMzJlIiwiaWF0IjoxNzIxMjk3NTYwLCJleHAiOjE3MjEzODM5NjB9.DyAeE42d0kEa9TzGa6hrVhU3Q2x0ZNCd9mbIVhlfaE0
+Jul 18, 2024 1:12:52 PM Domain.Facades.UserFacade register
+INFO: Registering new user test3 to the system.
+Jul 18, 2024 1:12:52 PM Domain.Facades.UserFacade register
+INFO: User test3 registered successfully.
+Jul 18, 2024 1:12:52 PM ServiceLayer.UserService register
+INFO: User registered: test3
