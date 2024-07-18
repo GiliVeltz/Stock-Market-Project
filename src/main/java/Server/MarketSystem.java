@@ -104,7 +104,7 @@ public class MarketSystem {
         this.userFacade = userFacade;
         this.shoppingCartFacade = shoppingCartFacade;
         this.notificationHandler = notificationHandler;
-        // this.webSocketServer = webSocketServer;
+        this.webSocketServer = webSocketServer;
         this.external_system_url = external_system_url;
         this.instructions_config_path = instructions_config_path;
         this.real_system_config_path = real_system_config_path;
