@@ -2,16 +2,16 @@ package Domain.ExternalServices.PaymentService;
 
 import Dtos.PaymentInfoDto;
 
-public class ProxyApyment implements AdapterPaymentInterface{
-    private static ProxyApyment _adapterPayment;
+public class ProxyPayment implements AdapterPaymentInterface{
+    private static ProxyPayment _adapterPayment;
 
-    public ProxyApyment() {
+    public ProxyPayment() {
         _adapterPayment = this;
     }
 
-    public static ProxyApyment getProxyApymentPayment() {
+    public static ProxyPayment getProxyAdapterPayment() {
         if (_adapterPayment == null)
-            _adapterPayment = new ProxyApyment();
+            _adapterPayment = new ProxyPayment();
         return _adapterPayment;
     }
 

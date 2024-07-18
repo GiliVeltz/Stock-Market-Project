@@ -17,7 +17,9 @@ import Domain.Entities.ShoppingBasket;
 import Domain.Entities.ShoppingCart;
 import Domain.Entities.User;
 import Domain.ExternalServices.PaymentService.AdapterPaymentImp;
+import Domain.ExternalServices.PaymentService.ProxyPayment;
 import Domain.ExternalServices.SupplyService.AdapterSupplyImp;
+import Domain.ExternalServices.SupplyService.ProxySupply;
 import Domain.Repositories.DbGuestRepository;
 import Domain.Repositories.DbOrderRepository;
 import Domain.Repositories.DbShopOrderRepository;
@@ -83,10 +85,21 @@ public class ShoppingCartFacade {
         cart.setOrderRepository(_orderRepository);
         g.setShoppingCart(cart);
         _cartsRepository.save(cart);
-        
+        _guestsCarts.put(guestID, cart);
         _guestRepository.flush();
         //_guestsCarts.put(guestID, cart);
     }
+
+    public void setPaymentMocksForGuestCart(String guestId, ProxyPayment paymentService, ProxySupply supplyService) throws StockMarketException{
+        ShoppingCart cart = _guestsCarts.get(guestId);
+        if(cart == null) {
+            throw new StockMarketException("Guest with id: " + guestId + " does not have a cart");
+        }
+        cart.setPaymentMocksForGuestCart(paymentService, supplyService);
+        _cartsRepository.save(cart);
+        _guestRepository.flush();
+    }
+
 
     /*
      * Add a cart for a user.
@@ -142,6 +155,7 @@ public class ShoppingCartFacade {
     @Transactional
     public void addProductToGuestCart(String guestID, int productID, int shopID, int quantity) throws StockMarketException {
         ShoppingCart cart = getCartByUsernameOrToken(guestID);
+        //ShoppingCart cart = _guestsCarts.get(guestID);
         if (cart != null) {
             cart.addProduct(productID, shopID, quantity);
             _cartsRepository.flush();
@@ -200,6 +214,8 @@ public class ShoppingCartFacade {
     public void purchaseCartGuest(String guestID, PurchaseCartDetailsDto purchaseCartDetails) throws StockMarketException {
         logger.log(Level.INFO, "Start purchasing cart for guest.");
         try {
+            // getGuestCart(guestID).purchaseCart(purchaseCartDetails);
+            // getGuestCart(guestID).emptyCart();
             getCartByUsernameOrToken(guestID).purchaseCart(purchaseCartDetails);
             getCartByUsernameOrToken(guestID).emptyCart();
             _cartsRepository.flush();
@@ -337,6 +353,7 @@ public class ShoppingCartFacade {
     // for tests
     public void addCartForGuestForTests(String guestID, ShoppingCart cart) {
         _guestsCarts.put(guestID, cart);
+        cart.setOrderRepository(_orderRepository);
     }
 
     // function to initilaize data for UI testing
