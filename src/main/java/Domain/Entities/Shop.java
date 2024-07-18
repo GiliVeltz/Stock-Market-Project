@@ -1166,7 +1166,8 @@ public class Shop {
             logger.log(Level.SEVERE, "Shop - ValidateProdcutPolicy: User " + u.getUserName()
                     + " violates the product policy of product " + p.getProductName() + " in shop with id: " + shopId);
             throw new ProdcutPolicyException(
-                    "User " + u.getUserName() + " violates the shop policy of shop with id: " + shopId);
+                    "User " + u.getUserName() + " violates the product policy " + p.getProductName()
+                            + " in shop with id: " + shopId);
         }
     }
 

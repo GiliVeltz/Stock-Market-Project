@@ -81,7 +81,11 @@ public class ShoppingBasket implements Cloneable {
 
         // check if the product is in the shop and validate the user doesn't violate the
         // product policy
-        shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        try {
+            shop.ValidateProdcutPolicy(user, shop.getProductById(productId));
+        } catch (StockMarketException e) {
+            throw e;
+        }
 
         // add the product to the basket
         for (int i = 0; i < quantity; i++)
