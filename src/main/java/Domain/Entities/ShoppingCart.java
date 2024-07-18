@@ -231,7 +231,13 @@ public class ShoppingCart {
                 continue;
             }
             try {
-                if (!shoppingBaskets.get(basketId).purchaseBasket(getUsernameString()))
+                String buyinguser;
+                if (user == null) {
+                    buyinguser = "Guest";
+                } else {
+                    buyinguser = getUsernameString();
+                }
+                if (!shoppingBaskets.get(basketId).purchaseBasket(buyinguser))
                     throw new ProductOutOfStockExepction("One of the products in the basket is out of stock");
                 boughtBasketList.add(basketId);
             } catch (ProductOutOfStockExepction e) {
@@ -303,7 +309,7 @@ public class ShoppingCart {
             basket = basketOptional.get();
         } else {
             basket = new ShoppingBasket(shopFacade.getShopByShopId(shopID));
-            basketRepository.save(basket);
+            basket = basketRepository.save(basket);
         }
 
         // add the product to the basket.

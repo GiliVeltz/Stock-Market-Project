@@ -80,14 +80,17 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
     private Dialog _chooseProductToChangePolicyDialog;
     private Dialog _addShopRuleDialog;
     private Dialog _addProductRuleDialog;
+    private Dialog _viewProductsDialog;
     private List<ShopManagerDto> _managers;
     private List<ShopManagerDto> _subordinates;
     private List<ShopDiscountDto> _discounts;
+    private List<ProductDto> _products;
     private Grid<ShopManagerDto> _viewRolesGrid;
     private Grid<ShopManagerDto> _viewSubordinatesGrid;
     private Grid<ShopDiscountDto> _viewDiscountsGrid;
     private Grid<ShoppingBasketRuleDto> _changeShopPolicyGrid;
     private Grid<UserRuleDto> _changeProductPolicyGrid;
+    private Grid<ProductDto> _viewProductsGrid;
     private Grid<ShopOrderDto> shopOrderGrid;
     private List<String> _permissionsList;
     private VerticalLayout contentLayout;
@@ -180,7 +183,12 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         Button viewPurchasesBtn = createButtonWithIcon("View Purchases", VaadinIcon.CART_O, event -> {
             presenter.getShopPurchaseHistory(getShopId());
         });
-        Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> presenter.viewProducts());
+        Button viewProductsBtn = createButtonWithIcon("View Products", VaadinIcon.PACKAGE, event -> 
+        presenter.fetchShopProducts(products -> {
+            _products = products;
+            _viewProductsDialog = createViewProductsDialog();
+            _viewProductsDialog.open();
+        }));
         Button closeShopBtn = createButtonWithIcon("Close Shop", VaadinIcon.CLOSE, event -> {
         Dialog closeDialog = new Dialog();
         closeDialog.add(new Paragraph("Are you sure you want to close the shop?"));
@@ -1569,6 +1577,79 @@ public class ShopManagerView extends BaseView implements HasUrlParameter<Integer
         productDialog.open();
     }
 
+    public Dialog createViewProductsDialog(){
+        // Create a dialog
+        Dialog dialog = new Dialog();
+
+        // Title for the dialog
+        H3 title = new H3("Shop Products");
+
+        // Create a vertical layout to hold the title and the grid
+        VerticalLayout content = new VerticalLayout();
+        content.add(title);
+
+        // Create a grid
+        _viewProductsGrid = new Grid<>(ProductDto.class, false);
+        _viewProductsGrid.addColumn(ProductDto::getProductId).setHeader("ID");
+        _viewProductsGrid.addColumn(ProductDto::getProductName).setHeader("Name");
+        _viewProductsGrid.addColumn(ProductDto::getPrice).setHeader("Price");
+        _viewProductsGrid.addColumn(ProductDto::getProductQuantity).setHeader("Quantity");
+        _viewProductsGrid.addColumn(ProductDto::getCategory).setHeader("Category");
+
+        
+        
+        _viewProductsGrid.addItemClickListener(event -> {
+            ProductDto selectedItem = event.getItem();
+            Dialog confirmationDialog = new Dialog();
+            Span confirmationText = new Span("Are you sure you want to delete this product?");
+            
+            // Create Yes and No buttons
+            Button yesButton = new Button("Yes", e -> {
+                // Handle the deletion here
+                presenter.deleteProduct(selectedItem, isSuccess ->{
+                    if(isSuccess) {
+                        presenter.fetchShopProducts(products -> {
+                            _products = products;
+                            _viewProductsDialog.close();
+                            confirmationDialog.close();
+                            _viewProductsDialog = createViewProductsDialog();
+                            _viewProductsDialog.open();
+                        });
+                    }else{
+                        confirmationDialog.close();
+                    }
+                });
+            });
+            
+            Button noButton = new Button("No", e -> confirmationDialog.close());
+
+            // Add the buttons to a HorizontalLayout
+            Span spacer = new Span();
+            HorizontalLayout buttonsLayout = new HorizontalLayout(yesButton, spacer, noButton);
+            buttonsLayout.setWidthFull(); // Ensure the layout takes up the full width
+            buttonsLayout.setFlexGrow(1, spacer); // Make yesButton take up available space, pushing noButton to the right
+            
+            // Create a layout for the dialog
+            VerticalLayout dialogLayout = new VerticalLayout(confirmationText, buttonsLayout);
+            confirmationDialog.add(dialogLayout);
+            confirmationDialog.open();
+        });
+
+        // Set items to the grid if available
+        if (_products != null) {
+            _viewProductsGrid.setItems(_products);
+        }
+
+        content.add(_viewProductsGrid);
+        
+       
+        dialog.setWidth("900px"); // Set the desired width of the dialog
+        dialog.setHeight("700px"); // Set the desired height of the dialog
+
+        dialog.add(content);
+        
+        return dialog;
+    }
 
     
 }

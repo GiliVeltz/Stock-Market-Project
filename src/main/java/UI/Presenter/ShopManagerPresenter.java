@@ -81,7 +81,7 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            view.showErrorMessage("Failed to parse response");
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                             view.getUI().ifPresent(ui -> ui.navigate("user"));
                         }
@@ -91,13 +91,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void viewProducts() {
-        
-    }
-
-    public void changeProductPolicy() {
-        
-    }
 
     public void appointManager(String newManagerUsername, Set<Permission> selectedPermissions) {
         RestTemplate restTemplate = new RestTemplate();
@@ -144,9 +137,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to appoint manager: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to appoint manager: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -192,9 +183,7 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to appoint owner: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -240,9 +229,7 @@ public class ShopManagerPresenter {
                         }catch (HttpClientErrorException e) {
                             ResponseHandler.handleResponse(e.getStatusCode());
                         }catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to appoint owner: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -251,13 +238,6 @@ public class ShopManagerPresenter {
                 });
     }
 
-    public void viewShopRoles() {
-
-    }
-
-    public void viewPurchases() {
-
-    }
 
     public void appointOwner(String newOwnerUsername){
         RestTemplate restTemplate = new RestTemplate();
@@ -298,9 +278,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to appoint owner: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to appoint owner: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -355,9 +333,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage(e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage(ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -403,9 +379,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to load discounts: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to load discounts: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -448,9 +422,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to add discount: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to add discount: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -492,9 +464,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to delete discount: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to delete discount: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -553,9 +523,7 @@ public class ShopManagerPresenter {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                             callback.accept(false);
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to change manager permissions: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to change manager permissions: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -595,9 +563,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to close the shop: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to close the shop: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                         
@@ -638,9 +604,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to reopen the shop: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to reopen the shop: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -689,9 +653,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to load shop policy: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to load shop policy: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -754,9 +716,7 @@ public class ShopManagerPresenter {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                             callback.accept(false);
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to change shop policy: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to change shop policy: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -820,9 +780,8 @@ public class ShopManagerPresenter {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                             callback.accept(false);
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to change "+product.getProductId()+" policy: " + e.getMessage().substring(startIndex, endIndex));
+                            
+                            view.showErrorMessage("Failed to change "+product.getProductId()+" policy: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             callback.accept(false);
                             e.printStackTrace();
                         }
@@ -872,9 +831,7 @@ public class ShopManagerPresenter {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to load Product with id "+product.getProductId()+" policy: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to load Product with id "+product.getProductId()+" policy: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                             e.printStackTrace();
                         }
                     } else {
@@ -918,13 +875,7 @@ public class ShopManagerPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
@@ -973,18 +924,11 @@ public class ShopManagerPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
                             }
-                            
                             view.showErrorMessage("Error: " + errorMessage);
                             e.printStackTrace();
                         }
@@ -1028,13 +972,7 @@ public class ShopManagerPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
@@ -1083,13 +1021,7 @@ public class ShopManagerPresenter {
                         } catch (Exception e) {
                             String errorMessage = "An error occurred";
                             try {
-                                String message = e.getMessage();
-                                int startIndex = message.indexOf("\"errorMessage\":\"") + 16;
-                                int endIndex = message.indexOf("\",", startIndex);
-                                
-                                if (startIndex >= 16 && endIndex > startIndex) {
-                                    errorMessage = message.substring(startIndex, endIndex);
-                                }
+                                errorMessage = ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage());
                             } catch (Exception ex) {
                                 // Handle any unexpected errors in extracting the error message
                                 errorMessage = "An unexpected error occurred while processing the error message.";
@@ -1148,9 +1080,7 @@ public void getShopPurchaseHistory(Integer shopId) {
                     catch (HttpClientErrorException e) {
                         view.showErrorMessage("HTTP error: " + e.getStatusCode());
                     } catch (Exception e) {
-                        int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                        int endIndex = e.getMessage().indexOf("\",", startIndex);
-                        view.showErrorMessage("Failed to show Orders: " + e.getMessage().substring(startIndex, endIndex));
+                        view.showErrorMessage("Failed to show Orders: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
                         e.printStackTrace();
                     }
                 } else {
@@ -1197,9 +1127,49 @@ public void getShopPurchaseHistory(Integer shopId) {
                         } catch (HttpClientErrorException e) {
                             view.showErrorMessage("HTTP error: " + e.getStatusCode());
                         } catch (Exception e) {
-                            int startIndex = e.getMessage().indexOf("\"errorMessage\":\"") + 16;
-                            int endIndex = e.getMessage().indexOf("\",", startIndex);
-                            view.showErrorMessage("Failed to load shop products: " + e.getMessage().substring(startIndex, endIndex));
+                            view.showErrorMessage("Failed to load shop products: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
+                            e.printStackTrace();
+                        }
+                    } else {
+                        view.showErrorMessage("Authorization token not found. Please log in.");
+                    }
+                });
+    }
+
+    public void deleteProduct(ProductDto productDto, Consumer<Boolean> callback){
+        RestTemplate restTemplate = new RestTemplate(); 
+        UI.getCurrent().getPage().executeJs("return localStorage.getItem('authToken');")
+                .then(String.class, token -> {
+                    if (token != null && !token.isEmpty()) {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization", token);
+                        HttpEntity<ProductDto> requestEntity = new HttpEntity<>(productDto, headers);
+                    try{
+                        ResponseEntity<Response> response = restTemplate.exchange(
+                                "http://localhost:" + view.getServerPort() + "/api/shop/removeProductFromShop?shopId="+view.getShopId(),
+                                HttpMethod.POST,
+                                requestEntity,
+                                Response.class);
+
+                        
+                            if (response.getStatusCode().is2xxSuccessful()) {
+                                Response responseBody = response.getBody();
+                                view.showSuccessMessage("Product deleted successfully");
+                                if (responseBody.getErrorMessage() == null) {
+                                    callback.accept(true);
+                                }else {
+                                    callback.accept(false);
+                                    view.showErrorMessage("Product deletion failed");
+                                }
+                            }
+                            else {
+                                view.showErrorMessage("Product deletion failed with status code: " + response.getStatusCodeValue());
+                            }
+                        } catch (HttpClientErrorException e) {
+                            view.showErrorMessage("HTTP error: " + e.getStatusCode());
+                        } catch (Exception e) {
+                            view.showErrorMessage("Failed to delete product: " + ErrorMessageGenerator.generateGenericErrorMessage(e.getMessage()));
+                            callback.accept(false);
                             e.printStackTrace();
                         }
                     } else {

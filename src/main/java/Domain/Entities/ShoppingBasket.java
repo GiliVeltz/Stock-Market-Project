@@ -197,7 +197,7 @@ public class ShoppingBasket implements Cloneable {
         return true;
     }
 
-    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) {
+    private void notfyPurchaseFromShop(String buyingUser, List<Integer> productIdList, Shop shop) throws StockMarketException {
         shop.notfyOwnerPurchaseFromShop(buyingUser,productIdList);
     }
 

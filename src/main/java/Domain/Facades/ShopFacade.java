@@ -32,15 +32,19 @@ import Domain.Entities.Discounts.ProductFixedDiscount;
 import Domain.Entities.Discounts.ProductPercentageDiscount;
 import Domain.Entities.Discounts.ShopFixedDiscount;
 import Domain.Entities.Discounts.ShopPercentageDiscount;
+import Domain.Entities.Policies.ShopPolicy;
+import Domain.Entities.Rules.AbstractRule;
 import Domain.Entities.Rules.Rule;
 import Domain.Entities.Rules.RuleFactory;
 import Domain.Entities.enums.Category;
 import Domain.Entities.enums.Permission;
 import Domain.Repositories.DbDiscountRepository;
+import Domain.Repositories.DbPolicyRepository;
 import Domain.Repositories.DbProductRepository;
 import Domain.Repositories.DbRoleRepository;
 import Domain.Repositories.DbShopRepository;
 import Domain.Repositories.InterfaceDiscountRepository;
+import Domain.Repositories.InterfacePolicyRepository;
 import Domain.Repositories.InterfaceProductRepository;
 import Domain.Repositories.InterfaceRoleRepository;
 import Domain.Repositories.InterfaceShopRepository;
@@ -66,20 +70,23 @@ public class ShopFacade {
     private InterfaceProductRepository _productRepository;
     private InterfaceRoleRepository _roleRepository;
     private InterfaceDiscountRepository _discountRepository;
+    private InterfacePolicyRepository _policyRepository;
     private NotificationHandler _notificationHandler;
+
 
     private static final Logger logger = Logger.getLogger(ShopFacade.class.getName());
 
     @Autowired
     public ShopFacade(DbShopRepository shopRepository, DbProductRepository productRepository,
             DbRoleRepository roleRepository, UserFacade userFacade, NotificationHandler notificationHandler,
-            DbDiscountRepository discountRepository) {
+            DbDiscountRepository discountRepository, DbPolicyRepository policyRepository) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _roleRepository = roleRepository;
         _userFacade = userFacade;
         _discountRepository = discountRepository;
         _notificationHandler = notificationHandler;
+        _policyRepository = policyRepository;
 
         // For testing UI
         // try {
@@ -93,11 +100,12 @@ public class ShopFacade {
     // set repositories to be used in test system
     public void setShopFacadeRepositories(InterfaceShopRepository shopRepository,
             InterfaceProductRepository productRepository, InterfaceRoleRepository roleRepository,
-            InterfaceDiscountRepository discountRepository) {
+            InterfaceDiscountRepository discountRepository, InterfacePolicyRepository policyRepository) {
         _shopRepository = shopRepository;
         _productRepository = productRepository;
         _roleRepository = roleRepository;
         _discountRepository = discountRepository;
+        _policyRepository = policyRepository;
     }
 
     public Shop getShopByShopId(Integer shopId) {
@@ -142,6 +150,7 @@ public class ShopFacade {
         shop = _shopRepository.save(shop);
         shop.setShopFounder(userName);
         shop.notifyReOpenShop(userName);
+        shop.setShopPolicy(_policyRepository.save(shop.getShopPolicy()));
         _shopRepository.flush();
         return shop.getShopId();
     }
@@ -717,7 +726,7 @@ public class ShopFacade {
     public List<ShoppingBasketRuleDto> getShopPolicy(Integer shopId) throws StockMarketException {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
-            List<Rule<ShoppingBasket>> rules = shop.getShopPolicy().getRules();
+            List<AbstractRule<ShoppingBasket>> rules = shop.getShopPolicy().getRules();
             List<ShoppingBasketRuleDto> rulesDto = rules.stream()
                     .map(rule -> RuleFactory.createShoppingBasketRuleDto(rule)).toList();
             return rulesDto;
@@ -732,7 +741,7 @@ public class ShopFacade {
         if (isShopIdExist(shopId)) {
             Shop shop = getShopByShopId(shopId);
             Product product = shop.getProductById(productId);
-            List<Rule<User>> rules = product.getProductPolicy().getRules();
+            List<AbstractRule<User>> rules = product.getProductPolicy().getRules();
             List<UserRuleDto> rulesDto = rules.stream().map(rule -> RuleFactory.createProductRule(rule)).toList();
             return rulesDto;
         } else {
@@ -922,7 +931,14 @@ public class ShopFacade {
         // List<ShoppingBasketRuleDto> shopRules = new ArrayList<>();
         // shopRules.addAll(minBasketRules);
         // shopRules.addAll(minProductRules);
-        shop.changeShopPolicy(username, rules);
+        // delete old policy
+        ShopPolicy oldPolicy = shop.getShopPolicy();
+        if(oldPolicy != shop.changeShopPolicy(username, rules)){
+            _policyRepository.delete(oldPolicy);
+            shop.setShopPolicy(_policyRepository.save(shop.getShopPolicy()));
+        }
+        _policyRepository.flush();
+        _shopRepository.flush();
         logger.info("Shop policy was changed successfully.");
     }
 
@@ -937,6 +953,7 @@ public class ShopFacade {
         if (shop.isShopClosed())
             throw new StockMarketException(String.format("Shop ID: %d is closed.", shopId));
         shop.changeProductPolicy(username, productId, productRules);
+        _shopRepository.flush();
         logger.info("Product policy was changed successfully.");
     }
 
